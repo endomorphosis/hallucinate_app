@@ -1,4 +1,4 @@
-Huggingface Electron App:
+Hallucinate Electron App:
 
 Contains: 
 
