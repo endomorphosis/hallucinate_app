@@ -5,7 +5,8 @@
 	"type": "module",
 	"main": "index.js",
 	"scripts": {
-		"test": "node tests/test.js"
+		"test": "node tests/test.js",
+		"start": "electron ."
 	},
 	"repository": {
 		"type": "git",
