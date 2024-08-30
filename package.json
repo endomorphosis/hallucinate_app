@@ -1,0 +1,23 @@
+{
+	"name": "ipfs_huggingface",
+	"version": "1.0.0",
+	"description": "Electron App containing the nodjs and clientjs runtimes for the IPFS Huggingface Bridge",
+	"type": "module",
+	"main": "index.js",
+	"scripts": {
+		"test": "node tests/test.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/endomorphosis/ipfs_huggingface.git"
+	},
+	"dependencies": {
+		
+	},
+	"author": "Benjamin Barber",
+	"license": "AGPL-3.0-only",
+	"bugs": {
+		"url": "https://github.com/endomorphosis/ipfs_huggingface/issues"
+	},
+	"homepage": "https://github.com/endomorphosis/ipfs_huggingface#readme"
+}
