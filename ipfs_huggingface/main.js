@@ -4,16 +4,13 @@ const createWindow = () => {
         width: 800,
         height: 600,
         webPreferences: {
-        nodeIntegration: true,
+            nodeIntegration: true,
+            preload: path.join(__dirname, "./node/main.js"),
         },
     });
     
     // and load the index.html of the app.
     mainWindow.loadFile("index.html");
-
-
-
-
 
     mainWindow.whenReady().then(() => {
         mainWindow.on("activate", () => {
@@ -22,6 +19,19 @@ const createWindow = () => {
                 mainWindow.webContents.on("did-finish-load", () => {
                     mainWindow.webContents.send("ping", "whoooooooh!");
                 });
+
+                mainWindow.addEventListener('DOMContentLoaded', () => {
+                    const replaceText = (selector, text) => {
+                        const element = document.getElementById(selector)
+                        if (element) element.innerText = text
+                    }
+
+                    for (const dependency of ['chrome', 'node', 'electron']) {
+                        replaceText(`${dependency}-version`, process.versions[dependency])
+                    }
+
+                })
+
             }
         })
 
@@ -43,5 +53,7 @@ const createWindow = () => {
         // when you should delete the corresponding element.
         mainWindow = null;
     });
+
+
 }
 
