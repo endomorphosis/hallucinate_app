@@ -1,24 +1,38 @@
 {
-	"name": "ipfs_huggingface",
-	"version": "1.0.0",
-	"description": "Electron App containing the nodjs and clientjs runtimes for the IPFS Huggingface Bridge",
-	"type": "module",
-	"main": "index.js",
-	"scripts": {
-		"test": "node tests/test.js",
-		"start": "electron ."
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/endomorphosis/ipfs_huggingface.git"
-	},
-	"dependencies": {
-		
-	},
-	"author": "Benjamin Barber",
-	"license": "AGPL-3.0-only",
-	"bugs": {
-		"url": "https://github.com/endomorphosis/ipfs_huggingface/issues"
-	},
-	"homepage": "https://github.com/endomorphosis/ipfs_huggingface#readme"
+  "name": "ipfs_huggingface",
+  "version": "1.0.0",
+  "description": "Electron App containing the nodjs and clientjs runtimes for the IPFS Huggingface Bridge",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "node tests/test.js",
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/endomorphosis/ipfs_huggingface.git"
+  },
+  "author": "Benjamin Barber",
+  "license": "AGPL-3.0-only",
+  "bugs": {
+    "url": "https://github.com/endomorphosis/ipfs_huggingface/issues"
+  },
+  "homepage": "https://github.com/endomorphosis/ipfs_huggingface#readme",
+  "devDependencies": {
+    "@electron-forge/cli": "^7.4.0",
+    "@electron-forge/maker-deb": "^7.4.0",
+    "@electron-forge/maker-rpm": "^7.4.0",
+    "@electron-forge/maker-squirrel": "^7.4.0",
+    "@electron-forge/maker-zip": "^7.4.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
+    "@electron-forge/plugin-fuses": "^7.4.0",
+    "@electron/fuses": "^1.8.0",
+    "electron": "32.0.1"
+  },
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.1",
+    "rpmbuild": "^0.0.23"
+  }
 }
