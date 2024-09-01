@@ -14,8 +14,6 @@ export const createWindow = () => {
     // and load the index.html of the app.
     mainWindow.loadFile("index.html");
 
-    mainWindow.on(" 
-
     mainWindow.whenReady().then(() => {
         mainWindow.on("activate", () => {
             if (BrowserWindow.getAllWindows().length === 0) {
@@ -46,8 +44,6 @@ export const createWindow = () => {
             app.quit();
         }
     })
-
-    mainWindow.on("
 
     // Open the DevTools.
     mainWindow.webContents.openDevTools();
