@@ -1,3 +1,5 @@
+import Main from "electron/main";
+
 export const createWindow = () => {
     // Create the browser window.
     mainWindow = new BrowserWindow({
@@ -11,6 +13,8 @@ export const createWindow = () => {
     
     // and load the index.html of the app.
     mainWindow.loadFile("index.html");
+
+    mainWindow.on(" 
 
     mainWindow.whenReady().then(() => {
         mainWindow.on("activate", () => {
@@ -42,6 +46,8 @@ export const createWindow = () => {
             app.quit();
         }
     })
+
+    mainWindow.on("
 
     // Open the DevTools.
     mainWindow.webContents.openDevTools();
