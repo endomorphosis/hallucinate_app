@@ -1,7 +1,7 @@
 {
-  "name": "ipfs_huggingface",
+  "name": "hallucinate_app",
   "version": "1.0.0",
-  "description": "Electron App containing the nodjs and clientjs runtimes for the IPFS Huggingface Bridge",
+  "description": "Electron App containing the nodjs and clientjs runtimes for the IPFS Huggingface Bridge App",
   "type": "module",
   "main": "index.js",
   "scripts": {
@@ -12,14 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/endomorphosis/ipfs_huggingface.git"
+    "url": "git+https://github.com/endomorphosis/hallucinate_app.git"
   },
   "author": "Benjamin Barber",
   "license": "AGPL-3.0-only",
   "bugs": {
-    "url": "https://github.com/endomorphosis/ipfs_huggingface/issues"
+    "url": "https://github.com/endomorphosis/hallucinate_app/issues"
   },
-  "homepage": "https://github.com/endomorphosis/ipfs_huggingface#readme",
+  "homepage": "https://github.com/endomorphosis/hallucinate_app#readme",
   "devDependencies": {
     "@electron-forge/cli": "^7.4.0",
     "@electron-forge/maker-deb": "^7.4.0",
@@ -33,6 +33,15 @@
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.1",
-    "rpmbuild": "^0.0.23"
+    "ipfs_kit_cjs": "^1.0.0",
+    "ipfs_kit_js": "^1.0.22",
+    "ipfs_model_manager_js": "^1.0.20",
+    "ipfs_agents_js": "^1.0.0",
+    "libp2p_kit_js": "^1.0.0",
+    "ipfs_accelerate_js": "^1.0.0",
+    "ipfs_transformers_js": "^1.0.1",
+    "orbitdb_kit_js": "^1.0.9",
+    "rpmbuild": "^0.0.23",
+    "ipfs_datasets_js": "^1.0.0"
   }
 }
