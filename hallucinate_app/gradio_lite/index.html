@@ -10,7 +10,6 @@
 
             pipe = await pipeline('sentiment-analysis')
 
-
             def count(word, list_of_words):
                 return list_of_words.count(word), list_of_words + [word]
         
@@ -20,11 +19,13 @@
 
             with gr.Blocks() as demo:
                 words = gr.State([])
-                textbox = gr.Textbox()
-                console =  gr.Textbox()
-                chat = gr.Textbox()
+                textbox = gr.Textbox(lines=5, label="History", placeholder="You: ", default="You: ")
+                chat =  gr.Textbox(lines=1, label="chat")
+                console = gr.Textbox(lines=5,label="console", placeholder=">>>")
+                button = gr.Button(textbox.submit(count, inputs=[textbox, words], outputs=[console, words]))                
                 textbox.submit(count, inputs=[textbox, words], outputs=[console, words])
             
+            gr.Interface.from_pipeline(pipe).
             demo.launch()
         
             
