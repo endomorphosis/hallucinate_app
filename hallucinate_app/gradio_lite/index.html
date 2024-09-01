@@ -6,10 +6,18 @@
 	<body>
         <gradio-lite playground layout="vertical" theme="dark">
             import gradio as gr  
+            from transformers_js_py import pipeline
+
+            pipe = await pipeline('sentiment-analysis')
+
 
             def count(word, list_of_words):
                 return list_of_words.count(word), list_of_words + [word]
-              
+        
+            async def fn(text):
+                result = await pipe(text)
+                return result
+
             with gr.Blocks() as demo:
                 words = gr.State([])
                 textbox = gr.Textbox()
@@ -18,17 +26,12 @@
                 textbox.submit(count, inputs=[textbox, words], outputs=[console, words])
             
             demo.launch()
+        
             
-            <!-- async def fn(text):
-                result = await pipe(text)
-                return result -->
-            
-            <!-- from transformers_js_py import pipeline -->
 
-            <!-- pipe = await pipeline('sentiment-analysis') -->
 
 			<gradio-requirements>
-                <!-- transformers-js-py -->
+                transformers-js-py
 			</gradio-requirements>
 		</gradio-lite>
         <div id="root" style="padding-left: 10px; padding-top: 10px; height: 100%; background-color: black; color: white;">   
