@@ -1,6 +1,6 @@
 {
   "name": "hallucinate_app",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Electron App containing the nodjs and clientjs runtimes for the IPFS Huggingface Bridge App",
   "type": "module",
   "main": "index.js",
@@ -32,16 +32,17 @@
     "electron": "32.0.1"
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.1",
+    "libp2p_kit_js": "^1.0.0",
+    "orbitdb_kit_js": "^1.0.9",
     "ipfs_kit_cjs": "^1.0.0",
     "ipfs_kit_js": "^1.0.22",
     "ipfs_model_manager_js": "^1.0.20",
-    "ipfs_agents_js": "^1.0.0",
-    "libp2p_kit_js": "^1.0.0",
-    "ipfs_accelerate_js": "^1.0.0",
     "ipfs_transformers_js": "^1.0.1",
-    "orbitdb_kit_js": "^1.0.9",
-    "rpmbuild": "^0.0.23",
-    "ipfs_datasets_js": "^1.0.0"
+    "ipfs_datasets_js": "^1.0.0",
+    "ipfs_accelerate_js": "^1.0.0",
+    "ipfs_agents_js": "^1.0.3",
+    "electron-squirrel-startup": "^1.0.1",
+    "rpmbuild": "^0.0.23"
+
   }
 }
