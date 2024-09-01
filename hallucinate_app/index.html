@@ -3,34 +3,41 @@
 		<script type="module" crossorigin src="https://cdn.jsdelivr.net/npm/@gradio/lite/dist/lite.js"></script>
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gradio/lite/dist/lite.css" />
 	</head>
-	<body background="black">
+	<body>
         <gradio-lite playground layout="vertical" theme="dark">
+            import gradio as gr  
 
             def count(word, list_of_words):
                 return list_of_words.count(word), list_of_words + [word]
-            
+              
             with gr.Blocks() as demo:
                 words = gr.State([])
                 textbox = gr.Textbox()
                 console =  gr.Textbox()
                 chat = gr.Textbox()
                 textbox.submit(count, inputs=[textbox, words], outputs=[console, words])
-
+            
             demo.launch()
+            
+            <!-- async def fn(text):
+                result = await pipe(text)
+                return result -->
+            
             <!-- from transformers_js_py import pipeline -->
+
             <!-- pipe = await pipeline('sentiment-analysis') -->
+
 			<gradio-requirements>
                 <!-- transformers-js-py -->
 			</gradio-requirements>
 		</gradio-lite>
-        <div id="root" style="padding-left: 10x; padding-top: 5px; height: 200px; background-color: black; color: white;">   
-            <span class="warnings">>     
+        <div id="root" style="padding-left: 10px; padding-top: 10px; height: 100%; background-color: black; color: white;">   
+            <span id="console" style="border-bottom: solid #333 2px; min-height: fit-content; min-width: fit-content">Console:</span>
+            <span style="border-top: solid #333 3px ; margin-left: 10px; margin-top: 10px; " class="warnings">     
                 <p>IPFS Huggingface is a project that aims to provide a decentralized way to access Huggingface models.</p>
                 <p>It uses IPFS to store the models and a simple web interface to access them.</p>
                 <p>Check out the <a href="https://github.com/endomorphosis/hallucinate_app">GitHub repository</a> for more information.</p>
-                <p>Websockets</p>
-            </span>
-            
+                <p>Please Wait While Gradio Loads ...</p>
             </span>
         </div>
         <script src="./cjs/index.js"></script>
