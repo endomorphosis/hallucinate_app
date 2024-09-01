@@ -1,20 +1,4 @@
 
-class IpfsAgentCjs {
-    constructor() {
-        this.module = {};
-    }
-
-    init() {
-        this.sayHello = this.sayHello.bind(this);
-    }
-
-    sayHello() {
-        console.log("Hello from IpfsAgentCjs");
-    }
-}
-
-
-// Define your module code here
 function init() {
     console.log("Initializing module");
     module.exports = {
@@ -23,10 +7,35 @@ function init() {
 
 }
 
-// Make the sayHello function available to other modules
 module = {
     init: init
 };
+
+const require = function (path) {
+    return module.exports;
+}
+
+
+class IpfsAgentCjs {
+    constructor() {
+        this.module = {};
+        this.newModule = {};
+    }
+
+    init() {
+        this.sayHello = this.sayHello.bind(this);
+    }
+
+    test() {
+        console.log("Test");
+        // Use the imported module here
+        // For example: otherModule.someFunction();
+    }
+    sayHello() {
+        console.log("Hello from IpfsAgentCjs");
+        console.log(Object.keys(this));
+    }
+}
 
 
 module.run = function() {
@@ -39,4 +48,9 @@ module.run = function() {
 }
 
 module.run();
+
 module.exports;
+
+const { libp2pKit } = require("./libp2p_kit_cjs/libp2p_kit.cjs");
+const otherModule = require("./path/to/otherModule");
+

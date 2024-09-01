@@ -1,0 +1,3 @@
+<script type="module:>
+    export { libp2pKitJs }
+</script>
