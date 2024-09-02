@@ -1,8 +1,8 @@
 {
     "dependencies": {
-    "ipfs_accelerate_js": "^1.0.0",
+    "ipfs_accelerate_js": "^1.0.3",
     "ipfs_agents_js": "^1.0.3",
-    "ipfs_datasets_js": "^1.0.0",
+    "ipfs_datasets_js": "^1.0.1",
     "ipfs_faiss_js": "^1.0.4",
     "ipfs_kit_cjs": "^1.0.0",
     "ipfs_kit_js": "^1.0.22",
