@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>stlite app</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@stlite/mountable@0.65.0/build/stlite.css"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@stlite/mountable@0.65.0/build/stlite.js"></script>
+    <script>
+stlite.mount(
+  {
+    requirements: ["transformers_js_py"],
+    entrypoint: "streamlit_app.py",
+    files: {
+"streamlit_app.py": `import streamlit as st
+
+from transformers_js_py import import_transformers_js
+
+st.title("Sentiment analysis")
+
+text = st.text_input("Input some text", "I love transformers!")
+
+if text:
+    with st.spinner():
+        transformers = await import_transformers_js()
+        pipeline = transformers.pipeline
+        if "pipe" not in st.session_state:
+            st.session_state["pipe"] = await pipeline('sentiment-analysis')
+        pipe = st.session_state["pipe"]
+        out = await pipe(text)
+    st.write(out)`,
+
+},
+  },
+  document.getElementById("root")
+)
+
+    </script>
+  </body>
+  <!-- Generated from stlite sharing (https://edit.share.stlite.net/), and the source version is 7a368f1e5666c01a42d6c59986b3bfcc5f3e8689 -->
+</html>

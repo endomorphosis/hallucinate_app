@@ -12,25 +12,21 @@
 
             def count(word, list_of_words):
                 return list_of_words.count(word), list_of_words + [word]
-        
+
             async def fn(text):
                 result = await pipe(text)
                 return result
 
             with gr.Blocks() as demo:
                 words = gr.State([])
-                textbox = gr.Textbox(lines=5, label="History", placeholder="You: ", default="You: ")
+                textbox = gr.Textbox(lines=5, label="History", placeholder="You: ")
                 chat =  gr.Textbox(lines=1, label="chat")
                 console = gr.Textbox(lines=5,label="console", placeholder=">>>")
-                button = gr.Button(textbox.submit(count, inputs=[textbox, words], outputs=[console, words]))                
+                button = gr.Button()        
                 textbox.submit(count, inputs=[textbox, words], outputs=[console, words])
+                gr.Interface.from_pipeline(pipe)
             
-            gr.Interface.from_pipeline(pipe).
             demo.launch()
-        
-            
-
-
 			<gradio-requirements>
                 transformers-js-py
 			</gradio-requirements>
