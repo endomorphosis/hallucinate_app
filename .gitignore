@@ -4,3 +4,4 @@ ipfs_kit_lib/bin/*
 config/config.toml
 out
 dist
+build
