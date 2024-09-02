@@ -8,6 +8,8 @@ import { ipfsModelManager } from 'ipfs_model_manager';
 import { ipfsDatasets } from 'ipfs_datasets';
 import { ipfsTransformers } from 'ipfs_transformers';
 import { ipfsAgents } from 'ipfs_agents';
+import { ipfsFaiss } from 'ipfs_faiss';
+import { ipfsAccelerate } from 'ipfs_accelerate';
 
 export class test_all {
     constructor(resources = {}, metadata = {}) {
@@ -18,6 +20,8 @@ export class test_all {
         this.ipfsDatasets = new ipfsDatasets();
         this.ipfsTransformers = new ipfsTransformers();
         this.ipfsAgents = new ipfsAgents();
+        this.ipfsFaiss = new ipfsFaiss();
+        this.ipfsAccelerate = new ipfsAccelerate();
         this.resources = resources;
         this.metadata = metadata;
     }
@@ -66,6 +70,18 @@ export class test_all {
         }
         catch (error) {
             init_results.ipfsAgents = error;
+        }
+        try {
+            init_results.ipfsFaiss = await this.ipfsFaiss.init();
+        }
+        catch (error) {
+            init_results.ipfsFaiss = error;
+        }
+        try {
+            init_results.ipfsAccelerate = await this.ipfsAccelerate.init();
+        }
+        catch (error) {
+            init_results.ipfsAccelerate = error;
         }
         return init_results;
     }

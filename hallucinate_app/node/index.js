@@ -1,3 +1,5 @@
+export * from "./ipfs_faiss.js";
+export { ipfsFaissJs } from "./ipfs_faiss.js";
 export * from "./libp2p_kit.js";
 export { libp2pKit } from "./libp2p_kit.js";
 export * from "./ipfs_kit.js";
@@ -13,5 +15,7 @@ export * from "./ipfs_transformers.js";
 export { ipfsTransformers } from "./ipfs_transformers.js";
 export * from "./ipfs_agents.js";
 export { ipfsAgents } from "./ipfs_agents.js";
+export * from './ipfs_accelerate.js';
+export { ipfsAccelerate } from './ipfs_accelerate.js';
 export * from "./test/test.js";
 export { test } from "./test/test.js";

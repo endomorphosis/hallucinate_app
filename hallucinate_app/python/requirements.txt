@@ -1,0 +1,8 @@
+ipfs-transformers-py
+ipfs-datasets-py
+ipfs-model-manager-py
+libp2p-kit-py
+ipfs-kit-py
+orbitdb-kit-py
+ipfs-agents-py
+ipfs-accelerate-py
