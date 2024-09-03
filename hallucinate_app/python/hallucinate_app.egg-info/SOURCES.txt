@@ -1,0 +1,8 @@
+pyproject.toml
+setup.py
+hallucinate_app/index.py
+hallucinate_app/ipfs_kit.py
+hallucinate_app.egg-info/PKG-INFO
+hallucinate_app.egg-info/SOURCES.txt
+hallucinate_app.egg-info/dependency_links.txt
+hallucinate_app.egg-info/top_level.txt

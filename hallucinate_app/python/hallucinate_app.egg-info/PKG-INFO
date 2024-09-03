@@ -1,0 +1,12 @@
+Metadata-Version: 2.1
+Name: hallucinate_app
+Version: 0.0.2
+Summary: A wrapper around huggingface datasets, invoking an IPFS model manager.
+Author-email: Benjamin Barber <starworks5@gmail.com>
+Project-URL: Homepage, https://github.com/endomorphosis/hallucinate_app
+Project-URL: Issues, https://github.com/endomorphosis/hallucinate_app
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)
+Classifier: Operating System :: POSIX :: Linux
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
