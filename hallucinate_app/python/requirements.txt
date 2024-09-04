@@ -1,25 +1,26 @@
-# ipfs-transformers-py
-# ipfs-datasets-py
-# ipfs-model-manager-py
-# libp2p-kit-py
-# ipfs-kit-py
-# orbitdb-kit-py
-# ipfs-agents-py
-# ipfs-accelerate-py
-libp2p_kit_py,
-ipfs_kit_py,
-orbitdb_kit_py,
-ipfs_faiss_py,
-ipfs_model_manager_py,
-ipfs_transformers_py,
-ipfs_datasets_py,
-ipfs_agents_py,
-ipfs_accelerate_py,
-transformers,
-torch,
-torchvision,
-numpy,
-torchtext,
-urllib3,
-requests,
-boto3,
+torch
+torchvision
+protobuf
+transformers
+numpy
+torchtext
+urllib3
+requests
+boto3
+websocket
+websockets
+libp2p_kit_py
+ipfs_kit_py
+ipfs_faiss_py
+ipfs-model-manager-py>=0.0.14
+ipfs_transformers_py
+ipfs-datasets-py>=0.0.5
+ipfs_agents_py
+ipfs-accelerate-py>=0.0.8
+orbitdb-kit-py>=0.0.9
+
+
+
+
+
+
