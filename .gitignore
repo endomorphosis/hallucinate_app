@@ -5,3 +5,4 @@ config/config.toml
 out
 dist
 build
+config.toml
