@@ -1,12 +1,11 @@
 import os
+import json
 # from cloudkit_worker import run
 # import config from .config
 import ipfs_accelerate_py
 import ipfs_agents_py
-import ipfs_agents_py.ipfs_agent
 import ipfs_kit_py
 import libp2p_kit_py
-import libp2p_kit_py.libp2p_kit
 import orbitdb_kit_py
 import ipfs_faiss_py 
 import ipfs_model_manager_py
@@ -81,7 +80,12 @@ class testLibp2pWorker:
 if __name__ == '__main__':
     try:
         worker = testLibp2pWorker()
-        worker.test()
+        test_results = worker.test()
+        print("Test Results:")
+        print(test_results)
+        test_results_json = json.dumps(test_results)
+        with open('test_results.json', 'w') as f:
+            f.write(test_results_json)
         # worker.run(skillset=os.path.join(os.path.dirname(__file__), 'skillset'))
     except Exception as e:
         print(e)
