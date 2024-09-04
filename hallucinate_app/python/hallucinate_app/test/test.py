@@ -13,7 +13,7 @@ import ipfs_transformers_py
 import ipfs_agents_py 
 import ipfs_accelerate_py 
 
-class testWorker:
+class testLibp2pWorker:
     def __init__(self):
         resources = {}
         metadata = {}
@@ -35,7 +35,7 @@ class testWorker:
 	
 if __name__ == '__main__':
     try:
-        worker = testWorker()
+        worker = testLibp2pWorker()
         worker.test()
         # worker.run(skillset=os.path.join(os.path.dirname(__file__), 'skillset'))
     except Exception as e:
