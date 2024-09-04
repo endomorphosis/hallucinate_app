@@ -25,7 +25,7 @@ class testLibp2pWorker:
         test_results = {}
         try:
             self.ipfs = ipfs_kit_py.ipfs_kit(self.resources, self.metadata)
-            test_results['ipfs'] = self.ipfs.test()
+            test_results['ipfs'] = self.test()
         except Exception as e:
             test_results['ipfs'] = e
         try:
