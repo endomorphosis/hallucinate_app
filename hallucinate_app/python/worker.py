@@ -1,10 +1,10 @@
 import os
 # from cloudkit_worker import run
-import ipfs_accelerate_py.ipfs_accelerate
-import ipfs_agents_py.ipfs_agent
+# import config from .config
+import ipfs_accelerate_py
+import ipfs_agents_py
 import ipfs_kit_py
 import libp2p_kit_py
-import libp2p_kit_py.libp2p_kit
 import orbitdb_kit_py
 import ipfs_faiss_py 
 import ipfs_model_manager_py
@@ -15,15 +15,19 @@ import ipfs_accelerate_py
 
 class Worker:
     def __init__(self):
-        self.ipfs = ipfs_kit_py.ipfs_kit()
-        self.libp2p = libp2p_kit_py.libp2p_kit()
-        self.orbitdb = orbitdb_kit_py.orbitdb_kit()
-        self.faiss = ipfs_faiss_py.ipfs_faiss_dataset()
-        self.model_manager = ipfs_model_manager_py.ipfs_model_manager()
-        self.datasets = ipfs_datasets_py.ipfs_datasets()
-        self.transformers = ipfs_transformers_py.ipfs_transformers()
-        self.agents = ipfs_agents_py.ipfs_agent()
-        self.accelerate = ipfs_accelerate_py.ipfs_accelerate()
+        resources = {}
+        metadata = {}
+        self.resources = resources
+        self.metadata = metadata
+        self.ipfs = ipfs_kit_py.ipfs_kit(self.resources, self.metadata)
+        self.orbitdb = orbitdb_kit_py.orbitdb_kit(self.resources, self.metadata)
+        self.faiss = ipfs_faiss_py.ipfs_faiss_dataset(self.resources, self.metadata)
+        self.model_manager = ipfs_model_manager_py.ipfs_model_manager(self.resources, self.metadata)
+        self.datasets = ipfs_datasets_py.ipfs_datasets(self.resources, self.metadata)
+        self.transformers = ipfs_transformers_py.ipfs_transformers(self.resources, self.metadata)
+        self.accelerate = ipfs_accelerate_py.ipfs_accelerate(self.resources, self.metadata)
+        self.libp2p = libp2p_kit_py.libp2p_kit(self.resources, self.metadata)
+        self.agents = ipfs_agents_py.ipfs_agent(self.resources, self.metadata)
 
     def init(self, imports):
           if not isinstance(imports, object):
@@ -44,8 +48,9 @@ class Worker:
         # self.ipfs_transformers.run()
         # self.ipfs_agents.run()
         # self.ipfs_accelerate.run()
-	
 
+        return True
+	
 if __name__ == '__main__':
     try:
         worker = Worker()
