@@ -21,8 +21,6 @@ import { test_ipfs_agents_js } from 'ipfs_agents_js';
 import { test_ipfs_faiss_js } from 'ipfs_faiss_js';
 import { test_ipfs_accelerate_js } from 'ipfs_accelerate_js';
 
-
-
 export class test_all {
     constructor(resources = {}, metadata = {}) {
         this.libp2pKit = new libp2pKit();
@@ -37,7 +35,6 @@ export class test_all {
         this.resources = resources;
         this.metadata = metadata;
     }
-
 
     async init() {
         let init_results = {};
