@@ -25,6 +25,6 @@ COPY ./README.md README.md
 COPY ./forge.config.cjs forge.config.cjs
 
 RUN python3 -m pip install -r ./hallucinate_app/python/requirements.txt
-
+CMD  wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.shrc" SHELL="$(which sh)" sh -
 
 ENTRYPOINT ["node", "index.js"]

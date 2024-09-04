@@ -23,33 +23,43 @@ class testLibp2pWorker:
 
     def test(self):
         test_results = {}
+
+        try:
+            self.libp2p = libp2p_kit_py.libp2p_kit(self.resources, self.metadata)
+            test_results['libp2p'] = self.libp2p.test()
+        except Exception as e:
+            test_results['libp2p'] = e
+
         try:
             self.ipfs = ipfs_kit_py.ipfs_kit(self.resources, self.metadata)
             test_results['ipfs'] = self.test()
         except Exception as e:
             test_results['ipfs'] = e
-        try:
-            self.orbitdb = orbitdb_kit_py.orbitdb_kit(self.resources, self.metadata)
-            test_results['orbitdb'] = self.orbitdb.test()
-        except Exception as e:
-            test_results['orbitdb'] = e
-        try:
-            self.faiss = ipfs_faiss_py.ipfs_faiss_dataset(self.resources, self.metadata)
-            test_results['faiss'] = self.faiss.test()
-        except Exception as e:
-            test_results['faiss'] = e
+
         try:
             self.model_manager = ipfs_model_manager_py.ipfs_model_manager(self.resources, self.metadata)
             test_results['model_manager'] = self.model_manager.test()
         except Exception as e:
             test_results['model_manager'] = e
-
+        
         try:
             self.datasets = ipfs_datasets_py.ipfs_datasets(self.resources, self.metadata)
             test_results['datasets'] = self.datasets.test()
         except Exception as e:
             test_results['datasets'] = e
-
+            
+        try:
+            self.orbitdb = orbitdb_kit_py.orbitdb_kit(self.resources, self.metadata)
+            test_results['orbitdb'] = self.orbitdb.test()
+        except Exception as e:
+            test_results['orbitdb'] = e
+        
+        try:
+            self.faiss = ipfs_faiss_py.ipfs_faiss_dataset(self.resources, self.metadata)
+            test_results['faiss'] = self.faiss.test()
+        except Exception as e:
+            test_results['faiss'] = e
+        
         try:
             self.transformers = ipfs_transformers_py.ipfs_transformers(self.resources, self.metadata)
             test_results['transformers'] = self.transformers.test()
@@ -61,13 +71,6 @@ class testLibp2pWorker:
             test_results['accelerate'] = self.accelerate.test()
         except Exception as e:
             test_results['accelerate'] = e
-
-        try:
-            self.libp2p = libp2p_kit_py.libp2p_kit(self.resources, self.metadata)
-            test_results['libp2p'] = self.libp2p.test()
-
-        except Exception as e:
-            test_results['libp2p'] = e
 
         try:
             self.agents = ipfs_agents_py.ipfs_agent(self.resources, self.metadata)

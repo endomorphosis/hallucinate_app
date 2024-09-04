@@ -1,27 +1,39 @@
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
-import { libp2pKit } from 'libp2p_kit';
-import { ipfsKit } from 'ipfs_kit';
-import { orbitdbKit } from 'orbitdb_kit';
-import { ipfsModelManager } from 'ipfs_model_manager';
-import { ipfsDatasets } from 'ipfs_datasets';
-import { ipfsTransformers } from 'ipfs_transformers';
-import { ipfsAgents } from 'ipfs_agents';
-import { ipfsFaiss } from 'ipfs_faiss';
-import { ipfsAccelerate } from 'ipfs_accelerate';
+import { libp2pKit } from 'libp2p_kit_js';
+import { ipfsKitJs } from 'ipfs_kit_js';
+import { orbitDbKitJs } from 'orbitdb_kit_js';
+import { ipfsModelManagerJs } from 'ipfs_model_manager_js';
+import { ipfsDatasetsJs } from 'ipfs_datasets_js';
+import { ipfsTransformersJs } from 'ipfs_transformers_js';
+import { ipfsAgentsJs } from 'ipfs_agents_js';
+import { ipfsFaissJs } from 'ipfs_faiss_js';
+import { ipfsAccelerateJs } from 'ipfs_accelerate_js';
+
+import { test_libp2p_kit_js } from 'libp2p_kit_js';
+import { test_ipfs_kit_js } from 'ipfs_kit_js';
+import { test_orbitdb_kit_js } from 'orbitdb_kit_js';
+import { test_ipfs_model_manager_js } from 'ipfs_model_manager_js';
+import { test_ipfs_datasets_js } from 'ipfs_datasets_js';
+import { test_ipfs_transformers_js } from 'ipfs_transformers_js';
+import { test_ipfs_agents_js } from 'ipfs_agents_js';
+import { test_ipfs_faiss_js } from 'ipfs_faiss_js';
+import { test_ipfs_accelerate_js } from 'ipfs_accelerate_js';
+
+
 
 export class test_all {
     constructor(resources = {}, metadata = {}) {
         this.libp2pKit = new libp2pKit();
-        this.ipfsKit = new ipfsKit();
-        this.orbitdbKit = new orbitdbKit();
-        this.ipfsModelManager = new ipfsModelManager();
-        this.ipfsDatasets = new ipfsDatasets();
-        this.ipfsTransformers = new ipfsTransformers();
-        this.ipfsAgents = new ipfsAgents();
-        this.ipfsFaiss = new ipfsFaiss();
-        this.ipfsAccelerate = new ipfsAccelerate();
+        this.ipfsKit = new ipfsKitJs();
+        this.orbitdbKit = new orbitDbKitJs();
+        this.ipfsModelManager = new ipfsModelManagerJs();
+        this.ipfsDatasets = new ipfsDatasetsJs();
+        this.ipfsTransformers = new ipfsTransformersJs();
+        this.ipfsAgents = new ipfsAgentsJs();
+        this.ipfsFaiss = new ipfsFaissJs();
+        this.ipfsAccelerate = new ipfsAccelerateJs();
         this.resources = resources;
         this.metadata = metadata;
     }
@@ -87,45 +99,119 @@ export class test_all {
     }
 
     async test() {
+        let init_test = {};
+
+        try {
+            this.test_ipfs_accelerate_js = new test_ipfs_accelerate_js();
+            init_test.test_ipfs_accelerate_js = await this.test_ipfs_accelerate_js.init();
+            }
+        catch (error) {
+            init_test.test_ipfs_accelerate_js = error;
+        }
+
+        try {
+            this.test_ipfs_faiss_js = new test_ipfs_faiss_js();
+            init_test.test_ipfs_faiss_js = await this.test_ipfs_faiss_js.init();
+        }
+        catch (error) {
+            init_test.test_ipfs_faiss_js = error;
+        }
+
+        try {
+            this.test_ipfs_agents_js = new test_ipfs_agents_js();
+            init_test.test_ipfs_agents_js = await this.test_ipfs_agents_js.init();
+        }
+        catch (error) {
+            init_test.test_ipfs_agents_js = error;
+        }
+
+        try {
+            this.test_ipfs_transformers_js = new test_ipfs_transformers_js();
+            init_test.test_ipfs_transformers_js = await this.test_ipfs_transformers_js.init();
+        }
+        catch (error) {
+            init_test.test_ipfs_transformers_js = error;
+        }
+
+        try {
+            this.test_ipfs_datasets_js = new test_ipfs_datasets_js();
+            init_test.test_ipfs_datasets_js = await this.test_ipfs_datasets_js.init();
+        }
+        catch (error) {
+            init_test.test_ipfs_datasets_js = error;
+        }
+
+        try {
+            this.test_ipfs_model_manager_js = new test_ipfs_model_manager_js();
+            init_test.test_ipfs_model_manager_js = await this.test_ipfs_model_manager_js.init();
+        }
+        catch (error) {
+            init_test.test_ipfs_model_manager_js = error;
+        }
+       
+        try {
+            this.test_orbitdb_kit_js = new test_orbitdb_kit_js();
+            init_test.test_orbitdb_kit_js = await this.test_orbitdb_kit_js.init();
+        }
+        catch (error) {
+            init_test.test_orbitdb_kit_js = error;
+        }
+
+        try {
+            this.test_ipfs_kit_js = new test_ipfs_kit_js();
+            init_test.test_ipfs_kit_js = await this.test_ipfs_kit_js.init();
+        }
+        catch (error) {
+            init_test.test_ipfs_kit_js = error;
+        }
+
+        try {
+            this.test_libp2p_kit_js = new test_libp2p_kit_js();
+            init_test.test_libp2p_kit_js  = await this.test_libp2p_kit_js.init();
+        }
+        catch (error) {
+            init_test.test_libp2p_kit_js = error;
+        }
+
         let test_results = {};
         try {
-            test_results.libp2pKit = await this.libp2pKit.test();
+            test_results.libp2pKit = await this.test_libp2p_kit_js.test();
         }
         catch (error) {
             test_results.libp2pKit = error;
         }
         try {
-            test_results.ipfsKit = await this.ipfsKit.test();
+            test_results.ipfsKit = await this.test_ipfs_kit_js.test();
         }
         catch (error) {
             test_results.ipfsKit = error;
         }
         try {
-            test_results.orbitdbKit = await this.orbitdbKit.test();
+            test_results.orbitdbKit = await this.test_orbitdb_kit_js.test();
         }
         catch (error) {
             test_results.orbitdbKit = error;
         }
         try {
-            test_results.ipfsModelManager = await this.ipfsModelManager.test();
+            test_results.ipfsModelManager = await this.test_ipfs_model_manager_js.test();
         }
         catch (error) {
             test_results.ipfsModelManager = error;
         }
         try {
-            test_results.ipfsDatasets = await this.ipfsDatasets.test();
+            test_results.ipfsDatasets = await this.test_ipfs_datasets_js.test();
         }
         catch (error) {
             test_results.ipfsDatasets = error;
         }
         try {
-            test_results.ipfsTransformers = await this.ipfsTransformers.test();
+            test_results.ipfsTransformers = await this.test_ipfs_transformers_js.test();
         }
         catch (error) {
             test_results.ipfsTransformers = error;
         }
         try {
-            test_results.ipfsAgents = await this.ipfsAgents.test();
+            test_results.ipfsAgents = await this.test_ipfs_agents_js.test();
         }
         catch (error) {
             test_results.ipfsAgents = error;

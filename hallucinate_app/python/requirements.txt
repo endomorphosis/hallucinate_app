@@ -9,7 +9,7 @@ requests
 boto3
 websocket
 websockets
-libp2p_kit_py>=0.0.6
+libp2p_kit_py>=0.0.10
 ipfs_kit_py
 ipfs_faiss_py
 ipfs-model-manager-py>=0.0.14
