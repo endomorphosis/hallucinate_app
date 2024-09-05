@@ -1,6 +1,6 @@
 {
   "name": "hallucinate_app",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Electron App containing the nodjs and clientjs runtimes for the IPFS Huggingface Bridge App",
   "type": "module",
   "main": "index.js",
