@@ -1,15 +1,16 @@
 {
   "type": "module",
   "dependencies": {
-    "ipfs_accelerate_js": "^1.0.8",
-    "ipfs_agents_js": "^1.0.12",
-    "ipfs_datasets_js": "^1.0.5",
-    "ipfs_faiss_js": "^1.0.4",
+    "ipfs_accelerate_js": "^1.0.10",
+    "ipfs_agents_js": "^1.0.14",
+    "ipfs_datasets_js": "^1.0.7",
+    "ipfs_faiss_js": "^1.0.7",
+    "ipfs_huggingface_scraper_js": "^1.0.20",
     "ipfs_kit_cjs": "^1.0.0",
-    "ipfs_kit_js": "^1.0.23",
-    "ipfs_model_manager_js": "^1.0.28",
-    "ipfs_transformers_js": "^1.0.8",
-    "libp2p_kit_js": "^1.0.17",
-    "orbitdb_kit_js": "^1.0.13"
+    "ipfs_kit_js": "^1.0.24",
+    "ipfs_model_manager_js": "^1.0.29",
+    "ipfs_transformers_js": "^1.0.9",
+    "libp2p_kit_js": "^1.0.19",
+    "orbitdb_kit_js": "^1.0.17"
   }
 }
