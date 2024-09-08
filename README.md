@@ -37,3 +37,25 @@ NodeJS server:
 -- huggingface_datasets_js wrapper
 
 -- orbitdb_kit_js node.js wrapper
+
+-- huggingface scraper library
+
+python server:
+
+-- ipfs_model_manager_py python library
+
+-- ipfs_kit_py python library
+
+-- ipfs_datasets_py python library
+
+-- Kubo / ipfs_cluster external Go library
+
+-- faiss system external library
+
+-- neural compressor external library
+
+-- huggingface Transformers wrapper
+
+-- huggingface_datasets wrapper
+
+-- orbitdb_kit_py node.js wrapper
