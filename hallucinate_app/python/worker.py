@@ -16,13 +16,13 @@ class libp2pWorker:
         metadata = {}
         self.resources = resources
         self.metadata = metadata
-        self.ipfs = ipfs_kit_py.ipfs_kit(self.resources, self.metadata)
-        self.faiss = ipfs_faiss_py.ipfs_faiss_dataset(self.resources, self.metadata)
-        self.model_manager = ipfs_model_manager_py.ipfs_model_manager(self.resources, self.metadata)
-        self.datasets = ipfs_datasets_py.ipfs_datasets(self.resources, self.metadata)
-        self.transformers = ipfs_transformers_py.ipfs_transformers(self.resources, self.metadata)
-        self.accelerate = ipfs_accelerate_py.ipfs_accelerate(self.resources, self.metadata)
-        self.libp2p = libp2p_kit_py.libp2p_kit(self.resources, self.metadata)
+        self.ipfs_kit = ipfs_kit_py.ipfs_kit(self.resources, self.metadata)
+        self.libp2p_kit = libp2p_kit_py.libp2p_kit(self.resources, self.metadata)
+        self.ipfs_faiss = ipfs_faiss_py.ipfs_faiss_dataset(self.resources, self.metadata)
+        self.ipfs_model_manager = ipfs_model_manager_py.ipfs_model_manager(self.resources, self.metadata)
+        self.ipfs_datasets = ipfs_datasets_py.ipfs_datasets(self.resources, self.metadata)
+        self.ipfs_transformers = ipfs_transformers_py.ipfs_transformers(self.resources, self.metadata)
+        self.ipfs_accelerate = ipfs_accelerate_py.ipfs_accelerate(self.resources, self.metadata)
 
     def init(self, imports):
           if not isinstance(imports, object):
