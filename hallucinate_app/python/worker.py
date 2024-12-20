@@ -16,13 +16,30 @@ class libp2pWorker:
         metadata = {}
         self.resources = resources
         self.metadata = metadata
-        self.ipfs_kit = ipfs_kit_py.ipfs_kit(self.resources, self.metadata)
-        self.libp2p_kit = libp2p_kit_py.libp2p_kit(self.resources, self.metadata)
-        self.ipfs_faiss = ipfs_faiss_py.ipfs_faiss_dataset(self.resources, self.metadata)
-        self.ipfs_model_manager = ipfs_model_manager_py.ipfs_model_manager(self.resources, self.metadata)
-        self.ipfs_datasets = ipfs_datasets_py.ipfs_datasets(self.resources, self.metadata)
-        self.ipfs_transformers = ipfs_transformers_py.ipfs_transformers(self.resources, self.metadata)
-        self.ipfs_accelerate = ipfs_accelerate_py.ipfs_accelerate(self.resources, self.metadata)
+        if "ipfs_kit_py" in globals():
+            self.ipfs_kit = ipfs_kit_py.ipfs_kit(self.resources, self.metadata)
+            self.resources["ipfs_kit"] = self.ipfs_kit
+        if "libp2p_kit_py" in globals():
+            self.libp2p_kit = libp2p_kit_py.libp2p_kit(self.resources, self.metadata)
+            self.resources["libp2p_kit"] = self.libp2p_kit
+        if "ipfs_transformers_py" in globals():
+            self.ipfs_transformers = ipfs_transformers_py.ipfs_transformers(self.resources, self.metadata)
+            self.resources["ipfs_transformers"] = self.ipfs_transformers
+        if "ipfs_datasets_py" in globals():
+            self.ipfs_datasets = ipfs_datasets_py.ipfs_datasets(self.resources, self.metadata)
+            self.resources["ipfs_datasets"] = self.ipfs_datasets
+        if "ipfs_model_manager_py" in globals():
+            self.ipfs_model_manager = ipfs_model_manager_py.ipfs_model_manager(self.resources, self.metadata)
+            self.resources["ipfs_model_manager"] = self.ipfs_model_manager
+        if "ipfs_accelerate_py" in globals():
+            self.ipfs_accelerate = ipfs_accelerate_py.ipfs_accelerate(self.resources, self.metadata)
+            self.resources["ipfs_accelerate"] = self.ipfs_accelerate
+        if "ipfs_faiss_py" in globals():
+            self.ipfs_faiss = ipfs_faiss_py.ipfs_faiss_dataset(self.resources, self.metadata)
+            self.resources["ipfs_faiss"] = self.ipfs_faiss
+        # if "ipfs_agents_py" in globals():
+        #     self.ipfs_agents = ipfs_agents_py.ipfs_agents(self.resources, self.metadata)
+        #     self.resources["ipfs_agents"] = self.ipfs_agents
 
     def init(self, imports):
           if not isinstance(imports, object):
