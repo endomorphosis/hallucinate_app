@@ -8,6 +8,7 @@ import ipfs_faiss_py
 import ipfs_model_manager_py
 import ipfs_datasets_py 
 import ipfs_transformers_py 
+import ipfs_embeddings_py
 import ipfs_accelerate_py 
 
 class libp2pWorker:
@@ -38,6 +39,9 @@ class libp2pWorker:
         if "ipfs_faiss_py" in globals():
             self.ipfs_faiss = ipfs_faiss_py.ipfs_faiss_py(self.resources, self.metadata)
             self.resources["ipfs_faiss"] = self.ipfs_faiss
+        if "ipfs_embeddings_py" in globals():
+            self.ipfs_embeddings = ipfs_embeddings_py.ipfs_embeddings(self.resources, self.metadata)
+            self.resources["ipfs_embeddings"] = self.ipfs_embeddings
         # if "ipfs_agents_py" in globals():
         #     self.ipfs_agents = ipfs_agents_py.ipfs_agents(self.resources, self.metadata)
         #     self.resources["ipfs_agents"] = self.ipfs_agents
