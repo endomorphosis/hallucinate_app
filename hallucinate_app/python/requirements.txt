@@ -9,10 +9,10 @@ requests
 boto3
 websocket
 websockets
-ipfs_faiss_py
+ipfs_faiss_py==0.0.6
 ipfs_transformers_py
 ipfs-datasets-py>=0.0.5
-ipfs-accelerate-py>=0.0.40
+ipfs-accelerate-py>=0.0.41
 ipfs_kit_py==0.0.18
 ipfs_model_manager_py==0.0.23
 libp2p_kit_py==0.0.19

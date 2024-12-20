@@ -16,6 +16,7 @@ class libp2pWorker:
         metadata = {}
         self.resources = resources
         self.metadata = metadata
+        self.metadata["role"] == "master"
         if "ipfs_kit_py" in globals():
             self.ipfs_kit = ipfs_kit_py.ipfs_kit(self.resources, self.metadata)
             self.resources["ipfs_kit"] = self.ipfs_kit
