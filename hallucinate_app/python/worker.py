@@ -36,11 +36,12 @@ class libp2pWorker:
             self.ipfs_accelerate = ipfs_accelerate_py.ipfs_accelerate(self.resources, self.metadata)
             self.resources["ipfs_accelerate"] = self.ipfs_accelerate
         if "ipfs_faiss_py" in globals():
-            self.ipfs_faiss = ipfs_faiss_py.ipfs_faiss_dataset(self.resources, self.metadata)
+            self.ipfs_faiss = ipfs_faiss_py.ipfs_faiss_py(self.resources, self.metadata)
             self.resources["ipfs_faiss"] = self.ipfs_faiss
         # if "ipfs_agents_py" in globals():
         #     self.ipfs_agents = ipfs_agents_py.ipfs_agents(self.resources, self.metadata)
         #     self.resources["ipfs_agents"] = self.ipfs_agents
+        return None
 
     def init(self, imports):
           if not isinstance(imports, object):
@@ -67,6 +68,7 @@ class libp2pWorker:
 if __name__ == '__main__':
     try:
         worker = libp2pWorker()
+        worker.init()
         worker.run()
         # worker.run(skillset=os.path.join(os.path.dirname(__file__), 'skillset'))
     except Exception as e:
