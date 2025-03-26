@@ -5,7 +5,10 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "node tests/test.js",
+    "test": "node test/test.js",
+    "test:bridge": "node test/js/test_accelerate_bridge.js",
+    "test:electron": "node test/js/test_accelerate_electron.js",
+    "test:python": "python test/python/test_accelerate_server.py",
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make"
@@ -29,7 +32,9 @@
     "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
     "@electron-forge/plugin-fuses": "^7.4.0",
     "@electron/fuses": "^1.8.0",
-    "electron": "32.0.1"
+    "chai": "^4.3.7",
+    "electron": "32.0.1",
+    "node-fetch": "^3.3.1"
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.1",
@@ -44,5 +49,6 @@
     "libp2p_kit_js": "^1.0.0",
     "orbitdb_kit_js": "^1.0.9",
     "rpmbuild": "^0.0.23"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IPFS Accelerate Model Tester</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .section {
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .section h2 {
+      margin-top: 0;
+      color: #555;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+    .status {
+      display: inline-block;
+      margin-left: 10px;
+      font-weight: bold;
+    }
+    .status.online {
+      color: #4CAF50;
+    }
+    .status.offline {
+      color: #f44336;
+    }
+    .input-group {
+      margin-bottom: 10px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    .result-area {
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 10px;
+      min-height: 100px;
+      max-height: 300px;
+      overflow-y: auto;
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+    .error {
+      color: #f44336;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>IPFS Accelerate Model Tester</h1>
+    
+    <div class="section">
+      <h2>Server Control</h2>
+      <button id="btnStartServer">Start Server</button>
+      <button id="btnStopServer" disabled>Stop Server</button>
+      <span id="serverStatus" class="status offline">Offline</span>
+    </div>
+    
+    <div class="section">
+      <h2>Model Management</h2>
+      <div class="input-group">
+        <label for="modelId">Model ID:</label>
+        <input type="text" id="modelId" placeholder="Enter model ID">
+      </div>
+      <button id="btnLoadModel" disabled>Load Model</button>
+      <div id="modelStatus"></div>
+    </div>
+    
+    <div class="section">
+      <h2>Inference</h2>
+      <div class="input-group">
+        <label for="inputText">Input Text:</label>
+        <textarea id="inputText" placeholder="Enter text for inference"></textarea>
+      </div>
+      <button id="btnRunInference" disabled>Run Inference</button>
+      <h3>Result:</h3>
+      <div id="inferenceResult" class="result-area">No results yet</div>
+    </div>
+    
+    <div class="section">
+      <h2>Testing</h2>
+      <button id="btnRunTest" disabled>Run Accelerate Tests</button>
+      <h3>Test Results:</h3>
+      <div id="testResult" class="result-area">No test results yet</div>
+    </div>
+  </div>
+  
+  <script>
+    const { ipcRenderer } = require('electron');
+    
+    // Elements
+    const btnStartServer = document.getElementById('btnStartServer');
+    const btnStopServer = document.getElementById('btnStopServer');
+    const serverStatus = document.getElementById('serverStatus');
+    const modelId = document.getElementById('modelId');
+    const btnLoadModel = document.getElementById('btnLoadModel');
+    const modelStatus = document.getElementById('modelStatus');
+    const inputText = document.getElementById('inputText');
+    const btnRunInference = document.getElementById('btnRunInference');
+    const inferenceResult = document.getElementById('inferenceResult');
+    const btnRunTest = document.getElementById('btnRunTest');
+    const testResult = document.getElementById('testResult');
+    
+    // Server status indicator
+    let isServerRunning = false;
+    
+    // Event Listeners
+    btnStartServer.addEventListener('click', () => {
+      btnStartServer.disabled = true;
+      serverStatus.textContent = 'Starting...';
+      ipcRenderer.send('start-server');
+    });
+    
+    btnStopServer.addEventListener('click', () => {
+      btnStopServer.disabled = true;
+      serverStatus.textContent = 'Stopping...';
+      ipcRenderer.send('stop-server');
+    });
+    
+    btnLoadModel.addEventListener('click', () => {
+      if (!modelId.value.trim()) {
+        modelStatus.innerHTML = '<span class="error">Please enter a model ID</span>';
+        return;
+      }
+      
+      btnLoadModel.disabled = true;
+      modelStatus.textContent = 'Loading model...';
+      ipcRenderer.send('load-model', modelId.value.trim());
+    });
+    
+    btnRunInference.addEventListener('click', () => {
+      if (!inputText.value.trim()) {
+        inferenceResult.innerHTML = '<span class="error">Please enter input text</span>';
+        return;
+      }
+      
+      btnRunInference.disabled = true;
+      inferenceResult.textContent = 'Running inference...';
+      ipcRenderer.send('run-inference', { text: inputText.value.trim() });
+    });
+    
+    btnRunTest.addEventListener('click', () => {
+      btnRunTest.disabled = true;
+      testResult.textContent = 'Running tests...';
+      ipcRenderer.send('run-test');
+    });
+    
+    // IPC Response Handlers
+    ipcRenderer.on('server-status', (event, data) => {
+      isServerRunning = data.running;
+      
+      if (isServerRunning) {
+        serverStatus.textContent = 'Online';
+        serverStatus.className = 'status online';
+        btnStartServer.disabled = true;
+        btnStopServer.disabled = false;
+        btnLoadModel.disabled = false;
+        btnRunTest.disabled = false;
+      } else {
+        serverStatus.textContent = data.error ? `Offline (${data.error})` : 'Offline';
+        serverStatus.className = 'status offline';
+        btnStartServer.disabled = false;
+        btnStopServer.disabled = true;
+        btnLoadModel.disabled = true;
+        btnRunInference.disabled = true;
+        btnRunTest.disabled = true;
+      }
+    });
+    
+    ipcRenderer.on('model-loaded', (event, data) => {
+      btnLoadModel.disabled = false;
+      
+      if (data.error) {
+        modelStatus.innerHTML = `<span class="error">Error: ${data.error}</span>`;
+      } else {
+        modelStatus.textContent = `Model ${data.model} loaded successfully!`;
+        btnRunInference.disabled = false;
+      }
+    });
+    
+    ipcRenderer.on('inference-result', (event, data) => {
+      btnRunInference.disabled = false;
+      
+      if (data.error) {
+        inferenceResult.innerHTML = `<span class="error">Error: ${data.error}</span>`;
+      } else {
+        inferenceResult.textContent = JSON.stringify(data, null, 2);
+      }
+    });
+    
+    ipcRenderer.on('test-result', (event, data) => {
+      btnRunTest.disabled = false;
+      
+      if (data.error) {
+        testResult.innerHTML = `<span class="error">Error: ${data.error}</span>`;
+      } else {
+        testResult.textContent = JSON.stringify(data, null, 2);
+      }
+    });
+  </script>
+</body>
+</html>
