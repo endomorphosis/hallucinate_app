@@ -1,147 +1,64 @@
-# hallucinate_app
+Hallucinate Electron App:
 
-An Electron application that creates a bridge between IPFS and HuggingFace technologies, enabling decentralized AI model serving, dataset management, and inference.
+![357108775-19cd87d5-d049-467c-a5ea-b53a636b6422](https://github.com/user-attachments/assets/72cef41c-3b46-4746-abbb-4cf19625994f)
+![357736268-9b1695ee-a3d0-41bf-a010-8757d6138ca1](https://github.com/user-attachments/assets/cc90c796-030a-40a2-8437-a1ea9507e29b)
 
-## Features
+Contains: 
 
-- Cross-platform desktop application (Windows, macOS, Linux)
-- Decentralized model serving via IPFS
-- Integration with HuggingFace transformers ecosystem
-- FAISS vector search capabilities
-- P2P communication via libp2p
-- Decentralized database with OrbitDB
+Chat Interface:
 
-## Quick Start
+-- ipfs_transformers_cjs client libray
 
-### Prerequisites
+-- ipfs_datasets_cjs client library
 
-- Node.js 16+
-- Python 3.8+
-- IPFS (optional, can use HTTP gateways)
+-- helia ipfs cjs external library
 
-### Installation
+-- ipfs_cluster cjs external library (against 127.0.0.1 REST interfaces)
 
-1. Clone the repository:
-```bash
-git clone https://github.com/endomorphosis/hallucinate_app.git
-cd hallucinate_app
-```
+-- gradio.cjs client external library 
 
-2. Install JavaScript dependencies:
-```bash
-npm install
-# or
-yarn install
-```
+-- faiss-wasm client external library
 
-3. Install Python dependencies:
-```bash
-pip install -r hallucinate_app/python/requirements.txt
-```
+-- orbitdb_kit_cjs client library
 
-### Running the App
+-- libp2p_kit_cjs client library
 
-Start the Electron application:
-```bash
-npm start
-```
+NodeJS server:
 
-## Using the IPFS Accelerate Model Server
+-- ipfs_model_manager_js nodejs library
 
-The hallucinate_app includes an integration with the ipfs_accelerate_py model server for optimized model inference.
+-- ipfs_kit_js node js library
 
-### Setting Up the Model Server
+-- Kubo / ipfs_cluster external Go library
 
-1. Make sure Python dependencies are installed:
-```bash
-pip install -r test/requirements.txt
-```
+-- faiss system external library
 
-2. Launch the Electron app with the model tester:
-```javascript
-// In your main Electron file
-import { createModelTesterWindow } from './hallucinate_app/node/accelerate_model_tester.js';
-createModelTesterWindow();
-```
+-- neural compressor external library
 
-### Working with Models
+-- huggingface Transformers_js wrapper
 
-1. **Start the Server**:
-   Click the "Start Server" button in the UI, or programmatically:
-   ```javascript
-   await pythonBridge.startServer();
-   ```
+-- huggingface_datasets_js wrapper
 
-2. **Load a Model**:
-   Enter a model ID in the UI, or programmatically:
-   ```javascript
-   const result = await pythonBridge.loadModel('model-name');
-   ```
+-- orbitdb_kit_js node.js wrapper
 
-3. **Run Inference**:
-   Enter text in the UI for inference, or programmatically:
-   ```javascript
-   const result = await pythonBridge.runInference({ 
-     text: 'Input text for inference' 
-   });
-   ```
+-- huggingface scraper library
 
-4. **Stop the Server**:
-   Click the "Stop Server" button when finished, or programmatically:
-   ```javascript
-   await pythonBridge.stopServer();
-   ```
+python server:
 
-## Development
+-- ipfs_model_manager_py python library
 
-For detailed development guidelines, see [CLAUDE.md](CLAUDE.md).
+-- ipfs_kit_py python library
 
-### Testing
+-- ipfs_datasets_py python library
 
-Run the test suite:
-```bash
-npm test
-```
+-- Kubo / ipfs_cluster external Go library
 
-For specific test components:
-```bash
-npm run test:bridge    # Test Python-JavaScript bridge
-npm run test:electron  # Test Electron UI
-npm run test:python    # Test Python server
-```
+-- faiss system external library
 
-### Building Distributables
+-- neural compressor external library
 
-Create a packaged application:
-```bash
-npm run package
-```
+-- huggingface Transformers wrapper
 
-Build installers:
-```bash
-npm run make
-```
+-- huggingface_datasets wrapper
 
-## Architecture
-
-The application follows a modular architecture with both JavaScript and Python implementations:
-
-- **IPFS Kit**: Foundation for IPFS interactions
-- **Model Manager**: Manages model loading and serving
-- **Transformers**: Integration with HuggingFace transformers
-- **Datasets**: Dataset management and processing
-- **FAISS**: Vector search capabilities
-- **Agents**: AI agent functionality
-- **Accelerate**: Performance optimizations
-- **libp2p**: P2P communication layer
-- **OrbitDB**: Decentralized database storage
-
-## License
-
-This project is licensed under the AGPL-3.0 License - see the LICENSE file for details.
-
-## Acknowledgements
-
-- HuggingFace for their transformers ecosystem
-- IPFS and libp2p projects
-- Electron framework
+-- orbitdb_kit_py node.js wrapper
