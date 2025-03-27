@@ -14,18 +14,31 @@ class PythonBridge {
       try {
         const pythonPath = 'python';  // or specify full path to python executable
         
-        // Find server script path
-        const serverScriptPath = path.join(
+        // First try the actual implementation
+        let serverScriptPath = path.join(
           process.cwd(), 
-          'test', 
+          'hallucinate_app',
           'python',
+          'hallucinate_app',
           'ipfs_accelerate_server.py'
         );
         
+        // If not found, fall back to test server
         if (!fs.existsSync(serverScriptPath)) {
-          return reject(new Error(`Server script not found at ${serverScriptPath}`));
+          console.log(`Main server script not found at ${serverScriptPath}, falling back to test server`);
+          serverScriptPath = path.join(
+            process.cwd(), 
+            'test', 
+            'python',
+            'ipfs_accelerate_server.py'
+          );
+          
+          if (!fs.existsSync(serverScriptPath)) {
+            return reject(new Error(`Server script not found at ${serverScriptPath}`));
+          }
         }
         
+        console.log(`Starting server from: ${serverScriptPath}`);
         this.pythonProcess = spawn(pythonPath, [serverScriptPath]);
         
         this.pythonProcess.stdout.on('data', (data) => {

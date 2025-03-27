@@ -17,12 +17,20 @@ class TestAccelerateBridge {
   async startServer() {
     try {
       const pythonPath = 'python';
-      const scriptPath = path.join(process.cwd(), 'hallucinate_app/python/hallucinate_app/ipfs_accelerate_server.py');
+      // First try the actual implementation
+      let scriptPath = path.join(process.cwd(), 'hallucinate_app/python/hallucinate_app/ipfs_accelerate_server.py');
       
+      // If not found, fall back to test server
       if (!fs.existsSync(scriptPath)) {
-        throw new Error(`Script not found at ${scriptPath}`);
+        console.log(`Main server script not found at ${scriptPath}, falling back to test server`);
+        scriptPath = path.join(process.cwd(), 'test/python/ipfs_accelerate_server.py');
+        
+        if (!fs.existsSync(scriptPath)) {
+          throw new Error(`Server script not found at ${scriptPath}`);
+        }
       }
       
+      console.log(`Starting server from: ${scriptPath}`);
       this.pythonProcess = spawn(pythonPath, [scriptPath]);
       
       this.pythonProcess.stdout.on('data', (data) => {
