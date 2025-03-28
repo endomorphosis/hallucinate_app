@@ -12,7 +12,7 @@ class PythonBridge {
   async startServer() {
     return new Promise((resolve, reject) => {
       try {
-        const pythonPath = 'python';  // or specify full path to python executable
+        const pythonPath = 'python3';  // use python3 for Linux/macOS
         
         // First try the actual implementation
         let serverScriptPath = path.join(
@@ -58,20 +58,25 @@ class PythonBridge {
         
         // Wait for server to start
         let retries = 0;
-        const maxRetries = 10;
+        const maxRetries = 20;  // Increased retries
         const retryInterval = 500; // ms
         
         const checkServer = () => {
+          console.log(`Checking server status (attempt ${retries + 1}/${maxRetries})...`);
           fetch(`${this.serverUrl}/status`)
             .then(response => {
               if (response.status === 200) {
+                console.log('Server started successfully!');
                 this.serverStarted = true;
                 resolve(true);
               } else {
                 retryCheck();
               }
             })
-            .catch(() => retryCheck());
+            .catch(error => {
+              console.log(`Server not ready yet: ${error.message}`);
+              retryCheck();
+            });
         };
         
         const retryCheck = () => {
@@ -94,8 +99,10 @@ class PythonBridge {
   async stopServer() {
     return new Promise((resolve) => {
       if (this.pythonProcess) {
+        console.log('Stopping Python server...');
         this.pythonProcess.kill();
         this.pythonProcess.on('close', () => {
+          console.log('Python server stopped');
           this.pythonProcess = null;
           this.serverStarted = false;
           resolve(true);
@@ -104,12 +111,13 @@ class PythonBridge {
         // Force resolve after timeout
         setTimeout(() => {
           if (this.pythonProcess) {
+            console.log('Force killing Python server');
             this.pythonProcess.kill('SIGKILL');
             this.pythonProcess = null;
             this.serverStarted = false;
           }
           resolve(true);
-        }, 3000);
+        }, 5000);
       } else {
         resolve(true);
       }
@@ -122,6 +130,7 @@ class PythonBridge {
     }
     
     try {
+      console.log(`Loading model: ${modelId}`);
       const response = await fetch(`${this.serverUrl}/load_model`, {
         method: 'POST',
         headers: {
@@ -135,7 +144,9 @@ class PythonBridge {
         throw new Error(errorData.detail || 'Failed to load model');
       }
       
-      return await response.json();
+      const result = await response.json();
+      console.log(`Model loaded successfully: ${modelId}`);
+      return result;
     } catch (error) {
       console.error('Error loading model:', error);
       throw error;
@@ -148,6 +159,7 @@ class PythonBridge {
     }
     
     try {
+      console.log(`Running inference with data: ${JSON.stringify(inputData)}`);
       const response = await fetch(`${this.serverUrl}/inference`, {
         method: 'POST',
         headers: {
@@ -161,7 +173,9 @@ class PythonBridge {
         throw new Error(errorData.detail || 'Inference failed');
       }
       
-      return await response.json();
+      const result = await response.json();
+      console.log('Inference completed successfully');
+      return result;
     } catch (error) {
       console.error('Error running inference:', error);
       throw error;
@@ -174,6 +188,7 @@ class PythonBridge {
     }
     
     try {
+      console.log('Running accelerator tests...');
       const response = await fetch(`${this.serverUrl}/test`);
       
       if (!response.ok) {
@@ -181,7 +196,9 @@ class PythonBridge {
         throw new Error(errorData.detail || 'Test failed');
       }
       
-      return await response.json();
+      const result = await response.json();
+      console.log('Tests completed successfully');
+      return result;
     } catch (error) {
       console.error('Error running test:', error);
       throw error;

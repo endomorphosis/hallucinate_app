@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comprehensive Module Testing</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <img src="../assets/logo.png" alt="Logo" onerror="this.src='https://via.placeholder.com/30'">
+        <span>IPFS HuggingFace Bridge - Module Testing</span>
+      </div>
+      <div class="header-actions">
+        <span id="serverStatus" class="status offline">Server Offline</span>
+        <button id="btnStartServer"><i class="fas fa-play"></i> Start All Services</button>
+        <button id="btnStopServer" disabled><i class="fas fa-stop"></i> Stop All Services</button>
+      </div>
+    </header>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <ul class="sidebar-menu">
+        <li><a href="#" data-page="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="#" class="active" data-page="module-tests"><i class="fas fa-vial"></i> Module Tests</a></li>
+      </ul>
+
+      <div class="sidebar-section">
+        <h3>Test Modules</h3>
+        <ul class="sidebar-menu">
+          <li><a href="#" data-module="ipfs-kit"><i class="fas fa-network-wired"></i> IPFS Kit</a></li>
+          <li><a href="#" data-module="model-manager"><i class="fas fa-cubes"></i> Model Manager</a></li>
+          <li><a href="#" data-module="transformers"><i class="fas fa-code-branch"></i> Transformers</a></li>
+          <li><a href="#" data-module="datasets"><i class="fas fa-database"></i> Datasets</a></li>
+          <li><a href="#" data-module="accelerate"><i class="fas fa-bolt"></i> Accelerate</a></li>
+          <li><a href="#" data-module="faiss"><i class="fas fa-search"></i> FAISS</a></li>
+          <li><a href="#" data-module="agents"><i class="fas fa-robot"></i> Agents</a></li>
+          <li><a href="#" data-module="libp2p"><i class="fas fa-plug"></i> libp2p</a></li>
+          <li><a href="#" data-module="orbitdb"><i class="fas fa-database"></i> OrbitDB</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Module Tests Page -->
+      <div id="module-tests-page" class="page active">
+        <h1>Comprehensive Module Testing</h1>
+        
+        <div class="card">
+          <div class="card-header">
+            <h2>Test Configuration</h2>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label for="testEnvironment">Test Environment:</label>
+              <select id="testEnvironment">
+                <option value="mock">Mock (No External Dependencies)</option>
+                <option value="local">Local (IPFS Only)</option>
+                <option value="full">Full (All External Services)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Test Options:</label>
+              <div>
+                <input type="checkbox" id="verboseLogging" checked>
+                <label for="verboseLogging">Verbose Logging</label>
+              </div>
+              <div>
+                <input type="checkbox" id="saveResults" checked>
+                <label for="saveResults">Save Results to JSON</label>
+              </div>
+            </div>
+            <button id="btnRunAllTests" class="btn btn-primary">
+              <i class="fas fa-play-circle"></i> Run All Tests
+            </button>
+          </div>
+        </div>
+        
+        <!-- Test modules sections -->
+        <div id="ipfs-kit-section" class="module-section">
+          <div class="card">
+            <div class="card-header">
+              <h2><i class="fas fa-network-wired"></i> IPFS Kit</h2>
+              <div>
+                <span id="ipfs-kit-status" class="status offline">Not Tested</span>
+                <button id="btnTestIpfsKit" class="btn btn-outline">Run Test</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label for="ipfsKitConfig">Configuration:</label>
+                <textarea id="ipfsKitConfig" rows="3">{
+  "resources": {},
+  "metadata": { "ipfsPath": "~/.cache/ipfs" }
+}</textarea>
+              </div>
+              <div class="module-test-results">
+                <h3>Test Results:</h3>
+                <div id="ipfsKitResults" class="result-area">No results yet</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="model-manager-section" class="module-section">
+          <div class="card">
+            <div class="card-header">
+              <h2><i class="fas fa-cubes"></i> Model Manager</h2>
+              <div>
+                <span id="model-manager-status" class="status offline">Not Tested</span>
+                <button id="btnTestModelManager" class="btn btn-outline">Run Test</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label for="modelManagerConfig">Configuration:</label>
+                <textarea id="modelManagerConfig" rows="3">{
+  "resources": {},
+  "metadata": { "role": "leecher", "localPath": "~/.cache/huggingface" }
+}</textarea>
+              </div>
+              <div class="module-test-results">
+                <h3>Test Results:</h3>
+                <div id="modelManagerResults" class="result-area">No results yet</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="transformers-section" class="module-section">
+          <div class="card">
+            <div class="card-header">
+              <h2><i class="fas fa-code-branch"></i> Transformers</h2>
+              <div>
+                <span id="transformers-status" class="status offline">Not Tested</span>
+                <button id="btnTestTransformers" class="btn btn-outline">Run Test</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label for="transformersConfig">Configuration:</label>
+                <textarea id="transformersConfig" rows="3">{
+  "resources": {},
+  "metadata": { "model": "bert-base-uncased" }
+}</textarea>
+              </div>
+              <div class="module-test-results">
+                <h3>Test Results:</h3>
+                <div id="transformersResults" class="result-area">No results yet</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="datasets-section" class="module-section">
+          <div class="card">
+            <div class="card-header">
+              <h2><i class="fas fa-database"></i> Datasets</h2>
+              <div>
+                <span id="datasets-status" class="status offline">Not Tested</span>
+                <button id="btnTestDatasets" class="btn btn-outline">Run Test</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label for="datasetsConfig">Configuration:</label>
+                <textarea id="datasetsConfig" rows="3">{
+  "resources": {},
+  "metadata": { "dataset": "imdb" }
+}</textarea>
+              </div>
+              <div class="module-test-results">
+                <h3>Test Results:</h3>
+                <div id="datasetsResults" class="result-area">No results yet</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="accelerate-section" class="module-section">
+          <div class="card">
+            <div class="card-header">
+              <h2><i class="fas fa-bolt"></i> Accelerate</h2>
+              <div>
+                <span id="accelerate-status" class="status offline">Not Tested</span>
+                <button id="btnTestAccelerate" class="btn btn-outline">Run Test</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label for="accelerateConfig">Configuration:</label>
+                <textarea id="accelerateConfig" rows="3">{
+  "resources": {},
+  "metadata": {}
+}</textarea>
+              </div>
+              <div class="module-test-results">
+                <h3>Test Results:</h3>
+                <div id="accelerateResults" class="result-area">No results yet</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="faiss-section" class="module-section">
+          <div class="card">
+            <div class="card-header">
+              <h2><i class="fas fa-search"></i> FAISS</h2>
+              <div>
+                <span id="faiss-status" class="status offline">Not Tested</span>
+                <button id="btnTestFaiss" class="btn btn-outline">Run Test</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label for="faissConfig">Configuration:</label>
+                <textarea id="faissConfig" rows="3">{
+  "resources": {},
+  "metadata": { "dimensions": 768 }
+}</textarea>
+              </div>
+              <div class="module-test-results">
+                <h3>Test Results:</h3>
+                <div id="faissResults" class="result-area">No results yet</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="agents-section" class="module-section">
+          <div class="card">
+            <div class="card-header">
+              <h2><i class="fas fa-robot"></i> Agents</h2>
+              <div>
+                <span id="agents-status" class="status offline">Not Tested</span>
+                <button id="btnTestAgents" class="btn btn-outline">Run Test</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label for="agentsConfig">Configuration:</label>
+                <textarea id="agentsConfig" rows="3">{
+  "resources": {},
+  "metadata": { "agent_type": "simple" }
+}</textarea>
+              </div>
+              <div class="module-test-results">
+                <h3>Test Results:</h3>
+                <div id="agentsResults" class="result-area">No results yet</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Test summary section -->
+        <div class="card">
+          <div class="card-header">
+            <h2>Test Summary</h2>
+          </div>
+          <div class="card-body">
+            <table class="test-summary-table">
+              <thead>
+                <tr>
+                  <th>Module</th>
+                  <th>Status</th>
+                  <th>Duration</th>
+                  <th>Details</th>
+                </tr>
+              </thead>
+              <tbody id="testSummaryTable">
+                <tr>
+                  <td colspan="4">No tests run yet</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="btn-group">
+              <button id="btnExportResults" class="btn btn-outline" disabled>
+                <i class="fas fa-file-export"></i> Export Results
+              </button>
+              <button id="btnClearResults" class="btn btn-outline" disabled>
+                <i class="fas fa-trash"></i> Clear Results
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const { ipcRenderer } = window.require('electron');
+    
+    // DOM Elements
+    const serverStatus = document.getElementById('serverStatus');
+    const btnStartServer = document.getElementById('btnStartServer');
+    const btnStopServer = document.getElementById('btnStopServer');
+    const btnRunAllTests = document.getElementById('btnRunAllTests');
+    const testEnvironment = document.getElementById('testEnvironment');
+    const verboseLogging = document.getElementById('verboseLogging');
+    const saveResults = document.getElementById('saveResults');
+    const testSummaryTable = document.getElementById('testSummaryTable');
+    const btnExportResults = document.getElementById('btnExportResults');
+    const btnClearResults = document.getElementById('btnClearResults');
+    
+    // Module Test Buttons
+    const btnTestIpfsKit = document.getElementById('btnTestIpfsKit');
+    const btnTestModelManager = document.getElementById('btnTestModelManager');
+    const btnTestTransformers = document.getElementById('btnTestTransformers');
+    const btnTestDatasets = document.getElementById('btnTestDatasets');
+    const btnTestAccelerate = document.getElementById('btnTestAccelerate');
+    const btnTestFaiss = document.getElementById('btnTestFaiss');
+    const btnTestAgents = document.getElementById('btnTestAgents');
+    
+    // Module Status Elements
+    const ipfsKitStatus = document.getElementById('ipfs-kit-status');
+    const modelManagerStatus = document.getElementById('model-manager-status');
+    const transformersStatus = document.getElementById('transformers-status');
+    const datasetsStatus = document.getElementById('datasets-status');
+    const accelerateStatus = document.getElementById('accelerate-status');
+    const faissStatus = document.getElementById('faiss-status');
+    const agentsStatus = document.getElementById('agents-status');
+    
+    // Module Results Elements
+    const ipfsKitResults = document.getElementById('ipfsKitResults');
+    const modelManagerResults = document.getElementById('modelManagerResults');
+    const transformersResults = document.getElementById('transformersResults');
+    const datasetsResults = document.getElementById('datasetsResults');
+    const accelerateResults = document.getElementById('accelerateResults');
+    const faissResults = document.getElementById('faissResults');
+    const agentsResults = document.getElementById('agentsResults');
+    
+    // Module Configurations
+    const ipfsKitConfig = document.getElementById('ipfsKitConfig');
+    const modelManagerConfig = document.getElementById('modelManagerConfig');
+    const transformersConfig = document.getElementById('transformersConfig');
+    const datasetsConfig = document.getElementById('datasetsConfig');
+    const accelerateConfig = document.getElementById('accelerateConfig');
+    const faissConfig = document.getElementById('faissConfig');
+    const agentsConfig = document.getElementById('agentsConfig');
+    
+    // Server status
+    let isServerRunning = false;
+    const testResults = {};
+    
+    // Navigation between sidebar items
+    document.querySelectorAll('.sidebar-menu a').forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // If this is a module test link, show only that module section
+        if (this.hasAttribute('data-module')) {
+          const moduleId = this.getAttribute('data-module');
+          
+          // First hide all module sections
+          document.querySelectorAll('.module-section').forEach(section => {
+            section.style.display = 'none';
+          });
+          
+          // Show only the selected module section
+          document.getElementById(`${moduleId}-section`).style.display = 'block';
+          
+          // Update active state only within module links
+          document.querySelectorAll('.sidebar-menu a[data-module]').forEach(link => {
+            link.classList.remove('active');
+          });
+          this.classList.add('active');
+          
+          return;
+        }
+        
+        // Regular page navigation
+        document.querySelectorAll('.sidebar-menu a').forEach(l => {
+          l.classList.remove('active');
+        });
+        
+        this.classList.add('active');
+        
+        document.querySelectorAll('.page').forEach(page => {
+          page.classList.remove('active');
+        });
+        
+        const pageName = this.getAttribute('data-page');
+        document.getElementById(`${pageName}-page`).classList.add('active');
+        
+        // If we're showing the module tests page, show all module sections
+        if (pageName === 'module-tests') {
+          document.querySelectorAll('.module-section').forEach(section => {
+            section.style.display = 'block';
+          });
+        }
+      });
+    });
+    
+    // Event Listeners
+    btnStartServer.addEventListener('click', () => {
+      btnStartServer.disabled = true;
+      serverStatus.textContent = 'Starting...';
+      serverStatus.className = 'status';
+      
+      ipcRenderer.send('start-all-services');
+    });
+    
+    btnStopServer.addEventListener('click', () => {
+      btnStopServer.disabled = true;
+      serverStatus.textContent = 'Stopping...';
+      serverStatus.className = 'status';
+      
+      ipcRenderer.send('stop-all-services');
+    });
+    
+    btnRunAllTests.addEventListener('click', () => {
+      // Clear existing results
+      clearTestSummary();
+      
+      // Disable all buttons during testing
+      setTestingState(true);
+      
+      // Get configuration
+      const config = {
+        environment: testEnvironment.value,
+        verbose: verboseLogging.checked,
+        save: saveResults.checked
+      };
+      
+      // Send message to run all tests
+      ipcRenderer.send('run-all-tests', config);
+    });
+    
+    // Individual module test buttons
+    btnTestIpfsKit.addEventListener('click', () => {
+      runModuleTest('ipfs-kit', ipfsKitConfig.value);
+    });
+    
+    btnTestModelManager.addEventListener('click', () => {
+      runModuleTest('model-manager', modelManagerConfig.value);
+    });
+    
+    btnTestTransformers.addEventListener('click', () => {
+      runModuleTest('transformers', transformersConfig.value);
+    });
+    
+    btnTestDatasets.addEventListener('click', () => {
+      runModuleTest('datasets', datasetsConfig.value);
+    });
+    
+    btnTestAccelerate.addEventListener('click', () => {
+      runModuleTest('accelerate', accelerateConfig.value);
+    });
+    
+    btnTestFaiss.addEventListener('click', () => {
+      runModuleTest('faiss', faissConfig.value);
+    });
+    
+    btnTestAgents.addEventListener('click', () => {
+      runModuleTest('agents', agentsConfig.value);
+    });
+    
+    btnExportResults.addEventListener('click', () => {
+      ipcRenderer.send('export-test-results', testResults);
+    });
+    
+    btnClearResults.addEventListener('click', () => {
+      clearTestResults();
+      clearTestSummary();
+      btnExportResults.disabled = true;
+      btnClearResults.disabled = true;
+    });
+    
+    // IPC Response Handlers
+    ipcRenderer.on('services-status', (event, data) => {
+      isServerRunning = data.running;
+      
+      if (isServerRunning) {
+        serverStatus.textContent = 'All Services Online';
+        serverStatus.className = 'status online';
+        btnStartServer.disabled = true;
+        btnStopServer.disabled = false;
+        btnRunAllTests.disabled = false;
+        enableModuleButtons();
+      } else {
+        serverStatus.textContent = data.error ? `Offline (${data.error})` : 'Services Offline';
+        serverStatus.className = 'status offline';
+        btnStartServer.disabled = false;
+        btnStopServer.disabled = true;
+        btnRunAllTests.disabled = true;
+        disableModuleButtons();
+      }
+    });
+    
+    ipcRenderer.on('test-result', (event, data) => {
+      // Store the result
+      testResults[data.module] = data;
+      
+      // Update UI based on module
+      updateModuleTestResult(data.module, data);
+      
+      // Update summary table
+      updateTestSummary(data);
+      
+      // Enable export and clear buttons
+      btnExportResults.disabled = false;
+      btnClearResults.disabled = false;
+    });
+    
+    ipcRenderer.on('all-tests-complete', (event, data) => {
+      // Enable all buttons after testing
+      setTestingState(false);
+      
+      // Update summary
+      if (data.summary) {
+        const summaryRow = document.createElement('tr');
+        summaryRow.innerHTML = `
+          <td colspan="3"><strong>Overall Result</strong></td>
+          <td>${data.success ? 'All tests passed' : 'Some tests failed'}</td>
+        `;
+        testSummaryTable.appendChild(summaryRow);
+      }
+    });
+    
+    ipcRenderer.on('export-complete', (event, data) => {
+      alert(`Test results exported to ${data.path}`);
+    });
+    
+    // Helper Functions
+    function runModuleTest(module, configStr) {
+      try {
+        const config = JSON.parse(configStr);
+        config.environment = testEnvironment.value;
+        config.verbose = verboseLogging.checked;
+        
+        // Update UI
+        const statusElement = document.getElementById(`${module}-status`);
+        statusElement.textContent = 'Testing...';
+        statusElement.className = 'status';
+        
+        // Disable the test button
+        document.getElementById(`btnTest${toCamelCase(module)}`).disabled = true;
+        
+        // Send test request
+        ipcRenderer.send('test-module', { module, config });
+      } catch (e) {
+        alert(`Invalid configuration JSON: ${e.message}`);
+      }
+    }
+    
+    function updateModuleTestResult(module, result) {
+      const statusElement = document.getElementById(`${module}-status`);
+      const resultsElement = document.getElementById(`${module}Results`);
+      
+      if (result.success) {
+        statusElement.textContent = 'Passed';
+        statusElement.className = 'status online';
+      } else {
+        statusElement.textContent = 'Failed';
+        statusElement.className = 'status offline';
+      }
+      
+      // Pretty-format the JSON with syntax highlighting
+      resultsElement.textContent = JSON.stringify(result.details, null, 2);
+      
+      // Re-enable the test button
+      document.getElementById(`btnTest${toCamelCase(module)}`).disabled = false;
+    }
+    
+    function updateTestSummary(result) {
+      // Create or update the row in the summary table
+      let row = document.getElementById(`summary-${result.module}`);
+      
+      if (!row) {
+        // Clear "No tests run yet" message if it exists
+        if (testSummaryTable.children.length === 1 && 
+            testSummaryTable.children[0].children.length === 1 && 
+            testSummaryTable.children[0].children[0].colSpan === 4) {
+          testSummaryTable.innerHTML = '';
+        }
+        
+        row = document.createElement('tr');
+        row.id = `summary-${result.module}`;
+        testSummaryTable.appendChild(row);
+      }
+      
+      row.innerHTML = `
+        <td>${prettyModuleName(result.module)}</td>
+        <td>${result.success ? '<span class="status online">Pass</span>' : '<span class="status offline">Fail</span>'}</td>
+        <td>${result.duration || 'N/A'} ms</td>
+        <td>${result.error || (result.success ? 'All tests passed' : 'See details')}</td>
+      `;
+    }
+    
+    function clearTestSummary() {
+      testSummaryTable.innerHTML = '<tr><td colspan="4">No tests run yet</td></tr>';
+    }
+    
+    function clearTestResults() {
+      // Clear individual module result areas
+      document.querySelectorAll('.result-area').forEach(area => {
+        area.textContent = 'No results yet';
+      });
+      
+      // Reset status indicators
+      document.querySelectorAll('[id$="-status"]').forEach(status => {
+        status.textContent = 'Not Tested';
+        status.className = 'status offline';
+      });
+      
+      // Clear stored results
+      Object.keys(testResults).forEach(key => delete testResults[key]);
+    }
+    
+    function setTestingState(isTesting) {
+      btnRunAllTests.disabled = isTesting;
+      
+      // Disable/enable all module test buttons
+      document.querySelectorAll('button[id^="btnTest"]').forEach(button => {
+        button.disabled = isTesting;
+      });
+      
+      // Disable configuration options during testing
+      testEnvironment.disabled = isTesting;
+      verboseLogging.disabled = isTesting;
+      saveResults.disabled = isTesting;
+    }
+    
+    function enableModuleButtons() {
+      document.querySelectorAll('button[id^="btnTest"]').forEach(button => {
+        button.disabled = false;
+      });
+    }
+    
+    function disableModuleButtons() {
+      document.querySelectorAll('button[id^="btnTest"]').forEach(button => {
+        button.disabled = true;
+      });
+    }
+    
+    function toCamelCase(str) {
+      return str.split('-').map((word, index) => {
+        return index === 0 ? word : word[0].toUpperCase() + word.slice(1);
+      }).join('');
+    }
+    
+    function prettyModuleName(moduleId) {
+      return moduleId.split('-').map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1)
+      ).join(' ');
+    }
+    
+    // Initialize the UI
+    window.addEventListener('DOMContentLoaded', () => {
+      // Check server status on load
+      ipcRenderer.send('check-services-status');
+    });
+  </script>
+</body>
+</html>

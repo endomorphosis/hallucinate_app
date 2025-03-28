@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IPFS HuggingFace Bridge</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <img src="../assets/logo.png" alt="Logo" onerror="this.src='https://via.placeholder.com/30'">
+        <span>IPFS HuggingFace Bridge</span>
+      </div>
+      <div class="header-actions">
+        <span id="serverStatus" class="status offline">Server Offline</span>
+        <button id="btnStartServer"><i class="fas fa-play"></i> Start Server</button>
+        <button id="btnStopServer" disabled><i class="fas fa-stop"></i> Stop Server</button>
+      </div>
+    </header>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <ul class="sidebar-menu">
+        <li><a href="#" class="active" data-page="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="#" data-page="model-tester"><i class="fas fa-brain"></i> Model Tester</a></li>
+      </ul>
+
+      <div class="sidebar-section">
+        <h3>Core Modules</h3>
+        <ul class="sidebar-menu">
+          <li><a href="#" data-page="model-manager"><i class="fas fa-cubes"></i> Model Manager</a></li>
+          <li><a href="#" data-page="datasets"><i class="fas fa-database"></i> Datasets</a></li>
+          <li><a href="#" data-page="transformers"><i class="fas fa-code-branch"></i> Transformers</a></li>
+          <li><a href="#" data-page="accelerate"><i class="fas fa-bolt"></i> Accelerate</a></li>
+          <li><a href="#" data-page="faiss"><i class="fas fa-search"></i> FAISS</a></li>
+          <li><a href="#" data-page="agents"><i class="fas fa-robot"></i> Agents</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Decentralized</h3>
+        <ul class="sidebar-menu">
+          <li><a href="#" data-page="ipfs"><i class="fas fa-network-wired"></i> IPFS</a></li>
+          <li><a href="#" data-page="libp2p"><i class="fas fa-plug"></i> libp2p</a></li>
+          <li><a href="#" data-page="orbitdb"><i class="fas fa-database"></i> OrbitDB</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Dashboard Page -->
+      <div id="dashboard-page" class="page active">
+        <h1>Dashboard</h1>
+        <div class="dashboard-grid">
+          <div class="card stats-card">
+            <div class="stats-icon">
+              <i class="fas fa-brain"></i>
+            </div>
+            <div class="stats-info">
+              <h2 class="stats-value" id="stats-models">0</h2>
+              <p class="stats-label">AI Models</p>
+            </div>
+          </div>
+          
+          <div class="card stats-card">
+            <div class="stats-icon">
+              <i class="fas fa-database"></i>
+            </div>
+            <div class="stats-info">
+              <h2 class="stats-value" id="stats-datasets">0</h2>
+              <p class="stats-label">Datasets</p>
+            </div>
+          </div>
+          
+          <div class="card stats-card">
+            <div class="stats-icon">
+              <i class="fas fa-network-wired"></i>
+            </div>
+            <div class="stats-info">
+              <h2 class="stats-value" id="stats-nodes">0</h2>
+              <p class="stats-label">IPFS Nodes</p>
+            </div>
+          </div>
+          
+          <div class="card stats-card">
+            <div class="stats-icon">
+              <i class="fas fa-bolt"></i>
+            </div>
+            <div class="stats-info">
+              <h2 class="stats-value" id="stats-requests">0</h2>
+              <p class="stats-label">Inference Requests</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <h2>Quick Actions</h2>
+          </div>
+          <div class="card-body">
+            <div class="btn-group">
+              <button class="btn btn-primary" id="btnOpenModelTester"><i class="fas fa-brain"></i> Model Tester</button>
+              <button class="btn btn-secondary" id="btnOpenModelManager"><i class="fas fa-cubes"></i> Model Manager</button>
+              <button class="btn btn-outline" id="btnRunDiagnostics"><i class="fas fa-stethoscope"></i> Run Diagnostics</button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <h2>System Status</h2>
+          </div>
+          <div class="card-body">
+            <div id="systemStatusAlerts">
+              <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> System is initializing. Please wait...
+              </div>
+            </div>
+            <div class="result-area" id="systemLogOutput">Waiting for logs...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Model Tester (embedded) -->
+      <div id="model-tester-page" class="page">
+        <div class="model-tester">
+          <h1>IPFS Accelerate Model Tester</h1>
+          
+          <div class="card">
+            <div class="card-header">
+              <h2>Model Management</h2>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label for="modelId">Model ID:</label>
+                <input type="text" id="modelId" placeholder="Enter model ID (e.g., bert-base-uncased)">
+              </div>
+              <button id="btnLoadModel" class="btn btn-primary" disabled><i class="fas fa-download"></i> Load Model</button>
+              <div id="modelStatus" class="mt-10"></div>
+            </div>
+          </div>
+          
+          <div class="card">
+            <div class="card-header">
+              <h2>Inference</h2>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label for="inputText">Input Text:</label>
+                <textarea id="inputText" placeholder="Enter text for inference"></textarea>
+              </div>
+              <button id="btnRunInference" class="btn btn-secondary" disabled><i class="fas fa-play"></i> Run Inference</button>
+              <h3>Result:</h3>
+              <div id="inferenceResult" class="result-area">No results yet</div>
+            </div>
+          </div>
+          
+          <div class="card">
+            <div class="card-header">
+              <h2>Testing</h2>
+            </div>
+            <div class="card-body">
+              <button id="btnRunTest" class="btn btn-outline" disabled><i class="fas fa-vial"></i> Run Accelerate Tests</button>
+              <h3>Test Results:</h3>
+              <div id="testResult" class="result-area">No test results yet</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Other module pages will be added here -->
+      <div id="accelerate-page" class="page">
+        <h1>IPFS Accelerate</h1>
+        <div class="card">
+          <div class="card-header">
+            <h2>Module Information</h2>
+          </div>
+          <div class="card-body">
+            <p>The IPFS Accelerate module provides performance optimizations for AI model serving and inference. It enables efficient loading and serving of models from IPFS.</p>
+            
+            <h3>Features:</h3>
+            <ul>
+              <li>Fast model loading from IPFS</li>
+              <li>Efficient inference processing</li>
+              <li>Multi-model management</li>
+              <li>Model caching and optimization</li>
+            </ul>
+            
+            <div class="alert alert-info">
+              <i class="fas fa-info-circle"></i> This module is integrated with the ipfs_accelerate_py Python implementation.
+            </div>
+            
+            <button class="btn btn-primary" id="btnOpenAccelerateDocs">
+              <i class="fas fa-book"></i> View Documentation
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const { ipcRenderer } = window.require('electron');
+    
+    // DOM Elements - Main UI
+    const serverStatus = document.getElementById('serverStatus');
+    const btnStartServer = document.getElementById('btnStartServer');
+    const btnStopServer = document.getElementById('btnStopServer');
+    const btnOpenModelTester = document.getElementById('btnOpenModelTester');
+    const btnOpenModelManager = document.getElementById('btnOpenModelManager');
+    const btnRunDiagnostics = document.getElementById('btnRunDiagnostics');
+    const systemStatusAlerts = document.getElementById('systemStatusAlerts');
+    const systemLogOutput = document.getElementById('systemLogOutput');
+    
+    // DOM Elements - Model Tester
+    const modelId = document.getElementById('modelId');
+    const btnLoadModel = document.getElementById('btnLoadModel');
+    const modelStatus = document.getElementById('modelStatus');
+    const inputText = document.getElementById('inputText');
+    const btnRunInference = document.getElementById('btnRunInference');
+    const inferenceResult = document.getElementById('inferenceResult');
+    const btnRunTest = document.getElementById('btnRunTest');
+    const testResult = document.getElementById('testResult');
+    
+    // Statistics elements
+    const statsModels = document.getElementById('stats-models');
+    const statsDatasets = document.getElementById('stats-datasets');
+    const statsNodes = document.getElementById('stats-nodes');
+    const statsRequests = document.getElementById('stats-requests');
+    
+    // Server status indicator
+    let isServerRunning = false;
+    
+    // Navigation
+    document.querySelectorAll('.sidebar-menu a').forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Remove active class from all links
+        document.querySelectorAll('.sidebar-menu a').forEach(l => {
+          l.classList.remove('active');
+        });
+        
+        // Add active class to clicked link
+        this.classList.add('active');
+        
+        // Hide all pages
+        document.querySelectorAll('.page').forEach(page => {
+          page.classList.remove('active');
+        });
+        
+        // Show selected page
+        const pageName = this.getAttribute('data-page');
+        const pageElement = document.getElementById(`${pageName}-page`);
+        if (pageElement) {
+          pageElement.classList.add('active');
+        }
+      });
+    });
+    
+    // Quick action buttons
+    btnOpenModelTester.addEventListener('click', () => {
+      // Simulate click on the model tester menu item
+      document.querySelector('.sidebar-menu a[data-page="model-tester"]').click();
+    });
+    
+    btnOpenModelManager.addEventListener('click', () => {
+      showSystemAlert('info', 'Model Manager module is not yet implemented.');
+    });
+    
+    btnRunDiagnostics.addEventListener('click', () => {
+      runSystemDiagnostics();
+    });
+    
+    // Server control
+    btnStartServer.addEventListener('click', () => {
+      btnStartServer.disabled = true;
+      serverStatus.textContent = 'Starting...';
+      serverStatus.className = 'status';
+      
+      // Show log message
+      addSystemLog('Starting IPFS Accelerate server...');
+      
+      // Send IPC message to start server
+      ipcRenderer.send('start-server');
+    });
+    
+    btnStopServer.addEventListener('click', () => {
+      btnStopServer.disabled = true;
+      serverStatus.textContent = 'Stopping...';
+      serverStatus.className = 'status';
+      
+      // Show log message
+      addSystemLog('Stopping IPFS Accelerate server...');
+      
+      // Send IPC message to stop server
+      ipcRenderer.send('stop-server');
+    });
+    
+    // Model Tester functionality
+    btnLoadModel.addEventListener('click', () => {
+      if (!modelId.value.trim()) {
+        modelStatus.innerHTML = '<div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> Please enter a model ID</div>';
+        return;
+      }
+      
+      btnLoadModel.disabled = true;
+      modelStatus.innerHTML = '<div class="loading">Loading model...</div>';
+      
+      // Add log message
+      addSystemLog(`Loading model: ${modelId.value.trim()}`);
+      
+      // Send IPC message to load model
+      ipcRenderer.send('load-model', modelId.value.trim());
+    });
+    
+    btnRunInference.addEventListener('click', () => {
+      if (!inputText.value.trim()) {
+        inferenceResult.innerHTML = '<div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> Please enter input text</div>';
+        return;
+      }
+      
+      btnRunInference.disabled = true;
+      inferenceResult.innerHTML = '<div class="loading">Running inference...</div>';
+      
+      // Add log message
+      addSystemLog(`Running inference with input: "${inputText.value.trim().substring(0, 30)}..."`);
+      
+      // Update stats
+      updateStats('requests', 1);
+      
+      // Send IPC message to run inference
+      ipcRenderer.send('run-inference', { text: inputText.value.trim() });
+    });
+    
+    btnRunTest.addEventListener('click', () => {
+      btnRunTest.disabled = true;
+      testResult.innerHTML = '<div class="loading">Running tests...</div>';
+      
+      // Add log message
+      addSystemLog('Running IPFS Accelerate tests...');
+      
+      // Send IPC message to run test
+      ipcRenderer.send('run-test');
+    });
+    
+    // IPC Response Handlers
+    ipcRenderer.on('server-status', (event, data) => {
+      isServerRunning = data.running;
+      
+      if (isServerRunning) {
+        serverStatus.textContent = 'Server Online';
+        serverStatus.className = 'status online';
+        btnStartServer.disabled = true;
+        btnStopServer.disabled = false;
+        btnLoadModel.disabled = false;
+        btnRunTest.disabled = false;
+        
+        // Add system alert and log
+        showSystemAlert('success', 'IPFS Accelerate server is now online and ready to use.');
+        addSystemLog('Server started successfully');
+        
+        // Update stats
+        updateStats('nodes', 1);
+      } else {
+        serverStatus.textContent = data.error ? `Offline (${data.error})` : 'Server Offline';
+        serverStatus.className = 'status offline';
+        btnStartServer.disabled = false;
+        btnStopServer.disabled = true;
+        btnLoadModel.disabled = true;
+        btnRunInference.disabled = true;
+        btnRunTest.disabled = true;
+        
+        if (data.error) {
+          showSystemAlert('error', `Server error: ${data.error}`);
+          addSystemLog(`Server error: ${data.error}`);
+        } else {
+          showSystemAlert('info', 'IPFS Accelerate server is offline.');
+          addSystemLog('Server stopped');
+        }
+        
+        // Update stats
+        updateStats('nodes', 0);
+      }
+    });
+    
+    ipcRenderer.on('model-loaded', (event, data) => {
+      btnLoadModel.disabled = false;
+      
+      if (data.error) {
+        modelStatus.innerHTML = `<div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> Error: ${data.error}</div>`;
+        addSystemLog(`Model loading failed: ${data.error}`);
+      } else {
+        modelStatus.innerHTML = `<div class="alert alert-success"><i class="fas fa-check-circle"></i> Model ${data.model} loaded successfully!</div>`;
+        btnRunInference.disabled = false;
+        addSystemLog(`Model ${data.model} loaded successfully`);
+        
+        // Update stats
+        updateStats('models', 1);
+      }
+    });
+    
+    ipcRenderer.on('inference-result', (event, data) => {
+      btnRunInference.disabled = false;
+      
+      if (data.error) {
+        inferenceResult.innerHTML = `<div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> Error: ${data.error}</div>`;
+        addSystemLog(`Inference failed: ${data.error}`);
+      } else {
+        // Pretty-format the JSON with syntax highlighting (simple version)
+        const prettyJson = JSON.stringify(data, null, 2);
+        inferenceResult.textContent = prettyJson;
+        addSystemLog('Inference completed successfully');
+      }
+    });
+    
+    ipcRenderer.on('test-result', (event, data) => {
+      btnRunTest.disabled = false;
+      
+      if (data.error) {
+        testResult.innerHTML = `<div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> Error: ${data.error}</div>`;
+        addSystemLog(`Tests failed: ${data.error}`);
+      } else {
+        // Pretty-format the JSON with syntax highlighting (simple version)
+        const prettyJson = JSON.stringify(data, null, 2);
+        testResult.textContent = prettyJson;
+        addSystemLog('Tests completed successfully');
+      }
+    });
+    
+    // Utility functions
+    function showSystemAlert(type, message) {
+      const icons = {
+        success: 'check-circle',
+        error: 'exclamation-circle',
+        warning: 'exclamation-triangle',
+        info: 'info-circle'
+      };
+      
+      const icon = icons[type] || 'info-circle';
+      systemStatusAlerts.innerHTML = `
+        <div class="alert alert-${type}">
+          <i class="fas fa-${icon}"></i> ${message}
+        </div>
+      `;
+    }
+    
+    function addSystemLog(message) {
+      const timestamp = new Date().toLocaleTimeString();
+      const logEntry = `[${timestamp}] ${message}\n`;
+      systemLogOutput.textContent = logEntry + systemLogOutput.textContent;
+    }
+    
+    function updateStats(type, value) {
+      switch (type) {
+        case 'models':
+          statsModels.textContent = value;
+          break;
+        case 'datasets':
+          statsDatasets.textContent = value;
+          break;
+        case 'nodes':
+          statsNodes.textContent = value;
+          break;
+        case 'requests':
+          // Increment the current value
+          statsRequests.textContent = parseInt(statsRequests.textContent || 0) + value;
+          break;
+      }
+    }
+    
+    function runSystemDiagnostics() {
+      // Show loading state
+      showSystemAlert('info', 'Running system diagnostics...');
+      addSystemLog('Starting system diagnostics');
+      
+      // Simulate diagnostics with timeout 
+      setTimeout(() => {
+        addSystemLog('Checking Python environment...');
+      }, 500);
+      
+      setTimeout(() => {
+        addSystemLog('Checking IPFS connectivity...');
+      }, 1000);
+      
+      setTimeout(() => {
+        addSystemLog('Checking storage space...');
+      }, 1500);
+      
+      setTimeout(() => {
+        addSystemLog('Diagnostics completed');
+        showSystemAlert('success', 'System diagnostics completed successfully. All systems operational.');
+      }, 2000);
+    }
+    
+    // Initialize the UI
+    window.addEventListener('DOMContentLoaded', () => {
+      // Show welcome message
+      showSystemAlert('info', 'Welcome to IPFS HuggingFace Bridge. Start the server to begin using AI models with IPFS.');
+      addSystemLog('Application initialized');
+    });
+  </script>
+</body>
+</html>

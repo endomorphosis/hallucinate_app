@@ -9,7 +9,9 @@ import json
 import asyncio
 
 # Add parent directory to path to import ipfs_accelerate_py
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(parent_dir)
+print(f"Added to path: {parent_dir}")
 
 # Configure logging
 logging.basicConfig(
@@ -28,7 +30,9 @@ except ImportError as e:
     
     # For testing purposes, we'll create a mock implementation
     class MockAccelerate:
-        def __init__(self):
+        def __init__(self, resources=None, metadata=None):
+            self.resources = resources or {}
+            self.metadata = metadata or {}
             self.loaded_models = {}
             logger.info("Initialized mock ipfs_accelerate")
             
@@ -84,9 +88,12 @@ app.add_middleware(
 try:
     if isinstance(ipfs_accelerate_py, type):  # It's the mock class
         accelerator = ipfs_accelerate_py()
+        logger.info("Initialized mock accelerator")
     else:  # It's the real module
-        accelerator = ipfs_accelerate_py()
-    logger.info("Accelerator initialized")
+        # Initialize with empty resources/metadata for now
+        accelerator = ipfs_accelerate_py({}, {})
+        logger.info("Initialized real accelerator")
+    logger.info("Accelerator initialized successfully")
 except Exception as e:
     logger.error(f"Error initializing accelerator: {e}")
     accelerator = None
@@ -203,4 +210,5 @@ if __name__ == "__main__":
     )
     
     # Start server
+    print("Starting IPFS Accelerate server on http://127.0.0.1:8000")
     uvicorn.run(app, host="127.0.0.1", port=8000)
