@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resource Usage Dashboard</title>
+  
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  
+  <!-- Chart.js for charts (CDN version) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+  
+  <!-- Dashboard CSS -->
+  <link rel="stylesheet" href="../dashboard/usage_dashboard.css">
+  
+  <style>
+    /* Page specific styles */
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9fafb;
+      color: #111827;
+      --color-primary: #4a6cf7;
+      --color-primary-dark: #3a5cd9;
+      --color-success: #10b981;
+      --color-success-dark: #0e9f6e;
+      --color-warning: #f59e0b;
+      --color-warning-dark: #d97706;
+      --color-error: #ef4444;
+      --color-error-dark: #dc2626;
+      --color-surface: #ffffff;
+      --color-surface-variant: #f3f4f6;
+      --color-border: #e5e7eb;
+      --color-text-primary: #111827;
+      --color-text-secondary: #6b7280;
+      --color-text-tertiary: #9ca3af;
+    }
+    
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #111827;
+        color: #f9fafb;
+        --color-surface: #1f2937;
+        --color-surface-variant: #111827;
+        --color-border: #374151;
+        --color-text-primary: #f9fafb;
+        --color-text-secondary: #d1d5db;
+        --color-text-tertiary: #9ca3af;
+        --color-primary: #5b7cfc;
+        --color-primary-dark: #4a6cf7;
+        --color-success: #10b981;
+        --color-success-dark: #059669;
+        --color-warning: #f59e0b;
+        --color-warning-dark: #d97706;
+        --color-error: #ef4444;
+        --color-error-dark: #dc2626;
+      }
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+    
+    header {
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--color-border);
+    }
+    
+    header h1 {
+      font-size: 2rem;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    header h1 i {
+      color: var(--color-primary);
+    }
+    
+    header p {
+      margin: 0.5rem 0 0;
+      color: var(--color-text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>
+        <i class="fas fa-chart-line"></i>
+        Resource Usage Dashboard
+      </h1>
+      <p>Monitor resource usage, track API calls, and analyze performance across secure components</p>
+    </header>
+    
+    <div id="usage-dashboard-container"></div>
+  </div>
+  
+  <script type="module">
+    // Import the UsageDashboard class
+    import UsageDashboard from '../dashboard/usage_dashboard.js';
+    import usageTracker from '../usage_tracker.js';
+    
+    // Wait for DOM to be ready
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Create an event bus for dashboard communication
+      const eventBus = {
+        listeners: {},
+        on(event, callback) {
+          if (!this.listeners[event]) {
+            this.listeners[event] = [];
+          }
+          this.listeners[event].push(callback);
+        },
+        emit(event, data) {
+          if (this.listeners[event]) {
+            this.listeners[event].forEach(callback => callback(data));
+          }
+        }
+      };
+      
+      // Create the Usage Dashboard
+      const usageDashboard = new UsageDashboard({
+        element: document.getElementById('usage-dashboard-container'),
+        usageTracker: usageTracker,
+        eventBus: eventBus,
+        refreshInterval: 5000
+      });
+      
+      // Initialize and render the dashboard
+      await usageDashboard.init();
+      await usageDashboard.render();
+      
+      // Generate some sample data for demonstration
+      generateSampleData();
+      
+      // Handle window close
+      window.addEventListener('beforeunload', () => {
+        usageDashboard.destroy();
+      });
+    });
+    
+    // Generate some sample usage data for demonstration
+    function generateSampleData() {
+      // Sample modules
+      const modules = [
+        'auth', 
+        'keystore', 
+        'auth_keystore_integration',
+        'secure_faiss_manager',
+        'secure_model_manager',
+        'secure_transformers_manager',
+        'ipfs_kit'
+      ];
+      
+      // Sample operations
+      const operations = {
+        auth: ['verifyCapability', 'issueCapability', 'createPrincipal', 'revokeCapability'],
+        keystore: ['getKey', 'setKey', 'deleteKey', 'rotateKey', 'getKeyInfo'],
+        auth_keystore_integration: ['getAuthorizedKey', 'verifyAccess', 'rotateAuthorizedKey'],
+        secure_faiss_manager: ['createIndex', 'addVectors', 'search', 'saveIndex', 'loadIndex'],
+        secure_model_manager: ['loadModel', 'unloadModel', 'getModelInfo', 'listModels'],
+        secure_transformers_manager: ['infer', 'loadTransformer', 'saveTransformer'],
+        ipfs_kit: ['addFile', 'getFile', 'pinCID', 'unpinCID']
+      };
+      
+      // Generate events at random intervals
+      function generateEvent() {
+        // Select random module
+        const module = modules[Math.floor(Math.random() * modules.length)];
+        
+        // Select random operation for that module
+        const moduleOps = operations[module];
+        const operation = moduleOps[Math.floor(Math.random() * moduleOps.length)];
+        
+        // Generate random metrics
+        const duration = Math.random() * 500 + 50; // 50-550ms
+        const memory = Math.random() * 1024 * 1024; // 0-1MB
+        
+        // Occasionally generate errors (10% chance)
+        const isError = Math.random() < 0.1;
+        
+        if (isError) {
+          // Track error event
+          usageTracker.trackEvent(module, `${operation}_error`, {
+            error: 'Simulated error for demonstration',
+            error_type: 'SimulatedError'
+          }, {
+            duration,
+            memory
+          });
+        } else {
+          // Track normal event
+          usageTracker.trackEvent(module, operation, {
+            result_type: 'success',
+            timestamp: Date.now()
+          }, {
+            duration,
+            memory,
+            success: true
+          });
+        }
+        
+        // Schedule next event
+        const delay = Math.random() * 2000 + 500; // 500-2500ms
+        setTimeout(generateEvent, delay);
+      }
+      
+      // Start generating events
+      generateEvent();
+    }
+  </script>
+</body>
+</html>

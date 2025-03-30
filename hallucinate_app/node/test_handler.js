@@ -28,7 +28,15 @@ class ModuleTestHandler {
       'agents': null,
       'libp2p': null,
       'orbitdb': null,
-      'embeddings': null
+      'fireproofdb': null,
+      'duckdb-ipld': null,
+      'embeddings': null,
+      'auth': null,
+      'keystore': null,
+      'auth-keystore': null,
+      'secure-faiss': null,
+      'security-integration': null,
+      'auth-dashboard': null
     };
     
     this.testResults = {};
@@ -275,8 +283,24 @@ class ModuleTestHandler {
           return await this.testLibp2p(config);
         case 'orbitdb':
           return await this.testOrbitDb(config);
+        case 'fireproofdb':
+          return await this.testFireproofDB(config);
+        case 'duckdb-ipld':
+          return await this.testDuckDBIPLD(config);
         case 'embeddings':
           return await this.testEmbeddings(config);
+        case 'auth':
+          return await this.testAuth(config);
+        case 'keystore':
+          return await this.testKeystore(config);
+        case 'auth-keystore':
+          return await this.testAuthKeystore(config);
+        case 'secure-faiss':
+          return await this.testSecureFaiss(config);
+        case 'security-integration':
+          return await this.testSecurityIntegration(config);
+        case 'auth-dashboard':
+          return await this.testAuthDashboard(config);
         default:
           throw new Error(`Unknown module: ${moduleId}`);
       }
@@ -1231,6 +1255,166 @@ class ModuleTestHandler {
       };
     }
   }
+  
+  /**
+   * Test FireproofDB module
+   */
+  async testFireproofDB(config) {
+    try {
+      // Parse config
+      const configObj = this.parseConfig(config);
+      
+      // Call actual test endpoint if not using mock
+      if (config.environment !== 'mock') {
+        try {
+          // Import the secure FireproofDB manager
+          const { secureFireproofdbManager } = await import('../node/secure_fireproofdb_manager.js');
+          
+          // Run the tests
+          console.log('Testing Secure FireproofDB Manager with config:', configObj);
+          
+          // Call the test method directly
+          const testResults = await secureFireproofdbManager.test();
+          
+          return {
+            success: testResults.success,
+            details: testResults
+          };
+        } catch (error) {
+          console.error('Error importing or testing Secure FireproofDB Manager:', error);
+          
+          // Fall back to HTTP API
+          const response = await fetch(`${pythonBridge.serverUrl}/test_module/fireproofdb`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(configObj),
+          });
+          
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || 'Test failed');
+          }
+          
+          const result = await response.json();
+          return {
+            success: result.success,
+            details: result
+          };
+        }
+      } else {
+        // Mock test result
+        return {
+          success: true,
+          details: {
+            module: 'secure_fireproofdb_manager',
+            initialization: true,
+            capability_verification: true,
+            database_operations: {
+              create: true,
+              delete: true,
+              write: true,
+              read: true,
+              query: true,
+              export: true,
+              import: true,
+              sync: true
+            },
+            stats_tracking: true,
+            metadata: configObj.metadata
+          }
+        };
+      }
+    } catch (error) {
+      console.error('FireproofDB test error:', error);
+      return {
+        success: false,
+        error: error.message,
+        details: { error: error.message }
+      };
+    }
+  }
+  
+  /**
+   * Test DuckDB-IPLD module
+   */
+  async testDuckDBIPLD(config) {
+    try {
+      // Parse config
+      const configObj = this.parseConfig(config);
+      
+      // Call actual test endpoint if not using mock
+      if (config.environment !== 'mock') {
+        try {
+          // Import the secure DuckDB-IPLD manager
+          const { secureDuckDBIPLDManager } = await import('../node/secure_duckdb_ipld_manager.js');
+          
+          // Run the tests
+          console.log('Testing Secure DuckDB-IPLD Manager with config:', configObj);
+          
+          // Call the test method directly
+          const testResults = await secureDuckDBIPLDManager.test();
+          
+          return {
+            success: testResults.success,
+            details: testResults
+          };
+        } catch (error) {
+          console.error('Error importing or testing Secure DuckDB-IPLD Manager:', error);
+          
+          // Fall back to HTTP API
+          const response = await fetch(`${pythonBridge.serverUrl}/test_module/duckdb_ipld`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(configObj),
+          });
+          
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || 'Test failed');
+          }
+          
+          const result = await response.json();
+          return {
+            success: result.success,
+            details: result
+          };
+        }
+      } else {
+        // Mock test result
+        return {
+          success: true,
+          details: {
+            module: 'secure_duckdb_ipld_manager',
+            initialization: true,
+            capability_verification: true,
+            sql_operations: {
+              execute: true,
+              prepare: true
+            },
+            data_operations: {
+              ipld_export: true,
+              ipld_import: true,
+              parquet_export: true,
+              arrow_integration: true
+            },
+            stats_tracking: true,
+            metadata: configObj.metadata
+          }
+        };
+      }
+    } catch (error) {
+      console.error('DuckDB-IPLD test error:', error);
+      return {
+        success: false,
+        error: error.message,
+        details: { error: error.message }
+      };
+    }
+  }
 
   /**
    * Parse configuration from string or object
@@ -1279,5 +1463,388 @@ class ModuleTestHandler {
 }
 
 const testHandler = new ModuleTestHandler();
+
+// Import security modules
+import { authManager } from './auth.js';
+import { keystore } from './keystore.js';
+import { authKeystoreIntegration } from './auth_keystore_integration.js';
+import { secureFaissManager } from './secure_faiss_manager.js';
+import testSecurityIntegration from './test_security_integration.js';
+
+/**
+ * Test Auth module
+ */
+ModuleTestHandler.prototype.testAuth = async function(config) {
+  try {
+    // Parse config
+    const configObj = this.parseConfig(config);
+    
+    // Call actual test endpoint if not using mock
+    if (config.environment !== 'mock') {
+      try {
+        // Ensure auth manager is initialized
+        if (!authManager.initialized) {
+          await authManager.init();
+        }
+        
+        // Run the test method directly
+        const testResults = await authManager.test();
+        
+        return {
+          success: testResults.success,
+          details: testResults
+        };
+      } catch (error) {
+        console.error('Error testing Auth module:', error);
+        return {
+          success: false,
+          error: error.message,
+          details: { 
+            error: error.message,
+            module: 'auth'
+          }
+        };
+      }
+    } else {
+      // Mock test result
+      return {
+        success: true,
+        details: {
+          module: 'auth',
+          initialization: true,
+          principal_creation: true,
+          capability_issuance: true,
+          capability_verification: true,
+          capability_revocation: true,
+          capability: {
+            ucan_available: false
+          },
+          metadata: configObj.metadata
+        }
+      };
+    }
+  } catch (error) {
+    console.error('Auth test error:', error);
+    return {
+      success: false,
+      error: error.message,
+      details: { error: error.message }
+    };
+  }
+};
+
+/**
+ * Test Keystore module
+ */
+ModuleTestHandler.prototype.testKeystore = async function(config) {
+  try {
+    // Parse config
+    const configObj = this.parseConfig(config);
+    
+    // Call actual test endpoint if not using mock
+    if (config.environment !== 'mock') {
+      try {
+        // Ensure keystore is initialized
+        if (!keystore.initialized) {
+          await keystore.init();
+        }
+        
+        // Run the test method directly
+        const testResults = await keystore.test();
+        
+        return {
+          success: testResults.success,
+          details: testResults
+        };
+      } catch (error) {
+        console.error('Error testing Keystore module:', error);
+        return {
+          success: false,
+          error: error.message,
+          details: { 
+            error: error.message,
+            module: 'keystore'
+          }
+        };
+      }
+    } else {
+      // Mock test result
+      return {
+        success: true,
+        details: {
+          module: 'keystore',
+          initialization: true,
+          key_operations: {
+            set: true,
+            get: true,
+            info: true,
+            delete: true,
+            rotate: true
+          },
+          persistence: true,
+          metadata: configObj.metadata
+        }
+      };
+    }
+  } catch (error) {
+    console.error('Keystore test error:', error);
+    return {
+      success: false,
+      error: error.message,
+      details: { error: error.message }
+    };
+  }
+};
+
+/**
+ * Test Auth-Keystore Integration module
+ */
+ModuleTestHandler.prototype.testAuthKeystore = async function(config) {
+  try {
+    // Parse config
+    const configObj = this.parseConfig(config);
+    
+    // Call actual test endpoint if not using mock
+    if (config.environment !== 'mock') {
+      try {
+        // Ensure integration is initialized
+        if (!authKeystoreIntegration.initialized) {
+          await authKeystoreIntegration.init();
+        }
+        
+        // Run the test method directly
+        const testResults = await authKeystoreIntegration.test();
+        
+        return {
+          success: testResults.success,
+          details: testResults
+        };
+      } catch (error) {
+        console.error('Error testing Auth-Keystore Integration module:', error);
+        return {
+          success: false,
+          error: error.message,
+          details: { 
+            error: error.message,
+            module: 'auth_keystore_integration'
+          }
+        };
+      }
+    } else {
+      // Mock test result
+      return {
+        success: true,
+        details: {
+          module: 'auth_keystore_integration',
+          initialization: true,
+          capabilities: true,
+          authorized_operations: {
+            get_key: true,
+            set_key: true,
+            delete_key: true,
+            list_providers: true,
+            get_info: true,
+            rotate_key: true,
+            issue_capability: true
+          },
+          metadata: configObj.metadata
+        }
+      };
+    }
+  } catch (error) {
+    console.error('Auth-Keystore Integration test error:', error);
+    return {
+      success: false,
+      error: error.message,
+      details: { error: error.message }
+    };
+  }
+};
+
+/**
+ * Test Secure FAISS Manager module
+ */
+ModuleTestHandler.prototype.testSecureFaiss = async function(config) {
+  try {
+    // Parse config
+    const configObj = this.parseConfig(config);
+    
+    // Call actual test endpoint if not using mock
+    if (config.environment !== 'mock') {
+      try {
+        // Ensure secure FAISS manager is initialized
+        if (!secureFaissManager.initialized) {
+          await secureFaissManager.init();
+        }
+        
+        // Run the test method directly
+        const testResults = await secureFaissManager.test();
+        
+        return {
+          success: testResults.success,
+          details: testResults
+        };
+      } catch (error) {
+        console.error('Error testing Secure FAISS Manager module:', error);
+        return {
+          success: false,
+          error: error.message,
+          details: { 
+            error: error.message,
+            module: 'secure_faiss_manager'
+          }
+        };
+      }
+    } else {
+      // Mock test result
+      return {
+        success: true,
+        details: {
+          module: 'secure_faiss_manager',
+          initialization: true,
+          capability_verification: true,
+          index_operations: {
+            create: true,
+            add: true, 
+            search: true,
+            save: true,
+            load: true,
+            list: true
+          },
+          stats_tracking: true,
+          metadata: configObj.metadata
+        }
+      };
+    }
+  } catch (error) {
+    console.error('Secure FAISS Manager test error:', error);
+    return {
+      success: false,
+      error: error.message,
+      details: { error: error.message }
+    };
+  }
+};
+
+/**
+ * Test Security Integration
+ */
+ModuleTestHandler.prototype.testSecurityIntegration = async function(config) {
+  try {
+    // Parse config
+    const configObj = this.parseConfig(config);
+    
+    // Call actual test endpoint if not using mock
+    if (config.environment !== 'mock') {
+      try {
+        // Run the security integration test
+        const testResults = await testSecurityIntegration();
+        
+        return {
+          success: testResults.success,
+          details: testResults
+        };
+      } catch (error) {
+        console.error('Error testing Security Integration:', error);
+        return {
+          success: false,
+          error: error.message,
+          details: { 
+            error: error.message,
+            module: 'security_integration'
+          }
+        };
+      }
+    } else {
+      // Mock test result
+      return {
+        success: true,
+        details: {
+          module: 'security_integration',
+          results: {
+            auth_manager: true,
+            keystore: true,
+            auth_keystore_integration: true,
+            auth_dashboard: true,
+            api_key_flow: true
+          },
+          implementation_details: {
+            auth_using_external: false,
+            keystore_using_external: false,
+            integration_using_external: false
+          },
+          message: 'Security integration tests passed successfully',
+          metadata: configObj.metadata
+        }
+      };
+    }
+  } catch (error) {
+    console.error('Security Integration test error:', error);
+    return {
+      success: false,
+      error: error.message,
+      details: { error: error.message }
+    };
+  }
+};
+
+/**
+ * Test Auth Dashboard
+ */
+ModuleTestHandler.prototype.testAuthDashboard = async function(config) {
+  try {
+    // Parse config
+    const configObj = this.parseConfig(config);
+    
+    // Call actual test endpoint if not using mock
+    if (config.environment !== 'mock') {
+      try {
+        // Import the test function for the auth dashboard
+        const testAuthDashboard = await import('./dashboard/test_auth_dashboard.js');
+        
+        // Run the auth dashboard test
+        const testResults = await testAuthDashboard.default();
+        
+        return {
+          success: testResults.success,
+          details: testResults
+        };
+      } catch (error) {
+        console.error('Error testing Auth Dashboard:', error);
+        return {
+          success: false,
+          error: error.message,
+          details: { 
+            error: error.message,
+            module: 'auth_dashboard'
+          }
+        };
+      }
+    } else {
+      // Mock test result
+      return {
+        success: true,
+        details: {
+          module: 'auth_dashboard',
+          component_initialization: true,
+          integration: {
+            auth_manager: true,
+            keystore: true,
+            auth_keystore: true
+          },
+          message: 'Auth dashboard component successfully tested with integration layers',
+          metadata: configObj.metadata
+        }
+      };
+    }
+  } catch (error) {
+    console.error('Auth Dashboard test error:', error);
+    return {
+      success: false,
+      error: error.message,
+      details: { error: error.message }
+    };
+  }
+};
 
 export default testHandler;

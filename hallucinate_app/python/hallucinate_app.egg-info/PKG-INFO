@@ -1,4 +1,4 @@
-Metadata-Version: 2.1
+Metadata-Version: 2.4
 Name: hallucinate_app
 Version: 0.0.2
 Summary: A wrapper around huggingface datasets, invoking an IPFS model manager.

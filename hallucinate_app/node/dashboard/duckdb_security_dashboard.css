@@ -1,0 +1,295 @@
+/**
+ * DuckDB-IPLD Security Dashboard Styles
+ * 
+ * Provides styling for the DuckDB-IPLD security dashboard
+ * Supports both light and dark themes
+ */
+
+/* Dashboard Container */
+.duckdb-security-dashboard {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  color: #333;
+  background-color: #f7f9fc;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Dashboard Header */
+.duckdb-security-dashboard .dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e1e4e8;
+}
+
+.duckdb-security-dashboard .dashboard-header h2 {
+  font-size: 1.5rem;
+  margin: 0;
+  color: #2a3746;
+}
+
+.duckdb-security-dashboard .dashboard-controls {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* Section Headers */
+.duckdb-security-dashboard h3 {
+  font-size: 1.2rem;
+  margin: 1.5rem 0 1rem;
+  color: #2a3746;
+}
+
+/* Statistics Grid */
+.duckdb-security-dashboard .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.duckdb-security-dashboard .stat-card {
+  background-color: #fff;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.duckdb-security-dashboard .stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.duckdb-security-dashboard .stat-value {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #0366d6;
+  margin-bottom: 0.5rem;
+}
+
+.duckdb-security-dashboard .stat-label {
+  font-size: 0.875rem;
+  color: #586069;
+}
+
+/* Data Tables */
+.duckdb-security-dashboard .data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.duckdb-security-dashboard .data-table th,
+.duckdb-security-dashboard .data-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e1e4e8;
+}
+
+.duckdb-security-dashboard .data-table th {
+  background-color: #f6f8fa;
+  font-weight: 600;
+  color: #24292e;
+}
+
+.duckdb-security-dashboard .data-table tr:last-child td {
+  border-bottom: none;
+}
+
+.duckdb-security-dashboard .data-table tbody tr:hover {
+  background-color: #f6f8fa;
+}
+
+/* Form Controls */
+.duckdb-security-dashboard .capability-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.duckdb-security-dashboard select,
+.duckdb-security-dashboard input {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5da;
+  border-radius: 0.25rem;
+  background-color: #fff;
+  min-width: 180px;
+}
+
+.duckdb-security-dashboard select:focus,
+.duckdb-security-dashboard input:focus {
+  outline: none;
+  border-color: #0366d6;
+  box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.1);
+}
+
+.duckdb-security-dashboard .resource-input {
+  flex-grow: 1;
+  min-width: 120px;
+}
+
+/* Buttons */
+.duckdb-security-dashboard .btn {
+  padding: 0.5rem 0.75rem;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.duckdb-security-dashboard .refresh-btn {
+  background-color: #f6f8fa;
+  color: #24292e;
+}
+
+.duckdb-security-dashboard .refresh-btn:hover {
+  background-color: #e1e4e8;
+}
+
+.duckdb-security-dashboard .grant-btn {
+  background-color: #2ea44f;
+  color: #fff;
+}
+
+.duckdb-security-dashboard .grant-btn:hover {
+  background-color: #22863a;
+}
+
+.duckdb-security-dashboard .delete-btn {
+  background-color: #cb2431;
+  color: #fff;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+.duckdb-security-dashboard .delete-btn:hover {
+  background-color: #a0181e;
+}
+
+/* Loading and No Data States */
+.duckdb-security-dashboard .stats-loading,
+.duckdb-security-dashboard .tables-loading,
+.duckdb-security-dashboard .capabilities-loading,
+.duckdb-security-dashboard .resource-loading,
+.duckdb-security-dashboard .no-data {
+  padding: 2rem;
+  text-align: center;
+  color: #586069;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Dark Theme */
+.duckdb-security-dashboard.dark {
+  background-color: #1e2028;
+  color: #e1e4e8;
+}
+
+.duckdb-security-dashboard.dark .dashboard-header {
+  border-bottom-color: #2d3139;
+}
+
+.duckdb-security-dashboard.dark .dashboard-header h2 {
+  color: #e1e4e8;
+}
+
+.duckdb-security-dashboard.dark h3 {
+  color: #e1e4e8;
+}
+
+.duckdb-security-dashboard.dark .stat-card {
+  background-color: #2d3139;
+}
+
+.duckdb-security-dashboard.dark .stat-value {
+  color: #58a6ff;
+}
+
+.duckdb-security-dashboard.dark .stat-label {
+  color: #8b949e;
+}
+
+.duckdb-security-dashboard.dark .data-table {
+  background-color: #2d3139;
+}
+
+.duckdb-security-dashboard.dark .data-table th,
+.duckdb-security-dashboard.dark .data-table td {
+  border-bottom-color: #1e2028;
+}
+
+.duckdb-security-dashboard.dark .data-table th {
+  background-color: #24292e;
+  color: #e1e4e8;
+}
+
+.duckdb-security-dashboard.dark .data-table tbody tr:hover {
+  background-color: #24292e;
+}
+
+.duckdb-security-dashboard.dark select,
+.duckdb-security-dashboard.dark input {
+  background-color: #2d3139;
+  border-color: #3d434b;
+  color: #e1e4e8;
+}
+
+.duckdb-security-dashboard.dark select:focus,
+.duckdb-security-dashboard.dark input:focus {
+  border-color: #58a6ff;
+  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+}
+
+.duckdb-security-dashboard.dark .refresh-btn {
+  background-color: #2d3139;
+  color: #e1e4e8;
+}
+
+.duckdb-security-dashboard.dark .refresh-btn:hover {
+  background-color: #24292e;
+}
+
+.duckdb-security-dashboard.dark .stats-loading,
+.duckdb-security-dashboard.dark .tables-loading,
+.duckdb-security-dashboard.dark .capabilities-loading,
+.duckdb-security-dashboard.dark .resource-loading,
+.duckdb-security-dashboard.dark .no-data {
+  background-color: #2d3139;
+  color: #8b949e;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .duckdb-security-dashboard .stats-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+  
+  .duckdb-security-dashboard .capability-actions {
+    flex-direction: column;
+  }
+  
+  .duckdb-security-dashboard select,
+  .duckdb-security-dashboard input,
+  .duckdb-security-dashboard .btn {
+    width: 100%;
+    min-width: auto;
+  }
+  
+  .duckdb-security-dashboard .data-table {
+    display: block;
+    overflow-x: auto;
+  }
+}

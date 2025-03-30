@@ -14,27 +14,39 @@ class PythonBridge {
       try {
         const pythonPath = 'python3';  // use python3 for Linux/macOS
         
-        // First try the actual implementation
+        // Try the main server script first
         let serverScriptPath = path.join(
           process.cwd(), 
           'hallucinate_app',
           'python',
           'hallucinate_app',
-          'ipfs_accelerate_server.py'
+          'main.py'
         );
         
-        // If not found, fall back to test server
+        // If main server not found, try accelerate server
         if (!fs.existsSync(serverScriptPath)) {
-          console.log(`Main server script not found at ${serverScriptPath}, falling back to test server`);
+          console.log(`Main server script not found at ${serverScriptPath}, trying accelerate server...`);
           serverScriptPath = path.join(
             process.cwd(), 
-            'test', 
+            'hallucinate_app',
             'python',
+            'hallucinate_app',
             'ipfs_accelerate_server.py'
           );
           
+          // If accelerate server not found, fall back to test server
           if (!fs.existsSync(serverScriptPath)) {
-            return reject(new Error(`Server script not found at ${serverScriptPath}`));
+            console.log(`Accelerate server script not found at ${serverScriptPath}, falling back to test server`);
+            serverScriptPath = path.join(
+              process.cwd(), 
+              'test', 
+              'python',
+              'ipfs_accelerate_server.py'
+            );
+            
+            if (!fs.existsSync(serverScriptPath)) {
+              return reject(new Error(`No server script found. Tried main.py, ipfs_accelerate_server.py, and test server.`));
+            }
           }
         }
         

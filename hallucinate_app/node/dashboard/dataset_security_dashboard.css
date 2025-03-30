@@ -1,0 +1,313 @@
+/**
+ * Dataset Security Dashboard Styles
+ * 
+ * CSS styles for the dataset security dashboard component
+ */
+
+.dataset-security-dashboard {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: #333;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dataset-security-dashboard h2 {
+  margin-top: 0;
+  font-size: 1.8rem;
+  color: #2c3e50;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.5rem;
+}
+
+.dataset-security-dashboard h3 {
+  font-size: 1.4rem;
+  margin: 0 0 1rem 0;
+  color: #3498db;
+}
+
+.dataset-security-dashboard h4 {
+  font-size: 1.1rem;
+  margin: 1.5rem 0 0.5rem 0;
+  color: #2c3e50;
+}
+
+/* Dashboard Panels Layout */
+.dashboard-panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.dashboard-panel {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Statistics Display */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.stat-item {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 1rem;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.stat-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #3498db;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+}
+
+/* Tables */
+.dashboard-table {
+  width: 100%;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.dashboard-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.dashboard-table th {
+  text-align: left;
+  padding: 0.75rem;
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #ddd;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.dashboard-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #eee;
+  color: #555;
+}
+
+.dashboard-table tr:hover {
+  background-color: #f8f9fa;
+}
+
+.dashboard-table tr.selected {
+  background-color: #e1f5fe;
+}
+
+/* Lists */
+.dashboard-list {
+  margin-top: 1rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.dashboard-select-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dashboard-select-list li {
+  padding: 0.75rem;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.dashboard-select-list li:hover {
+  background-color: #f8f9fa;
+}
+
+.dashboard-select-list li.selected {
+  background-color: #e1f5fe;
+  border-left: 3px solid #3498db;
+}
+
+.list-item-primary {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.list-item-secondary {
+  font-size: 0.8rem;
+  color: #7f8c8d;
+  margin-top: 0.25rem;
+}
+
+/* Forms */
+.dashboard-form {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  margin: 1rem 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  width: 90%;
+  max-width: 500px;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.form-group select,
+.form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  color: #2c3e50;
+}
+
+.form-group select:focus,
+.form-group input:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+/* Buttons */
+.dashboard-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #f8f9fa;
+  color: #2c3e50;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dashboard-btn:hover {
+  background-color: #e9ecef;
+}
+
+.dashboard-btn.primary {
+  background-color: #3498db;
+  color: white;
+  border-color: #2980b9;
+}
+
+.dashboard-btn.primary:hover {
+  background-color: #2980b9;
+}
+
+.dashboard-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dashboard-action-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Alerts */
+.dashboard-alert {
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.dashboard-alert.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.dashboard-alert.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.dashboard-alert.warning {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+}
+
+/* Empty States */
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: #7f8c8d;
+  font-style: italic;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  border: 1px dashed #ddd;
+}
+
+/* Loading State */
+.loading {
+  padding: 1rem;
+  text-align: center;
+  color: #7f8c8d;
+  font-style: italic;
+}
+
+/* Capabilities Container */
+.capabilities-container {
+  margin-top: 0.5rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .dashboard-panels {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .dashboard-form {
+    width: 95%;
+    padding: 1rem;
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "success": true,
+  "module": "query_optimizer_dashboard",
+  "tests": {
+    "failures": [],
+    "errors": []
+  },
+  "summary": {
+    "total": 15,
+    "passed": 15,
+    "failed": 0,
+    "skipped": 0,
+    "errors": 0
+  }
+}

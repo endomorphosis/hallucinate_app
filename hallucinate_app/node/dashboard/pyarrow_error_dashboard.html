@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PyArrow Content Index Error Dashboard</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fa;
+      color: #212529;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #dee2e6;
+    }
+    
+    h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .btn-primary {
+      background-color: #0d6efd;
+      color: white;
+    }
+    
+    .btn-secondary {
+      background-color: #6c757d;
+      color: white;
+    }
+    
+    .btn-danger {
+      background-color: #dc3545;
+      color: white;
+    }
+    
+    .btn-success {
+      background-color: #198754;
+      color: white;
+    }
+    
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .error-summary {
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+    
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    
+    .summary-item {
+      padding: 10px;
+      border-radius: 4px;
+      background-color: #f8f9fa;
+    }
+    
+    .summary-item .label {
+      font-size: 12px;
+      color: #6c757d;
+      margin-bottom: 5px;
+    }
+    
+    .summary-item .value {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    .error-filters {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .filter-label {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    select, input {
+      padding: 6px 8px;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    
+    .errors-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    
+    .errors-table th, .errors-table td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #dee2e6;
+    }
+    
+    .errors-table th {
+      background-color: #f1f3f5;
+      position: sticky;
+      top: 0;
+    }
+    
+    .errors-container {
+      max-height: 500px;
+      overflow-y: auto;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      background-color: #fff;
+    }
+    
+    .error-row {
+      cursor: pointer;
+    }
+    
+    .error-row:hover {
+      background-color: #f1f3f5;
+    }
+    
+    .error-row.selected {
+      background-color: #e2e9ff;
+    }
+    
+    .error-level {
+      padding: 3px 6px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .error-level-error {
+      background-color: #f8d7da;
+      color: #842029;
+    }
+    
+    .error-level-warning {
+      background-color: #fff3cd;
+      color: #664d03;
+    }
+    
+    .error-level-fatal {
+      background-color: #842029;
+      color: white;
+    }
+    
+    .error-details {
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+      display: none;
+    }
+    
+    .error-details.active {
+      display: block;
+    }
+    
+    .details-group {
+      margin-bottom: 15px;
+    }
+    
+    .details-label {
+      font-size: 12px;
+      color: #6c757d;
+      margin-bottom: 5px;
+    }
+    
+    .details-value {
+      font-family: monospace;
+      padding: 10px;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
+    
+    .details-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    
+    @media (max-width: 768px) {
+      .details-columns {
+        grid-template-columns: 1fr;
+      }
+      
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .no-errors {
+      padding: 30px;
+      text-align: center;
+      font-size: 16px;
+      color: #6c757d;
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    
+    /* For new errors */
+    @keyframes highlightNew {
+      0% { background-color: #ffe0e0; }
+      100% { background-color: transparent; }
+    }
+    
+    .highlight-new {
+      animation: highlightNew 2s ease-out;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>PyArrow Content Index Error Dashboard</h1>
+      <div class="header-actions">
+        <button id="refreshBtn" class="btn btn-primary">Refresh</button>
+        <button id="exportBtn" class="btn btn-success">Export</button>
+        <button id="clearBtn" class="btn btn-danger">Clear Errors</button>
+      </div>
+    </header>
+    
+    <div class="error-summary">
+      <h2>Error Summary</h2>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <div class="label">Total Errors</div>
+          <div id="totalErrors" class="value">0</div>
+        </div>
+        <div class="summary-item">
+          <div class="label">Errors</div>
+          <div id="errorCount" class="value">0</div>
+        </div>
+        <div class="summary-item">
+          <div class="label">Warnings</div>
+          <div id="warningCount" class="value">0</div>
+        </div>
+        <div class="summary-item">
+          <div class="label">Fatal Errors</div>
+          <div id="fatalCount" class="value">0</div>
+        </div>
+        <div class="summary-item">
+          <div class="label">JavaScript Errors</div>
+          <div id="jsErrors" class="value">0</div>
+        </div>
+        <div class="summary-item">
+          <div class="label">Python Errors</div>
+          <div id="pyErrors" class="value">0</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="error-filters">
+      <div class="filter-group">
+        <span class="filter-label">Level:</span>
+        <select id="levelFilter">
+          <option value="all">All</option>
+          <option value="error">Errors</option>
+          <option value="warning">Warnings</option>
+          <option value="fatal">Fatal</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Source:</span>
+        <select id="sourceFilter">
+          <option value="all">All</option>
+          <option value="js-bridge">JavaScript</option>
+          <option value="python">Python</option>
+          <option value="log_file">Log File</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Search:</span>
+        <input type="text" id="searchFilter" placeholder="Search..." />
+      </div>
+    </div>
+    
+    <div class="errors-container">
+      <table class="errors-table">
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>Timestamp</th>
+            <th>Operation</th>
+            <th>Message</th>
+            <th>Source</th>
+          </tr>
+        </thead>
+        <tbody id="errorsTableBody">
+          <!-- Error rows will be added here -->
+        </tbody>
+      </table>
+      <div id="noErrorsMessage" class="no-errors">
+        No errors to display.
+      </div>
+    </div>
+    
+    <div id="errorDetails" class="error-details">
+      <h2>Error Details</h2>
+      <div class="details-columns">
+        <div class="details-group">
+          <div class="details-label">Level</div>
+          <div id="detailLevel" class="details-value"></div>
+        </div>
+        <div class="details-group">
+          <div class="details-label">Timestamp</div>
+          <div id="detailTimestamp" class="details-value"></div>
+        </div>
+        <div class="details-group">
+          <div class="details-label">Operation</div>
+          <div id="detailOperation" class="details-value"></div>
+        </div>
+        <div class="details-group">
+          <div class="details-label">Source</div>
+          <div id="detailSource" class="details-value"></div>
+        </div>
+      </div>
+      
+      <div class="details-group">
+        <div class="details-label">Message</div>
+        <div id="detailMessage" class="details-value"></div>
+      </div>
+      
+      <div class="details-group">
+        <div class="details-label">Stack Trace</div>
+        <div id="detailStackTrace" class="details-value"></div>
+      </div>
+      
+      <div class="details-group">
+        <div class="details-label">Additional Details</div>
+        <div id="detailAdditional" class="details-value"></div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+  const { ipcRenderer } = require('electron');
+  
+  // DOM elements
+  const errorsTableBody = document.getElementById('errorsTableBody');
+  const noErrorsMessage = document.getElementById('noErrorsMessage');
+  const errorDetails = document.getElementById('errorDetails');
+  const refreshBtn = document.getElementById('refreshBtn');
+  const exportBtn = document.getElementById('exportBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const levelFilter = document.getElementById('levelFilter');
+  const sourceFilter = document.getElementById('sourceFilter');
+  const searchFilter = document.getElementById('searchFilter');
+  
+  // Detail elements
+  const detailLevel = document.getElementById('detailLevel');
+  const detailTimestamp = document.getElementById('detailTimestamp');
+  const detailOperation = document.getElementById('detailOperation');
+  const detailSource = document.getElementById('detailSource');
+  const detailMessage = document.getElementById('detailMessage');
+  const detailStackTrace = document.getElementById('detailStackTrace');
+  const detailAdditional = document.getElementById('detailAdditional');
+  
+  // Summary elements
+  const totalErrors = document.getElementById('totalErrors');
+  const errorCount = document.getElementById('errorCount');
+  const warningCount = document.getElementById('warningCount');
+  const fatalCount = document.getElementById('fatalCount');
+  const jsErrors = document.getElementById('jsErrors');
+  const pyErrors = document.getElementById('pyErrors');
+  
+  // State
+  let allErrors = [];
+  let selectedErrorId = null;
+  
+  // Initialize dashboard
+  function initDashboard() {
+    // Set up event listeners
+    refreshBtn.addEventListener('click', () => {
+      ipcRenderer.send('refresh-errors');
+    });
+    
+    exportBtn.addEventListener('click', () => {
+      ipcRenderer.send('export-errors');
+    });
+    
+    clearBtn.addEventListener('click', () => {
+      if (confirm('Are you sure you want to clear all errors?')) {
+        ipcRenderer.send('clear-error-history');
+      }
+    });
+    
+    levelFilter.addEventListener('change', filterErrors);
+    sourceFilter.addEventListener('change', filterErrors);
+    searchFilter.addEventListener('input', filterErrors);
+    
+    // Set up IPC listeners
+    ipcRenderer.on('init-error-history', (event, data) => {
+      allErrors = data.errors || [];
+      updateErrorTable();
+      updateSummary();
+    });
+    
+    ipcRenderer.on('error-received', (event, error) => {
+      error.level = error.level || 'error';
+      error.received_at = new Date().toISOString();
+      allErrors.push(error);
+      updateErrorTable();
+      updateSummary();
+      addHighlightedError(error);
+    });
+    
+    ipcRenderer.on('warning-received', (event, warning) => {
+      warning.level = 'warning';
+      warning.received_at = new Date().toISOString();
+      allErrors.push(warning);
+      updateErrorTable();
+      updateSummary();
+      addHighlightedError(warning);
+    });
+    
+    ipcRenderer.on('fatal-error-received', (event, error) => {
+      error.level = 'fatal';
+      error.received_at = new Date().toISOString();
+      allErrors.push(error);
+      updateErrorTable();
+      updateSummary();
+      addHighlightedError(error);
+    });
+    
+    ipcRenderer.on('log-entries', (event, entries) => {
+      // Add new log entries that aren't already in the error list
+      let added = 0;
+      entries.forEach(entry => {
+        const isDuplicate = allErrors.some(e => 
+          e.timestamp === entry.timestamp && 
+          e.message === entry.message &&
+          e.source === entry.source
+        );
+        
+        if (!isDuplicate) {
+          allErrors.push(entry);
+          added++;
+        }
+      });
+      
+      if (added > 0) {
+        updateErrorTable();
+        updateSummary();
+      }
+    });
+    
+    ipcRenderer.on('error-history-cleared', () => {
+      allErrors = [];
+      updateErrorTable();
+      updateSummary();
+      errorDetails.classList.remove('active');
+      selectedErrorId = null;
+    });
+    
+    // Initial refresh
+    ipcRenderer.send('refresh-errors');
+  }
+  
+  // Update the error table based on filters
+  function updateErrorTable() {
+    const filtered = getFilteredErrors();
+    
+    // Clear the table
+    errorsTableBody.innerHTML = '';
+    
+    // Show/hide no errors message
+    if (filtered.length === 0) {
+      noErrorsMessage.style.display = 'block';
+      return;
+    } else {
+      noErrorsMessage.style.display = 'none';
+    }
+    
+    // Add errors to table
+    filtered.forEach((error, index) => {
+      const row = document.createElement('tr');
+      row.classList.add('error-row');
+      row.dataset.id = index;
+      
+      if (index === selectedErrorId) {
+        row.classList.add('selected');
+      }
+      
+      row.innerHTML = `
+        <td><span class="error-level error-level-${error.level || 'error'}">${error.level || 'error'}</span></td>
+        <td>${formatTimestamp(error.timestamp || error.received_at)}</td>
+        <td>${error.operation || 'N/A'}</td>
+        <td>${truncateText(error.message || 'Unknown error', 60)}</td>
+        <td>${error.source || 'unknown'}</td>
+      `;
+      
+      row.addEventListener('click', () => {
+        selectError(index);
+      });
+      
+      errorsTableBody.appendChild(row);
+    });
+  }
+  
+  // Add a highlighted error to the table
+  function addHighlightedError(error) {
+    const filtered = getFilteredErrors();
+    const index = filtered.findIndex(e => e === error);
+    
+    if (index >= 0) {
+      const row = errorsTableBody.children[index];
+      if (row) {
+        row.classList.add('highlight-new');
+      }
+    }
+  }
+  
+  // Get filtered errors based on current filters
+  function getFilteredErrors() {
+    const level = levelFilter.value;
+    const source = sourceFilter.value;
+    const search = searchFilter.value.toLowerCase();
+    
+    return allErrors.filter(error => {
+      // Filter by level
+      if (level !== 'all' && error.level !== level) {
+        return false;
+      }
+      
+      // Filter by source
+      if (source !== 'all' && error.source !== source) {
+        return false;
+      }
+      
+      // Filter by search text
+      if (search && !(
+        (error.message && error.message.toLowerCase().includes(search)) ||
+        (error.operation && error.operation.toLowerCase().includes(search))
+      )) {
+        return false;
+      }
+      
+      return true;
+    }).sort((a, b) => {
+      // Sort by timestamp descending (newest first)
+      const timeA = a.timestamp || a.received_at || '';
+      const timeB = b.timestamp || b.received_at || '';
+      return timeB.localeCompare(timeA);
+    });
+  }
+  
+  // Filter errors based on selected filters
+  function filterErrors() {
+    updateErrorTable();
+  }
+  
+  // Select an error and show details
+  function selectError(id) {
+    // Clear previous selection
+    const prevSelected = errorsTableBody.querySelector('.selected');
+    if (prevSelected) {
+      prevSelected.classList.remove('selected');
+    }
+    
+    // Set new selection
+    selectedErrorId = id;
+    const filtered = getFilteredErrors();
+    const error = filtered[id];
+    
+    if (!error) {
+      errorDetails.classList.remove('active');
+      return;
+    }
+    
+    // Highlight selected row
+    const row = errorsTableBody.querySelector(`[data-id="${id}"]`);
+    if (row) {
+      row.classList.add('selected');
+    }
+    
+    // Show details
+    detailLevel.textContent = error.level || 'error';
+    detailTimestamp.textContent = formatTimestamp(error.timestamp || error.received_at);
+    detailOperation.textContent = error.operation || 'N/A';
+    detailSource.textContent = error.source || 'unknown';
+    detailMessage.textContent = error.message || 'Unknown error';
+    detailStackTrace.textContent = error.stack_trace || '';
+    detailAdditional.textContent = JSON.stringify(error.details || {}, null, 2);
+    
+    // Show details panel
+    errorDetails.classList.add('active', 'fade-in');
+  }
+  
+  // Update error summary
+  function updateSummary() {
+    const counts = {
+      total: allErrors.length,
+      error: 0,
+      warning: 0,
+      fatal: 0,
+      js: 0,
+      py: 0
+    };
+    
+    allErrors.forEach(error => {
+      if (error.level === 'warning') {
+        counts.warning++;
+      } else if (error.level === 'fatal') {
+        counts.fatal++;
+      } else {
+        counts.error++;
+      }
+      
+      if (error.source === 'js-bridge') {
+        counts.js++;
+      } else if (error.source === 'python') {
+        counts.py++;
+      }
+    });
+    
+    totalErrors.textContent = counts.total;
+    errorCount.textContent = counts.error;
+    warningCount.textContent = counts.warning;
+    fatalCount.textContent = counts.fatal;
+    jsErrors.textContent = counts.js;
+    pyErrors.textContent = counts.py;
+  }
+  
+  // Format timestamp
+  function formatTimestamp(timestamp) {
+    if (!timestamp) return 'N/A';
+    
+    try {
+      const date = new Date(timestamp);
+      return date.toLocaleString();
+    } catch (e) {
+      return timestamp;
+    }
+  }
+  
+  // Truncate text
+  function truncateText(text, maxLength) {
+    if (!text) return '';
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  }
+  
+  // Initialize dashboard when DOM is loaded
+  document.addEventListener('DOMContentLoaded', initDashboard);
+  </script>
+</body>
+</html>

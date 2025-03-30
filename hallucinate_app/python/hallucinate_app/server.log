@@ -1,0 +1,28 @@
+ipfshttpclient not available, using mock implementation
+2025-03-30 05:42:12,710 - hallucinate_app.ipfs_kit_server - INFO - IPFSKitServer initialized with API URL: /ip4/127.0.0.1/tcp/5001
+2025-03-30 05:42:12,710 - hallucinate_app.ipfs_kit_server - INFO - Using mock IPFS implementation
+2025-03-30 05:42:12,710 - hallucinate_app.ipfs_kit_py - INFO - IPFSKitPy initialized with API URL: /ip4/127.0.0.1/tcp/5001
+2025-03-30 05:42:12,710 - hallucinate_app.ipfs_kit_server - INFO - IPFS Kit Server started processing requests
+2025-03-30 05:42:12,711 - ipfs_kit - INFO - IPFSKit initialized with role=leecher, path=/home/barberb/.cache/ipfs
+Warning: faiss not available, some functionality may be limited
+Warning: Some IPFS modules may not be available: No module named 'faiss'
+Traceback (most recent call last):
+  File "/home/barberb/hallucinate_app/hallucinate_app/python/hallucinate_app/main.py", line 64, in <module>
+    from .benchmark_server import benchmark_router, init_benchmark_server
+ImportError: attempted relative import with no known parent package
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/barberb/hallucinate_app/hallucinate_app/python/hallucinate_app/main.py", line 68, in <module>
+    from benchmark_server import benchmark_router, init_benchmark_server
+  File "/home/barberb/hallucinate_app/hallucinate_app/python/hallucinate_app/benchmark_server.py", line 46, in <module>
+    import ipfs_datasets_py
+  File "/home/barberb/.local/lib/python3.12/site-packages/ipfs_datasets_py/__init__.py", line 26, in <module>
+    from ipfs_datasets_py.rag_query_optimizer import GraphRAGQueryOptimizer, GraphRAGQueryStats, VectorIndexPartitioner
+  File "/home/barberb/.local/lib/python3.12/site-packages/ipfs_datasets_py/rag_query_optimizer.py", line 61, in <module>
+    from ipfs_datasets_py.llm_reasoning_tracer import WikipediaKnowledgeGraphTracer
+  File "/home/barberb/.local/lib/python3.12/site-packages/ipfs_datasets_py/llm_reasoning_tracer.py", line 1048
+    **metadata or {}
+               ^^
+SyntaxError: invalid syntax

@@ -6,6 +6,8 @@
   <title>IPFS HuggingFace Bridge</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="../dashboard/dashboard.css">
+  <link rel="stylesheet" href="../dashboard/auth_dashboard.css">
 </head>
 <body>
   <div class="app-container">
@@ -47,6 +49,14 @@
           <li><a href="#" data-page="ipfs"><i class="fas fa-network-wired"></i> IPFS</a></li>
           <li><a href="#" data-page="libp2p"><i class="fas fa-plug"></i> libp2p</a></li>
           <li><a href="#" data-page="orbitdb"><i class="fas fa-database"></i> OrbitDB</a></li>
+        </ul>
+      </div>
+      
+      <div class="sidebar-section">
+        <h3>Security</h3>
+        <ul class="sidebar-menu">
+          <li><a href="#" data-page="auth-dashboard"><i class="fas fa-shield-alt"></i> Authentication</a></li>
+          <li><a href="#" data-page="keystore"><i class="fas fa-key"></i> Keystore</a></li>
         </ul>
       </div>
     </nav>
@@ -96,6 +106,16 @@
               <p class="stats-label">Inference Requests</p>
             </div>
           </div>
+          
+          <div class="card stats-card">
+            <div class="stats-icon">
+              <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="stats-info">
+              <h2 class="stats-value" id="stats-security-status">-</h2>
+              <p class="stats-label">Security Status</p>
+            </div>
+          </div>
         </div>
         
         <div class="card">
@@ -107,6 +127,8 @@
               <button class="btn btn-primary" id="btnOpenModelTester"><i class="fas fa-brain"></i> Model Tester</button>
               <button class="btn btn-secondary" id="btnOpenModelManager"><i class="fas fa-cubes"></i> Model Manager</button>
               <button class="btn btn-outline" id="btnRunDiagnostics"><i class="fas fa-stethoscope"></i> Run Diagnostics</button>
+              <button class="btn btn-outline" id="btnRunSecurityTests"><i class="fas fa-shield-alt"></i> Quick Security Tests</button>
+              <button class="btn btn-outline" id="btnOpenSecurityTestDashboard"><i class="fas fa-tachometer-alt"></i> Security Test Dashboard</button>
             </div>
           </div>
         </div>
@@ -121,11 +143,40 @@
                 <i class="fas fa-info-circle"></i> System is initializing. Please wait...
               </div>
             </div>
+            
+            <!-- Security status indicator -->
+            <div id="securityStatusSection" class="status-section">
+              <h3><i class="fas fa-shield-alt"></i> Security Status</h3>
+              <div class="status-grid">
+                <div class="status-item">
+                  <span class="status-label">Authentication:</span>
+                  <span class="status-value" id="auth-module-status">Initializing...</span>
+                </div>
+                <div class="status-item">
+                  <span class="status-label">Keystore:</span>
+                  <span class="status-value" id="keystore-module-status">Initializing...</span>
+                </div>
+                <div class="status-item">
+                  <span class="status-label">Capability Verification:</span>
+                  <span class="status-value" id="capability-status">Pending...</span>
+                </div>
+                <div class="status-item">
+                  <span class="status-label">Last Auth Event:</span>
+                  <span class="status-value" id="last-auth-event">None</span>
+                </div>
+              </div>
+            </div>
+            
             <div class="result-area" id="systemLogOutput">Waiting for logs...</div>
           </div>
         </div>
       </div>
 
+      <!-- Model Manager Dashboard -->
+      <div id="model-manager-dashboard-page" class="page">
+        <div id="model-manager-dashboard-container"></div>
+      </div>
+            
       <!-- Model Tester (embedded) -->
       <div id="model-tester-page" class="page">
         <div class="model-tester">
@@ -201,11 +252,61 @@
           </div>
         </div>
       </div>
+      
+      <!-- Authentication Dashboard -->
+      <div id="auth-dashboard-page" class="page">
+        <div id="auth-dashboard-container"></div>
+      </div>
+      
+      <!-- Keystore Dashboard -->
+      <div id="keystore-page" class="page">
+        <h1>Keystore</h1>
+        <div class="card">
+          <div class="card-header">
+            <h2>Secure API Key Management</h2>
+          </div>
+          <div class="card-body">
+            <p>The Keystore module provides encrypted storage for API keys and other sensitive credentials. It integrates with platform-specific secure storage mechanisms and supports key rotation and lifecycle management.</p>
+            
+            <h3>Features:</h3>
+            <ul>
+              <li>Secure encryption of API keys</li>
+              <li>API key rotation and lifecycle management</li>
+              <li>Encrypted storage with AES-GCM</li>
+              <li>Access control through capability-based security</li>
+            </ul>
+            
+            <div class="alert alert-info">
+              <i class="fas fa-info-circle"></i> For detailed API key management, use the Authentication dashboard.
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
   </div>
 
-  <script>
+  <script type="module">
     const { ipcRenderer } = window.require('electron');
+    
+    // Import dashboard components
+    import Dashboard from '../dashboard/dashboard.js';
+    import AuthDashboard from '../dashboard/auth_dashboard.js';
+    
+    // Create event bus for dashboard communication
+    const eventBus = {
+      listeners: {},
+      on(event, callback) {
+        if (!this.listeners[event]) {
+          this.listeners[event] = [];
+        }
+        this.listeners[event].push(callback);
+      },
+      emit(event, data) {
+        if (this.listeners[event]) {
+          this.listeners[event].forEach(callback => callback(data));
+        }
+      }
+    };
     
     // DOM Elements - Main UI
     const serverStatus = document.getElementById('serverStatus');
@@ -275,6 +376,17 @@
     
     btnRunDiagnostics.addEventListener('click', () => {
       runSystemDiagnostics();
+    });
+    
+    const btnRunSecurityTests = document.getElementById('btnRunSecurityTests');
+    btnRunSecurityTests.addEventListener('click', () => {
+      runSecurityTests();
+    });
+    
+    const btnOpenSecurityTestDashboard = document.getElementById('btnOpenSecurityTestDashboard');
+    btnOpenSecurityTestDashboard.addEventListener('click', () => {
+      // Send IPC message to open the security test dashboard
+      ipcRenderer.send('open-security-test-dashboard');
     });
     
     // Server control
@@ -498,11 +610,270 @@
       }, 2000);
     }
     
+    function runSecurityTests() {
+      // Show loading state
+      showSystemAlert('info', 'Running security tests...');
+      addSystemLog('Starting security diagnostics');
+      
+      // Disable button during tests
+      const btnRunSecurityTests = document.getElementById('btnRunSecurityTests');
+      btnRunSecurityTests.disabled = true;
+      btnRunSecurityTests.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing...';
+      
+      // Create promises for all security module tests
+      const promises = [];
+      
+      // Run authentication test if available
+      if (typeof authManager !== 'undefined' && authManager.test) {
+        promises.push(
+          authManager.test().then(result => {
+            addSystemLog(`Auth test ${result.success ? 'passed' : 'failed'}`);
+            return { module: 'auth', result };
+          })
+        );
+      }
+      
+      // Run keystore test if available  
+      if (typeof keystore !== 'undefined' && keystore.test) {
+        promises.push(
+          keystore.test().then(result => {
+            addSystemLog(`Keystore test ${result.success ? 'passed' : 'failed'}`);
+            return { module: 'keystore', result };
+          })
+        );
+      }
+      
+      // Run integration test if available
+      if (typeof authKeystoreIntegration !== 'undefined' && authKeystoreIntegration.test) {
+        promises.push(
+          authKeystoreIntegration.test().then(result => {
+            addSystemLog(`Auth-keystore integration test ${result.success ? 'passed' : 'failed'}`);
+            return { module: 'auth-keystore', result };
+          })
+        );
+      }
+      
+      // Run test handler directly if available (for other modules)
+      if (typeof testHandler !== 'undefined') {
+        promises.push(
+          testHandler.testModule('secure-faiss', {}).then(result => {
+            addSystemLog(`Secure FAISS test ${result.success ? 'passed' : 'failed'}`);
+            return { module: 'secure-faiss', result };
+          }).catch(error => {
+            addSystemLog(`Secure FAISS test error: ${error.message}`);
+            return { module: 'secure-faiss', result: { success: false, error: error.message } };
+          })
+        );
+      }
+      
+      // Process all results
+      Promise.allSettled(promises).then(results => {
+        // Process results
+        const passed = results.filter(r => r.status === 'fulfilled' && r.value?.result?.success).length;
+        const total = results.length;
+        
+        // Show result
+        if (passed === total && total > 0) {
+          showSystemAlert('success', `All security tests passed (${passed}/${total})`);
+          document.getElementById('stats-security-status').textContent = 'Verified';
+        } else if (passed > 0) {
+          showSystemAlert('warning', `Some security tests failed (${passed}/${total} passed)`);
+          document.getElementById('stats-security-status').textContent = 'Partial';
+        } else {
+          showSystemAlert('error', 'All security tests failed');
+          document.getElementById('stats-security-status').textContent = 'Failed';
+        }
+        
+        // Enable button again
+        btnRunSecurityTests.disabled = false;
+        btnRunSecurityTests.innerHTML = '<i class="fas fa-shield-alt"></i> Security Tests';
+        
+        // Log completion
+        addSystemLog(`Security tests completed: ${passed}/${total} tests passed`);
+      });
+    }
+    
     // Initialize the UI
     window.addEventListener('DOMContentLoaded', () => {
       // Show welcome message
       showSystemAlert('info', 'Welcome to IPFS HuggingFace Bridge. Start the server to begin using AI models with IPFS.');
       addSystemLog('Application initialized');
+      
+      // Import required modules
+      import { authManager } from '../auth.js';
+      import { keystore } from '../keystore.js';
+      import { authKeystoreIntegration } from '../auth_keystore_integration.js';
+      import { testHandler } from '../test_handler.js';
+      
+      // Initialize Auth Dashboard with dependencies
+      const authDashboardContainer = document.getElementById('auth-dashboard-container');
+      if (authDashboardContainer) {
+        // First ensure auth manager is initialized
+        authManager.init().then(async () => {
+          try {
+            // Ensure keystore is initialized
+            await keystore.init();
+            
+            // Ensure integration is initialized
+            await authKeystoreIntegration.init();
+            
+            // Create auth dashboard with dependencies
+            const authDashboard = new AuthDashboard({
+              element: authDashboardContainer,
+              auth: authManager,
+              keystore: keystore,
+              integration: authKeystoreIntegration,
+              eventBus: eventBus
+            });
+            
+            // Initialize and render the auth dashboard
+            await authDashboard.init();
+            await authDashboard.render();
+            addSystemLog('Auth dashboard initialized successfully');
+            
+            // Listen for auth events
+            eventBus.on('auth-status-change', (status) => {
+              // Update system status based on auth changes
+              if (status.authenticated) {
+                showSystemAlert('success', 'Authentication successful');
+                document.getElementById('stats-security-status').textContent = 'Secured';
+              } else {
+                showSystemAlert('warning', 'Authentication status changed');
+                document.getElementById('stats-security-status').textContent = 'Warning';
+              }
+              
+              // Update security status indicators
+              document.getElementById('auth-module-status').innerHTML = 
+                `<span class="status-badge ${status.authenticated ? 'online' : 'warning'}">${status.authenticated ? 'Authenticated' : 'Limited'}</span>`;
+              
+              document.getElementById('last-auth-event').textContent = status.message || 'Status changed';
+              
+              addSystemLog(`Authentication status: ${status.message}`);
+            });
+            
+            // Update security module status indicators
+            const updateSecurityStatus = () => {
+              // Auth module status
+              document.getElementById('auth-module-status').innerHTML = 
+                `<span class="status-badge ${authManager.initialized ? 'online' : 'offline'}">${authManager.initialized ? 'Online' : 'Offline'}</span>`;
+              
+              // Keystore status
+              document.getElementById('keystore-module-status').innerHTML = 
+                `<span class="status-badge ${keystore.initialized ? 'online' : 'offline'}">${keystore.initialized ? 'Active' : 'Inactive'}</span>`;
+              
+              // Capability verification status
+              let capabilityStatus = 'Unknown';
+              let capabilityClass = 'warning';
+              
+              if (authManager.initialized) {
+                if (authManager.options && authManager.options.useMockImplementation) {
+                  capabilityStatus = 'Mock Mode';
+                  capabilityClass = 'warning';
+                } else {
+                  capabilityStatus = 'Verified';
+                  capabilityClass = 'online';
+                }
+              } else {
+                capabilityStatus = 'Unavailable';
+                capabilityClass = 'offline';
+              }
+              
+              document.getElementById('capability-status').innerHTML = 
+                `<span class="status-badge ${capabilityClass}">${capabilityStatus}</span>`;
+              
+              // Update summary stat
+              const securityStatus = document.getElementById('stats-security-status');
+              if (authManager.initialized && keystore.initialized) {
+                securityStatus.textContent = authManager.options && authManager.options.useMockImplementation ? 
+                  'Mock Mode' : 'Secured';
+              } else {
+                securityStatus.textContent = 'Inactive';
+              }
+            };
+            
+            // Call immediately and set up interval
+            updateSecurityStatus();
+            setInterval(updateSecurityStatus, 10000); // Update every 10 seconds
+            
+            // Connect test handler
+            if (testHandler) {
+              testHandler.on('test-result', (result) => {
+                if (result.module === 'auth' || result.module === 'keystore' || 
+                    result.module === 'auth-keystore' || result.module === 'secure-faiss') {
+                  addSystemLog(`Test result for ${result.module}: ${result.success ? 'Success' : 'Failed'}`);
+                  if (!result.success) {
+                    showSystemAlert('error', `Security test failed: ${result.error || 'Unknown error'}`);
+                  }
+                }
+              });
+            }
+          } catch (error) {
+            console.error('Failed to initialize auth dashboard:', error);
+            addSystemLog('Failed to initialize auth dashboard: ' + error.message);
+            showSystemAlert('error', 'Failed to initialize security components');
+          }
+        });
+      }
+      
+      // Initialize Model Manager Dashboard with auth integration
+      const modelManagerDashboardContainer = document.getElementById('model-manager-dashboard-container');
+      if (modelManagerDashboardContainer) {
+        // Wait for auth to be initialized first
+        authManager.init().then(async () => {
+          try {
+            // Import secure model manager
+            import('../secure_model_manager.js').then(async ({ secureModelManager }) => {
+              try {
+                // Initialize secure model manager
+                await secureModelManager.init();
+                
+                // Create model manager dashboard with auth integration
+                const modelManagerDashboard = new ModelManagerDashboard({
+                  element: modelManagerDashboardContainer,
+                  auth: authManager,
+                  modelManager: secureModelManager,
+                  eventBus: eventBus
+                });
+                
+                // Initialize and render the model manager dashboard
+                await modelManagerDashboard.init();
+                await modelManagerDashboard.render();
+                addSystemLog('Model manager dashboard initialized with security integration');
+                
+                // Connect test handler for model manager
+                if (testHandler) {
+                  testHandler.on('test-result', (result) => {
+                    if (result.module === 'secure-model-manager') {
+                      addSystemLog(`Test result for ${result.module}: ${result.success ? 'Success' : 'Failed'}`);
+                    }
+                  });
+                }
+              } catch (error) {
+                console.error('Failed to initialize model manager dashboard:', error);
+                addSystemLog('Failed to initialize model manager dashboard: ' + error.message);
+                showSystemAlert('warning', 'Model manager initialized with limited functionality');
+              }
+            }).catch(error => {
+              console.error('Failed to import secure model manager:', error);
+              addSystemLog('Failed to import secure model manager: ' + error.message);
+              
+              // Fall back to basic initialization without security
+              const modelManagerDashboard = new ModelManagerDashboard({
+                element: modelManagerDashboardContainer
+              });
+              
+              modelManagerDashboard.init().then(() => {
+                modelManagerDashboard.render();
+                addSystemLog('Model manager dashboard initialized without security integration');
+                showSystemAlert('warning', 'Model manager initialized without security features');
+              });
+            });
+          } catch (error) {
+            console.error('Failed to initialize model manager dashboard:', error);
+            addSystemLog('Failed to initialize model manager dashboard: ' + error.message);
+          }
+        });
+      }
     });
   </script>
 </body>

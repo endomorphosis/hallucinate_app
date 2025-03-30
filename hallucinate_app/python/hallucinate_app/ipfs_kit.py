@@ -8,7 +8,7 @@ import shutil
 import asyncio
 import time
 from pathlib import Path
-import ipfs_kit_py
+from hallucinate_app import ipfs_kit_py
 
 # Configure logging
 logging.basicConfig(

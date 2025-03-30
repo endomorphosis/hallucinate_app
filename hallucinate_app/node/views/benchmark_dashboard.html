@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IPFS Python Modules - Benchmark Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <img src="../assets/logo.png" alt="Logo" onerror="this.src='https://via.placeholder.com/30'">
+        <span>IPFS Python Modules - Benchmark Dashboard</span>
+      </div>
+      <div class="header-actions">
+        <span id="serverStatus" class="status offline">Server Offline</span>
+        <button id="btnStartServer"><i class="fas fa-play"></i> Start All Services</button>
+        <button id="btnStopServer" disabled><i class="fas fa-stop"></i> Stop All Services</button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content full-width">
+      <div id="dashboard-container"></div>
+    </main>
+  </div>
+
+  <script>
+    const { ipcRenderer } = window.require('electron');
+    
+    // Import the IPFSModulesTestDashboard class from the dashboard module
+    const importDashboard = async () => {
+      try {
+        // Import the dashboard class dynamically
+        const module = await import('../dashboard/ipfs_modules_test_dashboard.js');
+        return module.default;
+      } catch (error) {
+        console.error('Failed to import dashboard:', error);
+        document.getElementById('dashboard-container').innerHTML = `
+          <div class="error-message">
+            <h2>Error Loading Dashboard</h2>
+            <p>${error.message}</p>
+          </div>
+        `;
+        return null;
+      }
+    };
+    
+    // Initialize the dashboard
+    const initDashboard = async () => {
+      const IPFSModulesTestDashboard = await importDashboard();
+      if (!IPFSModulesTestDashboard) return;
+      
+      const dashboardContainer = document.getElementById('dashboard-container');
+      const dashboard = new IPFSModulesTestDashboard({
+        container: dashboardContainer
+      });
+      
+      // Handle service status updates
+      ipcRenderer.on('services-status', (event, status) => {
+        const serverStatusEl = document.getElementById('serverStatus');
+        const btnStartServer = document.getElementById('btnStartServer');
+        const btnStopServer = document.getElementById('btnStopServer');
+        
+        if (status.running) {
+          serverStatusEl.textContent = 'All Services Online';
+          serverStatusEl.className = 'status online';
+          btnStartServer.disabled = true;
+          btnStopServer.disabled = false;
+        } else {
+          serverStatusEl.textContent = status.error ? `Offline (${status.error})` : 'Services Offline';
+          serverStatusEl.className = 'status offline';
+          btnStartServer.disabled = false;
+          btnStopServer.disabled = true;
+        }
+      });
+      
+      // Setup event listeners for service control buttons
+      document.getElementById('btnStartServer').addEventListener('click', () => {
+        const serverStatusEl = document.getElementById('serverStatus');
+        serverStatusEl.textContent = 'Starting...';
+        serverStatusEl.className = 'status';
+        
+        ipcRenderer.send('start-all-services');
+      });
+      
+      document.getElementById('btnStopServer').addEventListener('click', () => {
+        const serverStatusEl = document.getElementById('serverStatus');
+        serverStatusEl.textContent = 'Stopping...';
+        serverStatusEl.className = 'status';
+        
+        ipcRenderer.send('stop-all-services');
+      });
+      
+      // Check server status on load
+      ipcRenderer.send('check-services-status');
+    };
+    
+    // Initialize when the DOM is ready
+    window.addEventListener('DOMContentLoaded', initDashboard);
+  </script>
+  
+  <style>
+    /* Additional styles specific to the benchmark dashboard */
+    .main-content.full-width {
+      padding: 0;
+      margin: 0;
+      width: 100%;
+    }
+    
+    #dashboard-container {
+      width: 100%;
+      height: calc(100vh - 60px);
+      overflow-y: auto;
+    }
+    
+    .error-message {
+      padding: 20px;
+      background-color: #fff3f3;
+      border-left: 4px solid #d93025;
+      margin: 20px;
+    }
+    
+    .error-message h2 {
+      margin-top: 0;
+      color: #d93025;
+    }
+  </style>
+</body>
+</html>

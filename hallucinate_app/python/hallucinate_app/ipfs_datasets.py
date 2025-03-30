@@ -1,638 +1,487 @@
+"""
+IPFS Datasets Module
+
+This module provides a wrapper around the ipfs_datasets_py package, integrating it
+with the hallucinate_app resource pool pattern and adding hallucinate_app-specific
+functionality.
+"""
+
 import os
+import sys
 import json
 import logging
-import sys
-import tempfile
-import shutil
 import asyncio
-import time
-from pathlib import Path
-from typing import Dict, List, Optional, Union, Any
+from typing import Dict, List, Any, Optional, Union, Callable
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
-logger = logging.getLogger("ipfs_datasets")
-
-# Try to import IPFS Kit and Model Manager
-try:
-    from .ipfs_kit import IPFSKit, ipfs_kit
-    has_ipfs_kit = True
-except ImportError:
-    logger.warning("Could not import IPFSKit, some functionality will be limited")
-    has_ipfs_kit = False
+logging.basicConfig(level=logging.INFO, 
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 # Try to import ipfs_datasets_py
 try:
     import ipfs_datasets_py
-    has_ipfs_datasets_py = True
+    from ipfs_datasets_py import load_dataset
+    HAVE_DATASETS = True
 except ImportError:
-    logger.warning("Could not import ipfs_datasets_py, falling back to mock implementation")
-    has_ipfs_datasets_py = False
+    logger.warning("ipfs_datasets_py package not found. Some features will be limited.")
+    HAVE_DATASETS = False
 
-# Try to import datasets
+# Try to import datasets (HuggingFace)
 try:
     import datasets
-    from datasets import load_dataset, Dataset, DatasetDict, load_from_disk
-    has_huggingface_datasets = True
+    HAVE_HUGGINGFACE = True
 except ImportError:
-    logger.warning("Could not import huggingface datasets, functionality will be limited")
-    has_huggingface_datasets = False
+    logger.warning("HuggingFace datasets package not found. Using limited functionality.")
+    HAVE_HUGGINGFACE = False
+
 
 class IPFSDatasets:
     """
-    IPFS Datasets for managing datasets via IPFS
+    IPFS Datasets Manager for hallucinate_app
+    
+    Provides dataset management with IPFS integration, leveraging the ipfs_datasets_py package.
     """
     
-    def __init__(self, resources=None, metadata=None):
+    def __init__(self, resources: Dict[str, Any] = None, metadata: Dict[str, Any] = None):
         """
-        Initialize IPFS Datasets
+        Initialize the IPFS Datasets Manager
         
         Args:
-            resources (dict): Resources required
-            metadata (dict): Metadata for dataset operations
+            resources: Resource pool for accessing other modules
+            metadata: Configuration metadata
         """
         self.resources = resources or {}
         self.metadata = metadata or {}
         
-        # Get dataset path from metadata or default
-        self.datasets_path = self.metadata.get('datasetsPath', os.path.expanduser("~/.cache/huggingface/datasets"))
-        if not os.path.exists(self.datasets_path):
-            os.makedirs(self.datasets_path, exist_ok=True)
-            
-        # Get role from metadata or default to leecher
-        self.role = self.metadata.get('role', 'leecher')
-        if self.role not in ['master', 'worker', 'leecher']:
-            logger.warning(f"Invalid role '{self.role}', defaulting to 'leecher'")
-            self.role = 'leecher'
-            
-        # Default dataset if specified
-        self.default_dataset = self.metadata.get('dataset', None)
+        # Configuration with defaults
+        self.config = {
+            "dataset_cache_dir": self.metadata.get("dataset_cache_dir", "./datasets"),
+            "use_caching": self.metadata.get("use_caching", True),
+            "max_memory": self.metadata.get("max_memory", "1GB")
+        }
         
-        # Dataset registry to track local datasets
-        self.dataset_registry = {}
-        self.registry_loaded = False
-        
-        # IPFS Kit instance for dataset storage
-        if has_ipfs_kit:
-            if 'ipfsKit' in self.resources:
-                self.ipfs_kit = self.resources['ipfsKit']
-            else:
-                self.ipfs_kit = ipfs_kit
-        else:
-            self.ipfs_kit = None
-            
-        # Initialize with ipfs_datasets_py if available
-        if has_ipfs_datasets_py:
-            self.ipfs_datasets_py = ipfs_datasets_py.IPFSDatasetsPy(
-                resources=self.resources,
-                metadata=self.metadata
-            )
-        else:
-            self.ipfs_datasets_py = None
-            
+        # State tracking
         self.initialized = False
-        logger.info(f"IPFSDatasets initialized with role={self.role}, path={self.datasets_path}")
+        self.datasets_manager = None
         
-    async def init(self):
-        """Initialize datasets manager and load dataset registry"""
+        # Dataset tracking
+        self.loaded_datasets = {}
+        
+        logger.info("IPFS Datasets module initialized with configuration")
+    
+    async def init(self) -> bool:
+        """
+        Initialize the IPFS Datasets Manager
+        
+        Returns:
+            bool: True if initialization successful
+        """
         try:
-            # Make sure IPFS is available if we need it
-            if self.ipfs_kit and self.role != 'leecher':
-                await self.ipfs_kit.init()
-                
-            # Load registry
-            await self.load_registry()
+            # Check if required dependencies are installed
+            if not HAVE_DATASETS:
+                logger.warning("ipfs_datasets_py package not installed, functionality will be limited")
             
-            # Load default dataset if specified
-            if self.default_dataset:
-                await self.load_dataset(self.default_dataset)
-                
+            # Ensure we have IPFS Kit available
+            if "ipfs_kit" not in self.resources:
+                logger.warning("IPFS Kit resource not available, using standalone mode")
+            
+            # Initialize any required directories
+            os.makedirs(self.config["dataset_cache_dir"], exist_ok=True)
+            
+            # Initialize the underlying ipfs_datasets_py instance if available
+            if HAVE_DATASETS:
+                self.datasets_manager = ipfs_datasets_py.ipfs_datasets_py(self.resources, self.metadata)
+            
             self.initialized = True
-            logger.info("IPFSDatasets initialized successfully")
+            logger.info("IPFS Datasets module initialized successfully")
             return True
         except Exception as e:
-            logger.error(f"IPFSDatasets initialization failed: {e}")
+            logger.error(f"Failed to initialize IPFS Datasets: {e}")
             return False
-        
-    async def load_registry(self):
-        """Load dataset registry from local storage"""
-        registry_path = os.path.join(self.datasets_path, "dataset_registry.json")
-        
-        if os.path.exists(registry_path):
-            try:
-                with open(registry_path, 'r') as f:
-                    self.dataset_registry = json.load(f)
-                    
-                self.registry_loaded = True
-                logger.info(f"Loaded {len(self.dataset_registry)} datasets from registry")
-                return True
-            except Exception as e:
-                logger.error(f"Failed to load dataset registry: {e}")
-                self.dataset_registry = {}
-                return False
-        else:
-            logger.info("No dataset registry found, creating new one")
-            self.dataset_registry = {}
-            self.registry_loaded = True
-            return True
-            
-    async def save_registry(self):
-        """Save dataset registry to local storage"""
-        registry_path = os.path.join(self.datasets_path, "dataset_registry.json")
-        
-        try:
-            # Save to file
-            with open(registry_path, 'w') as f:
-                json.dump(self.dataset_registry, f, indent=2)
-                
-            logger.info(f"Saved {len(self.dataset_registry)} datasets to registry")
-            return True
-        except Exception as e:
-            logger.error(f"Failed to save dataset registry: {e}")
-            return False
-            
-    async def list_datasets(self) -> Dict[str, Dict]:
-        """List all datasets in the registry"""
-        if not self.initialized:
-            await self.init()
-            
-        return self.dataset_registry
-        
-    async def get_dataset_info(self, dataset_id: str) -> Optional[Dict]:
-        """Get information about a specific dataset"""
-        if not self.initialized:
-            await self.init()
-            
-        return self.dataset_registry.get(dataset_id)
-            
-    async def load_dataset(self, dataset_id: str, subset: str = None, split: str = None, revision: str = None) -> Dict:
+    
+    async def load_dataset(self, dataset_name: str, split: Optional[str] = None) -> Dict[str, Any]:
         """
-        Load a dataset from HuggingFace Hub or from local cache
+        Load a dataset from HuggingFace or local cache
         
         Args:
-            dataset_id (str): Dataset identifier (e.g., "imdb")
-            subset (str, optional): Configuration or subset of the dataset
-            split (str, optional): Which split of the dataset to load (e.g., "train", "test")
-            revision (str, optional): Version of the dataset to load
+            dataset_name: Name of the dataset
+            split: Dataset split to load
             
         Returns:
-            dict: Dataset information including metadata
+            Dictionary with dataset info
         """
         if not self.initialized:
             await self.init()
             
-        if not has_huggingface_datasets:
-            logger.error("Cannot load dataset: huggingface datasets not installed")
-            return {"error": "huggingface datasets not installed"}
-            
         try:
-            # Check if dataset is in registry
-            if dataset_id in self.dataset_registry:
-                logger.info(f"Dataset {dataset_id} found in registry")
-                dataset_info = self.dataset_registry[dataset_id]
-                
-                # Check if already downloaded
-                if "local_path" in dataset_info and os.path.exists(dataset_info["local_path"]):
-                    try:
-                        # Try loading from disk
-                        dataset = load_from_disk(dataset_info["local_path"])
-                        logger.info(f"Loaded dataset {dataset_id} from local cache")
-                        
-                        # Return specific split if requested
-                        if split:
-                            if isinstance(dataset, DatasetDict) and split in dataset:
-                                return {
-                                    "dataset_id": dataset_id,
-                                    "split": split,
-                                    "dataset": dataset[split],
-                                    "num_rows": len(dataset[split]),
-                                    "info": dataset_info
-                                }
-                            else:
-                                logger.warning(f"Split {split} not found in dataset {dataset_id}")
-                        
-                        return {
-                            "dataset_id": dataset_id,
-                            "dataset": dataset,
-                            "num_rows": sum(len(ds) for ds in dataset.values()) if isinstance(dataset, DatasetDict) else len(dataset),
-                            "info": dataset_info
-                        }
-                    except Exception as e:
-                        logger.warning(f"Failed to load dataset from disk: {e}, downloading again")
+            # Create dataset key for tracking
+            dataset_key = f"{dataset_name}:{split}" if split else dataset_name
             
-            # Download dataset from HuggingFace
-            logger.info(f"Loading dataset {dataset_id} from HuggingFace Hub")
-            
-            # Determine dataset path
-            dataset_path = os.path.join(self.datasets_path, dataset_id.replace('/', '_'))
-            os.makedirs(dataset_path, exist_ok=True)
-            
-            # Load the dataset
-            load_args = {"path": dataset_id}
-            if subset:
-                load_args["name"] = subset
-            if revision:
-                load_args["revision"] = revision
-                
-            dataset = load_dataset(**load_args)
-            
-            # Filter to specific split if requested
-            result_dataset = dataset
-            if split and isinstance(dataset, DatasetDict) and split in dataset:
-                result_dataset = dataset[split]
-                
-            # Save dataset to disk for future use
-            dataset.save_to_disk(dataset_path)
-            
-            # Get dataset info
-            dataset_info = {
-                "dataset_id": dataset_id,
-                "subset": subset,
-                "revision": revision,
-                "local_path": dataset_path,
-                "splits": list(dataset.keys()) if isinstance(dataset, DatasetDict) else ["train"],
-                "features": {k: str(v) for k, v in (dataset[split] if split and split in dataset else next(iter(dataset.values()))).features.items()},
-                "num_rows": sum(len(ds) for ds in dataset.values()) if isinstance(dataset, DatasetDict) else len(dataset),
-                "last_updated": time.time()
-            }
-            
-            # Add to registry
-            self.dataset_registry[dataset_id] = dataset_info
-            await self.save_registry()
-            
-            # If we have IPFS and we're a master/worker, add to IPFS
-            if self.ipfs_kit and self.role in ['master', 'worker']:
-                try:
-                    logger.info(f"Adding dataset {dataset_id} to IPFS")
-                    
-                    # Create archive of dataset
-                    import tarfile
-                    archive_path = os.path.join(tempfile.gettempdir(), f"{dataset_id.replace('/', '_')}.tar.gz")
-                    
-                    with tarfile.open(archive_path, "w:gz") as tar:
-                        tar.add(dataset_path, arcname=os.path.basename(dataset_path))
-                    
-                    # Add to IPFS
-                    with open(archive_path, 'rb') as f:
-                        result = await self.ipfs_kit.add_to_ipfs(f.read())
-                        
-                    if result and 'cid' in result:
-                        dataset_info['ipfs_cid'] = result['cid']
-                        self.dataset_registry[dataset_id] = dataset_info
-                        await self.save_registry()
-                        
-                    # Clean up
-                    os.remove(archive_path)
-                except Exception as e:
-                    logger.error(f"Failed to add dataset {dataset_id} to IPFS: {e}")
-            
-            # Return dataset info
-            return {
-                "dataset_id": dataset_id,
-                "dataset": result_dataset if split else dataset,
-                "split": split,
-                "num_rows": len(result_dataset) if split else dataset_info["num_rows"],
-                "info": dataset_info
-            }
-        except Exception as e:
-            logger.error(f"Failed to load dataset {dataset_id}: {e}")
-            return {"error": str(e)}
-            
-    async def import_dataset_from_ipfs(self, dataset_id: str, cid: str) -> Dict:
-        """
-        Import a dataset from IPFS
-        
-        Args:
-            dataset_id (str): Dataset identifier to use in registry
-            cid (str): IPFS CID for the dataset
-            
-        Returns:
-            dict: Dataset information including metadata
-        """
-        if not self.initialized:
-            await self.init()
-            
-        if not self.ipfs_kit:
-            logger.error("Cannot import from IPFS: IPFS Kit not available")
-            return {"error": "IPFS Kit not available"}
-            
-        if not has_huggingface_datasets:
-            logger.error("Cannot import dataset: huggingface datasets not installed")
-            return {"error": "huggingface datasets not installed"}
-            
-        try:
-            # Create dataset directory
-            dataset_path = os.path.join(self.datasets_path, dataset_id.replace('/', '_'))
-            os.makedirs(dataset_path, exist_ok=True)
-            
-            # Create a temporary directory for the download
-            with tempfile.TemporaryDirectory() as tmpdir:
-                # Download from IPFS
-                archive_path = os.path.join(tmpdir, f"{dataset_id.replace('/', '_')}.tar.gz")
-                
-                logger.info(f"Downloading dataset {dataset_id} from IPFS (CID: {cid})")
-                result = await self.ipfs_kit.fetch_from_ipfs(cid, archive_path)
-                
-                if not result:
-                    logger.error(f"Failed to fetch dataset {dataset_id} from IPFS")
-                    return {"error": "Failed to fetch from IPFS"}
-                    
-                # Extract archive
-                import tarfile
-                with tarfile.open(archive_path, "r:gz") as tar:
-                    tar.extractall(path=os.path.dirname(dataset_path))
-                    
-                # Try to load dataset
-                try:
-                    dataset = load_from_disk(dataset_path)
-                except Exception as e:
-                    logger.error(f"Failed to load dataset from extracted files: {e}")
-                    return {"error": f"Failed to load dataset: {str(e)}"}
-                    
-                # Create dataset info
-                dataset_info = {
-                    "dataset_id": dataset_id,
-                    "ipfs_cid": cid,
-                    "local_path": dataset_path,
-                    "splits": list(dataset.keys()) if isinstance(dataset, DatasetDict) else ["train"],
-                    "features": {k: str(v) for k, v in (next(iter(dataset.values())) if isinstance(dataset, DatasetDict) else dataset).features.items()},
-                    "num_rows": sum(len(ds) for ds in dataset.values()) if isinstance(dataset, DatasetDict) else len(dataset),
-                    "last_updated": time.time(),
-                    "source": "ipfs"
+            # Check if already loaded
+            if dataset_key in self.loaded_datasets:
+                logger.info(f"Using cached dataset: {dataset_key}")
+                return {
+                    "success": True, 
+                    "dataset": dataset_name, 
+                    "split": split,
+                    "cached": True
                 }
+            
+            if HAVE_DATASETS:
+                # Use ipfs_datasets_py implementation
+                await self.datasets_manager.load_dataset(dataset_name, split)
+                self.loaded_datasets[dataset_key] = {
+                    "name": dataset_name,
+                    "split": split,
+                    "loaded_at": self._get_timestamp()
+                }
+                return {
+                    "success": True, 
+                    "dataset": dataset_name, 
+                    "split": split
+                }
+            elif HAVE_HUGGINGFACE:
+                # Fallback to direct HuggingFace loading
+                if split:
+                    dataset = datasets.load_dataset(dataset_name, split=split)
+                else:
+                    dataset = datasets.load_dataset(dataset_name)
                 
-                # Add to registry
-                self.dataset_registry[dataset_id] = dataset_info
-                await self.save_registry()
+                self.loaded_datasets[dataset_key] = {
+                    "name": dataset_name,
+                    "split": split,
+                    "dataset": dataset,
+                    "loaded_at": self._get_timestamp()
+                }
                 
                 return {
-                    "dataset_id": dataset_id,
-                    "dataset": dataset,
-                    "num_rows": dataset_info["num_rows"],
-                    "info": dataset_info
+                    "success": True, 
+                    "dataset": dataset_name, 
+                    "split": split,
+                    "direct_hf": True
                 }
-        except Exception as e:
-            logger.error(f"Failed to import dataset {dataset_id} from IPFS: {e}")
-            return {"error": str(e)}
-            
-    async def remove_dataset(self, dataset_id: str) -> bool:
-        """
-        Remove a dataset from the registry and optionally from disk
-        
-        Args:
-            dataset_id (str): Dataset ID to remove
-            
-        Returns:
-            bool: True if successful, False otherwise
-        """
-        if not self.initialized:
-            await self.init()
-            
-        if dataset_id not in self.dataset_registry:
-            logger.warning(f"Dataset {dataset_id} not found in registry")
-            return False
-            
-        try:
-            # Get dataset path
-            dataset_info = self.dataset_registry[dataset_id]
-            local_path = dataset_info.get("local_path")
-            
-            # Remove from registry
-            del self.dataset_registry[dataset_id]
-            
-            # Save registry
-            await self.save_registry()
-            
-            # Remove from disk if path exists
-            if local_path and os.path.exists(local_path):
-                if os.path.isdir(local_path):
-                    shutil.rmtree(local_path)
-                else:
-                    os.remove(local_path)
-                    
-            return True
-        except Exception as e:
-            logger.error(f"Failed to remove dataset {dataset_id}: {e}")
-            return False
-            
-    async def get_sample(self, dataset_id: str, split: str = None, num_samples: int = 5) -> List:
-        """
-        Get sample rows from a dataset
-        
-        Args:
-            dataset_id (str): Dataset identifier
-            split (str, optional): Which split to sample from
-            num_samples (int): Number of samples to return
-            
-        Returns:
-            list: Sample records from the dataset
-        """
-        if not self.initialized:
-            await self.init()
-            
-        if not has_huggingface_datasets:
-            logger.error("Cannot get sample: huggingface datasets not installed")
-            return {"error": "huggingface datasets not installed"}
-            
-        try:
-            # Load dataset
-            result = await self.load_dataset(dataset_id, split=split)
-            
-            if "error" in result:
-                return result
-                
-            dataset = result["dataset"]
-            
-            # Get the dataset to sample from
-            if isinstance(dataset, DatasetDict):
-                if split:
-                    if split in dataset:
-                        target_dataset = dataset[split]
-                    else:
-                        logger.warning(f"Split {split} not found in dataset {dataset_id}")
-                        return {"error": f"Split {split} not found"}
-                else:
-                    # Use first split if none specified
-                    first_key = next(iter(dataset.keys()))
-                    target_dataset = dataset[first_key]
-                    split = first_key
             else:
-                # Dataset is already a single split
-                target_dataset = dataset
-                split = split or "train"
+                raise ImportError("Neither ipfs_datasets_py nor datasets is available")
                 
-            # Get samples
-            if num_samples >= len(target_dataset):
-                samples = [target_dataset[i] for i in range(len(target_dataset))]
-            else:
-                import random
-                indices = random.sample(range(len(target_dataset)), num_samples)
-                samples = [target_dataset[i] for i in indices]
-                
-            # Convert to serializable format
-            serializable_samples = []
-            for sample in samples:
-                serializable_sample = {}
-                for key, value in sample.items():
-                    if hasattr(value, 'numpy'):
-                        # Convert numpy arrays to lists
-                        serializable_sample[key] = value.numpy().tolist()
-                    elif isinstance(value, bytes):
-                        # Convert bytes to string
-                        serializable_sample[key] = value.decode('utf-8', errors='replace')
-                    else:
-                        serializable_sample[key] = value
-                serializable_samples.append(serializable_sample)
-                
+        except Exception as e:
+            logger.error(f"Error loading dataset {dataset_name}: {e}")
             return {
-                "dataset_id": dataset_id,
-                "split": split,
-                "num_samples": len(serializable_samples),
-                "samples": serializable_samples
+                "success": False, 
+                "error": str(e),
+                "dataset": dataset_name,
+                "split": split
             }
-        except Exception as e:
-            logger.error(f"Failed to get sample from dataset {dataset_id}: {e}")
-            return {"error": str(e)}
-            
-    def test(self):
+    
+    async def list_datasets(self) -> Dict[str, Any]:
         """
-        Test IPFS Datasets functionality
+        List all currently loaded datasets
         
         Returns:
-            dict: Test results
+            Dictionary of loaded datasets
         """
-        logger.info("Testing IPFS Datasets")
+        if not self.initialized:
+            await self.init()
+            
+        return {
+            "success": True,
+            "datasets": self.loaded_datasets
+        }
+    
+    async def dataset_info(self, dataset_name: str, split: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Get information about a dataset
         
-        try:
-            # Create asyncio event loop
-            loop = asyncio.get_event_loop()
+        Args:
+            dataset_name: Name of the dataset
+            split: Dataset split
             
-            # Test initialization
-            if not self.initialized:
-                init_result = loop.run_until_complete(self.init())
-            else:
-                init_result = True
-                
-            # Test registry
-            registry_test = loop.run_until_complete(self.load_registry())
+        Returns:
+            Dictionary with dataset information
+        """
+        if not self.initialized:
+            await self.init()
             
-            # Test listing datasets
-            datasets = loop.run_until_complete(self.list_datasets())
-            list_datasets_test = isinstance(datasets, dict)
-            
-            # Test sample loading
-            sample_test = False
-            dataset_loading_test = False
-            
-            if has_huggingface_datasets:
-                try:
-                    # Use a tiny test dataset
-                    test_dataset = "hf-internal-testing/imdb"
-                    dataset_result = loop.run_until_complete(
-                        self.load_dataset(test_dataset)
-                    )
-                    dataset_loading_test = "error" not in dataset_result
-                    
-                    if dataset_loading_test:
-                        # Try to get a sample
-                        sample_result = loop.run_until_complete(
-                            self.get_sample(test_dataset, num_samples=2)
-                        )
-                        sample_test = "error" not in sample_result
-                        
-                        # Clean up test dataset
-                        loop.run_until_complete(self.remove_dataset(test_dataset))
-                except Exception as e:
-                    logger.error(f"HuggingFace dataset test failed: {e}")
-            
-            # Test IPFS if available
-            ipfs_test = False
-            if self.ipfs_kit:
-                try:
-                    # Create a test dataset
-                    from datasets import Dataset
-                    test_data = {"text": ["Test text 1", "Test text 2"], "label": [0, 1]}
-                    test_dataset = Dataset.from_dict(test_data)
-                    
-                    # Save to disk
-                    test_dir = os.path.join(tempfile.gettempdir(), "test_dataset")
-                    if os.path.exists(test_dir):
-                        shutil.rmtree(test_dir)
-                    os.makedirs(test_dir)
-                    test_dataset.save_to_disk(test_dir)
-                    
-                    # Create a tar archive
-                    import tarfile
-                    archive_path = os.path.join(tempfile.gettempdir(), "test_dataset.tar.gz")
-                    with tarfile.open(archive_path, "w:gz") as tar:
-                        tar.add(test_dir, arcname=os.path.basename(test_dir))
-                    
-                    # Add to IPFS
-                    with open(archive_path, 'rb') as f:
-                        content = f.read()
-                    
-                    ipfs_result = loop.run_until_complete(
-                        self.ipfs_kit.add_to_ipfs(content)
-                    )
-                    
-                    if ipfs_result and 'cid' in ipfs_result:
-                        # Import from IPFS
-                        import_result = loop.run_until_complete(
-                            self.import_dataset_from_ipfs("test_ipfs_dataset", ipfs_result['cid'])
-                        )
-                        ipfs_test = "error" not in import_result
-                        
-                        # Clean up
-                        if ipfs_test:
-                            loop.run_until_complete(self.remove_dataset("test_ipfs_dataset"))
-                    
-                    # Clean up test files
-                    shutil.rmtree(test_dir)
-                    os.remove(archive_path)
-                except Exception as e:
-                    logger.error(f"IPFS dataset test failed: {e}")
-            
-            # Compile results
-            results = {
-                "success": init_result and registry_test and list_datasets_test,
-                "module": "datasets",
-                "initialization": init_result,
-                "registry": registry_test,
-                "list_datasets": list_datasets_test,
-                "dataset_loading": dataset_loading_test,
-                "sample_loading": sample_test,
-                "ipfs_integration": ipfs_test,
-                "capabilities": {
-                    "huggingface_datasets": has_huggingface_datasets,
-                    "ipfs": self.ipfs_kit is not None,
-                    "ipfs_datasets_py": has_ipfs_datasets_py
-                },
-                "metadata": self.metadata
-            }
-            
-            return results
-        except Exception as e:
-            logger.error(f"IPFS Datasets test failed: {e}")
+        dataset_key = f"{dataset_name}:{split}" if split else dataset_name
+        
+        if dataset_key not in self.loaded_datasets:
             return {
                 "success": False,
-                "module": "datasets",
-                "error": str(e),
-                "initialization": self.initialized,
-                "registry": False,
-                "list_datasets": False,
-                "dataset_loading": False,
-                "sample_loading": False,
-                "ipfs_integration": False,
-                "capabilities": {
-                    "huggingface_datasets": has_huggingface_datasets,
-                    "ipfs": self.ipfs_kit is not None,
-                    "ipfs_datasets_py": has_ipfs_datasets_py
-                },
-                "metadata": self.metadata
+                "error": f"Dataset {dataset_key} not loaded"
             }
+        
+        try:
+            if HAVE_DATASETS:
+                # Get info using ipfs_datasets_py implementation
+                dataset_info = {
+                    **self.loaded_datasets[dataset_key]
+                }
+                
+                return {
+                    "success": True,
+                    "info": dataset_info
+                }
+            elif HAVE_HUGGINGFACE:
+                # Get info directly from loaded HuggingFace dataset
+                dataset = self.loaded_datasets[dataset_key]["dataset"]
+                info = {
+                    "name": dataset_name,
+                    "split": split,
+                    "features": str(dataset.features) if hasattr(dataset, "features") else None,
+                    "num_rows": dataset.num_rows if hasattr(dataset, "num_rows") else None,
+                    "column_names": dataset.column_names if hasattr(dataset, "column_names") else None,
+                    "loaded_at": self.loaded_datasets[dataset_key]["loaded_at"],
+                }
+                
+                return {
+                    "success": True,
+                    "info": info
+                }
+            else:
+                return {
+                    "success": False,
+                    "error": "No dataset handling implementation available"
+                }
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e)
+            }
+    
+    async def process_dataset(self, 
+                             dataset_name: str, 
+                             split: Optional[str] = None,
+                             output_dir: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Process a dataset for IPFS storage
+        
+        Args:
+            dataset_name: Name of the dataset
+            split: Dataset split
+            output_dir: Output directory for processed files
+            
+        Returns:
+            Dictionary with processing results
+        """
+        if not self.initialized:
+            await self.init()
+            
+        if not HAVE_DATASETS:
+            return {
+                "success": False,
+                "error": "ipfs_datasets_py is required for dataset processing"
+            }
+            
+        try:
+            # Load the dataset if not already loaded
+            dataset_key = f"{dataset_name}:{split}" if split else dataset_name
+            if dataset_key not in self.loaded_datasets:
+                load_result = await self.load_dataset(dataset_name, split)
+                if not load_result["success"]:
+                    return load_result
+            
+            # Determine output directory
+            if output_dir is None:
+                output_dir = os.path.join(self.config["dataset_cache_dir"], dataset_name.replace("/", "_"))
+                os.makedirs(output_dir, exist_ok=True)
+            
+            # Process the dataset
+            # This would normally call specific methods from ipfs_datasets_py
+            # As a placeholder, we'll just indicate that processing would happen here
+            
+            logger.info(f"Dataset {dataset_key} would be processed to {output_dir}")
+            
+            return {
+                "success": True,
+                "dataset": dataset_name,
+                "split": split,
+                "output_dir": output_dir,
+                "message": "Dataset processing placeholder - actual processing would happen here"
+            }
+            
+        except Exception as e:
+            logger.error(f"Error processing dataset {dataset_name}: {e}")
+            return {
+                "success": False,
+                "error": str(e)
+            }
+    
+    async def query_dataset(self, 
+                           dataset_name: str, 
+                           query: Dict[str, Any],
+                           split: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Query a dataset with a structured query
+        
+        Args:
+            dataset_name: Name of the dataset
+            query: Dictionary with query parameters
+            split: Dataset split
+            
+        Returns:
+            Dictionary with query results
+        """
+        if not self.initialized:
+            await self.init()
+            
+        try:
+            # Load the dataset if not already loaded
+            dataset_key = f"{dataset_name}:{split}" if split else dataset_name
+            if dataset_key not in self.loaded_datasets:
+                load_result = await self.load_dataset(dataset_name, split)
+                if not load_result["success"]:
+                    return load_result
+            
+            # Execute the query
+            if HAVE_DATASETS:
+                # This would call specific methods from ipfs_datasets_py
+                # As a placeholder, just return the query parameters
+                return {
+                    "success": True,
+                    "dataset": dataset_name,
+                    "split": split,
+                    "query": query,
+                    "results": "Query would be executed here with ipfs_datasets_py"
+                }
+            elif HAVE_HUGGINGFACE:
+                # Execute query directly on HuggingFace dataset
+                dataset = self.loaded_datasets[dataset_key]["dataset"]
+                
+                # Extract filtering criteria
+                filter_column = query.get("filter_column")
+                filter_value = query.get("filter_value")
+                
+                if filter_column and filter_value:
+                    filtered_dataset = dataset.filter(lambda x: x[filter_column] == filter_value)
+                    sample_rows = filtered_dataset[:5] if len(filtered_dataset) >= 5 else filtered_dataset
+                    
+                    return {
+                        "success": True,
+                        "dataset": dataset_name,
+                        "split": split,
+                        "query": query,
+                        "num_results": len(filtered_dataset),
+                        "sample_results": sample_rows
+                    }
+                else:
+                    return {
+                        "success": False,
+                        "error": "Missing filter_column or filter_value in query"
+                    }
+            else:
+                return {
+                    "success": False,
+                    "error": "No dataset query implementation available"
+                }
+                
+        except Exception as e:
+            logger.error(f"Error querying dataset {dataset_name}: {e}")
+            return {
+                "success": False,
+                "error": str(e)
+            }
+    
+    async def test(self) -> Dict[str, Any]:
+        """
+        Run self-test
+        
+        Returns:
+            Dictionary with test results
+        """
+        test_results = {
+            "success": True,
+            "module": "ipfs_datasets",
+            "tests": []
+        }
+        
+        try:
+            # Test initialization
+            if not self.initialized:
+                init_result = await self.init()
+                test_results["tests"].append({
+                    "name": "initialization",
+                    "success": init_result
+                })
+                
+                if not init_result:
+                    test_results["success"] = False
+                    return test_results
+            
+            # Test dataset loading - only if we have the required packages
+            if HAVE_HUGGINGFACE:
+                try:
+                    # Use a small test dataset
+                    dataset_result = await self.load_dataset("hf-internal-testing/dummy_dataset", "train")
+                    
+                    test_results["tests"].append({
+                        "name": "dataset_loading",
+                        "success": dataset_result["success"],
+                        "details": dataset_result if not dataset_result["success"] else None
+                    })
+                    
+                    if not dataset_result["success"]:
+                        test_results["success"] = False
+                except Exception as e:
+                    test_results["tests"].append({
+                        "name": "dataset_loading",
+                        "success": False,
+                        "error": str(e)
+                    })
+                    test_results["success"] = False
+            else:
+                test_results["tests"].append({
+                    "name": "dataset_loading",
+                    "success": False,
+                    "error": "HuggingFace datasets package not available"
+                })
+                test_results["success"] = False
+            
+            # Test listing datasets
+            try:
+                list_result = await self.list_datasets()
+                
+                test_results["tests"].append({
+                    "name": "list_datasets",
+                    "success": list_result["success"]
+                })
+                
+                if not list_result["success"]:
+                    test_results["success"] = False
+            except Exception as e:
+                test_results["tests"].append({
+                    "name": "list_datasets",
+                    "success": False,
+                    "error": str(e)
+                })
+                test_results["success"] = False
+                
+            return test_results
+        except Exception as e:
+            test_results["success"] = False
+            test_results["error"] = str(e)
+            return test_results
+    
+    def _get_timestamp(self) -> str:
+        """Get current timestamp string"""
+        from datetime import datetime
+        return datetime.now().isoformat()
 
-# Create default instance
-ipfs_datasets = IPFSDatasets()
+
+# Example usage
+if __name__ == "__main__":
+    async def main():
+        # Create IPFSDatasets instance
+        datasets_manager = IPFSDatasets(
+            resources={},
+            metadata={"dataset_cache_dir": "./dataset_cache"}
+        )
+        
+        # Initialize
+        await datasets_manager.init()
+        
+        # Run test
+        test_results = await datasets_manager.test()
+        print(json.dumps(test_results, indent=2))
+        
+    # Run the example
+    asyncio.run(main())

@@ -1,234 +1,203 @@
-import { ipfsEmbeddingsJs } from 'ipfs_embeddings_js';
+/**
+ * IPFS Embeddings module - Integration Layer
+ * 
+ * This module serves as an integration layer for the ipfs_embeddings_js and ipfs_embeddings_py
+ * external modules. It does not implement any core functionality itself but provides
+ * standardized testing and access to the external module implementations. All principal
+ * work should be completed within the imported modules.
+ * 
+ * The module's responsibility is to:
+ * 1. Import and provide access to external modules
+ * 2. Run comprehensive tests to ensure external modules function correctly
+ * 3. Integrate the modules with the resource pool
+ * 4. Provide a unified interface for other components to use the embeddings capability
+ */
+
+// Import required dependencies
 import path from 'path';
 import os from 'os';
 
+// Check for external module availability
+let ipfsEmbeddingsJsModule = null;
+try {
+  ipfsEmbeddingsJsModule = require('ipfs_embeddings_js');
+  console.log('Successfully imported ipfs_embeddings_js module');
+} catch (error) {
+  console.warn('ipfs_embeddings_js module not found, some functionality will be limited');
+}
+
 /**
- * Enhanced IPFS Embeddings module
- * Extends the base ipfs_embeddings_js functionality
+ * IPFS Embeddings Integration class
+ * This class does not implement functionality, but delegates to external modules after testing
  */
 class IPFSEmbeddings {
   constructor(resources = {}, metadata = {}) {
-    // Base instance (will be added when package is installed)
-    this.ipfsEmbeddingsJs = null;
-    
-    try {
-      // If package is installed, use it
-      const ipfsEmbeddingsJsModule = require('ipfs_embeddings_js');
-      this.ipfsEmbeddingsJs = new ipfsEmbeddingsJsModule.ipfsEmbeddingsJs(resources, metadata);
-    } catch (error) {
-      console.warn('ipfs_embeddings_js package not found, using mock implementation');
-      // Mock implementation when package is not available
-      this.mockImplementation = true;
-    }
-    
-    // Store resources and metadata
+    // Store resources and metadata for passing to external modules
     this.resources = resources;
     this.metadata = metadata;
     
-    // Get cache directory from metadata or default
+    // Track module availability
+    this.modules = {
+      ipfs_embeddings_js: null,
+      ipfs_embeddings_py: null
+    };
+    
+    // Initialize integration with ipfs_embeddings_js
+    if (ipfsEmbeddingsJsModule) {
+      try {
+        this.modules.ipfs_embeddings_js = new ipfsEmbeddingsJsModule.ipfsEmbeddingsJs(resources, metadata);
+        console.log('Initialized ipfs_embeddings_js module instance');
+      } catch (error) {
+        console.error('Failed to initialize ipfs_embeddings_js:', error.message);
+      }
+    }
+    
+    // Get cache directory from metadata or default (only for logging)
     this.cacheDir = metadata.cacheDir || path.join(os.homedir(), '.cache', 'embeddings');
     
-    console.log(`IPFS Embeddings initialized with cache=${this.cacheDir}`);
+    // Log initialization
+    console.log(`IPFS Embeddings integration initialized with ${Object.values(this.modules).filter(Boolean).length} modules`);
+    console.log(`Cache directory: ${this.cacheDir}`);
   }
   
   /**
-   * Initialize the embeddings module
+   * Initialize all external modules
    */
   async init() {
-    try {
-      // Initialize base implementation if available
-      if (this.ipfsEmbeddingsJs && this.ipfsEmbeddingsJs.init) {
-        await this.ipfsEmbeddingsJs.init();
-        return true;
-      } else if (this.mockImplementation) {
-        // Mock initialization
-        console.log('Using mock implementation of IPFS Embeddings');
-        return true;
+    const results = {
+      ipfs_embeddings_js: false,
+      ipfs_embeddings_py: false
+    };
+    
+    // Initialize ipfs_embeddings_js
+    if (this.modules.ipfs_embeddings_js && typeof this.modules.ipfs_embeddings_js.init === 'function') {
+      try {
+        const jsResult = await this.modules.ipfs_embeddings_js.init();
+        results.ipfs_embeddings_js = jsResult === true;
+        console.log(`ipfs_embeddings_js initialization ${results.ipfs_embeddings_js ? 'successful' : 'failed'}`);
+      } catch (error) {
+        console.error('ipfs_embeddings_js initialization error:', error.message);
       }
-      
-      console.error('IPFS Embeddings initialization failed: No implementation available');
-      return false;
-    } catch (error) {
-      console.error('IPFS Embeddings initialization failed:', error);
-      return false;
     }
+    
+    // We're only handling JS initialization in this file
+    // Python initialization happens through the Python bridge
+    
+    // Return success if at least one module initialized successfully
+    return Object.values(results).some(result => result === true);
   }
   
   /**
-   * Generate embeddings for a text
-   * @param {string} text - Text to embed
-   * @param {object} options - Options for embedding
+   * Method forwarding pattern - delegates to external modules
+   * All actual functionality should be implemented in the external modules
    */
+  async forwardMethod(methodName, ...args) {
+    // Try JS module first
+    if (this.modules.ipfs_embeddings_js && typeof this.modules.ipfs_embeddings_js[methodName] === 'function') {
+      try {
+        return await this.modules.ipfs_embeddings_js[methodName](...args);
+      } catch (jsError) {
+        console.error(`Error in ipfs_embeddings_js.${methodName}:`, jsError.message);
+        // Continue to try Python module
+      }
+    }
+    
+    // If we get here, either JS module doesn't exist or failed
+    // Python bridge would handle the Python module communication
+    
+    // If both modules failed, return error
+    return {
+      error: `No working implementation found for method: ${methodName}`
+    };
+  }
+  
+  // Forward standard embedding operations to external modules
+  
   async generateEmbedding(text, options = {}) {
-    try {
-      // Use base implementation if available
-      if (this.ipfsEmbeddingsJs && this.ipfsEmbeddingsJs.generateEmbedding) {
-        return await this.ipfsEmbeddingsJs.generateEmbedding(text, options);
-      } else if (this.mockImplementation) {
-        // Mock embedding generation
-        console.log(`Generating mock embedding for: ${text.substring(0, 30)}...`);
-        
-        // Return a mock embedding (random vector)
-        const dimensions = options.dimensions || 384;
-        const mockEmbedding = Array(dimensions).fill(0).map(() => Math.random() - 0.5);
-        
-        return {
-          text: text,
-          embedding: mockEmbedding,
-          model: options.model || 'mock-embedding-model',
-          dimensions: dimensions,
-          mock: true
-        };
-      }
-      
-      throw new Error('No implementation available for generating embeddings');
-    } catch (error) {
-      console.error(`Failed to generate embedding: ${error.message}`);
-      return { error: error.message };
-    }
+    return this.forwardMethod('generateEmbedding', text, options);
   }
   
-  /**
-   * Compare similarity between two embeddings
-   * @param {Array} embedding1 - First embedding
-   * @param {Array} embedding2 - Second embedding
-   * @param {string} metric - Similarity metric (cosine, dot, euclidean)
-   */
   async compareSimilarity(embedding1, embedding2, metric = 'cosine') {
-    try {
-      // Use base implementation if available
-      if (this.ipfsEmbeddingsJs && this.ipfsEmbeddingsJs.compareSimilarity) {
-        return await this.ipfsEmbeddingsJs.compareSimilarity(embedding1, embedding2, metric);
-      } else if (this.mockImplementation) {
-        // Mock similarity calculation
-        console.log(`Calculating ${metric} similarity between embeddings`);
-        
-        // Return a mock similarity score
-        return {
-          similarity: Math.random(),
-          metric: metric,
-          mock: true
-        };
-      }
-      
-      throw new Error('No implementation available for comparing embeddings');
-    } catch (error) {
-      console.error(`Failed to compare embeddings: ${error.message}`);
-      return { error: error.message };
-    }
+    return this.forwardMethod('compareSimilarity', embedding1, embedding2, metric);
   }
   
-  /**
-   * Search for similar embeddings
-   * @param {Array} query - Query embedding
-   * @param {Array} embeddings - Collection of embeddings to search
-   * @param {object} options - Search options
-   */
   async searchSimilar(query, embeddings, options = {}) {
-    try {
-      // Use base implementation if available
-      if (this.ipfsEmbeddingsJs && this.ipfsEmbeddingsJs.searchSimilar) {
-        return await this.ipfsEmbeddingsJs.searchSimilar(query, embeddings, options);
-      } else if (this.mockImplementation) {
-        // Mock similarity search
-        console.log(`Searching for similar embeddings among ${embeddings.length} vectors`);
-        
-        // Return mock search results
-        const numResults = options.k || 5;
-        const results = [];
-        
-        for (let i = 0; i < Math.min(numResults, embeddings.length); i++) {
-          results.push({
-            index: i,
-            similarity: 1 - (i * 0.1),  // Decreasing similarity
-            embedding: embeddings[i]
-          });
-        }
-        
-        return {
-          query: query,
-          results: results,
-          metric: options.metric || 'cosine',
-          mock: true
-        };
-      }
-      
-      throw new Error('No implementation available for searching embeddings');
-    } catch (error) {
-      console.error(`Failed to search embeddings: ${error.message}`);
-      return { error: error.message };
-    }
+    return this.forwardMethod('searchSimilar', query, embeddings, options);
+  }
+  
+  async saveEmbeddingsToIpfs(embeddings, options = {}) {
+    return this.forwardMethod('saveEmbeddingsToIpfs', embeddings, options);
+  }
+  
+  async loadEmbeddingsFromIpfs(cid, options = {}) {
+    return this.forwardMethod('loadEmbeddingsFromIpfs', cid, options);
   }
   
   /**
-   * Run module tests
+   * Run tests on all external modules
    */
   async test() {
-    console.log('Testing IPFS Embeddings module');
+    console.log('Testing IPFS Embeddings integration modules');
     
     try {
-      // Test initialization
+      // Test results storage
       const testResults = {
-        success: true,
-        module: 'embeddings',
-        initialization: false,
-        embedding_generation: false,
-        similarity_comparison: false,
-        search: false,
+        success: false,
+        module: 'embeddings_integration',
+        modules_tested: [],
+        module_results: {},
         capabilities: {
-          has_package: this.ipfsEmbeddingsJs !== null,
-          using_mock: this.mockImplementation || false
+          ipfs_embeddings_js: this.modules.ipfs_embeddings_js !== null,
+          ipfs_embeddings_py: false,  // Will be determined via Python bridge
+          ipfs_available: this.resources.ipfsKit !== undefined
         },
         metadata: this.metadata
       };
       
-      // Test initialization
-      const initResult = await this.init();
-      testResults.initialization = initResult;
-      
-      // Test embedding generation
-      const embeddingResult = await this.generateEmbedding('This is a test sentence for embedding generation.');
-      testResults.embedding_generation = !embeddingResult.error;
-      
-      if (testResults.embedding_generation) {
-        // Test similarity comparison
-        const embedding1 = embeddingResult.embedding;
-        const embedding2 = (await this.generateEmbedding('This is another test sentence.')).embedding;
-        
-        const similarityResult = await this.compareSimilarity(embedding1, embedding2);
-        testResults.similarity_comparison = !similarityResult.error;
-        
-        // Test embedding search
-        const embeddings = [
-          embedding1,
-          embedding2,
-          (await this.generateEmbedding('A completely different topic.')).embedding,
-          (await this.generateEmbedding('Something else entirely.')).embedding,
-          (await this.generateEmbedding('This is a test for embeddings.')).embedding
-        ];
-        
-        const searchResult = await this.searchSimilar(embedding1, embeddings);
-        testResults.search = !searchResult.error;
+      // Test ipfs_embeddings_js
+      if (this.modules.ipfs_embeddings_js) {
+        try {
+          // Only test if module has test method
+          if (typeof this.modules.ipfs_embeddings_js.test === 'function') {
+            const jsTestResult = await this.modules.ipfs_embeddings_js.test();
+            testResults.module_results.ipfs_embeddings_js = jsTestResult;
+            testResults.modules_tested.push('ipfs_embeddings_js');
+            console.log('ipfs_embeddings_js test complete:', jsTestResult.success ? 'PASSED' : 'FAILED');
+          } else {
+            console.warn('ipfs_embeddings_js module does not implement test() method');
+            testResults.module_results.ipfs_embeddings_js = { 
+              success: false,
+              error: 'No test method available'
+            };
+          }
+        } catch (error) {
+          console.error('ipfs_embeddings_js test error:', error.message);
+          testResults.module_results.ipfs_embeddings_js = {
+            success: false,
+            error: error.message
+          };
+        }
       }
       
-      // Update overall success
-      testResults.success = testResults.initialization && 
-                         testResults.embedding_generation;
+      // Python module tests will happen via Python bridge and aren't included here
+      // This integration module should not implement any tests itself
+      
+      // Update overall success - successful if at least one module passes tests
+      testResults.success = testResults.modules_tested.length > 0 && 
+                         testResults.modules_tested.some(
+                           module => testResults.module_results[module]?.success === true
+                         );
       
       return testResults;
     } catch (error) {
-      console.error('IPFS Embeddings test failed:', error);
+      console.error('IPFS Embeddings integration test failed:', error);
       return {
         success: false,
-        module: 'embeddings',
+        module: 'embeddings_integration',
         error: error.message,
-        initialization: false,
-        embedding_generation: false,
-        similarity_comparison: false,
-        search: false,
         capabilities: {
-          has_package: this.ipfsEmbeddingsJs !== null,
-          using_mock: this.mockImplementation || false
+          ipfs_embeddings_js: this.modules.ipfs_embeddings_js !== null,
+          ipfs_embeddings_py: false
         },
         metadata: this.metadata
       };
@@ -239,5 +208,6 @@ class IPFSEmbeddings {
 // Create default instance
 const ipfsEmbeddings = new IPFSEmbeddings();
 
+// Export classes and instances
 export { IPFSEmbeddings, ipfsEmbeddings };
 export default ipfsEmbeddings;

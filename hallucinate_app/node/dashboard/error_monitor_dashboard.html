@@ -1,0 +1,1813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Error Monitoring Dashboard</title>
+  <style>
+    :root {
+      --primary-color: #0d6efd;
+      --success-color: #198754;
+      --warning-color: #ffc107;
+      --danger-color: #dc3545;
+      --info-color: #0dcaf0;
+      --secondary-color: #6c757d;
+      --background-color: #f8f9fa;
+      --card-bg-color: #fff;
+      --text-color: #212529;
+      --border-color: #dee2e6;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--background-color);
+      color: var(--text-color);
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    h1, h2, h3, h4 {
+      margin-top: 0;
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background-color 0.2s;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .btn-secondary {
+      background-color: var(--secondary-color);
+      color: white;
+    }
+    
+    .btn-danger {
+      background-color: var(--danger-color);
+      color: white;
+    }
+    
+    .btn-success {
+      background-color: var(--success-color);
+      color: white;
+    }
+    
+    .btn-warning {
+      background-color: var(--warning-color);
+      color: #212529;
+    }
+    
+    .btn-info {
+      background-color: var(--info-color);
+      color: #212529;
+    }
+    
+    .btn:hover {
+      filter: brightness(0.9);
+    }
+    
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .card {
+      background-color: var(--card-bg-color);
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    
+    .card-header {
+      padding: 15px;
+      border-bottom: 1px solid var(--border-color);
+      background-color: rgba(0, 0, 0, 0.03);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .card-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 500;
+    }
+    
+    .card-body {
+      padding: 15px;
+    }
+    
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 20px;
+    }
+    
+    .status-overview {
+      grid-column: 1 / 3;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 15px;
+    }
+    
+    .status-card {
+      padding: 15px;
+      border-radius: 6px;
+      background-color: var(--card-bg-color);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+    }
+    
+    .status-card:hover {
+      transform: translateY(-3px);
+    }
+    
+    .status-value {
+      font-size: 32px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .status-label {
+      font-size: 14px;
+      color: var(--secondary-color);
+    }
+    
+    .status-trend {
+      font-size: 14px;
+      margin-top: 5px;
+    }
+    
+    .trend-up {
+      color: var(--danger-color);
+    }
+    
+    .trend-down {
+      color: var(--success-color);
+    }
+    
+    .tabs {
+      display: flex;
+      gap: 2px;
+      margin-bottom: 15px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .tab {
+      padding: 10px 15px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--secondary-color);
+      border-bottom: 2px solid transparent;
+    }
+    
+    .tab.active {
+      color: var(--primary-color);
+      border-bottom: 2px solid var(--primary-color);
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .component-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .component-item {
+      padding: 12px 15px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .component-name {
+      font-weight: 500;
+    }
+    
+    .component-status {
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .status-healthy {
+      background-color: rgba(25, 135, 84, 0.15);
+      color: var(--success-color);
+    }
+    
+    .status-warning {
+      background-color: rgba(255, 193, 7, 0.15);
+      color: #856404;
+    }
+    
+    .status-critical {
+      background-color: rgba(220, 53, 69, 0.15);
+      color: var(--danger-color);
+    }
+    
+    .status-unknown {
+      background-color: rgba(108, 117, 125, 0.15);
+      color: var(--secondary-color);
+    }
+    
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .filter-label {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    select, input {
+      padding: 6px 8px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    
+    .alert-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background-color: var(--danger-color);
+      color: white;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 5px;
+    }
+    
+    .table-container {
+      overflow-x: auto;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    thead th {
+      background-color: rgba(0, 0, 0, 0.03);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    
+    tbody tr {
+      cursor: pointer;
+      transition: background-color 0.1s;
+    }
+    
+    tbody tr:hover {
+      background-color: rgba(0, 0, 0, 0.03);
+    }
+    
+    tr.selected {
+      background-color: rgba(13, 110, 253, 0.1);
+    }
+    
+    .error-level {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .level-debug {
+      background-color: rgba(13, 202, 240, 0.15);
+      color: var(--info-color);
+    }
+    
+    .level-info {
+      background-color: rgba(13, 110, 253, 0.15);
+      color: var(--primary-color);
+    }
+    
+    .level-warning {
+      background-color: rgba(255, 193, 7, 0.15);
+      color: #856404;
+    }
+    
+    .level-error {
+      background-color: rgba(220, 53, 69, 0.15);
+      color: var(--danger-color);
+    }
+    
+    .level-fatal {
+      background-color: var(--danger-color);
+      color: white;
+    }
+    
+    .alert-item {
+      padding: 12px 15px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      background-color: rgba(220, 53, 69, 0.1);
+      border-left: 4px solid var(--danger-color);
+    }
+    
+    .alert-item.warning {
+      background-color: rgba(255, 193, 7, 0.1);
+      border-left-color: var(--warning-color);
+    }
+    
+    .alert-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+    
+    .alert-title {
+      font-weight: 600;
+    }
+    
+    .alert-time {
+      font-size: 12px;
+      color: var(--secondary-color);
+    }
+    
+    .alert-message {
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+    
+    .alert-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 5px;
+    }
+    
+    .chart-container {
+      height: 300px;
+      margin-bottom: 20px;
+    }
+    
+    .recovery-item {
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      background-color: rgba(25, 135, 84, 0.1);
+      border-left: 4px solid var(--success-color);
+    }
+    
+    .recovery-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+    
+    .recovery-title {
+      font-weight: 600;
+    }
+    
+    .recovery-time {
+      font-size: 12px;
+      color: var(--secondary-color);
+    }
+    
+    .recovery-message {
+      font-size: 14px;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 3px 6px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 600;
+      background-color: var(--secondary-color);
+      color: white;
+    }
+    
+    .badge-primary {
+      background-color: var(--primary-color);
+    }
+    
+    .badge-success {
+      background-color: var(--success-color);
+    }
+    
+    .badge-danger {
+      background-color: var(--danger-color);
+    }
+    
+    .badge-warning {
+      background-color: var(--warning-color);
+      color: #212529;
+    }
+    
+    .badge-info {
+      background-color: var(--info-color);
+      color: #212529;
+    }
+    
+    .flex {
+      display: flex;
+    }
+    
+    .flex-column {
+      flex-direction: column;
+    }
+    
+    .flex-row {
+      flex-direction: row;
+    }
+    
+    .gap-10 {
+      gap: 10px;
+    }
+    
+    .error-details {
+      padding: 15px;
+      background-color: var(--card-bg-color);
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .details-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .related-errors {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid var(--border-color);
+    }
+    
+    .related-title {
+      margin-bottom: 10px;
+      font-size: 16px;
+      font-weight: 500;
+    }
+    
+    .resolution-section {
+      margin-top: 15px;
+      padding: 15px;
+      background-color: rgba(0, 0, 0, 0.03);
+      border-radius: 4px;
+    }
+    
+    .resolution-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 14px;
+      resize: vertical;
+      min-height: 80px;
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+    
+    .notes-section {
+      margin-top: 15px;
+    }
+    
+    .note-item {
+      padding: 10px;
+      background-color: rgba(0, 0, 0, 0.03);
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    
+    .note-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      font-size: 12px;
+      color: var(--secondary-color);
+    }
+    
+    .note-content {
+      font-size: 14px;
+    }
+    
+    .stack-trace {
+      font-family: monospace;
+      font-size: 13px;
+      white-space: pre-wrap;
+      background-color: rgba(0, 0, 0, 0.03);
+      padding: 10px;
+      border-radius: 4px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .tooltip .tooltip-text {
+      visibility: hidden;
+      width: 200px;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      text-align: center;
+      border-radius: 4px;
+      padding: 5px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 12px;
+    }
+    
+    .tooltip:hover .tooltip-text {
+      visibility: visible;
+      opacity: 1;
+    }
+    
+    .recovery-strategies {
+      margin-top: 15px;
+    }
+    
+    .strategy-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      background-color: rgba(0, 0, 0, 0.03);
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    
+    .strategy-actions {
+      margin-left: auto;
+    }
+    
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 10px;
+    }
+    
+    .tag {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      background-color: rgba(13, 110, 253, 0.1);
+      color: var(--primary-color);
+    }
+    
+    @media (max-width: 992px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .status-overview {
+        grid-column: 1;
+      }
+    }
+    
+    /* Dark mode */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --primary-color: #0d6efd;
+        --success-color: #198754;
+        --warning-color: #ffc107;
+        --danger-color: #dc3545;
+        --info-color: #0dcaf0;
+        --secondary-color: #adb5bd;
+        --background-color: #212529;
+        --card-bg-color: #2c3034;
+        --text-color: #f8f9fa;
+        --border-color: #495057;
+      }
+      
+      select, input, textarea {
+        background-color: #343a40;
+        color: var(--text-color);
+        border-color: var(--border-color);
+      }
+      
+      thead th {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+      
+      tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+      
+      tr.selected {
+        background-color: rgba(13, 110, 253, 0.2);
+      }
+      
+      .resolution-section, .note-item, .stack-trace, .strategy-item {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Advanced Error Monitoring Dashboard</h1>
+      <div class="header-actions">
+        <button id="refreshBtn" class="btn btn-primary">Refresh</button>
+        <button id="exportJsonBtn" class="btn btn-secondary">Export JSON</button>
+        <button id="exportCsvBtn" class="btn btn-secondary">Export CSV</button>
+      </div>
+    </header>
+    
+    <div class="status-overview" id="statusOverview">
+      <!-- Status cards will be added here dynamically -->
+    </div>
+    
+    <div class="dashboard-grid">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Component Status</h2>
+        </div>
+        <div class="card-body">
+          <ul class="component-list" id="componentList">
+            <!-- Component statuses will be added here dynamically -->
+          </ul>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <div class="tabs">
+            <button id="errorsTab" class="tab active">Errors</button>
+            <button id="alertsTab" class="tab">Alerts <span id="alertsBadge" class="alert-badge" style="display: none;">0</span></button>
+            <button id="analyticsTab" class="tab">Analytics</button>
+            <button id="recoveryTab" class="tab">Recovery</button>
+          </div>
+        </div>
+        
+        <div class="card-body">
+          <!-- Errors Tab -->
+          <div id="errorsContent" class="tab-content active">
+            <div class="filters">
+              <div class="filter-group">
+                <span class="filter-label">Level:</span>
+                <select id="levelFilter">
+                  <option value="all">All Levels</option>
+                  <option value="debug">Debug</option>
+                  <option value="info">Info</option>
+                  <option value="warning">Warning</option>
+                  <option value="error">Error</option>
+                  <option value="fatal">Fatal</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <span class="filter-label">Component:</span>
+                <select id="componentFilter">
+                  <option value="all">All Components</option>
+                  <!-- Components will be added dynamically -->
+                </select>
+              </div>
+              <div class="filter-group">
+                <span class="filter-label">Status:</span>
+                <select id="statusFilter">
+                  <option value="all">All</option>
+                  <option value="unresolved">Unresolved</option>
+                  <option value="resolved">Resolved</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <span class="filter-label">Search:</span>
+                <input type="text" id="searchFilter" placeholder="Search...">
+              </div>
+            </div>
+            
+            <div class="table-container" style="max-height: 500px; overflow-y: auto;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Level</th>
+                    <th>Timestamp</th>
+                    <th>Component</th>
+                    <th>Message</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="errorsTableBody">
+                  <!-- Errors will be added here dynamically -->
+                </tbody>
+              </table>
+            </div>
+            
+            <div id="noErrorsMessage" style="text-align: center; padding: 20px; display: none;">
+              No errors to display.
+            </div>
+            
+            <div id="errorDetails" class="error-details" style="margin-top: 20px; display: none;">
+              <div class="details-header">
+                <h3 id="errorTitle">Error Details</h3>
+                <div class="button-group">
+                  <button id="relateErrorBtn" class="btn btn-secondary">Relate Error</button>
+                  <button id="resolveErrorBtn" class="btn btn-success">Resolve</button>
+                  <button id="deleteErrorBtn" class="btn btn-danger">Delete</button>
+                </div>
+              </div>
+              
+              <div class="flex flex-row gap-10" style="margin-bottom: 15px;">
+                <div style="flex: 1;">
+                  <div style="margin-bottom: 10px;">
+                    <strong>ID:</strong> <span id="errorId"></span>
+                  </div>
+                  <div style="margin-bottom: 10px;">
+                    <strong>Level:</strong> <span id="errorLevel"></span>
+                  </div>
+                  <div style="margin-bottom: 10px;">
+                    <strong>Component:</strong> <span id="errorComponent"></span>
+                  </div>
+                  <div style="margin-bottom: 10px;">
+                    <strong>Operation:</strong> <span id="errorOperation"></span>
+                  </div>
+                </div>
+                <div style="flex: 1;">
+                  <div style="margin-bottom: 10px;">
+                    <strong>Timestamp:</strong> <span id="errorTimestamp"></span>
+                  </div>
+                  <div style="margin-bottom: 10px;">
+                    <strong>Source:</strong> <span id="errorSource"></span>
+                  </div>
+                  <div style="margin-bottom: 10px;">
+                    <strong>Status:</strong> <span id="errorStatus"></span>
+                  </div>
+                  <div style="margin-bottom: 10px;">
+                    <strong>Occurrences:</strong> <span id="errorOccurrences"></span>
+                  </div>
+                </div>
+              </div>
+              
+              <div style="margin-bottom: 15px;">
+                <strong>Message:</strong>
+                <div id="errorMessage" style="margin-top: 5px; padding: 10px; background-color: rgba(0, 0, 0, 0.03); border-radius: 4px;"></div>
+              </div>
+              
+              <div style="margin-bottom: 15px;">
+                <strong>Stack Trace:</strong>
+                <pre id="errorStackTrace" class="stack-trace"></pre>
+              </div>
+              
+              <div style="margin-bottom: 15px;">
+                <strong>Metadata:</strong>
+                <pre id="errorMetadata" class="stack-trace"></pre>
+              </div>
+              
+              <div class="tag-list" id="errorTags">
+                <!-- Tags will be added here dynamically -->
+              </div>
+              
+              <div class="related-errors">
+                <div class="related-title">Related Errors (<span id="relatedErrorCount">0</span>)</div>
+                <ul id="relatedErrorsList" style="padding-left: 20px;">
+                  <!-- Related errors will be added here dynamically -->
+                </ul>
+              </div>
+              
+              <div class="recovery-strategies">
+                <div class="related-title">Recovery Strategies</div>
+                <div id="recoveryStrategiesList">
+                  <!-- Recovery strategies will be added here dynamically -->
+                </div>
+              </div>
+              
+              <div class="notes-section">
+                <div class="related-title">Notes</div>
+                <div id="errorNotes">
+                  <!-- Notes will be added here dynamically -->
+                </div>
+                <div class="resolution-form">
+                  <textarea id="noteInput" placeholder="Add a note..."></textarea>
+                  <div class="button-group">
+                    <button id="addNoteBtn" class="btn btn-primary">Add Note</button>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="resolution-section" id="resolutionSection" style="display: none;">
+                <h4>Resolve Error</h4>
+                <div class="resolution-form">
+                  <textarea id="resolutionNotes" placeholder="Enter resolution notes..."></textarea>
+                  <div class="button-group">
+                    <button id="cancelResolutionBtn" class="btn btn-secondary">Cancel</button>
+                    <button id="confirmResolutionBtn" class="btn btn-success">Confirm Resolution</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Alerts Tab -->
+          <div id="alertsContent" class="tab-content">
+            <div id="alertsContainer">
+              <!-- Alerts will be added here dynamically -->
+            </div>
+            <div id="noAlertsMessage" style="text-align: center; padding: 20px; display: none;">
+              No active alerts.
+            </div>
+          </div>
+          
+          <!-- Analytics Tab -->
+          <div id="analyticsContent" class="tab-content">
+            <div class="chart-container">
+              <canvas id="errorTrendChart"></canvas>
+            </div>
+            
+            <div class="flex" style="gap: 20px;">
+              <div style="flex: 1;">
+                <h3>Error Distribution by Component</h3>
+                <div class="chart-container" style="height: 250px;">
+                  <canvas id="componentErrorChart"></canvas>
+                </div>
+              </div>
+              <div style="flex: 1;">
+                <h3>Error Distribution by Level</h3>
+                <div class="chart-container" style="height: 250px;">
+                  <canvas id="levelErrorChart"></canvas>
+                </div>
+              </div>
+            </div>
+            
+            <div style="margin-top: 20px;">
+              <h3>Error Statistics</h3>
+              <div class="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Metric</th>
+                      <th>Value</th>
+                      <th>Change</th>
+                    </tr>
+                  </thead>
+                  <tbody id="statisticsTableBody">
+                    <!-- Statistics will be added here dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Recovery Tab -->
+          <div id="recoveryContent" class="tab-content">
+            <div id="recoveryContainer">
+              <!-- Recovery records will be added here dynamically -->
+            </div>
+            <div id="noRecoveryMessage" style="text-align: center; padding: 20px; display: none;">
+              No recovery attempts recorded.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    const { ipcRenderer } = require('electron');
+    
+    // DOM Elements
+    const statusOverview = document.getElementById('statusOverview');
+    const componentList = document.getElementById('componentList');
+    const errorsTableBody = document.getElementById('errorsTableBody');
+    const noErrorsMessage = document.getElementById('noErrorsMessage');
+    const errorDetails = document.getElementById('errorDetails');
+    const alertsContainer = document.getElementById('alertsContainer');
+    const noAlertsMessage = document.getElementById('noAlertsMessage');
+    const recoveryContainer = document.getElementById('recoveryContainer');
+    const noRecoveryMessage = document.getElementById('noRecoveryMessage');
+    
+    // Tabs
+    const errorsTab = document.getElementById('errorsTab');
+    const alertsTab = document.getElementById('alertsTab');
+    const analyticsTab = document.getElementById('analyticsTab');
+    const recoveryTab = document.getElementById('recoveryTab');
+    const alertsBadge = document.getElementById('alertsBadge');
+    
+    const errorsContent = document.getElementById('errorsContent');
+    const alertsContent = document.getElementById('alertsContent');
+    const analyticsContent = document.getElementById('analyticsContent');
+    const recoveryContent = document.getElementById('recoveryContent');
+    
+    // Error Detail Elements
+    const errorTitle = document.getElementById('errorTitle');
+    const errorId = document.getElementById('errorId');
+    const errorLevel = document.getElementById('errorLevel');
+    const errorComponent = document.getElementById('errorComponent');
+    const errorOperation = document.getElementById('errorOperation');
+    const errorTimestamp = document.getElementById('errorTimestamp');
+    const errorSource = document.getElementById('errorSource');
+    const errorStatus = document.getElementById('errorStatus');
+    const errorOccurrences = document.getElementById('errorOccurrences');
+    const errorMessage = document.getElementById('errorMessage');
+    const errorStackTrace = document.getElementById('errorStackTrace');
+    const errorMetadata = document.getElementById('errorMetadata');
+    const errorTags = document.getElementById('errorTags');
+    const relatedErrorCount = document.getElementById('relatedErrorCount');
+    const relatedErrorsList = document.getElementById('relatedErrorsList');
+    const recoveryStrategiesList = document.getElementById('recoveryStrategiesList');
+    const errorNotes = document.getElementById('errorNotes');
+    
+    // Buttons
+    const refreshBtn = document.getElementById('refreshBtn');
+    const exportJsonBtn = document.getElementById('exportJsonBtn');
+    const exportCsvBtn = document.getElementById('exportCsvBtn');
+    const relateErrorBtn = document.getElementById('relateErrorBtn');
+    const resolveErrorBtn = document.getElementById('resolveErrorBtn');
+    const deleteErrorBtn = document.getElementById('deleteErrorBtn');
+    const addNoteBtn = document.getElementById('addNoteBtn');
+    const noteInput = document.getElementById('noteInput');
+    
+    // Resolution Section
+    const resolutionSection = document.getElementById('resolutionSection');
+    const resolutionNotes = document.getElementById('resolutionNotes');
+    const cancelResolutionBtn = document.getElementById('cancelResolutionBtn');
+    const confirmResolutionBtn = document.getElementById('confirmResolutionBtn');
+    
+    // Filters
+    const levelFilter = document.getElementById('levelFilter');
+    const componentFilter = document.getElementById('componentFilter');
+    const statusFilter = document.getElementById('statusFilter');
+    const searchFilter = document.getElementById('searchFilter');
+    
+    // Charts
+    let errorTrendChart = null;
+    let componentErrorChart = null;
+    let levelErrorChart = null;
+    
+    // State
+    let selectedErrorId = null;
+    let monitorData = {
+      errors: [],
+      alerts: [],
+      componentStatus: {},
+      analytics: {}
+    };
+    
+    // Initialize Dashboard
+    function initDashboard() {
+      setupEventListeners();
+      setupTabs();
+      setupCharts();
+      refreshData();
+    }
+    
+    function setupEventListeners() {
+      // Button Actions
+      refreshBtn.addEventListener('click', refreshData);
+      exportJsonBtn.addEventListener('click', () => exportData('json'));
+      exportCsvBtn.addEventListener('click', () => exportData('csv'));
+      
+      // Error Details Actions
+      relateErrorBtn.addEventListener('click', relateSelectedError);
+      resolveErrorBtn.addEventListener('click', showResolutionForm);
+      deleteErrorBtn.addEventListener('click', deleteSelectedError);
+      addNoteBtn.addEventListener('click', addNoteToSelectedError);
+      
+      // Resolution Form Actions
+      cancelResolutionBtn.addEventListener('click', hideResolutionForm);
+      confirmResolutionBtn.addEventListener('click', resolveSelectedError);
+      
+      // Filters
+      levelFilter.addEventListener('change', filterErrors);
+      componentFilter.addEventListener('change', filterErrors);
+      statusFilter.addEventListener('change', filterErrors);
+      searchFilter.addEventListener('input', filterErrors);
+      
+      // IPC Event Listeners
+      ipcRenderer.on('error-monitor-data', (event, data) => {
+        monitorData = data;
+        updateDashboard();
+      });
+      
+      ipcRenderer.on('resolve-error-result', (event, result) => {
+        if (result.success) {
+          hideResolutionForm();
+          refreshData();
+        } else {
+          alert(`Failed to resolve error: ${result.message}`);
+        }
+      });
+      
+      ipcRenderer.on('delete-error-result', (event, result) => {
+        if (result.success) {
+          errorDetails.style.display = 'none';
+          selectedErrorId = null;
+          refreshData();
+        } else {
+          alert(`Failed to delete error: ${result.message}`);
+        }
+      });
+      
+      ipcRenderer.on('relate-errors-result', (event, result) => {
+        if (result.success) {
+          refreshData();
+        } else {
+          alert(`Failed to relate errors: ${result.message}`);
+        }
+      });
+      
+      ipcRenderer.on('add-note-result', (event, result) => {
+        if (result.success) {
+          noteInput.value = '';
+          refreshData();
+        } else {
+          alert(`Failed to add note: ${result.message}`);
+        }
+      });
+      
+      ipcRenderer.on('export-result', (event, result) => {
+        if (result.success) {
+          alert(`Data exported successfully to ${result.path}`);
+        } else {
+          alert(`Failed to export data: ${result.message}`);
+        }
+      });
+    }
+    
+    function setupTabs() {
+      errorsTab.addEventListener('click', () => activateTab('errors'));
+      alertsTab.addEventListener('click', () => activateTab('alerts'));
+      analyticsTab.addEventListener('click', () => activateTab('analytics'));
+      recoveryTab.addEventListener('click', () => activateTab('recovery'));
+    }
+    
+    function activateTab(tabName) {
+      // Deactivate all tabs
+      errorsTab.classList.remove('active');
+      alertsTab.classList.remove('active');
+      analyticsTab.classList.remove('active');
+      recoveryTab.classList.remove('active');
+      
+      errorsContent.classList.remove('active');
+      alertsContent.classList.remove('active');
+      analyticsContent.classList.remove('active');
+      recoveryContent.classList.remove('active');
+      
+      // Activate selected tab
+      switch (tabName) {
+        case 'errors':
+          errorsTab.classList.add('active');
+          errorsContent.classList.add('active');
+          break;
+        case 'alerts':
+          alertsTab.classList.add('active');
+          alertsContent.classList.add('active');
+          alertsBadge.style.display = 'none'; // Hide badge when viewing alerts
+          break;
+        case 'analytics':
+          analyticsTab.classList.add('active');
+          analyticsContent.classList.add('active');
+          updateAnalyticsCharts();
+          break;
+        case 'recovery':
+          recoveryTab.classList.add('active');
+          recoveryContent.classList.add('active');
+          break;
+      }
+    }
+    
+    function setupCharts() {
+      // Initialize Chart.js charts
+      const errorTrendCtx = document.getElementById('errorTrendChart').getContext('2d');
+      errorTrendChart = new Chart(errorTrendCtx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Errors',
+            data: [],
+            borderColor: 'rgb(220, 53, 69)',
+            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+            tension: 0.1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Error Trend Over Time'
+            }
+          }
+        }
+      });
+      
+      const componentErrorCtx = document.getElementById('componentErrorChart').getContext('2d');
+      componentErrorChart = new Chart(componentErrorCtx, {
+        type: 'doughnut',
+        data: {
+          labels: [],
+          datasets: [{
+            data: [],
+            backgroundColor: [
+              'rgba(13, 110, 253, 0.7)',
+              'rgba(25, 135, 84, 0.7)',
+              'rgba(255, 193, 7, 0.7)',
+              'rgba(220, 53, 69, 0.7)',
+              'rgba(13, 202, 240, 0.7)',
+              'rgba(108, 117, 125, 0.7)'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+      
+      const levelErrorCtx = document.getElementById('levelErrorChart').getContext('2d');
+      levelErrorChart = new Chart(levelErrorCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Debug', 'Info', 'Warning', 'Error', 'Fatal'],
+          datasets: [{
+            data: [0, 0, 0, 0, 0],
+            backgroundColor: [
+              'rgba(13, 202, 240, 0.7)',
+              'rgba(13, 110, 253, 0.7)',
+              'rgba(255, 193, 7, 0.7)',
+              'rgba(220, 53, 69, 0.7)',
+              'rgba(108, 117, 125, 0.7)'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+    }
+    
+    function refreshData() {
+      ipcRenderer.send('refresh-error-monitor');
+    }
+    
+    function updateDashboard() {
+      updateStatusOverview();
+      updateComponentStatus();
+      updateErrorsTable();
+      updateAlerts();
+      updateRecovery();
+      updateFilters();
+      
+      // If an error is selected, refresh its details
+      if (selectedErrorId) {
+        const error = monitorData.errors.find(e => e.id === selectedErrorId);
+        if (error) {
+          displayErrorDetails(error);
+        } else {
+          errorDetails.style.display = 'none';
+          selectedErrorId = null;
+        }
+      }
+    }
+    
+    function updateStatusOverview() {
+      statusOverview.innerHTML = '';
+      
+      if (!monitorData.analytics || !monitorData.analytics.summary) {
+        return;
+      }
+      
+      const summary = monitorData.analytics.summary;
+      
+      // Create status cards
+      createStatusCard('Total Errors', summary.totalErrors, summary.errorTrend);
+      createStatusCard('Active Alerts', summary.activeAlerts, summary.alertTrend);
+      createStatusCard('Components', summary.componentCount, null);
+      createStatusCard('Error Rate', `${summary.errorRate}/min`, summary.errorRateTrend);
+      createStatusCard('Resolved', summary.resolvedErrors, null);
+      createStatusCard('Recovery Rate', `${summary.recoveryRate}%`, summary.recoveryTrend);
+    }
+    
+    function createStatusCard(label, value, trend) {
+      const card = document.createElement('div');
+      card.className = 'status-card';
+      
+      let trendHtml = '';
+      if (trend !== null) {
+        const trendClass = trend > 0 ? 'trend-up' : (trend < 0 ? 'trend-down' : '');
+        const trendSymbol = trend > 0 ? '‘' : (trend < 0 ? '“' : '');
+        trendHtml = `<div class="status-trend ${trendClass}">${trendSymbol} ${Math.abs(trend)}%</div>`;
+      }
+      
+      card.innerHTML = `
+        <div class="status-value">${value}</div>
+        <div class="status-label">${label}</div>
+        ${trendHtml}
+      `;
+      
+      statusOverview.appendChild(card);
+    }
+    
+    function updateComponentStatus() {
+      componentList.innerHTML = '';
+      
+      if (!monitorData.componentStatus) {
+        return;
+      }
+      
+      Object.entries(monitorData.componentStatus).forEach(([component, status]) => {
+        const li = document.createElement('li');
+        li.className = 'component-item';
+        
+        const statusClass = getStatusClass(status.health);
+        
+        li.innerHTML = `
+          <span class="component-name">${component}</span>
+          <span class="component-status ${statusClass}">${status.health}</span>
+        `;
+        
+        componentList.appendChild(li);
+      });
+    }
+    
+    function getStatusClass(health) {
+      switch (health.toLowerCase()) {
+        case 'healthy':
+          return 'status-healthy';
+        case 'warning':
+          return 'status-warning';
+        case 'critical':
+          return 'status-critical';
+        default:
+          return 'status-unknown';
+      }
+    }
+    
+    function updateErrorsTable() {
+      errorsTableBody.innerHTML = '';
+      
+      if (!monitorData.errors || monitorData.errors.length === 0) {
+        noErrorsMessage.style.display = 'block';
+        return;
+      }
+      
+      noErrorsMessage.style.display = 'none';
+      
+      // Filter errors
+      const filteredErrors = getFilteredErrors();
+      
+      // Create error rows
+      filteredErrors.forEach(error => {
+        const row = document.createElement('tr');
+        row.className = selectedErrorId === error.id ? 'selected' : '';
+        row.addEventListener('click', () => selectError(error.id));
+        
+        const resolved = error.resolved ? 
+          '<span class="badge badge-success">Resolved</span>' : 
+          '<span class="badge badge-secondary">Unresolved</span>';
+        
+        row.innerHTML = `
+          <td><span class="error-level level-${error.level}">${error.level}</span></td>
+          <td>${formatTimestamp(error.timestamp)}</td>
+          <td>${error.component}</td>
+          <td>${truncateText(error.message, 60)}</td>
+          <td>${resolved}</td>
+        `;
+        
+        errorsTableBody.appendChild(row);
+      });
+    }
+    
+    function getFilteredErrors() {
+      if (!monitorData.errors) return [];
+      
+      const level = levelFilter.value;
+      const component = componentFilter.value;
+      const status = statusFilter.value;
+      const search = searchFilter.value.toLowerCase();
+      
+      return monitorData.errors.filter(error => {
+        // Filter by level
+        if (level !== 'all' && error.level !== level) {
+          return false;
+        }
+        
+        // Filter by component
+        if (component !== 'all' && error.component !== component) {
+          return false;
+        }
+        
+        // Filter by status
+        if (status === 'resolved' && !error.resolved) {
+          return false;
+        }
+        if (status === 'unresolved' && error.resolved) {
+          return false;
+        }
+        
+        // Filter by search text
+        if (search && !(
+          (error.message && error.message.toLowerCase().includes(search)) ||
+          (error.component && error.component.toLowerCase().includes(search)) ||
+          (error.operation && error.operation.toLowerCase().includes(search))
+        )) {
+          return false;
+        }
+        
+        return true;
+      }).sort((a, b) => {
+        // Sort by timestamp (newest first)
+        return new Date(b.timestamp) - new Date(a.timestamp);
+      });
+    }
+    
+    function updateFilters() {
+      // Clear existing options
+      while (componentFilter.options.length > 1) {
+        componentFilter.remove(1);
+      }
+      
+      // Add unique components
+      const components = new Set();
+      if (monitorData.errors) {
+        monitorData.errors.forEach(error => {
+          if (error.component) {
+            components.add(error.component);
+          }
+        });
+      }
+      
+      components.forEach(component => {
+        const option = document.createElement('option');
+        option.value = component;
+        option.textContent = component;
+        componentFilter.appendChild(option);
+      });
+    }
+    
+    function updateAlerts() {
+      alertsContainer.innerHTML = '';
+      
+      if (!monitorData.alerts || monitorData.alerts.length === 0) {
+        noAlertsMessage.style.display = 'block';
+        alertsBadge.style.display = 'none';
+        return;
+      }
+      
+      noAlertsMessage.style.display = 'none';
+      
+      // Update alerts badge
+      alertsBadge.textContent = monitorData.alerts.length;
+      alertsBadge.style.display = 'inline-flex';
+      
+      // Create alert items
+      monitorData.alerts.forEach(alert => {
+        const alertEl = document.createElement('div');
+        alertEl.className = `alert-item ${alert.level === 'warning' ? 'warning' : ''}`;
+        
+        alertEl.innerHTML = `
+          <div class="alert-header">
+            <div class="alert-title">${alert.title}</div>
+            <div class="alert-time">${formatTimestamp(alert.timestamp)}</div>
+          </div>
+          <div class="alert-message">${alert.message}</div>
+          <div class="alert-actions">
+            <button class="btn btn-secondary btn-sm" onclick="acknowledgeAlert('${alert.id}')">Acknowledge</button>
+            ${alert.has_errors ? `<button class="btn btn-primary btn-sm" onclick="viewRelatedErrors('${alert.id}')">View Errors</button>` : ''}
+          </div>
+        `;
+        
+        alertsContainer.appendChild(alertEl);
+      });
+      
+      // Add global functions for alert actions
+      window.acknowledgeAlert = function(alertId) {
+        // Implement alert acknowledgment
+        console.log(`Acknowledging alert ${alertId}`);
+      };
+      
+      window.viewRelatedErrors = function(alertId) {
+        // Implement viewing related errors
+        activateTab('errors');
+        // Would then filter to show only related errors
+      };
+    }
+    
+    function updateRecovery() {
+      recoveryContainer.innerHTML = '';
+      
+      if (!monitorData.analytics || !monitorData.analytics.recoveries || monitorData.analytics.recoveries.length === 0) {
+        noRecoveryMessage.style.display = 'block';
+        return;
+      }
+      
+      noRecoveryMessage.style.display = 'none';
+      
+      // Create recovery items
+      monitorData.analytics.recoveries.forEach(recovery => {
+        const item = document.createElement('div');
+        item.className = 'recovery-item';
+        
+        item.innerHTML = `
+          <div class="recovery-header">
+            <div class="recovery-title">${recovery.strategy}</div>
+            <div class="recovery-time">${formatTimestamp(recovery.timestamp)}</div>
+          </div>
+          <div class="recovery-message">${recovery.result}</div>
+          <div class="badge-group" style="margin-top: 5px;">
+            <span class="badge ${recovery.success ? 'badge-success' : 'badge-danger'}">${recovery.success ? 'Success' : 'Failed'}</span>
+            <span class="badge badge-info">${recovery.component}</span>
+          </div>
+        `;
+        
+        recoveryContainer.appendChild(item);
+      });
+    }
+    
+    function updateAnalyticsCharts() {
+      if (!monitorData.analytics) {
+        return;
+      }
+      
+      // Update error trend chart
+      if (monitorData.analytics.errorTrend) {
+        const trend = monitorData.analytics.errorTrend;
+        errorTrendChart.data.labels = trend.timestamps;
+        errorTrendChart.data.datasets[0].data = trend.counts;
+        errorTrendChart.update();
+      }
+      
+      // Update component distribution chart
+      if (monitorData.analytics.componentDistribution) {
+        const distribution = monitorData.analytics.componentDistribution;
+        componentErrorChart.data.labels = Object.keys(distribution);
+        componentErrorChart.data.datasets[0].data = Object.values(distribution);
+        componentErrorChart.update();
+      }
+      
+      // Update level distribution chart
+      if (monitorData.analytics.levelDistribution) {
+        const dist = monitorData.analytics.levelDistribution;
+        levelErrorChart.data.datasets[0].data = [
+          dist.debug || 0,
+          dist.info || 0,
+          dist.warning || 0,
+          dist.error || 0,
+          dist.fatal || 0
+        ];
+        levelErrorChart.update();
+      }
+      
+      // Update statistics table
+      updateStatisticsTable();
+    }
+    
+    function updateStatisticsTable() {
+      const statisticsTableBody = document.getElementById('statisticsTableBody');
+      statisticsTableBody.innerHTML = '';
+      
+      if (!monitorData.analytics || !monitorData.analytics.statistics) {
+        return;
+      }
+      
+      const stats = monitorData.analytics.statistics;
+      
+      // Add rows to statistics table
+      addStatisticRow('Mean Time Between Errors', formatDuration(stats.mtbe), formatChange(stats.mtbe_change));
+      addStatisticRow('Error Rate (per hour)', stats.error_rate.toFixed(2), formatChange(stats.error_rate_change));
+      addStatisticRow('Recovery Success Rate', `${stats.recovery_success_rate.toFixed(2)}%`, formatChange(stats.recovery_rate_change));
+      addStatisticRow('Most Common Error', stats.most_common_error || 'N/A', '');
+      addStatisticRow('Most Affected Component', stats.most_affected_component || 'N/A', '');
+      
+      function addStatisticRow(name, value, change) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${name}</td>
+          <td>${value}</td>
+          <td>${change}</td>
+        `;
+        statisticsTableBody.appendChild(row);
+      }
+    }
+    
+    function selectError(errorId) {
+      selectedErrorId = errorId;
+      
+      // Clear previous selection
+      const selectedRows = errorsTableBody.querySelectorAll('.selected');
+      selectedRows.forEach(row => row.classList.remove('selected'));
+      
+      // Find the error
+      const error = monitorData.errors.find(e => e.id === errorId);
+      if (!error) return;
+      
+      // Update selected row
+      const rows = errorsTableBody.querySelectorAll('tr');
+      rows.forEach(row => {
+        if (row.cells[0].textContent === error.level &&
+            row.cells[1].textContent === formatTimestamp(error.timestamp) &&
+            row.cells[2].textContent === error.component) {
+          row.classList.add('selected');
+        }
+      });
+      
+      // Display error details
+      displayErrorDetails(error);
+    }
+    
+    function displayErrorDetails(error) {
+      errorTitle.textContent = 'Error Details';
+      errorId.textContent = error.id;
+      errorLevel.textContent = error.level;
+      errorLevel.className = `error-level level-${error.level}`;
+      errorComponent.textContent = error.component || 'N/A';
+      errorOperation.textContent = error.operation || 'N/A';
+      errorTimestamp.textContent = formatTimestamp(error.timestamp);
+      errorSource.textContent = error.source || 'N/A';
+      errorStatus.textContent = error.resolved ? 'Resolved' : 'Unresolved';
+      errorOccurrences.textContent = error.occurrences || '1';
+      errorMessage.textContent = error.message;
+      errorStackTrace.textContent = error.stack_trace || 'No stack trace available';
+      errorMetadata.textContent = JSON.stringify(error.metadata || {}, null, 2);
+      
+      // Update resolution button state
+      resolveErrorBtn.disabled = error.resolved;
+      resolveErrorBtn.textContent = error.resolved ? 'Already Resolved' : 'Resolve';
+      
+      // Update tags
+      errorTags.innerHTML = '';
+      if (error.tags && error.tags.length > 0) {
+        error.tags.forEach(tag => {
+          const tagEl = document.createElement('span');
+          tagEl.className = 'tag';
+          tagEl.textContent = tag;
+          errorTags.appendChild(tagEl);
+        });
+      }
+      
+      // Update related errors
+      updateRelatedErrors(error);
+      
+      // Update recovery strategies
+      updateRecoveryStrategies(error);
+      
+      // Update notes
+      updateErrorNotes(error);
+      
+      // Show error details
+      errorDetails.style.display = 'block';
+    }
+    
+    function updateRelatedErrors(error) {
+      relatedErrorsList.innerHTML = '';
+      
+      if (!error.related_errors || error.related_errors.length === 0) {
+        relatedErrorCount.textContent = '0';
+        return;
+      }
+      
+      relatedErrorCount.textContent = error.related_errors.length;
+      
+      error.related_errors.forEach(relatedError => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <a href="#" onclick="selectError('${relatedError.id}'); return false;">
+            ${truncateText(relatedError.message, 100)}
+          </a>
+          <span class="error-level level-${relatedError.level}" style="margin-left: 5px;">${relatedError.level}</span>
+        `;
+        relatedErrorsList.appendChild(li);
+      });
+      
+      // Make selectError function available globally
+      window.selectError = selectError;
+    }
+    
+    function updateRecoveryStrategies(error) {
+      recoveryStrategiesList.innerHTML = '';
+      
+      if (!error.recovery_strategies || error.recovery_strategies.length === 0) {
+        const noStrategies = document.createElement('div');
+        noStrategies.textContent = 'No automatic recovery strategies available for this error.';
+        recoveryStrategiesList.appendChild(noStrategies);
+        return;
+      }
+      
+      error.recovery_strategies.forEach(strategy => {
+        const strategyEl = document.createElement('div');
+        strategyEl.className = 'strategy-item';
+        
+        strategyEl.innerHTML = `
+          <div>
+            <div><strong>${strategy.name}</strong></div>
+            <div style="font-size: 14px;">${strategy.description}</div>
+          </div>
+          <div class="strategy-actions">
+            <button class="btn btn-sm btn-primary">Apply Strategy</button>
+          </div>
+        `;
+        
+        recoveryStrategiesList.appendChild(strategyEl);
+      });
+    }
+    
+    function updateErrorNotes(error) {
+      errorNotes.innerHTML = '';
+      
+      if (!error.notes || error.notes.length === 0) {
+        const noNotes = document.createElement('div');
+        noNotes.textContent = 'No notes yet.';
+        noNotes.style.fontStyle = 'italic';
+        noNotes.style.color = 'var(--secondary-color)';
+        errorNotes.appendChild(noNotes);
+        return;
+      }
+      
+      error.notes.forEach(note => {
+        const noteEl = document.createElement('div');
+        noteEl.className = 'note-item';
+        
+        noteEl.innerHTML = `
+          <div class="note-header">
+            <span>${note.author || 'System'}</span>
+            <span>${formatTimestamp(note.timestamp)}</span>
+          </div>
+          <div class="note-content">${note.content}</div>
+        `;
+        
+        errorNotes.appendChild(noteEl);
+      });
+    }
+    
+    function showResolutionForm() {
+      resolutionSection.style.display = 'block';
+      resolutionNotes.focus();
+    }
+    
+    function hideResolutionForm() {
+      resolutionSection.style.display = 'none';
+      resolutionNotes.value = '';
+    }
+    
+    function filterErrors() {
+      updateErrorsTable();
+    }
+    
+    function relateSelectedError() {
+      // Implement relating selected error to others
+      alert('Feature to relate this error to others is not yet implemented.');
+    }
+    
+    function resolveSelectedError() {
+      if (!selectedErrorId) return;
+      
+      const notes = resolutionNotes.value;
+      ipcRenderer.send('resolve-error', {
+        errorId: selectedErrorId,
+        notes: notes
+      });
+    }
+    
+    function deleteSelectedError() {
+      if (!selectedErrorId) return;
+      
+      if (confirm('Are you sure you want to delete this error? This action cannot be undone.')) {
+        ipcRenderer.send('delete-error', selectedErrorId);
+      }
+    }
+    
+    function addNoteToSelectedError() {
+      if (!selectedErrorId) return;
+      
+      const note = noteInput.value.trim();
+      if (!note) {
+        alert('Please enter a note before submitting');
+        return;
+      }
+      
+      ipcRenderer.send('add-error-note', {
+        errorId: selectedErrorId,
+        note: note
+      });
+    }
+    
+    function exportData(format) {
+      ipcRenderer.send('export-error-monitor-data', format);
+    }
+    
+    // Utility Functions
+    function formatTimestamp(timestamp) {
+      if (!timestamp) return 'N/A';
+      
+      try {
+        const date = new Date(timestamp);
+        return date.toLocaleString();
+      } catch (e) {
+        return timestamp;
+      }
+    }
+    
+    function truncateText(text, maxLength) {
+      if (!text) return '';
+      if (text.length <= maxLength) return text;
+      return text.substring(0, maxLength) + '...';
+    }
+    
+    function formatDuration(minutes) {
+      if (minutes === undefined || minutes === null) return 'N/A';
+      
+      if (minutes < 60) {
+        return `${minutes.toFixed(1)} min`;
+      } else {
+        const hours = minutes / 60;
+        return `${hours.toFixed(1)} hr`;
+      }
+    }
+    
+    function formatChange(change) {
+      if (change === undefined || change === null) return '';
+      
+      const value = Math.abs(change).toFixed(1);
+      if (change > 0) {
+        return `<span style="color: var(--danger-color)">‘ ${value}%</span>`;
+      } else if (change < 0) {
+        return `<span style="color: var(--success-color)">“ ${value}%</span>`;
+      } else {
+        return '<span></span>';
+      }
+    }
+    
+    // Initialize dashboard when DOM is loaded
+    document.addEventListener('DOMContentLoaded', initDashboard);
+  </script>
+</body>
+</html>

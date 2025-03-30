@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security Test Dashboard</title>
+  
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  
+  <!-- Dashboard CSS -->
+  <link rel="stylesheet" href="../dashboard/security_test_dashboard.css">
+  
+  <style>
+    /* Page specific styles */
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9fafb;
+      color: #111827;
+      --color-primary: #4a6cf7;
+      --color-primary-dark: #3a5cd9;
+      --color-success: #10b981;
+      --color-success-dark: #0e9f6e;
+      --color-warning: #f59e0b;
+      --color-warning-dark: #d97706;
+      --color-error: #ef4444;
+      --color-error-dark: #dc2626;
+      --color-surface: #ffffff;
+      --color-surface-variant: #f3f4f6;
+      --color-border: #e5e7eb;
+      --color-text-primary: #111827;
+      --color-text-secondary: #6b7280;
+      --color-text-tertiary: #9ca3af;
+    }
+    
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #111827;
+        color: #f9fafb;
+        --color-surface: #1f2937;
+        --color-surface-variant: #111827;
+        --color-border: #374151;
+        --color-text-primary: #f9fafb;
+        --color-text-secondary: #d1d5db;
+        --color-text-tertiary: #9ca3af;
+        --color-primary: #5b7cfc;
+        --color-primary-dark: #4a6cf7;
+        --color-success: #10b981;
+        --color-success-dark: #059669;
+        --color-warning: #f59e0b;
+        --color-warning-dark: #d97706;
+        --color-error: #ef4444;
+        --color-error-dark: #dc2626;
+      }
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+    
+    header {
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--color-border);
+    }
+    
+    header h1 {
+      font-size: 2rem;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    header h1 i {
+      color: var(--color-primary);
+    }
+    
+    header p {
+      margin: 0.5rem 0 0;
+      color: var(--color-text-secondary);
+    }
+    
+    .intro-card {
+      background-color: var(--color-surface);
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      border: 1px solid var(--color-border);
+    }
+    
+    .intro-card h2 {
+      font-size: 1.25rem;
+      margin: 0 0 1rem;
+    }
+    
+    .intro-card p {
+      margin: 0 0 1rem;
+      color: var(--color-text-secondary);
+    }
+    
+    .intro-card ul {
+      margin: 0 0 1rem;
+      padding-left: 1.5rem;
+    }
+    
+    .intro-card li {
+      margin-bottom: 0.5rem;
+      color: var(--color-text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>
+        <i class="fas fa-shield-alt"></i>
+        Security Test Dashboard
+      </h1>
+      <p>Run, visualize, and analyze security tests for the hallucinate_app framework</p>
+    </header>
+    
+    <div class="intro-card">
+      <h2>Complete Security Validation</h2>
+      <p>The Security Test Dashboard provides a comprehensive interface for running and analyzing security tests across all modules in the hallucinate_app framework. This dashboard helps you:</p>
+      
+      <ul>
+        <li><strong>Run Comprehensive Tests</strong> - Validate authentication, keystore, component integration, and secure managers</li>
+        <li><strong>Track Test History</strong> - Review and compare results from previous test runs</li>
+        <li><strong>Identify Vulnerabilities</strong> - Quickly spot security issues that need attention</li>
+        <li><strong>Validate Security Requirements</strong> - Ensure compliance with project security standards</li>
+      </ul>
+      
+      <p>Click the "Run All Tests" button below to start a complete security validation of the system.</p>
+    </div>
+    
+    <div id="security-test-dashboard-container"></div>
+  </div>
+  
+  <script type="module">
+    // Import the SecurityTestDashboard class
+    import SecurityTestDashboard from '../dashboard/security_test_dashboard.js';
+    import securityTestSuite from '../test/security_test_suite.js';
+    import NotificationSystem from '../dashboard/notifications.js';
+    
+    // Wait for DOM to be ready
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Create an event bus for dashboard communication
+      const eventBus = {
+        listeners: {},
+        on(event, callback) {
+          if (!this.listeners[event]) {
+            this.listeners[event] = [];
+          }
+          this.listeners[event].push(callback);
+        },
+        emit(event, data) {
+          if (this.listeners[event]) {
+            this.listeners[event].forEach(callback => callback(data));
+          }
+        }
+      };
+      
+      // Initialize the test suite if needed
+      if (!securityTestSuite.initialized) {
+        try {
+          // Set up the test environment
+          securityTestSuite.setupTestEnvironment();
+          console.log('Test suite initialized');
+        } catch (error) {
+          console.error('Failed to initialize test suite:', error);
+        }
+      }
+      
+      // Create the Security Test Dashboard
+      const securityTestDashboard = new SecurityTestDashboard({
+        element: document.getElementById('security-test-dashboard-container'),
+        testSuite: securityTestSuite,
+        eventBus: eventBus
+      });
+      
+      // Initialize and render the dashboard
+      await securityTestDashboard.init();
+      await securityTestDashboard.render();
+      
+      // Create global notification system for page-level messages
+      const notifications = new NotificationSystem({
+        container: document.body,
+        position: 'top-right'
+      });
+      
+      // Handle dashboard events
+      eventBus.on('security-test-suite-complete', (results) => {
+        console.log('Security test suite completed:', results);
+        
+        if (results.success) {
+          notifications.success('All security tests passed successfully!');
+        } else {
+          notifications.error(`Security testing failed with ${results.failedTests} failed tests.`);
+        }
+      });
+      
+      eventBus.on('security-test-suite-error', (data) => {
+        console.error('Security test suite error:', data.error);
+        notifications.error(`Security testing error: ${data.error.message}`);
+      });
+      
+      // Optional: Update intro card when tests are running
+      eventBus.on('security-test-module-start', () => {
+        const introCard = document.querySelector('.intro-card');
+        if (introCard) {
+          introCard.style.display = 'none';
+        }
+      });
+      
+      // Handle window close
+      window.addEventListener('beforeunload', () => {
+        // Perform any cleanup if needed
+      });
+    });
+  </script>
+</body>
+</html>
