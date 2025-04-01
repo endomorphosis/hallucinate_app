@@ -4,9 +4,9 @@
  * Tests the integration between authentication, keystore, and the security dashboard
  */
 
-import { authManager } from './auth.js';
-import { keystore } from './keystore.js';
-import { authKeystoreIntegration } from './auth_keystore_integration.js';
+import authManager from './auth.js';
+import keystore from './keystore.js';
+import authKeystoreIntegration from './auth_keystore_integration.js';
 import testAuthDashboard from './dashboard/test_auth_dashboard.js';
 
 /**

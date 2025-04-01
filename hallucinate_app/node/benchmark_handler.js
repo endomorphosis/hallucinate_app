@@ -18,7 +18,7 @@ import pythonBridge from '../../test/js/python_bridge.js';
 
 // Import required modules
 import testHandler from './test_handler.js';
-import { ipfsKit } from './ipfs_kit.js';
+import ipfsKitJS from './ipfs_kit.js';
 import { ipfsEmbeddings } from './ipfs_embeddings.js';
 import { ipfsFaiss } from './ipfs_faiss.js';
 

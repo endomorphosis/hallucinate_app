@@ -6,9 +6,9 @@
  * Implements secure access control for sensitive information
  */
 
-import { authManager } from '../auth.js';
-import { keystore } from '../keystore.js';
-import { authKeystoreIntegration } from '../auth_keystore_integration.js';
+import authManager from '../auth.js'; // Corrected: Import default export
+import keystore from '../keystore.js';
+import authKeystoreIntegration from '../auth_keystore_integration.js'; // Corrected: Import default export
 import NotificationSystem from './notifications.js';
 
 class AuthDashboard {

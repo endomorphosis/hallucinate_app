@@ -6,7 +6,7 @@
  * Implements proper error handling and access control
  */
 
-import { authManager } from './auth.js';
+import authManager from './auth.js'; // Corrected: Import default export
 import { ipfsFaiss } from './ipfs_faiss.js';
 
 // Define capability namespaces for FAISS operations

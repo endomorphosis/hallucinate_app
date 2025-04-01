@@ -6,9 +6,9 @@
  */
 
 import AuthDashboard from './auth_dashboard.js';
-import { authManager } from '../auth.js';
-import { keystore } from '../keystore.js';
-import { authKeystoreIntegration } from '../auth_keystore_integration.js';
+import authManager from '../auth.js';
+import keystore from '../keystore.js';
+import authKeystoreIntegration from '../auth_keystore_integration.js';
 
 // Mock element for testing
 class MockElement {

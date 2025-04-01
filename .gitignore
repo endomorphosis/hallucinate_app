@@ -6,3 +6,4 @@ out
 dist
 build
 config.toml
+.venv

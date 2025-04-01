@@ -1,64 +1,45 @@
-import os from 'os'
-import fs from 'fs'
-import path from 'path'
-import { parseToml, overrideToml } from '@mwni/toml'
+// Production configuration for hallucinate_app
+// This file defines real resource settings rather than using mock implementations.
 
-
-export const baseConfig = {
-	master: {
-		port: 8080,
-		tempPath: fs.mkdtempSync(
-			path.join(os.tmpdir(), 'cloudkit-')
-		)
-	}
-}
-
-export function findConfig(){
-	let paths = [
-		'./config.toml',
-		'../config.toml',
-        '../config/config.toml',
-        './config/config.toml'
-	]
-
-	let foundPath = paths.find(
-		p => fs.existsSync(p)
-	)
-
-	return foundPath
-		? path.resolve(foundPath)
-		: undefined
-}
-
-export function loadConfig( configPath, overrides = {}){
-	
-	return overrideToml(
-		baseConfig,
-		parseToml(fs.readFileSync(configPath), 'camelCase'),
-		overrides
-	)
-}
-
-export function requireConfig(opts){
-	let configPath
-	if (opts != undefined){
-		if (Object.keys(opts).includes('config')){
-			configPath = opts.config
-		}
-		else{
-			configPath = findConfig()
-		}
-	}
-	else{
-		configPath = findConfig()
-	}
-
-	if(!configPath){
-		console.error(`no config file found`)
-		console.log(`make sure config.toml is in the working directory`)
-		console.log(`or specify path using --config`)
-		process.exit(1)
-	}
-
-	return loadConfig(configPath)
-}
+module.exports = {
+  // Database resources configuration for production
+  databaseResources: {
+    orbitDb: {
+      provider: "real",
+      connectionString: "ipfs://orbitdb/production-db",
+      options: {
+        replicationFactor: 3
+      }
+    },
+    fireproofDb: {
+      provider: "real",
+      connectionString: "ipfs://fireproofdb/production-backup",
+      options: {
+        mirror: true
+      }
+    },
+    duckDb: {
+      provider: "real",
+      connectionString: "./data/duckdb/production.db",
+      options: {
+        enableIPLDConversion: true
+      }
+    }
+  },
+  // Synchronization directory for Database Sync Manager
+  syncDir: "./sync_test",
+  // Disable mock implementations in production
+  useMock: false,
+  
+  // Additional production configuration settings
+  ipfs: {
+    nodeAddress: "http://127.0.0.1:5001",
+    gateway: "https://ipfs.io/ipfs/"
+  },
+  auth: {
+    ucanExpirySeconds: 3600
+  },
+  keystore: {
+    encryptionKey: process.env.KEYSTORE_MASTER_KEY || "REPLACE_WITH_REAL_MASTER_KEY"
+  }
+};

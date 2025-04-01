@@ -1465,10 +1465,10 @@ class ModuleTestHandler {
 const testHandler = new ModuleTestHandler();
 
 // Import security modules
-import { authManager } from './auth.js';
-import { keystore } from './keystore.js';
-import { authKeystoreIntegration } from './auth_keystore_integration.js';
-import { secureFaissManager } from './secure_faiss_manager.js';
+import authManager from './auth.js';
+import keystore from './keystore.js';
+import authKeystoreIntegration from './auth_keystore_integration.js';
+import secureFaissManager from './secure_faiss_manager.js';
 import testSecurityIntegration from './test_security_integration.js';
 
 /**

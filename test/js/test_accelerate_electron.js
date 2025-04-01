@@ -1,5 +1,6 @@
 import { expect } from 'chai';
-import { app, BrowserWindow } from 'electron';
+import pkg from 'electron';
+const { app, BrowserWindow } = pkg;
 import path from 'path';
 import fs from 'fs';
 
@@ -136,6 +137,11 @@ class MockApp {
     
     // Test model loading
     await this.testModelLoading();
+    
+    // Simulate UI update by sending 'server-status'
+    if (this.accelerateWindow) {
+      this.accelerateWindow.webContents.send('server-status', {});
+    }
     
     // Test inference
     await this.testInference();
