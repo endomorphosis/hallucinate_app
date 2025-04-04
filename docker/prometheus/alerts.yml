@@ -1,0 +1,92 @@
+groups:
+- name: hallucinate_app_alerts
+  rules:
+  - alert: HighErrorRate
+    expr: sum(rate(ipfs_kit_bridge_errors_total[5m])) / sum(rate(ipfs_kit_bridge_operations_total[5m])) > 0.1
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High error rate in IPFS Kit operations"
+      description: "Error rate is {{ $value | humanizePercentage }} over the last 5 minutes."
+
+  - alert: SlowOperations
+    expr: histogram_quantile(0.95, sum(rate(ipfs_kit_bridge_operation_duration_seconds_bucket[5m])) by (le, operation)) > 1
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Slow IPFS operations detected"
+      description: "95th percentile operation duration for {{ $labels.operation }} is {{ $value }}s"
+
+  - alert: HighMemoryUsage
+    expr: ipfs_kit_bridge_system_memory_usage_bytes > 1e9
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High memory usage"
+      description: "Memory usage is {{ $value | humanizeBytes }}"
+
+  - alert: LongUptimeWithoutRestart
+    expr: ipfs_kit_bridge_process_uptime_seconds > 86400
+    for: 1h
+    labels:
+      severity: info
+    annotations:
+      summary: "Process has been running for over 24 hours"
+      description: "Consider restarting to apply any updates or prevent memory leaks."
+
+  - alert: MetadataIndexNotGrowing
+    expr: rate(ipfs_kit_bridge_metadata_index_operations_total{operation="add"}[30m]) == 0
+    for: 6h
+    labels:
+      severity: info
+    annotations:
+      summary: "Metadata index not growing"
+      description: "No new entries have been added to the metadata index in the last 6 hours."
+
+  - alert: HighCPUUsage
+    expr: ipfs_kit_bridge_system_cpu_usage_percent > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High CPU usage"
+      description: "CPU usage is {{ $value }}% for more than 5 minutes."
+
+  - alert: SDKGenerationFailure
+    expr: increase(sdk_generator_operations_total{status="error"}[15m]) > 0
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "SDK generation failures detected"
+      description: "{{ $value }} SDK generation failures in the last 15 minutes."
+
+  - alert: SlowSDKGeneration
+    expr: histogram_quantile(0.95, sum(rate(sdk_generator_operation_duration_seconds_bucket[5m])) by (le, language)) > 300
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Slow SDK generation detected"
+      description: "95th percentile SDK generation for {{ $labels.language }} takes more than 5 minutes."
+      
+  - alert: ObservabilityComponentDown
+    expr: absent(up{job="hallucinate_app"}) == 1
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Observability component is down"
+      description: "The hallucinate_app metrics endpoint is not reachable for more than 5 minutes."
+      
+  - alert: PersistentHighErrorRate
+    expr: sum(rate(ipfs_kit_bridge_errors_total[1h])) / sum(rate(ipfs_kit_bridge_operations_total[1h])) > 0.05
+    for: 30m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Persistent high error rate detected"
+      description: "Error rate has been above 5% for more than 30 minutes: {{ $value | humanizePercentage }}"

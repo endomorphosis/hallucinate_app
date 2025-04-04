@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: 'IPFS Kit Dashboards'
+    orgId: 1
+    folder: 'IPFS Kit'
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards

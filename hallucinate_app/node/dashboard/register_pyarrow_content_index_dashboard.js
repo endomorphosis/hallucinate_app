@@ -8,6 +8,8 @@
 
 // Import required modules
 import PyArrowIndexBridge from '../pyarrow_index_bridge.js';
+import securePyArrowIndexManager, { PYARROW_INDEX_CAPABILITIES } from '../secure_pyarrow_index_manager.js';
+import authManager from '../auth.js';
 import { get_observability } from '../observability.js';
 
 /**
@@ -48,25 +50,67 @@ export async function registerPyArrowContentIndexDashboard(dashboard, options = 
       }
     } : {};
 
-    // Create PyArrow Index Bridge instance
-    const pyarrowIndexBridge = new PyArrowIndexBridge({
-      pythonBridge,
-      resources,
-      indexPath: config.indexPath,
-      useArrow: config.useArrow !== false,
-      observabilityOptions
-    });
-
-    // Initialize the bridge
-    const initResult = await pyarrowIndexBridge.init();
-    if (!initResult) {
-      throw new Error('Failed to initialize PyArrow Index Bridge');
+    // Initialize auth manager if needed
+    if (!authManager.initialized) {
+      await authManager.init();
+    }
+    
+    // Determine whether to use the secure manager or direct bridge
+    const useSecureManager = config.useSecureManager !== false; // Default to true
+    
+    let pyarrowIndexBridge;
+    let secureManager;
+    
+    if (useSecureManager) {
+      // Use the secure manager for capability-based access control
+      secureManager = securePyArrowIndexManager;
+      
+      // Initialize with resources
+      secureManager.resources = {
+        ...secureManager.resources,
+        pythonBridge,
+        auth: authManager,
+        ...resources
+      };
+      
+      secureManager.metadata = {
+        ...secureManager.metadata,
+        indexPath: config.indexPath,
+        useArrow: config.useArrow !== false,
+        observabilityOptions
+      };
+      
+      // Initialize the secure manager
+      const secureInitResult = await secureManager.init();
+      if (!secureInitResult) {
+        throw new Error('Failed to initialize Secure PyArrow Index Manager');
+      }
+      
+      // Use the underlying bridge for some operations
+      pyarrowIndexBridge = secureManager.indexBridge;
+    } else {
+      // Create direct PyArrow Index Bridge instance without security
+      pyarrowIndexBridge = new PyArrowIndexBridge({
+        pythonBridge,
+        resources,
+        indexPath: config.indexPath,
+        useArrow: config.useArrow !== false,
+        observabilityOptions
+      });
+      
+      // Initialize the bridge
+      const initResult = await pyarrowIndexBridge.init();
+      if (!initResult) {
+        throw new Error('Failed to initialize PyArrow Index Bridge');
+      }
     }
 
-    // Add bridge to resources for dashboard to use
+    // Add resources for dashboard to use
     const dashboardResources = {
       ...resources,
-      pyarrowIndexBridge
+      pyarrowIndexBridge,
+      securePyArrowIndexManager: secureManager,
+      authManager
     };
 
     // Add dashboard panel and register event handlers
@@ -111,10 +155,36 @@ export async function registerPyArrowContentIndexDashboard(dashboard, options = 
 
     // Register IPC handlers for dashboard-backend communication
     if (dashboard.ipc) {
-      // Register handlers for PyArrow Content Index operations
+      // Get or create an auth token for operations
+      const getAuthToken = async (capability) => {
+        try {
+          // If secure mode, get a token, otherwise return null (bypass security)
+          if (useSecureManager) {
+            return await authManager.getCapabilityToken(capability);
+          }
+          return null;
+        } catch (error) {
+          console.error(`Error getting auth token for ${capability}:`, error);
+          return null;
+        }
+      };
+      
+      // Use appropriate manager based on security mode
+      const getManager = () => {
+        return useSecureManager ? secureManager : pyarrowIndexBridge;
+      };
+      
+      // Register handlers with security integration
       dashboard.ipc.handle('pyarrow-content-index:lookup-by-cid', async (event, cid) => {
         try {
-          return await pyarrowIndexBridge.lookupByCid(cid);
+          const manager = getManager();
+          
+          if (useSecureManager) {
+            const authToken = await getAuthToken(PYARROW_INDEX_CAPABILITIES.READ);
+            return await manager.lookupByCid(cid, authToken);
+          } else {
+            return await manager.lookupByCid(cid);
+          }
         } catch (error) {
           console.error(`Error looking up CID ${cid}:`, error);
           throw error;
@@ -123,7 +193,14 @@ export async function registerPyArrowContentIndexDashboard(dashboard, options = 
 
       dashboard.ipc.handle('pyarrow-content-index:lookup-by-path', async (event, path) => {
         try {
-          return await pyarrowIndexBridge.lookupByPath(path);
+          const manager = getManager();
+          
+          if (useSecureManager) {
+            const authToken = await getAuthToken(PYARROW_INDEX_CAPABILITIES.READ);
+            return await manager.lookupByPath(path, authToken);
+          } else {
+            return await manager.lookupByPath(path);
+          }
         } catch (error) {
           console.error(`Error looking up path ${path}:`, error);
           throw error;
@@ -132,7 +209,14 @@ export async function registerPyArrowContentIndexDashboard(dashboard, options = 
 
       dashboard.ipc.handle('pyarrow-content-index:query', async (event, queryParams) => {
         try {
-          return await pyarrowIndexBridge.query(queryParams);
+          const manager = getManager();
+          
+          if (useSecureManager) {
+            const authToken = await getAuthToken(PYARROW_INDEX_CAPABILITIES.READ);
+            return await manager.query(queryParams, authToken);
+          } else {
+            return await manager.query(queryParams);
+          }
         } catch (error) {
           console.error('Error querying content index:', error);
           throw error;
@@ -141,7 +225,14 @@ export async function registerPyArrowContentIndexDashboard(dashboard, options = 
 
       dashboard.ipc.handle('pyarrow-content-index:get-stats', async () => {
         try {
-          return await pyarrowIndexBridge.getStats();
+          const manager = getManager();
+          
+          if (useSecureManager) {
+            const authToken = await getAuthToken(PYARROW_INDEX_CAPABILITIES.READ);
+            return await manager.getStats(authToken);
+          } else {
+            return await manager.getStats();
+          }
         } catch (error) {
           console.error('Error getting content index stats:', error);
           throw error;
@@ -150,7 +241,14 @@ export async function registerPyArrowContentIndexDashboard(dashboard, options = 
 
       dashboard.ipc.handle('pyarrow-content-index:add-entry', async (event, entry) => {
         try {
-          return await pyarrowIndexBridge.addEntry(entry);
+          const manager = getManager();
+          
+          if (useSecureManager) {
+            const authToken = await getAuthToken(PYARROW_INDEX_CAPABILITIES.WRITE);
+            return await manager.addEntry(entry, authToken);
+          } else {
+            return await manager.addEntry(entry);
+          }
         } catch (error) {
           console.error('Error adding content index entry:', error);
           throw error;
@@ -159,7 +257,14 @@ export async function registerPyArrowContentIndexDashboard(dashboard, options = 
 
       dashboard.ipc.handle('pyarrow-content-index:update-entry', async (event, cid, updateData) => {
         try {
-          return await pyarrowIndexBridge.updateEntry(cid, updateData);
+          const manager = getManager();
+          
+          if (useSecureManager) {
+            const authToken = await getAuthToken(PYARROW_INDEX_CAPABILITIES.WRITE);
+            return await manager.updateEntry(cid, updateData, authToken);
+          } else {
+            return await manager.updateEntry(cid, updateData);
+          }
         } catch (error) {
           console.error(`Error updating content index entry ${cid}:`, error);
           throw error;
@@ -168,7 +273,14 @@ export async function registerPyArrowContentIndexDashboard(dashboard, options = 
 
       dashboard.ipc.handle('pyarrow-content-index:delete-entry', async (event, cid) => {
         try {
-          return await pyarrowIndexBridge.deleteEntry(cid);
+          const manager = getManager();
+          
+          if (useSecureManager) {
+            const authToken = await getAuthToken(PYARROW_INDEX_CAPABILITIES.DELETE);
+            return await manager.deleteEntry(cid, authToken);
+          } else {
+            return await manager.deleteEntry(cid);
+          }
         } catch (error) {
           console.error(`Error deleting content index entry ${cid}:`, error);
           throw error;
@@ -177,7 +289,14 @@ export async function registerPyArrowContentIndexDashboard(dashboard, options = 
 
       dashboard.ipc.handle('pyarrow-content-index:sync-with-ipfs-pinset', async (event, includeMetadata) => {
         try {
-          return await pyarrowIndexBridge.syncWithIpfsPinset(includeMetadata);
+          const manager = getManager();
+          
+          if (useSecureManager) {
+            const authToken = await getAuthToken(PYARROW_INDEX_CAPABILITIES.SYNC);
+            return await manager.syncWithIpfsPinset(includeMetadata, authToken);
+          } else {
+            return await manager.syncWithIpfsPinset(includeMetadata);
+          }
         } catch (error) {
           console.error('Error syncing content index with IPFS pinset:', error);
           throw error;
@@ -186,7 +305,14 @@ export async function registerPyArrowContentIndexDashboard(dashboard, options = 
 
       dashboard.ipc.handle('pyarrow-content-index:export-to-parquet', async (event, exportPath) => {
         try {
-          return await pyarrowIndexBridge.exportToParquet(exportPath);
+          const manager = getManager();
+          
+          if (useSecureManager) {
+            const authToken = await getAuthToken(PYARROW_INDEX_CAPABILITIES.EXPORT);
+            return await manager.exportToParquet(exportPath, authToken);
+          } else {
+            return await manager.exportToParquet(exportPath);
+          }
         } catch (error) {
           console.error(`Error exporting content index to Parquet ${exportPath}:`, error);
           throw error;
@@ -195,7 +321,14 @@ export async function registerPyArrowContentIndexDashboard(dashboard, options = 
 
       dashboard.ipc.handle('pyarrow-content-index:import-from-parquet', async (event, importPath) => {
         try {
-          return await pyarrowIndexBridge.importFromParquet(importPath);
+          const manager = getManager();
+          
+          if (useSecureManager) {
+            const authToken = await getAuthToken(PYARROW_INDEX_CAPABILITIES.IMPORT);
+            return await manager.importFromParquet(importPath, authToken);
+          } else {
+            return await manager.importFromParquet(importPath);
+          }
         } catch (error) {
           console.error(`Error importing content index from Parquet ${importPath}:`, error);
           throw error;
@@ -204,9 +337,50 @@ export async function registerPyArrowContentIndexDashboard(dashboard, options = 
 
       dashboard.ipc.handle('pyarrow-content-index:test', async () => {
         try {
-          return await pyarrowIndexBridge.test();
+          const manager = getManager();
+          return await manager.test();
         } catch (error) {
           console.error('Error running content index test:', error);
+          throw error;
+        }
+      });
+      
+      // Add security-specific handlers
+      dashboard.ipc.handle('pyarrow-content-index:get-security-status', async () => {
+        try {
+          if (useSecureManager) {
+            return secureManager.getSecurityStatus();
+          } else {
+            return {
+              module: 'pyarrow_index',
+              initialized: true,
+              secure_mode: false,
+              message: 'Running in non-secure mode - security not enabled'
+            };
+          }
+        } catch (error) {
+          console.error('Error getting security status:', error);
+          throw error;
+        }
+      });
+      
+      dashboard.ipc.handle('pyarrow-content-index:issue-capability', async (event, capability, resource) => {
+        try {
+          if (!useSecureManager) {
+            throw new Error('Security not enabled - cannot issue capabilities');
+          }
+          
+          // Issue a capability token for the requested operation
+          const token = await authManager.getCapabilityToken(`${capability}:${resource || '*'}`);
+          return {
+            token,
+            capability,
+            resource: resource || '*',
+            issued_at: new Date().toISOString(),
+            secure_mode: true
+          };
+        } catch (error) {
+          console.error(`Error issuing capability ${capability}:`, error);
           throw error;
         }
       });
@@ -216,7 +390,9 @@ export async function registerPyArrowContentIndexDashboard(dashboard, options = 
     return {
       success: true,
       message: 'PyArrow Content Index dashboard registered successfully',
-      bridge: pyarrowIndexBridge
+      bridge: pyarrowIndexBridge,
+      secureManager: useSecureManager ? secureManager : null,
+      secureMode: useSecureManager
     };
   } catch (error) {
     console.error('Failed to register PyArrow Content Index dashboard:', error);

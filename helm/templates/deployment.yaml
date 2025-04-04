@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "hallucinate-app.fullname" . }}
+  labels:
+    {{- include "hallucinate-app.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "hallucinate-app.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "hallucinate-app.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "hallucinate-app.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: OBSERVABILITY_PROMETHEUS_ENABLED
+              value: "{{ .Values.observability.prometheusEnabled }}"
+            - name: OBSERVABILITY_PROMETHEUS_PORT
+              value: "{{ .Values.observability.prometheusPort }}"
+            - name: OBSERVABILITY_SYSTEM_METRICS_ENABLED
+              value: "{{ .Values.observability.systemMetricsEnabled }}"
+            - name: OBSERVABILITY_SYSTEM_METRICS_INTERVAL
+              value: "{{ .Values.observability.systemMetricsInterval }}"
+            - name: OBSERVABILITY_LOGGING_LEVEL
+              value: "{{ .Values.observability.logging.level }}"
+            - name: OBSERVABILITY_LOGGING_JSON_FORMAT
+              value: "{{ .Values.observability.logging.jsonFormat }}"
+            - name: OBSERVABILITY_LOGGING_INCLUDE_TIMESTAMP
+              value: "{{ .Values.observability.logging.includeTimestamp }}"
+            {{- if .Values.observability.logging.logFilePath }}
+            - name: OBSERVABILITY_LOGGING_FILE_PATH
+              value: "{{ .Values.observability.logging.logFilePath }}"
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+            - name: metrics
+              containerPort: {{ .Values.service.metricsPort }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 15
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "hallucinate-app.fullname" . }}-config
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

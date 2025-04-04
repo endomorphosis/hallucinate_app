@@ -9,6 +9,7 @@
     "test:bridge": "node test/js/test_accelerate_bridge.js",
     "test:electron": "node test/js/test_accelerate_electron.js",
     "test:python": "python test/python/test_accelerate_server.py",
+    "test:ipfs-kit": "node test/js/test_ipfs_kit_dashboard.js",
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make"

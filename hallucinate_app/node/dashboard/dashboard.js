@@ -8,6 +8,7 @@
 
 import AuthDashboard from './auth_dashboard.js';
 import ModelManagerDashboard from './model_manager_dashboard.js';
+import IPFSKitDashboard from './ipfs_kit_dashboard.js';
 
 class Dashboard {
   /**
@@ -124,6 +125,23 @@ class Dashboard {
       component: modelManagerDashboard,
       element: modelManagerContainer,
       icon: 'cubes'
+    });
+    
+    // Create IPFS Kit dashboard panel
+    const ipfsKitContainer = document.createElement('div');
+    ipfsKitContainer.id = 'ipfs-kit-dashboard-container';
+    
+    const ipfsKitDashboard = new IPFSKitDashboard({
+      element: ipfsKitContainer,
+      eventBus: this.eventBus
+    });
+    
+    this.addPanel({
+      id: 'ipfs-kit',
+      title: 'IPFS Kit',
+      component: ipfsKitDashboard,
+      element: ipfsKitContainer,
+      icon: 'network-wired'
     });
     
     // Add more dashboard panels here as they are implemented

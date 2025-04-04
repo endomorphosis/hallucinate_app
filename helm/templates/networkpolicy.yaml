@@ -1,0 +1,32 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "hallucinate-app.fullname" . }}
+  labels:
+    {{- include "hallucinate-app.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "hallucinate-app.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Ingress
+  ingress:
+    # Allow ingress traffic to the application port
+    - ports:
+        - port: {{ .Values.service.port }}
+          protocol: TCP
+    # Allow ingress traffic to the metrics port
+    - ports:
+        - port: {{ .Values.service.metricsPort }}
+          protocol: TCP
+      {{- if .Values.networkPolicy.metricsNamespaceSelector }}
+      from:
+        - namespaceSelector:
+            {{- toYaml .Values.networkPolicy.metricsNamespaceSelector | nindent 12 }}
+      {{- else if .Values.networkPolicy.metricsPodSelector }}
+      from:
+        - podSelector:
+            {{- toYaml .Values.networkPolicy.metricsPodSelector | nindent 12 }}
+      {{- end }}
+{{- end }}

@@ -77,6 +77,29 @@ const createWindow = () => {
   return mainWindow;
 };
 
+// Create a window for the IPFS Kit Dashboard
+const createIPFSKitDashboardWindow = () => {
+  const win = new BrowserWindow({
+    width: 1280,
+    height: 900,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false
+    },
+    title: 'IPFS Kit Dashboard',
+    icon: path.join(__dirname, 'hallucinate_app', 'assets', 'icon.png')
+  });
+
+  win.loadFile(path.join(__dirname, 'hallucinate_app', 'node', 'views', 'ipfs_kit_dashboard.html'));
+  
+  // Open the DevTools in development
+  if (process.env.NODE_ENV === 'development') {
+    win.webContents.openDevTools();
+  }
+  
+  return win;
+};
+
 // Create application menu
 const createAppMenu = () => {
   const appMenu = Menu.buildFromTemplate([
@@ -119,6 +142,12 @@ const createAppMenu = () => {
           label: 'Model Tester',
           click: () => {
             createModelTesterWindow();
+          }
+        },
+        {
+          label: 'IPFS Kit Dashboard',
+          click: () => {
+            createIPFSKitDashboardWindow();
           }
         }
       ]
