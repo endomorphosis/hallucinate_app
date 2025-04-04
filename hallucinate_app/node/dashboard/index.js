@@ -11,6 +11,7 @@ const PyArrowContentIndexDashboard = require('./pyarrow_content_index_dashboard'
 import AuthDashboard from './auth_dashboard.js';
 import UsageDashboard from './usage_dashboard.js';
 import SecurityTestDashboard from './security_test_dashboard.js';
+import { registerPyArrowContentIndexDashboard } from './register_pyarrow_content_index_dashboard.js';
 
 /**
  * Initialize all dashboards
@@ -275,5 +276,6 @@ module.exports = {
   UsageDashboard,
   SecurityTestDashboard,
   initializeDashboards,
-  createErrorReporter
+  createErrorReporter,
+  registerPyArrowContentIndexDashboard
 };
