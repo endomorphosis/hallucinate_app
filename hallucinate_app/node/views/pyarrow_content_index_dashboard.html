@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PyArrow Content Index Dashboard</title>
+  
+  <!-- Add Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  
+  <style>
+    /* Base styles */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f7fa;
+      color: #2d3748;
+      line-height: 1.5;
+    }
+    
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    /* Dashboard container */
+    #dashboard-container {
+      margin-top: 1rem;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      min-height: 800px;
+    }
+    
+    /* Page header */
+    .page-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .page-header h1 {
+      margin: 0;
+      color: #2d3748;
+      font-size: 2rem;
+    }
+    
+    .page-header p {
+      margin: 0.5rem 0 0;
+      color: #718096;
+      font-size: 1.125rem;
+    }
+
+    /* Tab Container */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #e2e8f0;
+      margin-bottom: 1rem;
+    }
+    
+    .tab {
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      font-weight: 500;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s ease;
+    }
+    
+    .tab:hover {
+      background-color: #f7fafc;
+    }
+    
+    .tab.active {
+      border-bottom-color: #4299e1;
+      color: #4299e1;
+    }
+    
+    /* Tab Content */
+    .tab-content {
+      display: none;
+      padding: 1.5rem;
+    }
+    
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    
+    /* Grid layout */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    /* Card layout */
+    .card {
+      background-color: #fff;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      transition: all 0.2s ease;
+    }
+    
+    .card:hover {
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    
+    .card-title {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    
+    .card-subtitle {
+      margin: 0.25rem 0 0;
+      color: #718096;
+      font-size: 0.875rem;
+    }
+    
+    .card-icon {
+      font-size: 1.5rem;
+      color: #4299e1;
+    }
+    
+    .card-content {
+      margin-bottom: 1rem;
+    }
+    
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+    }
+    
+    .btn-primary {
+      background-color: #4299e1;
+      color: #fff;
+    }
+    
+    .btn-primary:hover {
+      background-color: #3182ce;
+    }
+    
+    .btn-secondary {
+      background-color: #e2e8f0;
+      color: #2d3748;
+    }
+    
+    .btn-secondary:hover {
+      background-color: #cbd5e0;
+    }
+    
+    .btn-danger {
+      background-color: #f56565;
+      color: #fff;
+    }
+    
+    .btn-danger:hover {
+      background-color: #e53e3e;
+    }
+    
+    .btn-sm {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+    }
+    
+    .btn-icon {
+      margin-right: 0.5rem;
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.875rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.375rem;
+      transition: all 0.2s ease;
+    }
+    
+    .form-control:focus {
+      border-color: #4299e1;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+    }
+    
+    /* Action Bar */
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding: 0.75rem 1rem;
+      background-color: #f7fafc;
+      border-radius: 0.5rem;
+    }
+    
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .search-box {
+      position: relative;
+      flex: 1;
+      max-width: 300px;
+    }
+    
+    .search-box input {
+      width: 100%;
+      padding: 0.5rem 0.75rem 0.5rem 2rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.375rem;
+    }
+    
+    .search-box i {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #a0aec0;
+    }
+    
+    /* Tables */
+    .table-container {
+      overflow-x: auto;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      margin-bottom: 1.5rem;
+    }
+    
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .table th,
+    .table td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .table th {
+      background-color: #f7fafc;
+      font-weight: 600;
+      color: #4a5568;
+    }
+    
+    .table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .table tr:hover td {
+      background-color: #f7fafc;
+    }
+    
+    .table .actions-cell {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: flex-end;
+    }
+    
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 9999px;
+    }
+    
+    .badge-blue {
+      background-color: #ebf8ff;
+      color: #3182ce;
+    }
+    
+    .badge-green {
+      background-color: #f0fff4;
+      color: #38a169;
+    }
+    
+    .badge-yellow {
+      background-color: #fffaf0;
+      color: #dd6b20;
+    }
+    
+    .badge-red {
+      background-color: #fff5f5;
+      color: #e53e3e;
+    }
+    
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .modal {
+      width: 100%;
+      max-width: 600px;
+      background-color: #fff;
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      transform: translateY(-20px);
+      transition: all 0.3s ease;
+    }
+    
+    .modal-overlay.active .modal {
+      transform: translateY(0);
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .modal-title {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #a0aec0;
+      transition: color 0.2s ease;
+    }
+    
+    .modal-close:hover {
+      color: #4a5568;
+    }
+    
+    .modal-body {
+      padding: 1.5rem;
+    }
+    
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      padding: 1rem 1.5rem;
+      border-top: 1px solid #e2e8f0;
+      gap: 0.5rem;
+    }
+    
+    /* Statistics Section */
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .stat-card {
+      background-color: #fff;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #4299e1;
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+      font-size: 0.875rem;
+      color: #718096;
+    }
+    
+    /* Visualizations */
+    .visualization {
+      background-color: #fff;
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      margin-bottom: 1.5rem;
+    }
+    
+    .visualization-title {
+      margin-top: 0;
+      margin-bottom: 1rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    
+    /* Utility Classes */
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-4 { margin-bottom: 1rem; }
+    .mb-5 { margin-bottom: 1.5rem; }
+    
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-2 { margin-top: 0.5rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-4 { margin-top: 1rem; }
+    .mt-5 { margin-top: 1.5rem; }
+    
+    .flex { display: flex; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .justify-end { justify-content: flex-end; }
+    .gap-2 { gap: 0.5rem; }
+    
+    .text-sm { font-size: 0.875rem; }
+    .text-xs { font-size: 0.75rem; }
+    .text-gray { color: #718096; }
+    .text-center { text-align: center; }
+
+    /* Loading State */
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 200px;
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(66, 153, 225, 0.2);
+      border-radius: 50%;
+      border-top-color: #4299e1;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.3s ease-in-out;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="page-header">
+      <h1>PyArrow Content Index Dashboard</h1>
+      <p>Manage and explore your content metadata index</p>
+    </div>
+    
+    <div id="dashboard-container">
+      <!-- Tab Navigation -->
+      <div class="tabs">
+        <div class="tab active" data-tab="overview">Overview</div>
+        <div class="tab" data-tab="browser">Content Browser</div>
+        <div class="tab" data-tab="add">Add Content</div>
+        <div class="tab" data-tab="sync">Synchronization</div>
+        <div class="tab" data-tab="stats">Statistics</div>
+      </div>
+      
+      <!-- Overview Tab -->
+      <div id="overview-tab" class="tab-content active">
+        <div class="stats-container">
+          <div class="stat-card">
+            <div class="stat-value" id="total-entries">0</div>
+            <div class="stat-label">Total Entries</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="total-size">0</div>
+            <div class="stat-label">Total Size</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="entry-types">0</div>
+            <div class="stat-label">Content Types</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="last-updated">-</div>
+            <div class="stat-label">Last Updated</div>
+          </div>
+        </div>
+        
+        <div class="action-bar">
+          <h3 class="mb-0">Quick Actions</h3>
+          <div class="actions">
+            <button id="refresh-index-btn" class="btn btn-primary"><i class="fas fa-sync-alt btn-icon"></i> Refresh Index</button>
+            <button id="sync-pinset-btn" class="btn btn-secondary"><i class="fas fa-exchange-alt btn-icon"></i> Sync with IPFS</button>
+            <button id="export-index-btn" class="btn btn-secondary"><i class="fas fa-file-export btn-icon"></i> Export Index</button>
+          </div>
+        </div>
+        
+        <div class="grid">
+          <div class="visualization">
+            <h3 class="visualization-title">Content Type Distribution</h3>
+            <div id="content-type-chart" class="chart-container" style="height: 300px;">
+              <div class="loading">
+                <div class="spinner"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="visualization">
+            <h3 class="visualization-title">Size Distribution</h3>
+            <div id="size-chart" class="chart-container" style="height: 300px;">
+              <div class="loading">
+                <div class="spinner"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="visualization">
+          <h3 class="visualization-title">Recent Content</h3>
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>CID</th>
+                  <th>Path</th>
+                  <th>MIME Type</th>
+                  <th>Size</th>
+                  <th>Added Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="recent-content-table">
+                <tr>
+                  <td colspan="6" class="text-center">Loading recent content...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Content Browser Tab -->
+      <div id="browser-tab" class="tab-content">
+        <div class="action-bar">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="search-input" placeholder="Search by CID, path, or metadata...">
+          </div>
+          <div class="actions">
+            <select id="filter-type" class="form-control">
+              <option value="all">All Types</option>
+              <option value="image">Images</option>
+              <option value="video">Videos</option>
+              <option value="document">Documents</option>
+              <option value="model">Models</option>
+              <option value="dataset">Datasets</option>
+            </select>
+            <select id="sort-by" class="form-control">
+              <option value="date_desc">Newest First</option>
+              <option value="date_asc">Oldest First</option>
+              <option value="size_desc">Largest First</option>
+              <option value="size_asc">Smallest First</option>
+              <option value="path">Path (A-Z)</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>CID</th>
+                <th>Path</th>
+                <th>Type</th>
+                <th>Size</th>
+                <th>Added Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="content-browser-table">
+              <tr>
+                <td colspan="6" class="text-center">Loading content index...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="flex justify-between items-center mt-4">
+          <div class="text-sm text-gray">
+            Showing <span id="showing-count">0</span> of <span id="total-count">0</span> entries
+          </div>
+          <div class="pagination">
+            <button id="prev-page-btn" class="btn btn-secondary btn-sm" disabled>Previous</button>
+            <span id="current-page" class="mx-2">Page 1</span>
+            <button id="next-page-btn" class="btn btn-secondary btn-sm" disabled>Next</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Add Content Tab -->
+      <div id="add-tab" class="tab-content">
+        <div class="card">
+          <h2 class="card-title mb-4">Add New Content Entry</h2>
+          <form id="add-entry-form">
+            <div class="form-group">
+              <label class="form-label" for="add-cid">Content Identifier (CID)*</label>
+              <input type="text" id="add-cid" class="form-control" placeholder="bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi" required>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="add-path">Path*</label>
+              <input type="text" id="add-path" class="form-control" placeholder="/models/stable-diffusion/v1.5/model.ckpt" required>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="add-mimetype">MIME Type</label>
+              <input type="text" id="add-mimetype" class="form-control" placeholder="application/octet-stream">
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="add-size">Size (bytes)</label>
+              <input type="number" id="add-size" class="form-control" placeholder="1024">
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="add-metadata">Additional Metadata (JSON)</label>
+              <textarea id="add-metadata" class="form-control" rows="6" placeholder='{
+  "tags": ["model", "stable-diffusion"],
+  "locations": {
+    "huggingface": {
+      "repo_id": "runwayml/stable-diffusion-v1-5",
+      "path": "v1-5-pruned-emaonly.ckpt"
+    }
+  }
+}'></textarea>
+            </div>
+            
+            <div class="flex justify-end">
+              <button type="button" id="clear-form-btn" class="btn btn-secondary mr-2">Clear Form</button>
+              <button type="submit" class="btn btn-primary">Add Entry</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      <!-- Synchronization Tab -->
+      <div id="sync-tab" class="tab-content">
+        <div class="grid">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">IPFS Pinset Synchronization</h3>
+              <i class="fas fa-exchange-alt card-icon"></i>
+            </div>
+            <div class="card-content">
+              <p>Synchronize your content index with the IPFS pinset to ensure consistency between your local IPFS node and the content index.</p>
+              <div class="form-group">
+                <label class="form-label">
+                  <input type="checkbox" id="include-metadata-checkbox"> Include metadata collection (slower)
+                </label>
+                <p class="text-sm text-gray mt-1">When enabled, additional metadata like size and MIME type will be collected for new pins.</p>
+              </div>
+            </div>
+            <button id="start-sync-btn" class="btn btn-primary">Start Synchronization</button>
+          </div>
+          
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Export/Import</h3>
+              <i class="fas fa-file-export card-icon"></i>
+            </div>
+            <div class="card-content">
+              <p>Export your content index to a Parquet file for backup or transfer to another system, or import from an existing Parquet file.</p>
+              <div class="form-group">
+                <label class="form-label" for="export-path">Export Path</label>
+                <input type="text" id="export-path" class="form-control" placeholder="/path/to/export.parquet">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="import-path">Import Path</label>
+                <input type="text" id="import-path" class="form-control" placeholder="/path/to/import.parquet">
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <button id="export-btn" class="btn btn-secondary">Export Index</button>
+              <button id="import-btn" class="btn btn-secondary">Import Index</button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card mt-5">
+          <div class="card-header">
+            <h3 class="card-title">Synchronization History</h3>
+            <i class="fas fa-history card-icon"></i>
+          </div>
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Operation</th>
+                  <th>Added</th>
+                  <th>Updated</th>
+                  <th>Removed</th>
+                  <th>Duration</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="sync-history-table">
+                <tr>
+                  <td colspan="7" class="text-center">No synchronization history available</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Statistics Tab -->
+      <div id="stats-tab" class="tab-content">
+        <div class="visualization">
+          <h3 class="visualization-title">Index Operations</h3>
+          <div id="operations-chart" class="chart-container" style="height: 300px;">
+            <div class="loading">
+              <div class="spinner"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="grid">
+          <div class="visualization">
+            <h3 class="visualization-title">File Type Distribution</h3>
+            <div id="file-type-chart" class="chart-container" style="height: 300px;">
+              <div class="loading">
+                <div class="spinner"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="visualization">
+            <h3 class="visualization-title">Size by Content Type</h3>
+            <div id="size-by-type-chart" class="chart-container" style="height: 300px;">
+              <div class="loading">
+                <div class="spinner"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="visualization">
+          <h3 class="visualization-title">Performance Metrics</h3>
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Operation</th>
+                  <th>Count</th>
+                  <th>Avg. Duration (ms)</th>
+                  <th>Min Duration (ms)</th>
+                  <th>Max Duration (ms)</th>
+                  <th>Last Executed</th>
+                </tr>
+              </thead>
+              <tbody id="performance-metrics-table">
+                <tr>
+                  <td colspan="6" class="text-center">Loading performance metrics...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Content Details Modal -->
+  <div id="content-details-modal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Content Details</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body" id="content-details-body">
+        <div class="loading">
+          <div class="spinner"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-danger" id="delete-content-btn">Delete</button>
+        <button class="btn btn-secondary modal-close-btn">Close</button>
+      </div>
+    </div>
+  </div>
+  
+  <script type="module">
+    import { registerPyArrowContentIndexDashboard } from '../dashboard/register_pyarrow_content_index_dashboard.js';
+    
+    // Initialize the dashboard when the page loads
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        // Register and initialize the PyArrow Content Index dashboard
+        const result = await registerPyArrowContentIndexDashboard({
+          container: document.getElementById('dashboard-container')
+        });
+        
+        if (!result || !result.success) {
+          console.error('Failed to initialize PyArrow Content Index dashboard:', result?.message);
+          document.getElementById('dashboard-container').innerHTML = `
+            <div class="error-message" style="padding: 2rem; text-align: center;">
+              <i class="fas fa-exclamation-circle" style="font-size: 3rem; display: block; margin-bottom: 1rem;"></i>
+              <h2>Dashboard Initialization Failed</h2>
+              <p>${result?.message || 'There was a problem initializing the dashboard. Please check the console for details.'}</p>
+            </div>
+          `;
+        }
+        
+        // Set up tab navigation
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        tabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            // Remove active class from all tabs and contents
+            tabs.forEach(t => t.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+            
+            // Add active class to selected tab and content
+            tab.classList.add('active');
+            const tabId = tab.dataset.tab;
+            document.getElementById(`${tabId}-tab`).classList.add('active');
+          });
+        });
+        
+        // Set up modal close functionality
+        const modal = document.getElementById('content-details-modal');
+        const closeButtons = document.querySelectorAll('.modal-close, .modal-close-btn');
+        
+        closeButtons.forEach(button => {
+          button.addEventListener('click', () => {
+            modal.classList.remove('active');
+          });
+        });
+        
+        // Close modal when clicking outside
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) {
+            modal.classList.remove('active');
+          }
+        });
+        
+      } catch (error) {
+        console.error('Error initializing dashboard:', error);
+        document.getElementById('dashboard-container').innerHTML = `
+          <div class="error-message" style="padding: 2rem; text-align: center;">
+            <i class="fas fa-exclamation-circle" style="font-size: 3rem; display: block; margin-bottom: 1rem;"></i>
+            <h2>Error</h2>
+            <p>${error.message}</p>
+          </div>
+        `;
+      }
+    });
+  </script>
+</body>
+</html>

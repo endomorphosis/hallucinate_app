@@ -134,7 +134,27 @@ function initializeDashboards(mainWindow, options = {}) {
           },
           {
             label: 'PyArrow Content Index',
-            click: () => contentIndexDashboard.openDashboard()
+            click: () => {
+              // Create a new window for the content index dashboard
+              const { BrowserWindow } = require('electron');
+              const contentIndexWindow = new BrowserWindow({
+                width: 1200,
+                height: 900,
+                title: 'PyArrow Content Index Dashboard',
+                webPreferences: {
+                  nodeIntegration: true,
+                  contextIsolation: false
+                }
+              });
+              
+              // Load HTML content
+              contentIndexWindow.loadFile('views/pyarrow_content_index_dashboard.html');
+              
+              // Open dev tools in development
+              if (process.env.NODE_ENV === 'development') {
+                contentIndexWindow.webContents.openDevTools();
+              }
+            }
           },
           {
             label: 'PyArrow Error Dashboard',
@@ -170,6 +190,28 @@ function initializeDashboards(mainWindow, options = {}) {
   
   ipcMain.on('open-error-monitor-dashboard', () => {
     errorMonitorDashboard.openDashboard();
+  });
+  
+  ipcMain.on('open-content-index-dashboard', () => {
+    // Create a new window for the content index dashboard
+    const { BrowserWindow } = require('electron');
+    const contentIndexWindow = new BrowserWindow({
+      width: 1200,
+      height: 900,
+      title: 'PyArrow Content Index Dashboard',
+      webPreferences: {
+        nodeIntegration: true,
+        contextIsolation: false
+      }
+    });
+    
+    // Load HTML content
+    contentIndexWindow.loadFile('views/pyarrow_content_index_dashboard.html');
+    
+    // Open dev tools in development
+    if (process.env.NODE_ENV === 'development') {
+      contentIndexWindow.webContents.openDevTools();
+    }
   });
   
   ipcMain.on('open-security-test-dashboard', () => {
