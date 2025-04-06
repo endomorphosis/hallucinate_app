@@ -8,6 +8,24 @@
   <!-- Add Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   
+  <!-- Add Chart.js for search analytics and visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+  
+  <!-- Add content browser styles -->
+  <link rel="stylesheet" href="../dashboard/content_browser/styles.css">
+  
+  <!-- Add metrics dashboard styles -->
+  <link rel="stylesheet" href="../dashboard/observability/metrics_dashboard.css">
+  
+  <!-- Add enhanced storage visualization styles -->
+  <link rel="stylesheet" href="../dashboard/enhanced_storage/styles.css">
+  
+  <!-- Add enhanced search-thumbnail integration styles -->
+  <link rel="stylesheet" href="../dashboard/enhanced_search/search_thumbnail_integration.css">
+  
+  <!-- Add model management component styles -->
+  <link rel="stylesheet" href="../dashboard/model_management_component.css">
+  
   <style>
     /* Base styles */
     body {
@@ -495,6 +513,320 @@
     .fade-in {
       animation: fadeIn 0.3s ease-in-out;
     }
+    
+    /* Enhanced Search Styles */
+    .enhanced-search-container {
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background-color: #f8fafc;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+    
+    .search-filters {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .search-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .advanced-search-panel {
+      margin-top: 1rem;
+      padding: 1rem;
+      background-color: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.5rem;
+    }
+    
+    .search-form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+    
+    .search-field {
+      margin-bottom: 0.75rem;
+    }
+    
+    .active-filters {
+      margin-top: 0.75rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    
+    .active-filter {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.5rem;
+      background-color: #e6f0fb;
+      border-radius: 0.25rem;
+      font-size: 0.875rem;
+    }
+    
+    .active-filter button {
+      margin-left: 0.25rem;
+      border: none;
+      background: none;
+      color: #4a5568;
+      cursor: pointer;
+    }
+    
+    /* Enhanced Storage Styles */
+    .enhanced-storage-container {
+      margin-top: 2rem;
+      margin-bottom: 2rem;
+      background-color: #fff;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+    }
+    
+    .storage-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      min-width: 200px;
+    }
+    
+    .filter-group label {
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+    
+    .filter-group select {
+      padding: 0.5rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.25rem;
+    }
+    
+    .chart-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .chart-column {
+      flex: 1;
+      min-width: 300px;
+    }
+    
+    .chart-wrapper {
+      background-color: #fff;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Content Discovery Styles */
+    .content-discovery-container {
+      margin-top: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .discovery-panel {
+      background-color: #fff;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .tag-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    
+    .tag-item {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      background-color: #e6f0fb;
+      color: #3182ce;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    
+    .tag-item:hover {
+      background-color: #bee3f8;
+    }
+    
+    .similar-items {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .similar-item {
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      border: 1px solid #e2e8f0;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    
+    .similar-item:hover {
+      border-color: #4299e1;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Enhanced Thumbnails Styles */
+    .thumbnail {
+      width: 100%;
+      height: 0;
+      padding-bottom: 100%;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      border-radius: 0.25rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .thumbnail-placeholder {
+      width: 100%;
+      height: 0;
+      padding-bottom: 100%;
+      background-color: #f7fafc;
+      border-radius: 0.25rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #a0aec0;
+    }
+    
+    /* Real-time Updates Styles */
+    .realtime-updates-container {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+    
+    .notification-panel {
+      width: 320px;
+      background-color: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+      margin-bottom: 0.5rem;
+      max-height: 400px;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .notification-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .notification-header h4 {
+      margin: 0;
+    }
+    
+    .notification-header .close-btn {
+      background: none;
+      border: none;
+      color: #a0aec0;
+      cursor: pointer;
+    }
+    
+    .notification-list {
+      padding: 0.5rem;
+      overflow-y: auto;
+      max-height: 350px;
+    }
+    
+    .notification-item {
+      padding: 0.75rem;
+      border-radius: 0.25rem;
+      margin-bottom: 0.5rem;
+      background-color: #f7fafc;
+      border-left: 3px solid #4299e1;
+    }
+    
+    .notification-item.update {
+      border-left-color: #48bb78;
+    }
+    
+    .notification-item.error {
+      border-left-color: #f56565;
+    }
+    
+    .notification-time {
+      font-size: 0.75rem;
+      color: #718096;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    
+    .status-indicator {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.5rem 0.75rem;
+      background-color: white;
+      border-radius: 0.25rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+    }
+    
+    .connection-status {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 0.5rem;
+    }
+    
+    .connection-status.online {
+      color: #48bb78;
+    }
+    
+    .connection-status.offline {
+      color: #f56565;
+    }
+    
+    .connection-status.connecting {
+      color: #ed8936;
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
+    
+    /* Updated Item Highlight */
+    .updated-item {
+      animation: highlight 2s ease-in-out;
+    }
+    
+    @keyframes highlight {
+      0%, 100% { background-color: transparent; }
+      50% { background-color: rgba(66, 153, 225, 0.2); }
+    }
   </style>
 </head>
 <body>
@@ -511,8 +843,11 @@
         <div class="tab" data-tab="browser">Content Browser</div>
         <div class="tab" data-tab="add">Add Content</div>
         <div class="tab" data-tab="sync">Synchronization</div>
+        <div class="tab" data-tab="models">Models</div>
         <div class="tab" data-tab="stats">Statistics</div>
+        <div class="tab" data-tab="realtime">Real-Time</div>
         <div class="tab" data-tab="security">Security</div>
+        <div class="tab" data-tab="metrics">Metrics</div>
       </div>
       
       <!-- Overview Tab -->
@@ -569,6 +904,26 @@
           </div>
         </div>
         
+        <div class="grid">
+          <div class="visualization">
+            <h3 class="visualization-title">Storage Location Distribution</h3>
+            <div id="storage-location-chart" class="chart-container" style="height: 300px;">
+              <div class="loading">
+                <div class="spinner"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="visualization">
+            <h3 class="visualization-title">Content Timeline</h3>
+            <div id="timeline-chart" class="chart-container" style="height: 300px;">
+              <div class="loading">
+                <div class="spinner"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
         <div class="visualization">
           <h3 class="visualization-title">Recent Content</h3>
           <div class="table-container">
@@ -595,59 +950,47 @@
       
       <!-- Content Browser Tab -->
       <div id="browser-tab" class="tab-content">
-        <div class="action-bar">
-          <div class="search-box">
-            <i class="fas fa-search"></i>
-            <input type="text" id="search-input" placeholder="Search by CID, path, or metadata...">
+        <!-- Enhanced search container -->
+        <div id="enhanced-search-container" class="enhanced-search-container">
+          <div class="search-filters">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input type="text" id="search-input" placeholder="Search content...">
+              <button id="search-button">Search</button>
+            </div>
+            <div class="advanced-search-toggle">
+              <button id="advanced-search-toggle-btn">
+                <i class="fas fa-sliders-h"></i> Advanced
+              </button>
+            </div>
+            <div class="search-actions">
+              <button id="saved-searches-btn">
+                <i class="fas fa-bookmark"></i> Saved
+              </button>
+              <button id="search-history-btn">
+                <i class="fas fa-history"></i> History
+              </button>
+            </div>
           </div>
-          <div class="actions">
-            <select id="filter-type" class="form-control">
-              <option value="all">All Types</option>
-              <option value="image">Images</option>
-              <option value="video">Videos</option>
-              <option value="document">Documents</option>
-              <option value="model">Models</option>
-              <option value="dataset">Datasets</option>
-            </select>
-            <select id="sort-by" class="form-control">
-              <option value="date_desc">Newest First</option>
-              <option value="date_asc">Oldest First</option>
-              <option value="size_desc">Largest First</option>
-              <option value="size_asc">Smallest First</option>
-              <option value="path">Path (A-Z)</option>
-            </select>
+          <div id="advanced-search-panel" class="advanced-search-panel" style="display: none;">
+            <!-- Advanced search form will be added by the enhanced search component -->
+          </div>
+          <div id="active-filters" class="active-filters">
+            <!-- Active filters will be added dynamically -->
           </div>
         </div>
         
-        <div class="table-container">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>CID</th>
-                <th>Path</th>
-                <th>Type</th>
-                <th>Size</th>
-                <th>Added Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="content-browser-table">
-              <tr>
-                <td colspan="6" class="text-center">Loading content index...</td>
-              </tr>
-            </tbody>
-          </table>
+        <!-- Content browser container -->
+        <div id="content-browser-container" class="content-browser-container">
+          <div class="loading">
+            <div class="spinner"></div>
+            <p class="loading-text">Loading content browser components...</p>
+          </div>
         </div>
         
-        <div class="flex justify-between items-center mt-4">
-          <div class="text-sm text-gray">
-            Showing <span id="showing-count">0</span> of <span id="total-count">0</span> entries
-          </div>
-          <div class="pagination">
-            <button id="prev-page-btn" class="btn btn-secondary btn-sm" disabled>Previous</button>
-            <span id="current-page" class="mx-2">Page 1</span>
-            <button id="next-page-btn" class="btn btn-secondary btn-sm" disabled>Next</button>
-          </div>
+        <!-- Content discovery container -->
+        <div id="content-discovery-container" class="content-discovery-container">
+          <!-- Content discovery components will be added here -->
         </div>
       </div>
       
@@ -768,6 +1111,11 @@
         </div>
       </div>
       
+      <!-- Models Tab -->
+      <div id="models-tab" class="tab-content">
+        <!-- The model management component will be loaded here -->
+      </div>
+      
       <!-- Statistics Tab -->
       <div id="stats-tab" class="tab-content">
         <div class="visualization">
@@ -797,6 +1145,41 @@
               </div>
             </div>
           </div>
+        </div>
+        
+        <!-- Storage Distribution Visualizations -->
+        <div class="grid">
+          <div class="visualization">
+            <h3 class="visualization-title">Storage Location Distribution</h3>
+            <div id="location-distribution-chart" class="chart-container" style="height: 300px;">
+              <div class="loading">
+                <div class="spinner"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="visualization">
+            <h3 class="visualization-title">Content Size Distribution</h3>
+            <div id="size-distribution-chart" class="chart-container" style="height: 300px;">
+              <div class="loading">
+                <div class="spinner"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="visualization">
+          <h3 class="visualization-title">Content Addition Timeline</h3>
+          <div id="content-timeline-chart" class="chart-container" style="height: 250px;">
+            <div class="loading">
+              <div class="spinner"></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Enhanced storage visualization container -->
+        <div id="enhanced-storage-container" class="enhanced-storage-container">
+          <!-- Enhanced storage visualization components will be added here -->
         </div>
         
         <div class="visualization">
@@ -981,8 +1364,208 @@
           </div>
         </div>
       </div>
+      
+      <!-- Metrics Tab -->
+      <div id="metrics-tab" class="tab-content">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p class="loading-text">Loading metrics components...</p>
+        </div>
+      </div>
+      
+      <!-- Real-Time Tab -->
+      <div id="realtime-tab" class="tab-content">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Real-Time Updates</h3>
+            <i class="fas fa-bolt card-icon"></i>
+          </div>
+          <div class="card-content">
+            <div class="realtime-status-panel">
+              <div class="status-row">
+                <div class="status-label">Connection Status:</div>
+                <div class="status-value">
+                  <div class="status-indicator-large disconnected" id="realtime-status"></div>
+                  <span class="status-text" id="realtime-status-text">Disconnected</span>
+                </div>
+                <button id="realtime-connect-btn" class="btn btn-primary">Connect</button>
+              </div>
+              
+              <div class="status-row">
+                <div class="status-label">WebSocket URL:</div>
+                <div class="status-value">
+                  <input type="text" id="realtime-ws-url" class="form-control" 
+                    value="ws://localhost:8765/pyarrow-content-index/ws" 
+                    placeholder="WebSocket URL">
+                </div>
+                <button id="realtime-apply-url-btn" class="btn btn-secondary">Apply</button>
+              </div>
+              
+              <div class="status-row">
+                <div class="status-label">Last Activity:</div>
+                <div class="status-value" id="realtime-last-activity">Never</div>
+              </div>
+              
+              <div class="status-row">
+                <div class="status-label">Updates Received:</div>
+                <div class="status-value" id="realtime-updates-count">0</div>
+              </div>
+            </div>
+            
+            <h4>Settings</h4>
+            <div class="settings-grid">
+              <div class="setting-row">
+                <label class="setting-label">
+                  <input type="checkbox" id="realtime-notifications-toggle" checked>
+                  Show Notifications
+                </label>
+                <div class="setting-description">Display notifications for content updates</div>
+              </div>
+              
+              <div class="setting-row">
+                <label class="setting-label">
+                  <input type="checkbox" id="realtime-indicators-toggle" checked>
+                  Visual Indicators
+                </label>
+                <div class="setting-description">Highlight changed content in tables</div>
+              </div>
+              
+              <div class="setting-row">
+                <label class="setting-label">
+                  <input type="checkbox" id="realtime-background-toggle" checked>
+                  Background Refresh
+                </label>
+                <div class="setting-description">Automatically refresh data in the background</div>
+              </div>
+              
+              <div class="setting-row">
+                <label class="setting-label">Background Refresh Interval:</label>
+                <div class="setting-input">
+                  <select id="realtime-refresh-interval" class="form-control">
+                    <option value="30000">30 seconds</option>
+                    <option value="60000" selected>1 minute</option>
+                    <option value="300000">5 minutes</option>
+                    <option value="600000">10 minutes</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <h4>Metrics</h4>
+            <div class="metrics-panel">
+              <div class="metrics-row">
+                <div class="metrics-card">
+                  <div class="metrics-title">Connection</div>
+                  <div class="metrics-content">
+                    <div class="metric-item">
+                      <span class="metric-label">Attempts:</span>
+                      <span class="metric-value" id="metric-connect-attempts">0</span>
+                    </div>
+                    <div class="metric-item">
+                      <span class="metric-label">Successes:</span>
+                      <span class="metric-value" id="metric-connect-successes">0</span>
+                    </div>
+                    <div class="metric-item">
+                      <span class="metric-label">Failures:</span>
+                      <span class="metric-value" id="metric-connect-failures">0</span>
+                    </div>
+                    <div class="metric-item">
+                      <span class="metric-label">Reconnects:</span>
+                      <span class="metric-value" id="metric-reconnects">0</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="metrics-card">
+                  <div class="metrics-title">Messages</div>
+                  <div class="metrics-content">
+                    <div class="metric-item">
+                      <span class="metric-label">Sent:</span>
+                      <span class="metric-value" id="metric-messages-sent">0</span>
+                    </div>
+                    <div class="metric-item">
+                      <span class="metric-label">Received:</span>
+                      <span class="metric-value" id="metric-messages-received">0</span>
+                    </div>
+                    <div class="metric-item">
+                      <span class="metric-label">Notifications:</span>
+                      <span class="metric-value" id="metric-notifications">0</span>
+                    </div>
+                    <div class="metric-item">
+                      <span class="metric-label">Rate Limits:</span>
+                      <span class="metric-value" id="metric-rate-limits">0</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="metrics-row">
+                <div class="metrics-card full-width">
+                  <div class="metrics-title">Error Log</div>
+                  <div class="metrics-content">
+                    <div class="error-log-container" id="metrics-error-log">
+                      <div class="no-errors">No errors recorded</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <h4>Recent Activity</h4>
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Type</th>
+                    <th>Resource</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="realtime-activity-table">
+                  <tr>
+                    <td colspan="4" class="text-center">No recent activity</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <div class="actions mt-4">
+              <button id="realtime-clear-indicators-btn" class="btn btn-secondary">
+                <i class="fas fa-eraser"></i> Clear Indicators
+              </button>
+              <button id="realtime-test-notification-btn" class="btn btn-secondary">
+                <i class="fas fa-bell"></i> Test Notification
+              </button>
+              <button id="realtime-manual-refresh-btn" class="btn btn-primary">
+                <i class="fas fa-sync-alt"></i> Manual Refresh
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
+  
+  <!-- Real-time Updates Notification Area -->
+  <div id="realtime-updates-container" class="realtime-updates-container">
+    <div class="notification-panel">
+      <div class="notification-header">
+        <h4>Real-Time Updates</h4>
+        <button class="close-btn"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="notification-list" class="notification-list">
+        <!-- Notifications will be added dynamically -->
+      </div>
+    </div>
+    <div class="status-indicator" id="realtime-status-indicator">
+      <span id="connection-status" class="connection-status offline">●</span>
+      <span class="status-text" id="connection-status-text">Offline</span>
+    </div>
+  </div>
+  
+  <!-- Notification container for real-time updates -->
+  <div id="notification-container" class="notification-container"></div>
   
   <!-- Content Details Modal -->
   <div id="content-details-modal" class="modal-overlay">
@@ -1005,13 +1588,111 @@
   
   <script type="module">
     import { registerPyArrowContentIndexDashboard } from '../dashboard/register_pyarrow_content_index_dashboard.js';
+    import ModelManagementComponent from '../dashboard/model_management_component.js';
+    import integrateRealtimeUpdates from '../dashboard/realtime_updates/realtime_integration.js';
     
     // Initialize the dashboard when the page loads
     document.addEventListener('DOMContentLoaded', async () => {
       try {
-        // Register and initialize the PyArrow Content Index dashboard
+        // Create event bus for communication between components
+        const eventBus = {
+          listeners: {},
+          on(event, callback) {
+            if (!this.listeners[event]) {
+              this.listeners[event] = [];
+            }
+            this.listeners[event].push(callback);
+            return this;
+          },
+          off(event, callback) {
+            if (!this.listeners[event]) return;
+            this.listeners[event] = this.listeners[event].filter(cb => cb !== callback);
+            return this;
+          },
+          emit(event, data) {
+            if (this.listeners[event]) {
+              this.listeners[event].forEach(callback => {
+                try {
+                  callback(data);
+                } catch (error) {
+                  console.error(`Error in event handler for ${event}:`, error);
+                }
+              });
+            }
+            return this;
+          }
+        };
+        
+        // Register and initialize the PyArrow Content Index dashboard with all enhanced components
         const result = await registerPyArrowContentIndexDashboard({
-          container: document.getElementById('dashboard-container')
+          container: document.getElementById('dashboard-container'),
+          eventBus, // Pass the event bus to the dashboard
+          config: {
+            // Enable all enhanced components
+            enableEnhancedSearch: true,
+            enableEnhancedStorage: true,
+            enableEnhancedThumbnails: true,
+            enableContentDiscovery: true,
+            enableRealtimeUpdates: true,
+            enableContentBrowser: true,
+            enableStatisticsVisualization: true,
+            
+            // Enhanced search configuration
+            searchConfig: {
+              enableSavedSearches: true,
+              enableSearchHistory: true,
+              maxHistoryItems: 20,
+              maxSavedSearches: 10
+            },
+            
+            // Enhanced storage configuration
+            storageConfig: {
+              enableCharts: true,
+              defaultView: 'bar',
+              enableTimeline: true
+            },
+            
+            // Enhanced thumbnails configuration
+            thumbnailConfig: {
+              thumbnailSize: 'medium',
+              enableLazyLoading: true,
+              cacheThumbnails: true
+            },
+            
+            // Content discovery configuration
+            discoveryConfig: {
+              enableTagCloud: true,
+              enableSimilarItems: true,
+              maxRecommendations: 5
+            },
+            
+            // Visualization configuration
+            visualizationConfig: {
+              colorScheme: 'default',
+              enableAnimations: true,
+              chartHeight: 300,
+              chartTypes: {
+                operations: 'bar',
+                fileType: 'doughnut',
+                sizeByType: 'horizontalBar'
+              },
+              refreshInterval: 30000 // 30 seconds
+            },
+            
+            // Real-time updates configuration
+            realtimeConfig: {
+              wsEndpoint: 'ws://localhost:8765/pyarrow-content-index/ws',
+              enableNotifications: true,
+              enableVisualIndicators: true,
+              enableBackgroundRefresh: true,
+              reconnectInterval: 5000,
+              heartbeatInterval: 30000,
+              backgroundRefreshInterval: 60000, // 1 minute
+              metricsEnabled: true,
+              metricsUpdateInterval: 10000,
+              authRequired: false // Set to true if auth is required
+            }
+          }
         });
         
         if (!result || !result.success) {
@@ -1024,6 +1705,44 @@
             </div>
           `;
           return;
+        }
+        
+        // Initialize model management component
+        try {
+          console.log('Initializing model management component...');
+          const modelManagementElement = document.getElementById('models-tab');
+          
+          if (modelManagementElement) {
+            // Create instance with bridge from dashboard result
+            const modelManagement = new ModelManagementComponent({
+              element: modelManagementElement,
+              bridge: result.bridge,
+              secureManager: result.secureManager,
+              secureMode: result.secureMode,
+              eventBus: result.eventBus || document.createEventBus
+            });
+            
+            // Initialize and render the component
+            await modelManagement.init();
+            await modelManagement.render();
+            
+            console.log('Model management component initialized successfully.');
+          } else {
+            console.warn('Models tab element not found.');
+          }
+        } catch (modelError) {
+          console.error('Failed to initialize model management component:', modelError);
+          const modelManagementElement = document.getElementById('models-tab');
+          
+          if (modelManagementElement) {
+            modelManagementElement.innerHTML = `
+              <div class="error-message" style="padding: 2rem; text-align: center;">
+                <i class="fas fa-exclamation-circle" style="font-size: 2rem; display: block; margin-bottom: 1rem;"></i>
+                <h3>Model Management Component Initialization Failed</h3>
+                <p>${modelError.message || 'There was a problem initializing the model management component.'}</p>
+              </div>
+            `;
+          }
         }
         
         // Set up tab navigation
@@ -1045,6 +1764,16 @@
             if (tabId === 'security') {
               updateSecurityStatus();
             }
+            
+            // If real-time tab is selected, emit tab change event
+            if (tabId === 'realtime' && eventBus) {
+              eventBus.emit('tab-changed', 'realtime');
+            }
+            
+            // Handle other tab selection with event
+            if (eventBus) {
+              eventBus.emit('tab-changed', tabId);
+            }
           });
         });
         
@@ -1065,6 +1794,9 @@
           }
         });
         
+        // Setup real-time updates notification area
+        setupRealtimeNotificationPanel(result.realtimeUpdates, result.eventBus || eventBus);
+        
         // Initialize security-related elements
         initSecurityFeatures(result.secureMode);
         
@@ -1079,6 +1811,157 @@
         `;
       }
     });
+    
+    /**
+     * Setup real-time updates notification panel
+     * @param {Object} realtimeUpdates The real-time updates instance
+     * @param {Object} eventBus Event bus for communication
+     */
+    function setupRealtimeNotificationPanel(realtimeUpdates, eventBus) {
+      if (!realtimeUpdates) {
+        console.warn('Real-time updates not available');
+        return;
+      }
+      
+      // Get notification panel elements
+      const container = document.getElementById('realtime-updates-container');
+      const notificationList = document.getElementById('notification-list');
+      const statusIndicator = document.getElementById('connection-status');
+      const statusText = document.getElementById('connection-status-text');
+      const closeBtn = container.querySelector('.close-btn');
+      
+      if (!container || !notificationList || !statusIndicator || !statusText || !closeBtn) {
+        console.warn('Real-time notification panel elements not found');
+        return;
+      }
+      
+      // Initialize panel UI
+      container.style.display = 'flex';
+      
+      // Setup close button
+      closeBtn.addEventListener('click', () => {
+        container.querySelector('.notification-panel').style.display = 'none';
+      });
+      
+      // Click on status indicator to toggle notification panel
+      const statusElement = document.getElementById('realtime-status-indicator');
+      if (statusElement) {
+        statusElement.addEventListener('click', () => {
+          const panel = container.querySelector('.notification-panel');
+          panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
+        });
+      }
+      
+      // Listen for connection status updates
+      if (eventBus) {
+        eventBus.on('websocket-connected', () => {
+          statusIndicator.className = 'connection-status online';
+          statusText.textContent = 'Connected';
+        });
+        
+        eventBus.on('websocket-closed', () => {
+          statusIndicator.className = 'connection-status offline';
+          statusText.textContent = 'Disconnected';
+        });
+        
+        eventBus.on('websocket-error', () => {
+          statusIndicator.className = 'connection-status error';
+          statusText.textContent = 'Error';
+        });
+        
+        // Listen for notifications
+        const addNotification = (data) => {
+          // Create notification element
+          const notificationElement = document.createElement('div');
+          notificationElement.className = 'notification-item';
+          
+          // Determine notification type
+          if (data.type.includes('added')) {
+            notificationElement.classList.add('update');
+          } else if (data.type.includes('error')) {
+            notificationElement.classList.add('error');
+          }
+          
+          // Format timestamp
+          const timestamp = data.timestamp ? new Date(data.timestamp) : new Date();
+          const timeString = timestamp.toLocaleTimeString();
+          
+          // Set content
+          notificationElement.innerHTML = `
+            <span class="notification-time">${timeString}</span>
+            <div class="notification-content">${formatNotificationContent(data)}</div>
+          `;
+          
+          // Add to list
+          notificationList.insertBefore(notificationElement, notificationList.firstChild);
+          
+          // Limit number of notifications
+          const notifications = notificationList.querySelectorAll('.notification-item');
+          if (notifications.length > 10) {
+            notificationList.removeChild(notifications[notifications.length - 1]);
+          }
+          
+          // Show the notification panel if it's hidden
+          container.querySelector('.notification-panel').style.display = 'flex';
+          
+          // Auto-hide after 10 seconds
+          setTimeout(() => {
+            container.querySelector('.notification-panel').style.display = 'none';
+          }, 10000);
+        };
+        
+        // Listen for various notification events
+        const notificationEvents = [
+          'content-updated', 'content-synced', 'system-notification',
+          'error', 'websocket-connected', 'websocket-closed', 'websocket-error'
+        ];
+        
+        notificationEvents.forEach(eventName => {
+          eventBus.on(eventName, addNotification);
+        });
+      }
+    }
+    
+    /**
+     * Format notification content for display
+     * @param {Object} data Notification data
+     * @returns {string} Formatted content
+     */
+    function formatNotificationContent(data) {
+      if (!data) return 'No content';
+      
+      switch (data.type) {
+        case 'content-added':
+          return `Content added: ${data.content?.cid?.substring(0, 16) || 'unknown'}...`;
+          
+        case 'content-updated':
+          return `Content updated: ${data.content?.cid?.substring(0, 16) || 'unknown'}...`;
+          
+        case 'content-deleted':
+          return `Content deleted: ${data.content?.cid?.substring(0, 16) || 'unknown'}...`;
+          
+        case 'content-synced':
+          return `Content synchronized: ${data.added || 0} added, ${data.updated || 0} updated, ${data.removed || 0} removed`;
+          
+        case 'websocket-connected':
+          return `Connected to ${data.endpoint || 'server'}`;
+          
+        case 'websocket-closed':
+          return `Disconnected: ${data.reason || 'Connection closed'}`;
+          
+        case 'websocket-error':
+          return `Connection error: ${data.error || 'Unknown error'}`;
+          
+        case 'system-notification':
+          return data.message || 'System notification';
+          
+        case 'error':
+          return `Error: ${data.message || 'Unknown error'}`;
+          
+        default:
+          return data.message || JSON.stringify(data);
+      }
+    }
     
     /**
      * Initialize security features

@@ -1143,6 +1143,58 @@ class PyArrowContentIndexBridge:
                     self.cache_timestamps['query'].clear()
                     self.cache_access_times['query'].clear()
             
+            # Send real-time notification via WebSocket if the operation was successful
+            if result and not isinstance(result, dict) or "error" not in result:
+                try:
+                    # Import the WebSocket server
+                    from hallucinate_app.js_bridge.pyarrow_content_index_ws_server import get_ws_server, start_ws_server
+                    
+                    # Run in another thread to avoid blocking
+                    def send_notification():
+                        async def _send():
+                            # Get or start the WebSocket server
+                            ws_server = get_ws_server()
+                            if not ws_server.running:
+                                await start_ws_server()
+                            
+                            # Send notification with content details
+                            if isinstance(entry_data, dict):
+                                cid = entry_data.get('cid')
+                                path = entry_data.get('path')
+                                mimetype = entry_data.get('mimetype')
+                                size = entry_data.get('size')
+                                
+                                # Prepare metadata from remaining fields
+                                metadata = {k: v for k, v in entry_data.items() 
+                                          if k not in ('cid', 'path', 'mimetype', 'size')}
+                                
+                                # Send content-added notification
+                                await ws_server.notify_content_added(
+                                    cid=cid,
+                                    path=path,
+                                    mimetype=mimetype,
+                                    size=size,
+                                    metadata=metadata if metadata else None
+                                )
+                                logger.info(f"Sent content-added notification for CID {cid}")
+                        
+                        # Create and run a new event loop in this thread
+                        loop = asyncio.new_event_loop()
+                        asyncio.set_event_loop(loop)
+                        try:
+                            loop.run_until_complete(_send())
+                        finally:
+                            loop.close()
+                    
+                    # Run the notification in a separate thread
+                    notification_thread = threading.Thread(
+                        target=send_notification,
+                        daemon=True
+                    )
+                    notification_thread.start()
+                except Exception as e:
+                    logger.error(f"Error sending WebSocket notification: {e}")
+            
             # Convert to Arrow if requested and available
             if use_arrow and self.use_arrow:
                 return self._convert_to_arrow(result)
@@ -1240,6 +1292,46 @@ class PyArrowContentIndexBridge:
                 self.cache_timestamps['query'].clear()
                 self.cache_access_times['query'].clear()
             
+            # Send real-time notification via WebSocket if the operation was successful
+            if result and not isinstance(result, dict) or "error" not in result:
+                try:
+                    # Import the WebSocket server
+                    from hallucinate_app.js_bridge.pyarrow_content_index_ws_server import get_ws_server, start_ws_server
+                    
+                    # Run in another thread to avoid blocking
+                    def send_notification():
+                        async def _send():
+                            # Get or start the WebSocket server
+                            ws_server = get_ws_server()
+                            if not ws_server.running:
+                                await start_ws_server()
+                            
+                            # Send notification about the update
+                            if isinstance(update_data, dict):
+                                # Send content-updated notification
+                                await ws_server.notify_content_updated(
+                                    cid=cid,
+                                    updates=update_data
+                                )
+                                logger.info(f"Sent content-updated notification for CID {cid}")
+                        
+                        # Create and run a new event loop in this thread
+                        loop = asyncio.new_event_loop()
+                        asyncio.set_event_loop(loop)
+                        try:
+                            loop.run_until_complete(_send())
+                        finally:
+                            loop.close()
+                    
+                    # Run the notification in a separate thread
+                    notification_thread = threading.Thread(
+                        target=send_notification,
+                        daemon=True
+                    )
+                    notification_thread.start()
+                except Exception as e:
+                    logger.error(f"Error sending WebSocket notification: {e}")
+            
             # Convert to Arrow if requested and available
             if use_arrow and self.use_arrow:
                 return self._convert_to_arrow(result)
@@ -1263,7 +1355,7 @@ class PyArrowContentIndexBridge:
             await self.init()
         
         try:
-            # Get the entry first to invalidate path cache later
+            # Get the entry first to invalidate path cache later and for notification
             old_entry = None
             try:
                 def get_old_entry():
@@ -1328,6 +1420,49 @@ class PyArrowContentIndexBridge:
                 self.caches['query'].clear()
                 self.cache_timestamps['query'].clear()
                 self.cache_access_times['query'].clear()
+            
+            # Send real-time notification via WebSocket if the operation was successful
+            if result:
+                try:
+                    # Import the WebSocket server
+                    from hallucinate_app.js_bridge.pyarrow_content_index_ws_server import get_ws_server, start_ws_server
+                    
+                    # Extract path from old entry if available
+                    path = None
+                    if old_entry and isinstance(old_entry, dict) and 'path' in old_entry:
+                        path = old_entry['path']
+                    
+                    # Run in another thread to avoid blocking
+                    def send_notification():
+                        async def _send():
+                            # Get or start the WebSocket server
+                            ws_server = get_ws_server()
+                            if not ws_server.running:
+                                await start_ws_server()
+                            
+                            # Send content-deleted notification
+                            await ws_server.notify_content_deleted(
+                                cid=cid,
+                                path=path
+                            )
+                            logger.info(f"Sent content-deleted notification for CID {cid}")
+                        
+                        # Create and run a new event loop in this thread
+                        loop = asyncio.new_event_loop()
+                        asyncio.set_event_loop(loop)
+                        try:
+                            loop.run_until_complete(_send())
+                        finally:
+                            loop.close()
+                    
+                    # Run the notification in a separate thread
+                    notification_thread = threading.Thread(
+                        target=send_notification,
+                        daemon=True
+                    )
+                    notification_thread.start()
+                except Exception as e:
+                    logger.error(f"Error sending WebSocket notification: {e}")
             
             return result
         except Exception as e:
@@ -1500,6 +1635,62 @@ class PyArrowContentIndexBridge:
             
             # Clear all caches after sync since the index may have changed significantly
             self._clear_cache()
+            
+            # Send real-time notification via WebSocket if the operation was successful
+            if result and not isinstance(result, dict) or "error" not in result:
+                try:
+                    # Import the WebSocket server
+                    from hallucinate_app.js_bridge.pyarrow_content_index_ws_server import get_ws_server, start_ws_server
+                    
+                    # Extract sync stats from result
+                    added = 0
+                    updated = 0
+                    removed = 0
+                    details = {}
+                    
+                    if isinstance(result, dict):
+                        added = result.get('added', 0)
+                        updated = result.get('updated', 0)
+                        removed = result.get('removed', 0)
+                        
+                        # Collect additional details but filter out large data structures
+                        details = {k: v for k, v in result.items() 
+                                 if k not in ['added', 'updated', 'removed', 'added_cids', 'updated_cids', 'removed_cids'] 
+                                 and not isinstance(v, (list, dict)) or (isinstance(v, (list, dict)) and len(str(v)) < 1000)}
+                    
+                    # Run in another thread to avoid blocking
+                    def send_notification():
+                        async def _send():
+                            # Get or start the WebSocket server
+                            ws_server = get_ws_server()
+                            if not ws_server.running:
+                                await start_ws_server()
+                            
+                            # Send content-synced notification
+                            await ws_server.notify_content_synced(
+                                added=added,
+                                updated=updated,
+                                removed=removed,
+                                details=details
+                            )
+                            logger.info(f"Sent content-synced notification: +{added}, ~{updated}, -{removed}")
+                        
+                        # Create and run a new event loop in this thread
+                        loop = asyncio.new_event_loop()
+                        asyncio.set_event_loop(loop)
+                        try:
+                            loop.run_until_complete(_send())
+                        finally:
+                            loop.close()
+                    
+                    # Run the notification in a separate thread
+                    notification_thread = threading.Thread(
+                        target=send_notification,
+                        daemon=True
+                    )
+                    notification_thread.start()
+                except Exception as e:
+                    logger.error(f"Error sending WebSocket notification: {e}")
             
             # Convert to Arrow if requested and available
             if use_arrow and self.use_arrow:

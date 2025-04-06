@@ -1065,4 +1065,671 @@ class PyArrowIndexBridge {
   }
 }
 
-export default PyArrowIndexBridge;
+/**
+ * WebSocket client for real-time updates from the PyArrow Content Index
+ */
+class PyArrowIndexRealtimeClient {
+  /**
+   * Initialize the real-time client
+   * 
+   * @param {Object} options - Configuration options
+   * @param {string} options.wsEndpoint - WebSocket endpoint URL
+   * @param {Object} options.pythonBridge - Python bridge for starting the server
+   * @param {Object} options.eventBus - Event bus for broadcasting events
+   * @param {Object} options.authManager - Authentication manager
+   * @param {boolean} options.autoConnect - Whether to connect automatically
+   */
+  constructor(options = {}) {
+    this.wsEndpoint = options.wsEndpoint || 'ws://localhost:8765/pyarrow-content-index/ws';
+    this.pythonBridge = options.pythonBridge;
+    this.eventBus = options.eventBus;
+    this.authManager = options.authManager;
+    
+    this.websocket = null;
+    this.connected = false;
+    this.reconnectTimer = null;
+    this.heartbeatTimer = null;
+    this.pendingReconnect = false;
+    
+    // Configuration
+    this.autoReconnect = options.autoReconnect !== false;
+    this.reconnectInterval = options.reconnectInterval || 5000;
+    this.heartbeatInterval = options.heartbeatInterval || 30000;
+    
+    // Authentication state
+    this.authRequired = options.authRequired || false;
+    this.authToken = options.authToken || null;
+    this.authAttempted = false;
+    this.authSuccess = false;
+    
+    // Metrics
+    this.metrics = {
+      connected: false,
+      connectAttempts: 0,
+      connectSuccesses: 0,
+      connectFailures: 0,
+      messagesSent: 0,
+      messagesReceived: 0,
+      notificationsReceived: 0,
+      reconnectAttempts: 0,
+      lastHeartbeat: null,
+      errors: [],
+      rateLimitsExceeded: 0
+    };
+    
+    // Auto-connect if specified
+    if (options.autoConnect !== false) {
+      this.connect();
+    }
+  }
+  
+  /**
+   * Connect to the WebSocket server
+   * 
+   * @returns {Promise<boolean>} Connection success status
+   */
+  async connect() {
+    if (this.websocket && (this.websocket.readyState === WebSocket.OPEN || this.websocket.readyState === WebSocket.CONNECTING)) {
+      return true;
+    }
+    
+    return new Promise((resolve, reject) => {
+      try {
+        // Update metrics
+        this.metrics.connectAttempts++;
+        
+        console.info(`Connecting to WebSocket at ${this.wsEndpoint}`);
+        
+        // Create WebSocket connection
+        this.websocket = new WebSocket(this.wsEndpoint);
+        
+        // Set up timeout for connection
+        const connectionTimeout = setTimeout(() => {
+          if (!this.connected) {
+            console.warn('WebSocket connection timed out');
+            this.websocket.close();
+            
+            // Update metrics
+            this.metrics.connectFailures++;
+            this.metrics.errors.push({
+              time: Date.now(),
+              type: 'connection_timeout',
+              message: 'Connection timed out'
+            });
+            
+            // Keep only the last 10 errors
+            if (this.metrics.errors.length > 10) {
+              this.metrics.errors.shift();
+            }
+            
+            reject(new Error('Connection timed out'));
+          }
+        }, 10000); // 10 seconds timeout
+        
+        // Set up event handlers
+        this.websocket.addEventListener('open', async (event) => {
+          clearTimeout(connectionTimeout);
+          
+          this.connected = true;
+          this.pendingReconnect = false;
+          
+          // Update metrics
+          this.metrics.connectSuccesses++;
+          this.metrics.connected = true;
+          this.metrics.lastHeartbeat = Date.now();
+          
+          // Start heartbeat
+          this.startHeartbeat();
+          
+          // Emit connection event
+          if (this.eventBus) {
+            this.eventBus.emit('websocket-connected', {
+              endpoint: this.wsEndpoint,
+              timestamp: new Date().toISOString()
+            });
+          }
+          
+          // Perform authentication if required
+          if (this.authRequired) {
+            try {
+              await this.authenticate();
+            } catch (error) {
+              console.error('Authentication error:', error);
+              // Continue with connection even if auth fails
+            }
+          }
+          
+          resolve(true);
+        });
+        
+        this.websocket.addEventListener('message', (event) => {
+          this.onMessage(event);
+        });
+        
+        this.websocket.addEventListener('error', (event) => {
+          clearTimeout(connectionTimeout);
+          
+          console.error('WebSocket error:', event);
+          
+          // Update metrics
+          this.metrics.connectFailures++;
+          this.metrics.errors.push({
+            time: Date.now(),
+            type: 'connection_error',
+            message: event.message || 'WebSocket connection error'
+          });
+          
+          // Keep only the last 10 errors
+          if (this.metrics.errors.length > 10) {
+            this.metrics.errors.shift();
+          }
+          
+          // Emit error event
+          if (this.eventBus) {
+            this.eventBus.emit('websocket-error', {
+              error: event.message || 'Unknown WebSocket error',
+              timestamp: new Date().toISOString()
+            });
+          }
+          
+          reject(new Error('WebSocket connection error'));
+        });
+        
+        this.websocket.addEventListener('close', (event) => {
+          this.onClose(event);
+        });
+        
+      } catch (error) {
+        console.error('Error connecting to WebSocket:', error);
+        
+        // Update metrics
+        this.metrics.connectFailures++;
+        this.metrics.errors.push({
+          time: Date.now(),
+          type: 'connection_exception',
+          message: error.message
+        });
+        
+        // Keep only the last 10 errors
+        if (this.metrics.errors.length > 10) {
+          this.metrics.errors.shift();
+        }
+        
+        reject(error);
+      }
+    });
+  }
+  
+  /**
+   * Disconnect from the WebSocket server
+   */
+  disconnect() {
+    // Clear timers
+    if (this.heartbeatTimer) {
+      clearInterval(this.heartbeatTimer);
+      this.heartbeatTimer = null;
+    }
+    
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+    
+    this.autoReconnect = false;
+    
+    // Close connection if open
+    if (this.websocket) {
+      if (this.websocket.readyState === WebSocket.OPEN || this.websocket.readyState === WebSocket.CONNECTING) {
+        this.websocket.close(1000, 'Client disconnected');
+      }
+      this.websocket = null;
+    }
+    
+    this.connected = false;
+    
+    // Emit disconnection event
+    if (this.eventBus) {
+      this.eventBus.emit('websocket-closed', {
+        reason: 'Client disconnected',
+        code: 1000,
+        timestamp: new Date().toISOString()
+      });
+    }
+  }
+  
+  /**
+   * Authenticate with the WebSocket server
+   * 
+   * @returns {Promise<boolean>} Authentication success status
+   */
+  async authenticate() {
+    if (!this.connected) {
+      throw new Error('Cannot authenticate: WebSocket not connected');
+    }
+    
+    // If auth token is not provided, try to get it from auth manager
+    if (!this.authToken && this.authManager) {
+      try {
+        this.authToken = await this.authManager.getCapabilityToken('pyarrow-index:read');
+      } catch (error) {
+        console.error('Failed to get authentication token:', error);
+        
+        // Update metrics
+        this.metrics.errors.push({
+          time: Date.now(),
+          type: 'auth_error',
+          message: 'Failed to get authentication token: ' + error.message
+        });
+        
+        throw error;
+      }
+    }
+    
+    if (!this.authToken) {
+      throw new Error('No authentication token available');
+    }
+    
+    return new Promise((resolve, reject) => {
+      const authTimeoutId = setTimeout(() => {
+        reject(new Error('Authentication timed out'));
+      }, 10000); // 10 seconds timeout
+      
+      // Set up one-time message handler for auth response
+      const authResponseHandler = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          
+          if (data.type === 'auth_success') {
+            clearTimeout(authTimeoutId);
+            this.authSuccess = true;
+            this.websocket.removeEventListener('message', authResponseHandler);
+            
+            // Emit auth success event
+            if (this.eventBus) {
+              this.eventBus.emit('auth-success', {
+                timestamp: new Date().toISOString(),
+                principal: data.principal
+              });
+            }
+            
+            resolve(true);
+          } else if (data.type === 'error' && (data.error === 'auth_required' || data.error === 'invalid_token')) {
+            clearTimeout(authTimeoutId);
+            this.authSuccess = false;
+            this.websocket.removeEventListener('message', authResponseHandler);
+            
+            // Emit auth error event
+            if (this.eventBus) {
+              this.eventBus.emit('auth-error', {
+                timestamp: new Date().toISOString(),
+                error: data.error,
+                message: data.message
+              });
+            }
+            
+            reject(new Error(`Authentication failed: ${data.message}`));
+          }
+        } catch (error) {
+          console.error('Error processing authentication response:', error);
+        }
+      };
+      
+      // Add temporary auth response handler
+      this.websocket.addEventListener('message', authResponseHandler);
+      
+      // Send authentication message
+      this.sendMessage({
+        type: 'auth',
+        token: this.authToken
+      });
+      
+      this.authAttempted = true;
+    });
+  }
+  
+  /**
+   * Send a heartbeat message to keep the connection alive
+   */
+  sendHeartbeat() {
+    if (this.connected && this.websocket && this.websocket.readyState === WebSocket.OPEN) {
+      this.sendMessage({ type: 'heartbeat' });
+    }
+  }
+  
+  /**
+   * Start the heartbeat timer
+   */
+  startHeartbeat() {
+    if (this.heartbeatTimer) {
+      clearInterval(this.heartbeatTimer);
+    }
+    
+    this.heartbeatTimer = setInterval(this.sendHeartbeat.bind(this), this.heartbeatInterval);
+  }
+  
+  /**
+   * Send a message to the WebSocket server
+   * 
+   * @param {Object} message Message to send
+   */
+  sendMessage(message) {
+    if (!this.connected || !this.websocket || this.websocket.readyState !== WebSocket.OPEN) {
+      console.warn('Cannot send message: WebSocket not connected');
+      return false;
+    }
+    
+    try {
+      const messageString = JSON.stringify(message);
+      this.websocket.send(messageString);
+      
+      // Update metrics
+      this.metrics.messagesSent++;
+      
+      return true;
+    } catch (error) {
+      console.error('Error sending WebSocket message:', error);
+      
+      // Update metrics
+      this.metrics.errors.push({
+        time: Date.now(),
+        type: 'message_send_error',
+        message: error.message
+      });
+      
+      // Keep only the last 10 errors
+      if (this.metrics.errors.length > 10) {
+        this.metrics.errors.shift();
+      }
+      
+      return false;
+    }
+  }
+  
+  /**
+   * Handle incoming WebSocket messages
+   * 
+   * @param {MessageEvent} event WebSocket message event
+   */
+  onMessage(event) {
+    try {
+      const data = JSON.parse(event.data);
+      
+      // Update metrics
+      this.metrics.messagesReceived++;
+      
+      // Handle different message types
+      switch (data.type) {
+        case 'heartbeat':
+          // Update metrics for heartbeat
+          if (this.metrics) {
+            this.metrics.lastHeartbeat = Date.now();
+          }
+          break;
+          
+        case 'auth_success':
+          // Authentication success is handled in the authenticate method
+          this.authSuccess = true;
+          break;
+          
+        case 'error':
+          console.error('Received error from server:', data.error, data.message);
+          
+          // Update metrics
+          this.metrics.errors.push({
+            time: Date.now(),
+            type: `server_${data.error || 'unknown'}`,
+            message: data.message || 'Server error'
+          });
+          
+          // Keep only the last 10 errors
+          if (this.metrics.errors.length > 10) {
+            this.metrics.errors.shift();
+          }
+          
+          // Rate limit error handling
+          if (data.error === 'rate_limit_exceeded') {
+            this.metrics.rateLimitsExceeded++;
+          }
+          
+          // Emit error event
+          if (this.eventBus) {
+            this.eventBus.emit('error', {
+              error: data.error,
+              message: data.message,
+              timestamp: data.timestamp || new Date().toISOString()
+            });
+          }
+          break;
+          
+        case 'content-added':
+        case 'content-updated':
+        case 'content-deleted':
+          // Handle content notifications
+          this.metrics.notificationsReceived++;
+          
+          // Emit specific event for this notification type
+          if (this.eventBus) {
+            this.eventBus.emit('content-updated', {
+              type: data.type,
+              content: data.data,
+              action: data.action,
+              timestamp: data.timestamp || new Date().toISOString()
+            });
+          }
+          break;
+          
+        case 'content-synced':
+          // Handle sync notification
+          this.metrics.notificationsReceived++;
+          
+          // Emit sync event
+          if (this.eventBus) {
+            this.eventBus.emit('content-synced', {
+              added: data.data?.added || 0,
+              updated: data.data?.updated || 0,
+              removed: data.data?.removed || 0,
+              timestamp: data.timestamp || new Date().toISOString()
+            });
+          }
+          break;
+          
+        case 'system':
+          // Handle system notifications
+          console.info('System notification:', data.message);
+          
+          // Emit system notification event
+          if (this.eventBus) {
+            this.eventBus.emit('system-notification', {
+              message: data.message,
+              timestamp: data.timestamp || new Date().toISOString()
+            });
+          }
+          break;
+          
+        default:
+          console.info('Received unknown message type:', data.type);
+          
+          // Emit generic message event for unknown types
+          if (this.eventBus) {
+            this.eventBus.emit('message', {
+              type: data.type,
+              data: data,
+              timestamp: data.timestamp || new Date().toISOString()
+            });
+          }
+      }
+    } catch (error) {
+      console.error('Error processing WebSocket message:', error, event.data);
+      
+      // Update metrics
+      this.metrics.errors.push({
+        time: Date.now(),
+        type: 'message_processing_error',
+        message: error.message
+      });
+      
+      // Keep only the last 10 errors
+      if (this.metrics.errors.length > 10) {
+        this.metrics.errors.shift();
+      }
+    }
+  }
+  
+  /**
+   * Handle WebSocket close event
+   * 
+   * @param {CloseEvent} event WebSocket close event
+   */
+  onClose(event) {
+    console.info(`WebSocket closed: Code ${event.code}${event.reason ? ` (${event.reason})` : ''}`);
+    this.connected = false;
+    
+    // Clear heartbeat timer
+    if (this.heartbeatTimer) {
+      clearInterval(this.heartbeatTimer);
+      this.heartbeatTimer = null;
+    }
+    
+    // Update metrics
+    this.metrics.connected = false;
+    
+    // Add error for abnormal closure
+    if (event.code !== 1000 && event.code !== 1001) {
+      this.metrics.errors.push({
+        time: Date.now(),
+        type: 'connection_closed',
+        message: `Connection closed with code ${event.code}${event.reason ? `: ${event.reason}` : ''}`
+      });
+      
+      // Keep only the last 10 errors
+      if (this.metrics.errors.length > 10) {
+        this.metrics.errors.shift();
+      }
+    }
+    
+    // Emit close event
+    if (this.eventBus) {
+      this.eventBus.emit('websocket-closed', {
+        code: event.code,
+        reason: event.reason,
+        timestamp: new Date().toISOString()
+      });
+    }
+    
+    // Reconnect if auto-reconnect is enabled
+    if (this.autoReconnect) {
+      this.pendingReconnect = true;
+      
+      console.info(`Reconnecting in ${this.reconnectInterval}ms...`);
+      
+      // Update metrics
+      this.metrics.reconnectAttempts++;
+      
+      // Set up reconnect timer
+      this.reconnectTimer = setTimeout(() => {
+        this.connect().catch(error => {
+          console.error('Reconnection failed:', error);
+        });
+      }, this.reconnectInterval);
+    }
+  }
+  
+  /**
+   * Start the real-time updates server
+   * 
+   * @param {Object} options Server options
+   * @param {string} options.host Server host
+   * @param {number} options.port Server port
+   * @param {Object} options.authManager Authentication manager
+   * @returns {Promise<Object>} Server information
+   */
+  async startServer(options = {}) {
+    if (!this.pythonBridge) {
+      throw new Error('Python bridge not available for starting server');
+    }
+    
+    try {
+      const host = options.host || 'localhost';
+      const port = options.port || 8765;
+      
+      // Call Python function to start the server
+      const result = await this.pythonBridge.callAsync({
+        module: 'pyarrow_content_index_integration',
+        instance: 'content_index_integration',
+        method: 'start_realtime_server',
+        args: [host, port, options.authManager ? true : false]
+      });
+      
+      // Update endpoint if server was started successfully
+      if (result && result.success) {
+        this.wsEndpoint = result.websocket_url;
+        
+        console.info(`Real-time server started at ${this.wsEndpoint}`);
+        
+        // Connect to the server if auto-connect is enabled
+        if (options.autoConnect !== false) {
+          await this.connect();
+        }
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('Error starting real-time server:', error);
+      throw error;
+    }
+  }
+  
+  /**
+   * Stop the real-time updates server
+   * 
+   * @returns {Promise<boolean>} Success status
+   */
+  async stopServer() {
+    if (!this.pythonBridge) {
+      throw new Error('Python bridge not available for stopping server');
+    }
+    
+    try {
+      // First disconnect the client
+      this.disconnect();
+      
+      // Call Python function to stop the server
+      const result = await this.pythonBridge.callAsync({
+        module: 'pyarrow_content_index_integration',
+        instance: 'content_index_integration',
+        method: 'stop_realtime_server'
+      });
+      
+      console.info('Real-time server stopped');
+      
+      return result;
+    } catch (error) {
+      console.error('Error stopping real-time server:', error);
+      throw error;
+    }
+  }
+  
+  /**
+   * Get current client status and metrics
+   * 
+   * @returns {Object} Client status and metrics
+   */
+  getStatus() {
+    return {
+      connected: this.connected,
+      endpoint: this.wsEndpoint,
+      authRequired: this.authRequired,
+      authAttempted: this.authAttempted,
+      authSuccess: this.authSuccess,
+      autoReconnect: this.autoReconnect,
+      pendingReconnect: this.pendingReconnect,
+      metrics: { ...this.metrics }, // Return a copy
+      timestamp: new Date().toISOString()
+    };
+  }
+}
+
+export {
+  PyArrowIndexBridge as default,
+  PyArrowIndexRealtimeClient
+};

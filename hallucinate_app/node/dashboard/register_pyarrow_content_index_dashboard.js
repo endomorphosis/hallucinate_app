@@ -7,10 +7,18 @@
  */
 
 // Import required modules
-import PyArrowIndexBridge from '../pyarrow_index_bridge.js';
+import PyArrowIndexBridge, { PyArrowIndexRealtimeClient } from '../pyarrow_index_bridge.js';
 import securePyArrowIndexManager, { PYARROW_INDEX_CAPABILITIES } from '../secure_pyarrow_index_manager.js';
 import authManager from '../auth.js';
 import { get_observability } from '../observability.js';
+import loadRealtimeUpdates from './load_realtime_updates.js';
+import loadEnhancedSearch from './load_enhanced_search.js';
+import loadEnhancedStorage from './load_enhanced_storage.js';
+import loadEnhancedThumbnails from './load_enhanced_thumbnails.js';
+import loadContentDiscovery from './load_content_discovery.js';
+import initializeContentBrowser from './content_browser/content_browser_integration.js';
+import initializeStatistics from './content_browser/statistics_integration.js';
+import integrateRealtimeUpdates from './realtime_updates/realtime_integration.js';
 
 /**
  * Register the PyArrow Content Index dashboard with the main dashboard
@@ -111,6 +119,15 @@ export async function registerPyArrowContentIndexDashboard(dashboard, options = 
       pyarrowIndexBridge,
       securePyArrowIndexManager: secureManager,
       authManager
+    };
+    
+    // Add configuration for enhanced components
+    dashboardResources.enhancedComponentConfig = {
+      searchConfig: config.searchConfig || {},
+      storageConfig: config.storageConfig || {},
+      thumbnailConfig: config.thumbnailConfig || {},
+      discoveryConfig: config.discoveryConfig || {},
+      realtimeConfig: config.realtimeConfig || {}
     };
 
     // Add dashboard panel and register event handlers
@@ -387,12 +404,412 @@ export async function registerPyArrowContentIndexDashboard(dashboard, options = 
     }
 
     console.log('PyArrow Content Index dashboard registered successfully');
+    
+    // Create object to store enhanced component results
+    const enhancedResults = {};
+    const eventBus = dashboard.eventBus;
+    
+    // Initialize enhanced search if enabled
+    if (config.enableEnhancedSearch !== false) {
+      try {
+        console.log('Initializing enhanced search...');
+        const searchResult = await loadEnhancedSearch({
+          dashboard: dashboard.element || dashboard,
+          eventBus,
+          config: dashboardResources.enhancedComponentConfig.searchConfig,
+          electronAPI: dashboard.ipc
+        });
+        
+        console.log('Enhanced search initialized:', searchResult.success);
+        enhancedResults.search = searchResult;
+      } catch (error) {
+        console.error('Failed to initialize enhanced search:', error);
+        enhancedResults.search = { success: false, error: error.message };
+      }
+    }
+    
+    // Initialize enhanced storage visualization if enabled
+    if (config.enableEnhancedStorage !== false) {
+      try {
+        console.log('Initializing enhanced storage visualization...');
+        const storageResult = await loadEnhancedStorage({
+          dashboard: dashboard.element || dashboard,
+          eventBus,
+          config: dashboardResources.enhancedComponentConfig.storageConfig,
+          electronAPI: dashboard.ipc
+        });
+        
+        console.log('Enhanced storage visualization initialized:', storageResult.success);
+        enhancedResults.storage = storageResult;
+      } catch (error) {
+        console.error('Failed to initialize enhanced storage visualization:', error);
+        enhancedResults.storage = { success: false, error: error.message };
+      }
+    }
+    
+    // Initialize enhanced thumbnails if enabled
+    if (config.enableEnhancedThumbnails !== false) {
+      try {
+        console.log('Initializing enhanced thumbnails...');
+        const thumbnailsResult = await loadEnhancedThumbnails({
+          dashboard: dashboard.element || dashboard,
+          eventBus,
+          config: dashboardResources.enhancedComponentConfig.thumbnailConfig,
+          electronAPI: dashboard.ipc
+        });
+        
+        console.log('Enhanced thumbnails initialized:', thumbnailsResult.success);
+        enhancedResults.thumbnails = thumbnailsResult;
+      } catch (error) {
+        console.error('Failed to initialize enhanced thumbnails:', error);
+        enhancedResults.thumbnails = { success: false, error: error.message };
+      }
+    }
+    
+    // Initialize content discovery if enabled
+    if (config.enableContentDiscovery !== false) {
+      try {
+        console.log('Initializing content discovery...');
+        const discoveryResult = await loadContentDiscovery({
+          dashboard: dashboard.element || dashboard,
+          eventBus,
+          config: dashboardResources.enhancedComponentConfig.discoveryConfig,
+          electronAPI: dashboard.ipc
+        });
+        
+        console.log('Content discovery initialized:', discoveryResult.success);
+        enhancedResults.discovery = discoveryResult;
+      } catch (error) {
+        console.error('Failed to initialize content discovery:', error);
+        enhancedResults.discovery = { success: false, error: error.message };
+      }
+    }
+    
+    // Initialize content browser if enabled
+    if (config.enableContentBrowser !== false) {
+      try {
+        console.log('Initializing content browser...');
+        const browserContainer = document.getElementById('content-browser-container');
+        
+        if (browserContainer) {
+          // Clear the loading state
+          browserContainer.innerHTML = '';
+          
+          // Create the content browser wrapper
+          const browserWrapper = document.createElement('div');
+          browserWrapper.className = 'content-browser-wrapper';
+          browserContainer.appendChild(browserWrapper);
+          
+          // Initialize the content browser
+          const browserResult = await initializeContentBrowser({
+            container: browserWrapper,
+            bridge: useSecureManager ? secureManager : pyarrowIndexBridge,
+            eventBus,
+            config: {
+              searchConfig: dashboardResources.enhancedComponentConfig.searchConfig, 
+              browserConfig: config.browserConfig || {}
+            }
+          });
+          
+          // Connect content browser to real-time updates if available
+          if (eventBus) {
+            // Forward events from other components to the content browser
+            eventBus.on('realtime-update', (updateData) => {
+              eventBus.emit('content-index-updated', updateData);
+            });
+            
+            // Connect tab switching events
+            eventBus.on('tab-changed', (tabId) => {
+              if (tabId === 'browser') {
+                // Force refresh when switching to the browser tab
+                if (browserResult.success && browserResult.metadataBrowser) {
+                  setTimeout(() => {
+                    browserResult.metadataBrowser.refresh();
+                  }, 100);
+                }
+              }
+            });
+          }
+          
+          console.log('Content browser initialized:', browserResult.success);
+          enhancedResults.browser = browserResult;
+        } else {
+          console.warn('Content browser container not found');
+          enhancedResults.browser = { success: false, error: 'Container element not found' };
+        }
+      } catch (error) {
+        console.error('Failed to initialize content browser:', error);
+        enhancedResults.browser = { success: false, error: error.message };
+      }
+    }
+    
+    // Initialize statistics visualization if enabled
+    if (config.enableStatisticsVisualization !== false) {
+      try {
+        console.log('Initializing statistics visualization...');
+        const statsContainer = document.getElementById('stats-tab');
+        
+        if (statsContainer) {
+          // Initialize the statistics visualization manager
+          const statsResult = await initializeStatistics({
+            container: statsContainer,
+            bridge: useSecureManager ? secureManager : pyarrowIndexBridge,
+            eventBus,
+            config: config.visualizationConfig || {}
+          });
+          
+          // Set up event handling for real-time updates
+          if (eventBus && statsResult.success) {
+            // Forward content index updates to the visualization manager
+            eventBus.on('content-index-updated', (updateData) => {
+              // Reload data and update charts when content index changes
+              if (statsResult.visualizationManager) {
+                statsResult.visualizationManager.loadData().then(() => {
+                  statsResult.visualizationManager.updateCharts();
+                });
+              }
+            });
+          }
+          
+          console.log('Statistics visualization initialized:', statsResult.success);
+          enhancedResults.statistics = statsResult;
+        } else {
+          console.warn('Statistics container not found');
+          enhancedResults.statistics = { success: false, error: 'Container element not found' };
+        }
+      } catch (error) {
+        console.error('Failed to initialize statistics visualization:', error);
+        enhancedResults.statistics = { success: false, error: error.message };
+      }
+    }
+    
+    // Initialize real-time updates if enabled
+    if (config.enableRealtimeUpdates !== false) {
+      try {
+        // Use existing event bus from dashboard if available
+        const eventBus = dashboard.eventBus || {
+          listeners: {},
+          on(event, callback) {
+            if (!this.listeners[event]) {
+              this.listeners[event] = [];
+            }
+            this.listeners[event].push(callback);
+            return this;
+          },
+          emit(event, data) {
+            if (this.listeners[event]) {
+              this.listeners[event].forEach(callback => callback(data));
+            }
+            return this;
+          }
+        };
+        
+        // Configure WebSocket endpoint from config or use default
+        const wsEndpoint = config.realtimeConfig?.wsEndpoint || 'ws://localhost:8765/pyarrow-content-index/ws';
+        
+        console.log('Initializing PyArrow Content Index real-time updates with the dedicated client...');
+        
+        // Get auth token if security is enabled
+        let authToken = null;
+        if (useSecureManager && config.realtimeConfig?.authRequired !== false) {
+          authToken = await getAuthToken(PYARROW_INDEX_CAPABILITIES.READ);
+        }
+        
+        // Create the real-time client instance using PyArrowIndexRealtimeClient
+        const realtimeClient = new PyArrowIndexRealtimeClient({
+          wsEndpoint,
+          pythonBridge, // Pass the Python bridge for server communication
+          eventBus,     // Pass the event bus for events
+          
+          // Authentication support
+          authManager: useSecureManager ? authManager : null,
+          authToken,
+          authRequired: config.realtimeConfig?.authRequired !== false,
+          
+          // Configuration options
+          autoConnect: config.realtimeConfig?.autoConnect !== false,
+          autoReconnect: config.realtimeConfig?.autoReconnect !== false,
+          reconnectInterval: config.realtimeConfig?.reconnectInterval || 5000,
+          heartbeatInterval: config.realtimeConfig?.heartbeatInterval || 30000,
+          
+          // Metrics options
+          metricsEnabled: config.realtimeConfig?.metricsEnabled !== false,
+          metricsUpdateInterval: config.realtimeConfig?.metricsUpdateInterval || 30000
+        });
+        
+        // Start the real-time server if needed
+        if (config.realtimeConfig?.startServer !== false) {
+          console.log('Starting PyArrow Content Index real-time server...');
+          
+          try {
+            // Use the server startup capability of the client
+            const serverResult = await realtimeClient.startServer({
+              host: config.realtimeConfig?.serverHost || 'localhost',
+              port: config.realtimeConfig?.serverPort || 8765,
+              authManager: useSecureManager ? true : false
+            });
+            
+            console.log('Real-time server started successfully:', serverResult.success);
+          } catch (serverError) {
+            console.warn('Failed to start real-time server:', serverError.message);
+            // Continue with client connection even if server failed to start
+            // (it might be started elsewhere or already running)
+          }
+        }
+        
+        // Now integrate with the dashboard UI using our utility to get consistent UI behavior
+        console.log('Integrating real-time client with dashboard UI...');
+        const realtimeResult = integrateRealtimeUpdates(dashboard.element || dashboard, {
+          electronAPI: dashboard.ipc,
+          eventBus,
+          wsEndpoint,
+          
+          // Authentication support
+          authManager: useSecureManager ? authManager : null,
+          authRequired: config.realtimeConfig?.authRequired !== false,
+          authToken,
+          
+          // Feature toggles
+          autoConnect: false, // Don't connect in the integrator since we're managing it ourselves
+          enableNotifications: config.realtimeConfig?.enableNotifications !== false,
+          enableVisualIndicators: config.realtimeConfig?.enableVisualIndicators !== false,
+          enableBackgroundRefresh: config.realtimeConfig?.enableBackgroundRefresh !== false,
+          
+          // WebSocket configuration
+          reconnectInterval: config.realtimeConfig?.reconnectInterval || 5000,
+          heartbeatInterval: config.realtimeConfig?.heartbeatInterval || 30000,
+          bgRefreshInterval: config.realtimeConfig?.backgroundRefreshInterval || 60000,
+          
+          // Metrics tracking
+          metricsEnabled: config.realtimeConfig?.metricsEnabled !== false,
+          metricsUpdateInterval: config.realtimeConfig?.metricsUpdateInterval || 30000,
+          
+          // Add our client interface
+          realtimeClient
+        });
+        
+        // Connect real-time updates to the content browser
+        if (enhancedResults.browser && enhancedResults.browser.success) {
+          console.log('Connecting real-time updates to content browser...');
+          
+          // Forward real-time events to the content browser
+          eventBus.on('content-updated', (updateData) => {
+            if (enhancedResults.browser.metadataBrowser) {
+              // Mark the item as updated in the browser
+              enhancedResults.browser.metadataBrowser.markItemUpdated(
+                updateData.content.cid,
+                updateData.action
+              );
+            }
+          });
+          
+          // Handle background refresh
+          eventBus.on('background-refresh', (refreshData) => {
+            if (enhancedResults.browser.metadataBrowser) {
+              // Refresh the browser with the full refresh flag
+              enhancedResults.browser.metadataBrowser.refresh(refreshData.fullRefresh);
+            }
+          });
+        }
+        
+        // Connect real-time updates to statistics visualization
+        if (enhancedResults.statistics && enhancedResults.statistics.success) {
+          console.log('Connecting real-time updates to statistics visualization...');
+          
+          // Forward real-time events to update statistics
+          eventBus.on('content-updated', () => {
+            if (enhancedResults.statistics.visualizationManager) {
+              // Refresh the visualization data
+              enhancedResults.statistics.visualizationManager.loadData().then(() => {
+                enhancedResults.statistics.visualizationManager.updateCharts();
+              });
+            }
+          });
+          
+          // Handle background refresh
+          eventBus.on('background-refresh', () => {
+            if (enhancedResults.statistics.visualizationManager) {
+              // Refresh the visualization data
+              enhancedResults.statistics.visualizationManager.loadData().then(() => {
+                enhancedResults.statistics.visualizationManager.updateCharts();
+              });
+            }
+          });
+        }
+        
+        // Setup periodic status updates
+        let statusUpdateInterval;
+        if (config.realtimeConfig?.statusUpdateInterval !== false) {
+          const interval = config.realtimeConfig?.statusUpdateInterval || 30000;
+          statusUpdateInterval = setInterval(() => {
+            try {
+              const status = realtimeClient.getStatus();
+              eventBus.emit('realtime-status-update', status);
+            } catch (error) {
+              console.warn('Error updating realtime status:', error);
+            }
+          }, interval);
+        }
+        
+        // Add cleanup function to dashboard if available
+        if (dashboard && typeof dashboard === 'object') {
+          const originalCleanup = dashboard.cleanup || (() => {});
+          dashboard.cleanup = function() {
+            // Stop the status update interval
+            if (statusUpdateInterval) {
+              clearInterval(statusUpdateInterval);
+            }
+            
+            // Stop the server and disconnect client
+            try {
+              realtimeClient.disconnect();
+              realtimeClient.stopServer().catch(err => console.warn('Error stopping realtime server:', err));
+            } catch (error) {
+              console.warn('Error cleaning up realtime client:', error);
+            }
+            
+            // Call original cleanup
+            originalCleanup.call(this);
+          };
+        }
+        
+        // Add real-time client to dashboard resources
+        dashboardResources.realtimeClient = realtimeClient;
+        
+        // Add real-time updates instance to result
+        return {
+          success: true,
+          message: 'PyArrow Content Index dashboard registered successfully',
+          bridge: pyarrowIndexBridge,
+          secureManager: useSecureManager ? secureManager : null,
+          secureMode: useSecureManager,
+          enhancedComponents: enhancedResults,
+          realtimeClient,
+          eventBus
+        };
+      } catch (error) {
+        console.error('Failed to initialize real-time updates:', error);
+        
+        // Still return success for the dashboard registration
+        return {
+          success: true,
+          message: 'PyArrow Content Index dashboard registered successfully (real-time updates failed)',
+          bridge: pyarrowIndexBridge,
+          secureManager: useSecureManager ? secureManager : null,
+          secureMode: useSecureManager,
+          enhancedComponents: enhancedResults,
+          realtimeUpdateError: error.message
+        };
+      }
+    }
+    
     return {
       success: true,
       message: 'PyArrow Content Index dashboard registered successfully',
       bridge: pyarrowIndexBridge,
       secureManager: useSecureManager ? secureManager : null,
-      secureMode: useSecureManager
+      secureMode: useSecureManager,
+      enhancedComponents: enhancedResults
     };
   } catch (error) {
     console.error('Failed to register PyArrow Content Index dashboard:', error);

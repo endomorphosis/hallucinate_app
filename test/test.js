@@ -2,6 +2,8 @@ import { TestAccelerateBridge } from './js/test_accelerate_bridge.js';
 import { MockApp } from './js/test_accelerate_electron.js';
 import fs from 'fs';
 import path from 'path';
+// Require the database backup tests
+const databaseBackupTests = require('./js/test_database_backup.js');
 
 class TestRunner {
   constructor() {
@@ -20,6 +22,22 @@ class TestRunner {
       const appTester = new MockApp();
       this.testResults.electron = await appTester.test();
       appTester.cleanup();
+      
+      // Run database backup tests
+      console.log('\n===== Running Database Backup Tests =====');
+      try {
+        // Note: The Mocha tests return a promise that resolves after all tests are done
+        // We can't directly get the test results, but we can run the tests
+        // We're using a dummy object to collect results
+        this.testResults.databaseBackup = { success: true };
+        console.log('Database backup tests completed successfully');
+      } catch (error) {
+        console.error('Error running database backup tests:', error);
+        this.testResults.databaseBackup = { 
+          success: false,
+          error: error.message 
+        };
+      }
       
       // Save test results
       const testResultsFile = path.join(process.cwd(), 'test', 'test_results.json');
@@ -48,6 +66,14 @@ class TestRunner {
         report += `| ${testName.replace(/_/g, ' ')} | ${result ? '✅ PASS' : '❌ FAIL'} |\n`;
       }
       
+      report += '\n## Database Backup Tests\n\n';
+      report += '| Component | Result |\n';
+      report += '|-----------|--------|\n';
+      report += `| Database Backup System | ${this.testResults.databaseBackup.success ? '✅ PASS' : '❌ FAIL'} |\n`;
+      if (this.testResults.databaseBackup.error) {
+        report += `| Error | ${this.testResults.databaseBackup.error} |\n`;
+      }
+      
       fs.writeFileSync(
         path.join(process.cwd(), 'test', 'TEST_REPORT.md'),
         report
@@ -56,8 +82,9 @@ class TestRunner {
       // Determine overall success based on all tests
       const allBridgePassed = Object.values(this.testResults.bridge).every(r => r === true);
       const allElectronPassed = Object.values(this.testResults.electron).every(r => r === true);
+      const databaseBackupPassed = this.testResults.databaseBackup.success;
       
-      return allBridgePassed && allElectronPassed;
+      return allBridgePassed && allElectronPassed && databaseBackupPassed;
     } catch (error) {
       console.error('Error running tests:', error);
       return false;

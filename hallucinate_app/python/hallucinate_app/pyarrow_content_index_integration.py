@@ -642,6 +642,73 @@ class PyArrowContentIndexIntegration:
             self._handle_error("get_stats", e)
             # Re-raise as integration error
             raise ContentIndexIntegrationError(f"Error getting content index stats: {str(e)}")
+            
+    async def start_realtime_server(self, host="localhost", port=8765, auth_manager=None):
+        """
+        Start a WebSocket server for real-time updates
+        
+        This creates a WebSocket server that clients can connect to in order to
+        receive real-time notifications when the content index changes.
+        
+        Args:
+            host (str): Server host
+            port (int): Server port
+            auth_manager: Optional authentication manager
+            
+        Returns:
+            dict: Server information
+        """
+        if not self.initialized:
+            await self.init()
+            
+        try:
+            # Import the realtime server module
+            from hallucinate_app.pyarrow_content_index_realtime_server import (
+                PyArrowContentIndexRealtimeServer, start_realtime_server
+            )
+            
+            # Start the server
+            server = await start_realtime_server(
+                content_index_integration=self,
+                host=host,
+                port=port,
+                auth_manager=auth_manager
+            )
+            
+            # Store the server instance for later use
+            self.realtime_server = server
+            
+            return {
+                "success": True,
+                "host": host,
+                "port": port,
+                "websocket_url": f"ws://{host}:{port}/pyarrow-content-index/ws",
+                "server_running": server.running
+            }
+        except Exception as e:
+            self._handle_error("start_realtime_server", e)
+            # Re-raise as integration error
+            raise ContentIndexIntegrationError(f"Error starting real-time server: {str(e)}")
+            
+    async def stop_realtime_server(self):
+        """
+        Stop the WebSocket server for real-time updates
+        
+        Returns:
+            bool: Success status
+        """
+        if not hasattr(self, 'realtime_server') or self.realtime_server is None:
+            return False
+            
+        try:
+            # Stop the server
+            await self.realtime_server.stop()
+            self.realtime_server = None
+            return True
+        except Exception as e:
+            self._handle_error("stop_realtime_server", e)
+            # Re-raise as integration error
+            raise ContentIndexIntegrationError(f"Error stopping real-time server: {str(e)}")
     
     def test(self, verbose=False) -> Dict[str, Any]:
         """
@@ -869,6 +936,46 @@ class PyArrowContentIndexIntegration:
                 test_result["steps"]["delete_entry"] = {
                     "success": False,
                     "message": f"Failed to delete test entry: {str(e)}"
+                }
+            
+            # Test real-time server (optional)
+            if verbose:
+                test_result["logs"].append("[INFO] Testing real-time server functionality")
+            
+            try:
+                # Start the real-time server
+                realtime_result = await self.start_realtime_server(
+                    host="localhost",
+                    port=8766  # Use a different port for testing
+                )
+                
+                if realtime_result["success"] and realtime_result["server_running"]:
+                    test_result["steps"]["realtime_server"] = {
+                        "success": True,
+                        "message": "Successfully started real-time server",
+                        "data": {
+                            "host": realtime_result["host"],
+                            "port": realtime_result["port"],
+                            "websocket_url": realtime_result["websocket_url"]
+                        } if verbose else None
+                    }
+                    
+                    # Stop the server
+                    stop_result = await self.stop_realtime_server()
+                    test_result["steps"]["stop_realtime_server"] = {
+                        "success": stop_result,
+                        "message": "Successfully stopped real-time server" if stop_result else "Failed to stop real-time server"
+                    }
+                else:
+                    test_result["steps"]["realtime_server"] = {
+                        "success": False,
+                        "message": "Failed to start real-time server",
+                        "data": realtime_result if verbose else None
+                    }
+            except Exception as e:
+                test_result["steps"]["realtime_server"] = {
+                    "success": False,
+                    "message": f"Error testing real-time server: {str(e)}"
                 }
             
             # Determine overall success
