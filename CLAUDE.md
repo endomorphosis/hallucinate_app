@@ -6,7 +6,7 @@ hallucinate_app is an Electron-based desktop application that creates a bridge b
 
 ### Key Technologies
 - **Frontend**: Electron (cross-platform desktop application)
-- **JavaScript**: ES Modules, Node.js
+- **JavaScript**: ES Modules, Node.can 
 - **Python**: Python 3.8+ with HuggingFace ecosystem 
 - **AI/ML**: Transformers, PyTorch, FAISS vector database
 - **Decentralized**: IPFS, libp2p, OrbitDB, FireproofDB, DuckDB-IPLD
