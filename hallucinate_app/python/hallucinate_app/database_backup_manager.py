@@ -1500,7 +1500,7 @@ class DatabaseBackupManager:
                                         str(v) if isinstance(v, (int, float)) else
                                         "TRUE" if v is True else
                                         "FALSE" if v is False else
-                                        f"'{str(v).replace(\"'\", \"''\")}'"
+                                        "'" + str(v).replace("'", "''") + "'"
                                         for v in row.values()
                                     ])
                                     
