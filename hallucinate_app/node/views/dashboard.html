@@ -49,6 +49,7 @@
           <li><a href="#" data-page="ipfs"><i class="fas fa-network-wired"></i> IPFS</a></li>
           <li><a href="#" data-page="libp2p"><i class="fas fa-plug"></i> libp2p</a></li>
           <li><a href="#" data-page="orbitdb"><i class="fas fa-database"></i> OrbitDB</a></li>
+          <li><a href="#" onclick="window.ipcRenderer.send('open-database-backup-dashboard'); return false;"><i class="fas fa-cloud-upload-alt"></i> Database Backup</a></li>
         </ul>
       </div>
       
@@ -282,6 +283,11 @@
           </div>
         </div>
       </div>
+      
+      <!-- Database Backup Dashboard -->
+      <div id="database-backup-page" class="page">
+        <div id="database-backup-panel"></div>
+      </div>
     </main>
   </div>
 
@@ -291,6 +297,8 @@
     // Import dashboard components
     import Dashboard from '../dashboard/dashboard.js';
     import AuthDashboard from '../dashboard/auth_dashboard.js';
+    import DatabaseBackupDashboard from '../dashboard/database_backup_dashboard.js';
+    import { registerDatabaseBackupDashboard } from '../dashboard/register_database_backup_dashboard.js';
     
     // Create event bus for dashboard communication
     const eventBus = {
@@ -811,6 +819,86 @@
             console.error('Failed to initialize auth dashboard:', error);
             addSystemLog('Failed to initialize auth dashboard: ' + error.message);
             showSystemAlert('error', 'Failed to initialize security components');
+          }
+        });
+      }
+      
+      // Initialize the Database Backup Dashboard with auth integration
+      const databaseBackupPanel = document.getElementById('database-backup-panel');
+      if (databaseBackupPanel) {
+        // Wait for auth to be initialized first
+        authManager.init().then(async () => {
+          try {
+            // Import database backup bridge
+            import('../database_backup_bridge.js').then(async ({ databaseBackupBridge }) => {
+              try {
+                // Initialize the database backup bridge
+                await databaseBackupBridge.init();
+                
+                // Create dashboard component
+                const databaseBackupDashboard = new DatabaseBackupDashboard({
+                  element: databaseBackupPanel,
+                  eventBus: eventBus,
+                  authManager: authManager,
+                  resources: {
+                    pythonBridge: window.pythonBridge
+                  }
+                });
+                
+                // Set up dashboard registration
+                const dashboard = {
+                  element: document,
+                  eventBus: eventBus,
+                  ipc: ipcRenderer,
+                  registerPanel: (id, config) => {
+                    console.log(`Panel registered: ${id}`);
+                    return true;
+                  }
+                };
+                
+                // Register the dashboard
+                registerDatabaseBackupDashboard(dashboard, {
+                  pythonBridge: window.pythonBridge,
+                  resources: {
+                    authManager,
+                    databaseBackupBridge
+                  }
+                }).then(result => {
+                  if (result.success) {
+                    addSystemLog('Database backup dashboard registered successfully');
+                  } else {
+                    addSystemLog(`Database backup dashboard registration failed: ${result.message}`);
+                  }
+                });
+                
+                // Initialize and render
+                await databaseBackupDashboard.init();
+                // Dashboard will render itself during init
+                
+                addSystemLog('Database backup dashboard initialized with security integration');
+              } catch (error) {
+                console.error('Failed to initialize database backup dashboard:', error);
+                addSystemLog('Failed to initialize database backup dashboard: ' + error.message);
+                showSystemAlert('warning', 'Database backup initialized with limited functionality');
+              }
+            }).catch(error => {
+              console.error('Failed to import database backup bridge:', error);
+              addSystemLog('Failed to import database backup bridge: ' + error.message);
+              
+              // Fall back to basic initialization without bridge
+              const databaseBackupDashboard = new DatabaseBackupDashboard({
+                element: databaseBackupPanel,
+                eventBus: eventBus
+              });
+              
+              databaseBackupDashboard.init().then(() => {
+                addSystemLog('Database backup dashboard initialized without bridge integration');
+                showSystemAlert('warning', 'Database backup initialized without full functionality');
+              });
+            });
+          } catch (error) {
+            console.error('Failed to initialize database backup dashboard:', error);
+            addSystemLog('Failed to initialize database backup dashboard: ' + error.message);
           }
         });
       }

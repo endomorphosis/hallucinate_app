@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IPFS Kit Dashboard</title>
+  
+  <!-- Add Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  
+  <!-- Add dashboard styles -->
+  <link rel="stylesheet" href="../dashboard/ipfs_kit_dashboard.css">
+  <style>
+    /* Base styles */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f7fa;
+      color: #2d3748;
+      line-height: 1.5;
+    }
+    
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    /* Dashboard container */
+    #dashboard-container {
+      margin-top: 1rem;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      min-height: 800px;
+    }
+    
+    /* Page header */
+    .page-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .page-header h1 {
+      margin: 0;
+      color: #2d3748;
+      font-size: 2rem;
+    }
+    
+    .page-header p {
+      margin: 0.5rem 0 0;
+      color: #718096;
+      font-size: 1.125rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="page-header">
+      <h1>IPFS Kit Dashboard</h1>
+      <p>Test and manage IPFS Kit functionality</p>
+    </div>
+    
+    <div id="dashboard-container"></div>
+  </div>
+  
+  <script type="module">
+    import { registerIPFSKitDashboard } from '../dashboard/register_ipfs_dashboard.js';
+    
+    // Initialize the dashboard when the page loads
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        // Register and initialize the IPFS Kit dashboard
+        const result = await registerIPFSKitDashboard({
+          container: document.getElementById('dashboard-container')
+        });
+        
+        if (!result) {
+          console.error('Failed to initialize IPFS Kit dashboard');
+          document.getElementById('dashboard-container').innerHTML = `
+            <div class="error-message" style="padding: 2rem; text-align: center;">
+              <i class="fas fa-exclamation-circle" style="font-size: 3rem; display: block; margin-bottom: 1rem;"></i>
+              <h2>Dashboard Initialization Failed</h2>
+              <p>There was a problem initializing the IPFS Kit dashboard. Please check the console for details.</p>
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('Error initializing dashboard:', error);
+        document.getElementById('dashboard-container').innerHTML = `
+          <div class="error-message" style="padding: 2rem; text-align: center;">
+            <i class="fas fa-exclamation-circle" style="font-size: 3rem; display: block; margin-bottom: 1rem;"></i>
+            <h2>Error</h2>
+            <p>${error.message}</p>
+          </div>
+        `;
+      }
+    });
+  </script>
+</body>
+</html>

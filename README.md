@@ -127,6 +127,8 @@ NodeJS server:
 
 -- ipfs_kit_js node js library
 
+-- pyarrow_index_bridge.js for PyArrow Content Index integration
+
 -- Kubo / ipfs_cluster external Go library
 
 -- faiss system external library
@@ -161,6 +163,8 @@ Python server:
 
 -- auth_keystore_py package (from PyPI, provides capability-based access to APIs)
 
+-- pyarrow_content_index_bridge.py for JavaScript-Python communication
+
 -- Integration layers for all external packages
 
 -- Kubo / ipfs_cluster external Go library
@@ -174,6 +178,34 @@ Python server:
 -- huggingface_datasets wrapper
 
 -- orbitdb_kit_py node.js wrapper
+
+## PyArrow Content Index Bridge
+
+Hallucinate App includes a comprehensive JavaScript bridge for the PyArrow Content Index, enabling efficient metadata management with observability integration:
+
+### Key Features
+
+- **Bidirectional Communication**: Seamless interaction between JavaScript and Python components
+- **Apache Arrow Integration**: Efficient data transfer using the Arrow columnar memory format
+- **Observability Integration**: Comprehensive metrics tracking for all operations
+- **Dashboard Integration**: Visual interface for content index management
+- **Error Handling**: Robust error management with detailed diagnostics
+
+### Components
+
+1. **JavaScript Bridge (`pyarrow_index_bridge.js`)**: Core implementation providing all Content Index operations
+2. **Dashboard Registration (`register_pyarrow_content_index_dashboard.js`)**: UI integration component
+3. **Python Bridge Module (`pyarrow_content_index_bridge.py`)**: Python-side counterpart
+
+### Use Cases
+
+- **Content Discovery**: Find resources by CID, path, or metadata criteria
+- **Metadata Management**: Store and retrieve metadata for IPFS content
+- **IPFS Pinset Synchronization**: Keep index in sync with IPFS pins
+- **Analytics**: Track content usage and distribution
+- **Visual Exploration**: Browse content through the dashboard interface
+
+For complete details, see the [PyArrow Content Index Bridge Documentation](docs/PYARROW_CONTENT_INDEX_BRIDGE.md).
 
 ## Multi-Process Architecture
 

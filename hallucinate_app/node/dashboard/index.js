@@ -5,12 +5,15 @@
  * for the main Electron application
  */
 
-const PyArrowErrorDashboard = require('./pyarrow_error_dashboard');
-const ErrorMonitorDashboard = require('./error_monitor_dashboard');
-const PyArrowContentIndexDashboard = require('./pyarrow_content_index_dashboard');
+import PyArrowErrorDashboard from './pyarrow_error_dashboard.js';
+import ErrorMonitorDashboard from './error_monitor_dashboard.js';
+import PyArrowContentIndexDashboard from './pyarrow_content_index_dashboard.js';
 import AuthDashboard from './auth_dashboard.js';
 import UsageDashboard from './usage_dashboard.js';
 import SecurityTestDashboard from './security_test_dashboard.js';
+import { DatabaseBackupDashboard } from './database_backup_dashboard.js';
+import { registerPyArrowContentIndexDashboard } from './register_pyarrow_content_index_dashboard.js';
+import { registerDatabaseBackupDashboard } from './register_database_backup_dashboard.js';
 
 /**
  * Initialize all dashboards
@@ -49,6 +52,11 @@ function initializeDashboards(mainWindow, options = {}) {
   // Initialize the Security Test Dashboard
   const securityTestDashboard = new SecurityTestDashboard({
     ...options.securityTestDashboard
+  });
+  
+  // Initialize the Database Backup Dashboard
+  const databaseBackupDashboard = new DatabaseBackupDashboard({
+    ...options.databaseBackupDashboard
   });
   
   // Add menu items to app menu
@@ -133,7 +141,27 @@ function initializeDashboards(mainWindow, options = {}) {
           },
           {
             label: 'PyArrow Content Index',
-            click: () => contentIndexDashboard.openDashboard()
+            click: () => {
+              // Create a new window for the content index dashboard
+              const { BrowserWindow } = require('electron');
+              const contentIndexWindow = new BrowserWindow({
+                width: 1200,
+                height: 900,
+                title: 'PyArrow Content Index Dashboard',
+                webPreferences: {
+                  nodeIntegration: true,
+                  contextIsolation: false
+                }
+              });
+              
+              // Load HTML content
+              contentIndexWindow.loadFile('views/pyarrow_content_index_dashboard.html');
+              
+              // Open dev tools in development
+              if (process.env.NODE_ENV === 'development') {
+                contentIndexWindow.webContents.openDevTools();
+              }
+            }
           },
           {
             label: 'PyArrow Error Dashboard',
@@ -142,6 +170,30 @@ function initializeDashboards(mainWindow, options = {}) {
           {
             label: 'Advanced Error Monitor',
             click: () => errorMonitorDashboard.openDashboard()
+          },
+          {
+            label: 'Database Backup & Restore',
+            click: () => {
+              // Create a new window for the database backup dashboard
+              const { BrowserWindow } = require('electron');
+              const databaseBackupWindow = new BrowserWindow({
+                width: 1200,
+                height: 900,
+                title: 'Database Backup & Restore Dashboard',
+                webPreferences: {
+                  nodeIntegration: true,
+                  contextIsolation: false
+                }
+              });
+              
+              // Load dedicated database backup dashboard HTML
+              databaseBackupWindow.loadFile('views/database_backup_dashboard.html');
+              
+              // Open dev tools in development
+              if (process.env.NODE_ENV === 'development') {
+                databaseBackupWindow.webContents.openDevTools();
+              }
+            }
           },
           { type: 'separator' },
           {
@@ -157,7 +209,7 @@ function initializeDashboards(mainWindow, options = {}) {
   }
   
   // Register dashboard IPC handlers for renderer processes
-  const { ipcMain } = require('electron');
+  const { ipcMain } = options.electron || require('electron');
   
   ipcMain.on('open-content-index-dashboard', () => {
     contentIndexDashboard.openDashboard();
@@ -169,6 +221,28 @@ function initializeDashboards(mainWindow, options = {}) {
   
   ipcMain.on('open-error-monitor-dashboard', () => {
     errorMonitorDashboard.openDashboard();
+  });
+  
+  ipcMain.on('open-content-index-dashboard', () => {
+    // Create a new window for the content index dashboard
+    const { BrowserWindow } = require('electron');
+    const contentIndexWindow = new BrowserWindow({
+      width: 1200,
+      height: 900,
+      title: 'PyArrow Content Index Dashboard',
+      webPreferences: {
+        nodeIntegration: true,
+        contextIsolation: false
+      }
+    });
+    
+    // Load HTML content
+    contentIndexWindow.loadFile('views/pyarrow_content_index_dashboard.html');
+    
+    // Open dev tools in development
+    if (process.env.NODE_ENV === 'development') {
+      contentIndexWindow.webContents.openDevTools();
+    }
   });
   
   ipcMain.on('open-security-test-dashboard', () => {
@@ -193,6 +267,28 @@ function initializeDashboards(mainWindow, options = {}) {
     }
   });
   
+  ipcMain.on('open-database-backup-dashboard', () => {
+    // Create a new window for the database backup dashboard
+    const { BrowserWindow } = require('electron');
+    const databaseBackupWindow = new BrowserWindow({
+      width: 1200,
+      height: 900,
+      title: 'Database Backup & Restore Dashboard',
+      webPreferences: {
+        nodeIntegration: true,
+        contextIsolation: false
+      }
+    });
+    
+    // Load dedicated database backup dashboard HTML
+    databaseBackupWindow.loadFile('views/database_backup_dashboard.html');
+    
+    // Open dev tools in development
+    if (process.env.NODE_ENV === 'development') {
+      databaseBackupWindow.webContents.openDevTools();
+    }
+  });
+  
   ipcMain.on('clear-pyarrow-error-history', () => {
     // Tell all renderer processes to clear error history
     if (mainWindow) {
@@ -207,7 +303,8 @@ function initializeDashboards(mainWindow, options = {}) {
     errorMonitorDashboard,
     authDashboard,
     usageDashboard,
-    securityTestDashboard
+    securityTestDashboard,
+    databaseBackupDashboard
   };
 }
 
@@ -267,13 +364,16 @@ function createErrorReporter(mainWindow) {
 }
 
 // Export dashboard components and utilities
-module.exports = {
+export {
   PyArrowErrorDashboard,
   ErrorMonitorDashboard,
   PyArrowContentIndexDashboard,
   AuthDashboard,
   UsageDashboard,
   SecurityTestDashboard,
+  DatabaseBackupDashboard,
   initializeDashboards,
-  createErrorReporter
+  createErrorReporter,
+  registerPyArrowContentIndexDashboard,
+  registerDatabaseBackupDashboard
 };

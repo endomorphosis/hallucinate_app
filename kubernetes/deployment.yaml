@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hallucinate-app
+  namespace: hallucinate-app
+  labels:
+    app: hallucinate-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hallucinate-app
+  template:
+    metadata:
+      labels:
+        app: hallucinate-app
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+        - name: hallucinate-app
+          image: hallucinate-app:latest
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
+          env:
+            - name: OBSERVABILITY_PROMETHEUS_ENABLED
+              value: "true"
+            - name: OBSERVABILITY_PROMETHEUS_PORT
+              value: "9090"
+            - name: OBSERVABILITY_SYSTEM_METRICS_ENABLED
+              value: "true"
+            - name: OBSERVABILITY_SYSTEM_METRICS_INTERVAL
+              value: "15"
+            - name: OBSERVABILITY_LOGGING_LEVEL
+              value: "info"
+            - name: OBSERVABILITY_LOGGING_JSON_FORMAT
+              value: "true"
+            - name: OBSERVABILITY_LOGGING_INCLUDE_TIMESTAMP
+              value: "true"
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 15
+            periodSeconds: 5
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+            requests:
+              cpu: 500m
+              memory: 512Mi
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: hallucinate-app-config

@@ -1,0 +1,210 @@
+# Default values for hallucinate-app
+# This is a YAML-formatted file.
+
+replicaCount: 1
+
+image:
+  repository: hallucinate-app
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "9090"
+  prometheus.io/path: "/metrics"
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 3000
+  metricsPort: 9090
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# ServiceMonitor configuration for Prometheus Operator
+serviceMonitor:
+  enabled: false
+  interval: 15s
+  scrapeTimeout: 10s
+  path: /metrics
+  additionalLabels: {}
+  relabelings: []
+  metricRelabelings: []
+
+# NetworkPolicy configuration
+networkPolicy:
+  enabled: false
+  # If the monitoring stack is in a separate namespace, define it here
+  metricsNamespaceSelector:
+    matchLabels:
+      name: monitoring
+  # If you want to allow specific pods to scrape metrics
+  metricsPodSelector:
+    matchLabels:
+      app: prometheus
+
+# Prometheus configuration
+prometheus:
+  enabled: true
+  alertmanager:
+    enabled: true
+    config:
+      global:
+        resolve_timeout: 5m
+      route:
+        group_by: ['alertname', 'job']
+        group_wait: 30s
+        group_interval: 5m
+        repeat_interval: 12h
+        receiver: 'null'
+        routes:
+        - match:
+            alertname: Watchdog
+          receiver: 'null'
+      receivers:
+      - name: 'null'
+  serverFiles:
+    alerting_rules.yml:
+      groups:
+      - name: hallucinate_app_alerts
+        rules:
+        - alert: HighErrorRate
+          expr: sum(rate(ipfs_kit_bridge_errors_total[5m])) / sum(rate(ipfs_kit_bridge_operations_total[5m])) > 0.1
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High error rate in IPFS Kit operations"
+            description: "Error rate is {{ $value | humanizePercentage }} over the last 5 minutes."
+        - alert: SlowOperations
+          expr: histogram_quantile(0.95, sum(rate(ipfs_kit_bridge_operation_duration_seconds_bucket[5m])) by (le, operation)) > 1
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Slow IPFS operations detected"
+            description: "95th percentile operation duration for {{ $labels.operation }} is {{ $value }}s"
+        - alert: HighMemoryUsage
+          expr: ipfs_kit_bridge_system_memory_usage_bytes > 1e9
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High memory usage"
+            description: "Memory usage is {{ $value | humanizeBytes }}"
+        - alert: HighCPUUsage
+          expr: ipfs_kit_bridge_system_cpu_usage_percent > 80
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High CPU usage"
+            description: "CPU usage is {{ $value }}% for more than 5 minutes."
+        - alert: SDKGenerationFailure
+          expr: increase(sdk_generator_operations_total{status="error"}[15m]) > 0
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "SDK generation failures detected"
+            description: "{{ $value }} SDK generation failures in the last 15 minutes."
+        - alert: ObservabilityComponentDown
+          expr: absent(up{job="hallucinate_app"}) == 1
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Observability component is down"
+            description: "The hallucinate_app metrics endpoint is not reachable for more than 5 minutes."
+
+# Grafana configuration
+grafana:
+  enabled: true
+  adminPassword: admin
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Prometheus
+          type: prometheus
+          url: http://{{ .Release.Name }}-prometheus-server
+          access: proxy
+          isDefault: true
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: 'default'
+          orgId: 1
+          folder: 'IPFS Kit'
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/default
+        - name: 'sdk'
+          orgId: 1
+          folder: 'SDK Generator'
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/sdk
+  dashboardsConfigMaps:
+    default: "{{ .Release.Name }}-grafana-dashboards"
+    sdk: "{{ .Release.Name }}-sdk-dashboard"
+  
+# Observability configuration
+observability:
+  # Enable Prometheus metrics collection
+  prometheusEnabled: true
+  # Prometheus metrics port
+  prometheusPort: 9090
+  # Enable system metrics collection (CPU, memory, disk)
+  systemMetricsEnabled: true
+  # System metrics collection interval in seconds
+  systemMetricsInterval: 15
+  # Structured logging configuration
+  logging:
+    # Log level (debug, info, warning, error)
+    level: info
+    # Enable JSON formatting for logs
+    jsonFormat: true
+    # Include additional context in logs
+    includeTimestamp: true
+    # Log file path (leave empty for stdout)
+    logFilePath: ""
+  # SDK Generator metrics configuration
+  sdkGenerator:
+    # Enable SDK Generator metrics collection
+    enabled: true
+    # Label for SDK Generator metrics
+    namespace: "sdk_generator"
+    # Include language-specific metrics
+    collectLanguageMetrics: true
+    # Include custom metrics for SDK size and structure
+    collectSizeMetrics: true

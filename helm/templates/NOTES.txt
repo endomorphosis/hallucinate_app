@@ -1,0 +1,37 @@
+{{- if .Values.ingress.enabled }}
+Hallucinate App has been installed.
+
+Access the application via the Ingress resource at:
+  http{{ if .Values.ingress.tls }}s{{ end }}://{{ .Values.ingress.host }}{{ .Values.ingress.path }}
+{{- else }}
+Hallucinate App has been installed.
+
+1. Access the application by running these commands:
+   kubectl port-forward svc/{{ include "hallucinate-app.fullname" . }} {{ .Values.service.port }}:{{ .Values.service.port }}
+   Visit http://localhost:{{ .Values.service.port }} in your browser
+
+2. Access Grafana (if enabled) by running:
+   {{- if .Values.grafana.enabled }}
+   kubectl port-forward svc/{{ .Release.Name }}-grafana 3000:80
+   Visit http://localhost:3000 in your browser
+   - Username: admin
+   - Password: {{ .Values.grafana.adminPassword }}
+   {{- else }}
+   Grafana is not enabled in this deployment
+   {{- end }}
+
+3. Access Prometheus (if enabled) by running:
+   {{- if .Values.prometheus.enabled }}
+   kubectl port-forward svc/{{ .Release.Name }}-prometheus-server 9090:80
+   Visit http://localhost:9090 in your browser
+   {{- else }}
+   Prometheus is not enabled in this deployment
+   {{- end }}
+
+4. Monitor metrics via:
+   kubectl port-forward svc/{{ include "hallucinate-app.fullname" . }} {{ .Values.service.metricsPort }}:{{ .Values.service.metricsPort }}
+   curl http://localhost:{{ .Values.service.metricsPort }}/metrics
+{{- end }}
+
+For more information, see the Helm chart documentation:
+https://github.com/yourusername/hallucinate-app/blob/main/helm/README.md

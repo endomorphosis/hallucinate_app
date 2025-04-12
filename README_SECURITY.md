@@ -75,6 +75,25 @@ The database sync manager provides bidirectional synchronization between OrbitDB
 - JavaScript:
   - `hallucinate_app/node/database_sync_manager.js` - Sync manager module (planned)
 
+### 5. PyArrow Content Index Secure Manager
+
+The PyArrow Content Index Secure Manager provides capability-based security for accessing and manipulating the PyArrow Content Index, which stores metadata about content in the system.
+
+#### Key Features:
+- Capability verification for all index operations (read, write, delete, sync, import, export)
+- Fine-grained access control for specific resources and operations
+- Secure integration with UCAN authentication system
+- Comprehensive audit logging and observability metrics
+- Security status visualization in dashboard UI
+- User-friendly capability management interface
+
+#### Implementation Files:
+- Python:
+  - `hallucinate_app/python/hallucinate_app/secure_pyarrow_index_manager.py` - Secure manager module
+- JavaScript:
+  - `hallucinate_app/node/secure_pyarrow_index_manager.js` - Secure manager module
+  - `hallucinate_app/node/views/pyarrow_content_index_dashboard.html` - Dashboard UI
+
 ## Usage Examples
 
 ### Python Examples
@@ -277,6 +296,94 @@ export_result = await sync_manager.export_duckdb_to_ipld(
 )
 ```
 
+#### Using the PyArrow Content Index Secure Manager
+
+```python
+from hallucinate_app.secure_pyarrow_index_manager import SecurePyArrowIndexManager, PYARROW_INDEX_CAPABILITIES
+
+# Create and initialize the secure manager with resources
+secure_manager = SecurePyArrowIndexManager(resources={
+    'auth': auth_manager,
+    'pythonBridge': python_bridge
+}, metadata={
+    'indexPath': '/path/to/content_index.arrow',
+    'useArrow': True
+})
+await secure_manager.init()
+
+# Get read capability token
+read_token = auth_manager.get_self_signed_token(PYARROW_INDEX_CAPABILITIES['READ'])
+
+# Look up content by CID with capability verification
+content = await secure_manager.lookupByCid('Qmabcdef123456789', read_token)
+
+# Get write capability token
+write_token = auth_manager.get_self_signed_token(PYARROW_INDEX_CAPABILITIES['WRITE'])
+
+# Add a new entry with capability verification
+result = await secure_manager.addEntry({
+    'cid': 'Qmnewentry123456',
+    'path': '/datasets/new_data.parquet',
+    'mimetype': 'application/octet-stream',
+    'size': 1024,
+    'metadata': {
+        'description': 'Example dataset',
+        'tags': ['dataset', 'example']
+    }
+}, write_token)
+
+# Get security status
+status = secure_manager.getSecurityStatus()
+```
+
+#### Using the PyArrow Content Index Secure Manager (JavaScript)
+
+```javascript
+import { SecurePyArrowIndexManager, PYARROW_INDEX_CAPABILITIES } from './hallucinate_app/node/secure_pyarrow_index_manager.js';
+import authManager from './hallucinate_app/node/auth.js';
+
+// Create and initialize the secure manager with resources
+const secureManager = new SecurePyArrowIndexManager({
+  auth: authManager,
+  pythonBridge: pythonBridge
+}, {
+  indexPath: '/path/to/content_index.arrow',
+  useArrow: true,
+  observabilityOptions: {
+    namespace: 'pyarrow_index',
+    subsystem: 'secure_manager'
+  }
+});
+await secureManager.init();
+
+// Get read capability token
+const readToken = await authManager.getCapabilityToken(PYARROW_INDEX_CAPABILITIES.READ);
+
+// Look up content by CID with capability verification
+const content = await secureManager.lookupByCid('Qmabcdef123456789', readToken);
+
+// Get write capability token
+const writeToken = await authManager.getCapabilityToken(PYARROW_INDEX_CAPABILITIES.WRITE);
+
+// Add a new entry with capability verification
+const result = await secureManager.addEntry({
+  cid: 'Qmnewentry123456',
+  path: '/datasets/new_data.parquet',
+  mimetype: 'application/octet-stream',
+  size: 1024,
+  metadata: {
+    description: 'Example dataset',
+    tags: ['dataset', 'example']
+  }
+}, writeToken);
+
+// Get statistics about a specific capability
+const statsResult = await secureManager.getStats(await authManager.getCapabilityToken(PYARROW_INDEX_CAPABILITIES.ADMIN));
+
+// Get security status (no token required)
+const securityStatus = secureManager.getSecurityStatus();
+```
+
 ## Testing
 
 Each component includes comprehensive tests:
@@ -297,11 +404,19 @@ python -m unittest discover -s hallucinate_app/test
 - `test/js/test_keystore.js` - Tests for the keystore module
 - `test/js/test_auth.js` - Tests for the auth module
 - `test/js/test_auth_keystore_integration.js` - Tests for the integration module
+- `test/js/test_pyarrow_index_bridge.js` - Tests for the PyArrow Content Index bridge
+- `test/js/test_secure_pyarrow_index_manager.js` - Tests for the PyArrow Content Index secure manager
 
 To run the JavaScript tests:
 ```bash
 npm run test:js
 ```
+
+### Security Dashboard Tests
+- Access the security dashboard through the application menu
+- Test capability management by requesting capabilities and verifying they are granted
+- Run security tests from the dashboard UI to validate secure manager functionality
+- Monitor access control metrics to ensure proper capability verification
 
 ## Security Best Practices
 
@@ -322,6 +437,7 @@ npm run test:js
 | Keystore | ✅ | ✅ |
 | Auth-Keystore Integration | ✅ | ✅ |
 | Database Sync Manager | ✅ | 🔄 (In Progress) |
+| PyArrow Content Index Secure Manager | ✅ | ✅ |
 
 ## Future Enhancements
 
@@ -329,7 +445,9 @@ npm run test:js
    - ✅ `auth.js`: Complete UCAN-based authentication system
    - ✅ `keystore.js`: Secure credential storage with encryption and platform integration
    - ✅ `auth_keystore_integration.js`: Capability-based access control for API keys
-2. **Security Dashboard**: Create a UI for monitoring key usage, capability delegations, and security status.
+2. ✅ **Security Dashboard**: Create a UI for monitoring key usage, capability delegations, and security status.
+   - ✅ PyArrow Content Index Security UI: Capability management and security status visualization
+   - ✅ Security test dashboard: Visual interface for running and analyzing security tests
 3. **Enhanced Intrusion Detection**: Add detection for unusual access patterns.
 4. **Additional Storage Backends**: Support more secure storage backends.
 5. **Hardware Security Integration**: Add support for hardware security modules.

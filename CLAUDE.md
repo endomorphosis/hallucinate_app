@@ -6,7 +6,7 @@ hallucinate_app is an Electron-based desktop application that creates a bridge b
 
 ### Key Technologies
 - **Frontend**: Electron (cross-platform desktop application)
-- **JavaScript**: ES Modules, Node.js
+- **JavaScript**: ES Modules, Node.can 
 - **Python**: Python 3.8+ with HuggingFace ecosystem 
 - **AI/ML**: Transformers, PyTorch, FAISS vector database
 - **Decentralized**: IPFS, libp2p, OrbitDB, FireproofDB, DuckDB-IPLD
@@ -112,19 +112,44 @@ This is the highest priority task because many other components depend on having
 
 #### 1.2 Multi-Process Architecture (High Priority)
 Continue developing the multi-process architecture for Python components:
-- Complete the IPC mechanism for efficient communication between processes
-- Implement shared memory using PyArrow Plasma store
-- Ensure proper process management and resource cleanup
-- Add robust error handling for process failures
-- Test with large data transfers between processes
+- ✅ Complete the IPC mechanism for efficient communication between processes
+- ✅ Implement shared memory using PyArrow Plasma store
+- ✅ Ensure proper process management and resource cleanup
+- ✅ Add robust error handling for process failures
+- ✅ Test with large data transfers between processes
+- ✅ Implement comprehensive observability with Prometheus metrics and structured logging
 
-#### 1.3 PyArrow Content Index Integration (High Priority)
-Enhance the PyArrow Content Index integration:
-- Complete the JavaScript bridge for the PyArrow Content Index
-- Add efficient search and update capabilities
-- Implement proper index serialization/deserialization
-- Ensure thread-safety for concurrent access
+#### 1.3 SDK Generation (High Priority)
+The SDK generation for ipfs_kit_py has been implemented:
+- ✅ Created a Python module `sdk_generator.py` for generating client SDKs
+- ✅ Support for multiple languages: Python, JavaScript, TypeScript, and Rust
+- ✅ Customization capabilities for project-specific needs
+- ✅ Integration with hallucinate_app project structure
+- ✅ Mock generation capability for testing when ipfs_kit_py is not available
+- ✅ Language-specific post-processing for optimal integration
+- ✅ Command-line interface for generating SDKs
+
+#### 1.4 Observability Integration (High Priority)
+Comprehensive observability has been implemented:
+- ✅ Prometheus metrics integration for detailed monitoring
+- ✅ Custom metrics for IPFS operations, metadata index, and system resources
+- ✅ Support for counters, gauges, histograms, and timers
+- ✅ Structured logging with context-aware data
+- ✅ Thread-local context management for concurrent operations
+- ✅ Performance tracking with histogram metrics
+- ✅ Timer context manager and function decorator for easy timing
+- ✅ Detailed error tracking with classification
+- ✅ Integration with IPFS Kit Bridge for seamless monitoring
+- ✅ Comprehensive test suite and examples
+
+#### 1.5 PyArrow Content Index Integration (High Priority)
+Enhance the PyArrow Content Index integration from the ipfs_kit_py package:
+- Complete the JavaScript bridge for the PyArrow Content Index from ipfs_kit_py
+- Add efficient search and update capabilities through the integration layer
+- Implement proper index serialization/deserialization for data exchange
+- Ensure thread-safety for concurrent access to the ipfs_kit_py index
 - Test with large datasets and concurrent operations
+- Create a secure manager layer for authenticated access
 
 ### 2. Security Framework (High Priority)
 
@@ -152,6 +177,7 @@ Implement the secure manager components that integrate with the auth system:
 - ✅ secure_model_manager.py - For ML model management
 - ✅ secure_transformers_manager.py - For HuggingFace integration
 - ✅ secure_datasets_manager.py - For dataset management
+- ✅ secure_pyarrow_index_manager.js - For secure access to PyArrow Content Index from ipfs_kit_py
 - ✅ Add comprehensive tests for each manager
 - ✅ Develop comprehensive security test dashboard
   - ✅ Visual test runner for all security components
@@ -233,7 +259,49 @@ Each module follows a consistent pattern:
   - ✅ This prevents IPFS operations from blocking machine learning model execution
   - ✅ Communication happens via Apache Arrow IPC (Inter-Process Communication) and thread-safe queues
   - ✅ Shared memory regions enable zero-copy data transfer between processes
-  - Example implementation:
+  - ✅ Comprehensive observability with Prometheus metrics and structured logging
+  
+  #### ipfs_kit_server.py Implementation
+  
+  The hallucinate_app includes a comprehensive `ipfs_kit_server.py` module that runs IPFS operations in a separate thread to prevent blocking the main application thread. This provides a non-blocking interface to IPFS operations with these key features:
+  
+  - **Thread-based execution**: Runs all IPFS operations in a background thread
+  - **Queue-based communication**: Uses thread-safe queues for command requests and responses
+  - **Comprehensive API**: Provides a complete set of IPFS operations (add, cat, get, pin, etc.)
+  - **Async/Sync support**: Both synchronous and asynchronous APIs available
+  - **Graceful error handling**: Robust error handling with detailed error information
+  - **Mock implementation**: Automatic fallback to mock implementation when IPFS is not available
+  
+  The module is designed to be used as follows:
+  
+  ```python
+  # Create communication queues
+  request_queue = Queue()
+  response_queue = Queue()
+  
+  # Create and start server in a background thread
+  server = IPFSKitServer(request_queue, response_queue)
+  server_thread = threading.Thread(target=server.start)
+  server_thread.daemon = True
+  server_thread.start()
+  
+  # Create client for sending commands
+  client = IPFSKitClient(request_queue, response_queue)
+  
+  # Use client API (non-blocking)
+  result = client.add("example.txt")
+  content = client.cat(result["Hash"])
+  
+  # Async API for even better non-blocking behavior
+  async def fetch_content():
+      result = await client.async_add("example.txt")
+      content = await client.async_cat(result["Hash"])
+      return content
+  ```
+  
+  #### Multi-process Architecture
+  
+  For even more robust isolation and performance, the app also includes a multi-process architecture example implementation:
   
   ```python
   import multiprocessing as mp
@@ -304,6 +372,519 @@ Each module follows a consistent pattern:
   - Prevents compute-intensive ML tasks from blocking I/O operations
   - Zero-copy data sharing via shared memory reduces overhead
   - Improves resource utilization and responsiveness
+  
+- **Electron Integration**:
+  - When running within the Electron app, the Python IPFS processes are managed by the JavaScript bridge
+  - Communication between Electron's main process and the Python processes happens through IPC channels
+  - The JavaScript bridge handles process lifecycle management (start, monitoring, shutdown)
+  - Error handling and automatic recovery is implemented for robustness
+
+### PyArrow Metadata Index Integration
+
+The hallucinate_app integrates with the powerful PyArrow Metadata Index from the ipfs_kit_py module. This component provides an efficient mechanism for storing, querying, and synchronizing metadata about IPFS content.
+
+#### Metadata Index Architecture
+
+The Metadata Index leverages Apache Arrow's columnar format to offer:
+
+1. **High-Performance Storage and Querying**:
+   - Columnar data organization for fast analytical queries
+   - Memory-mapped access for efficient handling of large indices
+   - Parquet file persistence for durable storage with efficient compression 
+   - Tiered caching for optimized access patterns
+   - Zero-copy data sharing between processes via Arrow C Data Interface
+
+2. **Comprehensive Metadata Schema**:
+   - Content identifiers and multihash information
+   - Size, block count, and link structure details
+   - MIME type and file metadata
+   - Pin status across different storage backends
+   - Timestamps for creation and access tracking
+   - Custom tags and arbitrary property support
+   - Multi-location tracking (where content is stored)
+
+3. **Distributed Synchronization**:
+   - IPFS PubSub for real-time updates between nodes
+   - IPFS DAG for content-addressed index publishing
+   - Role-specific behavior for master, worker, and leecher nodes
+   - Automatic metadata propagation in cluster environments
+
+#### Integration with Electron App
+
+The hallucinate_app provides a seamless integration with this Metadata Index:
+
+```javascript
+// In the JavaScript bridge to Python
+async function getMetadataForCid(cid) {
+  try {
+    // Query the PyArrow metadata index through the Python bridge
+    const result = await pythonBridge.invokeMethod('get_metadata_for_cid', { cid });
+    return result;
+  } catch (error) {
+    console.error('Error querying metadata index:', error);
+    throw error;
+  }
+}
+
+// Example usage to get metadata for a specific CID
+const contentMetadata = await getMetadataForCid('QmZ4tDuvesekSs4qM5ZBKpXiZGun7S2CYtEZRB3DYXkjGx');
+```
+
+The integration allows the application to efficiently:
+- Track all content stored in IPFS
+- Locate content across multiple storage backends
+- Build advanced search interfaces based on content metadata
+- Maintain a synchronized content registry across cluster nodes
+- Optimize data access based on metadata (like size, type, frequency of use)
+
+### SDK Generation for Cross-Language Development
+
+The ipfs_kit_py module includes sophisticated SDK generation capabilities that are integrated with the hallucinate_app. This feature allows automatic generation of client libraries for Python, JavaScript, and Rust, enabling seamless cross-language development.
+
+#### SDK Generation Features
+
+1. **Multi-Language Support**:
+   - Python SDKs with comprehensive typing and documentation
+   - JavaScript SDKs with both CommonJS and ESM support
+   - Rust SDKs with proper type safety and async support
+
+2. **API Consistency**:
+   - Consistent interfaces across all languages
+   - Idiomatic implementations for each target language
+   - Comprehensive error handling appropriate to each language
+
+3. **Documentation Integration**:
+   - Automatic documentation generation
+   - Code examples for common operations
+   - Type information and parameter descriptions
+
+#### SDK Usage in hallucinate_app
+
+The hallucinate_app leverages these SDK generation capabilities to:
+- Create consistent interfaces between Python and JavaScript components
+- Ensure type safety and proper error handling across language boundaries
+- Simplify future integration with other languages like Rust
+- Maintain documentation and interfaces in sync across all components
+
+Example integration with the generated JavaScript SDK:
+
+```javascript
+// Import the automatically generated JavaScript SDK
+import { IPFSKitClient } from './generated/ipfs_kit_sdk.js';
+
+// Initialize the client with configuration
+const client = new IPFSKitClient({
+  apiUrl: 'http://localhost:8000',
+  timeout: 30000
+});
+
+// Use the SDK methods (matching the Python API)
+async function addAndPinContent(content) {
+  try {
+    const result = await client.add(content, { pin: true });
+    console.log(`Content added with CID: ${result.cid}`);
+    return result.cid;
+  } catch (error) {
+    console.error('Error adding content:', error);
+    throw error;
+  }
+}
+```
+
+## Implementation Plan for hallucinate_app Integration
+
+The following implementation plan outlines how to integrate the ipfs_kit_py PyArrow Metadata Index, SDK generation capabilities, and testing dashboard into the hallucinate_app Electron application.
+
+### Phase 1: Foundation (Weeks 1-2)
+
+#### 1.1 Environment Setup and Dependencies
+- [ ] Add ipfs_kit_py with required extras to Python requirements
+  - Ensure arrow and fsspec extras are included for metadata indexing
+  - Add dev extras for testing capabilities
+  - Configure automatic installation during application startup
+- [ ] Configure development environment for cross-language development
+  - Set up shared virtual environment for Python modules
+  - Create Node.js binding configuration
+- [ ] Set up testing infrastructure for Python-JavaScript bridges
+  - Implement test harness for bidirectional communication
+  - Create fixtures for common test scenarios
+- [ ] Implement Python process management in Electron main process
+  - Add process spawning and monitoring
+  - Implement process isolation for IPFS operations
+  - Create logging infrastructure for Python processes
+
+#### 1.2 Basic IPC Bridge
+- [ ] Create bidirectional IPC communication channel between Electron and Python
+  - Implement reliable message passing
+  - Create command/response protocol
+  - Add progress reporting for long-running operations
+- [ ] Implement error handling and timeout mechanisms
+  - Add operation timeouts with configurable duration
+  - Implement retry logic for transient failures
+  - Create structured error reporting
+- [ ] Add serialization/deserialization for complex data types
+  - Implement Arrow-based serialization for efficiency
+  - Add schema validation for messages
+  - Create type adapters for custom objects
+- [ ] Set up process lifecycle management (start, monitor, graceful shutdown)
+  - Create health check mechanism
+  - Implement automatic restart of crashed processes
+  - Add graceful shutdown sequence
+
+#### 1.3 Core SDK Generation
+- [ ] Add SDK generation module to build process
+  - Create build script for SDK generation
+  - Add integration with application build pipeline
+  - Implement on-demand SDK generation
+- [ ] Configure JavaScript SDK output location
+  - Set up structured output directory
+  - Create version management for generated code
+  - Add cleanup of outdated versions
+- [ ] Create TypeScript type definitions for generated SDK
+  - Implement TypeScript interface generation
+  - Add JSDoc comments for developer tooling
+  - Create type guards for runtime validation
+- [ ] Add version checking to ensure SDK and Python module stay in sync
+  - Implement version compatibility check on startup
+  - Create warning for mismatched versions
+  - Add automatic regeneration of outdated SDKs
+
+### Phase 2: PyArrow Metadata Index Integration (Weeks 3-4)
+
+#### 2.1 Python Implementation
+- [ ] Initialize PyArrow Metadata Index in Python process
+  - Configure memory and disk allocation
+  - Set up index schema with all required fields
+  - Implement persistence and recovery
+- [ ] Create configuration system for index persistence location
+  - Add user-configurable storage location
+  - Implement migration for existing indices
+  - Add backup and restore capabilities
+- [ ] Implement content tracking hooks for all IPFS operations
+  - Add metadata collection for add operations
+  - Create update hooks for content access
+  - Implement automatic tag generation
+- [ ] Set up background index synchronization with other nodes
+  - Configure PubSub-based synchronization
+  - Add incremental updates for efficiency
+  - Implement conflict resolution strategies
+
+#### 2.2 JavaScript Bridge ✅
+- [x] Create JavaScript bridge methods for all metadata index operations
+  - [x] Implement all query and modification operations
+  - [x] Add batch operations for efficiency
+  - [x] Create streaming interface for large result sets
+- [x] Implement efficient data transfer for large result sets
+  - [x] Use Arrow IPC format for zero-copy transfer
+  - [x] Add streaming results for large queries
+  - [x] Implement windowing for pagination
+- [x] Add query capability with filtering and sorting
+  - [x] Create query builder interface
+  - [x] Implement complex filter conditions
+  - [x] Add sorting and grouping capabilities
+- [x] Create observability integration for performance monitoring
+  - [x] Implement metrics collection for all operations
+  - [x] Add error tracking with detailed diagnostics
+  - [x] Create dashboard integration for visualization
+- [x] Develop comprehensive testing suite for bridge functionality
+  - [x] Implement unit and integration tests
+  - [x] Add performance benchmarks
+  - [x] Create self-validation test method
+
+#### 2.3 UI Components
+- [ ] Design metadata browser component for Electron UI
+  - Create flexible grid/table view
+  - Add detail panel for content inspection
+  - Implement thumbnail generation for visual content
+- [ ] Implement search interface for content discovery
+  - Create advanced search form
+  - Add saved search functionality
+  - Implement search history
+- [ ] Create visualizations for storage distribution
+  - Add charts for content type distribution
+  - Create size distribution visualization
+  - Implement storage location breakdown
+- [ ] Add real-time updates for metadata changes
+  - Create WebSocket-based update notifications
+  - Add visual indicators for changing items
+  - Implement background refresh
+
+#### 2.4 Testing & Performance
+- [ ] Develop comprehensive tests for metadata operations
+  - Create unit tests for all operations
+  - Add integration tests for full workflows
+  - Implement stress tests for large datasets
+- [ ] Add performance benchmarks for index operations
+  - Create timing benchmarks for common operations
+  - Implement comparison against direct IPFS operations
+  - Add trend tracking for performance changes
+- [ ] Optimize memory usage for large indices
+  - Implement memory-mapping for large indices
+  - Add tiered cache configuration
+  - Create adaptive memory allocation
+- [ ] Implement pagination for large result sets
+  - Add cursor-based pagination
+  - Create efficient skip/limit implementation
+  - Implement background fetching
+
+### Phase 3: Testing Dashboard Integration (Weeks 5-6)
+
+#### 3.1 IPFS Module Test Dashboard
+- [ ] Complete the IPFS modules test dashboard UI
+  - Finalize module selection interface
+  - Add test configuration panels
+  - Create results display components
+- [ ] Implement test execution for all ipfs_kit_py modules
+  - Add test runners for each module
+  - Create parallel test execution
+  - Implement test case filtering
+- [ ] Add real-time result visualization
+  - Create progress indicators
+  - Add pass/fail status visualization
+  - Implement test output streaming
+- [ ] Create benchmark comparison tools
+  - Add historical comparison charts
+  - Implement performance regression detection
+  - Create export functionality for benchmark results
+
+#### 3.2 SDK Integration
+- [ ] Integrate generated SDK throughout application
+  - Replace direct Python calls with SDK methods
+  - Add consistency checks for API usage
+  - Implement automatic SDK usage
+- [ ] Replace direct IPC calls with SDK methods where appropriate
+  - Refactor existing code to use SDK
+  - Validate behavior equivalence
+  - Add performance monitoring for comparison
+- [ ] Add SDK version management to application startup
+  - Create version check on application start
+  - Add update notification for available SDK changes
+  - Implement automatic regeneration option
+- [ ] Create SDK documentation viewer in developer tools
+  - Add interactive documentation browser
+  - Implement method search functionality
+  - Create code examples for common operations
+
+#### 3.3 Observability Integration
+- [ ] Connect Prometheus metrics to dashboard
+  - Add metrics collection and export
+  - Create metric visualization components
+  - Implement custom metric definitions
+- [ ] Implement Grafana dashboard integration
+  - Create pre-configured dashboard templates
+  - Add dashboard import/export functionality
+  - Implement dashboard switching
+- [ ] Add real-time performance monitoring
+  - Create live charts for system metrics
+  - Implement operation timing tracking
+  - Add resource usage visualization
+- [ ] Create alerting for system issues
+  - Implement threshold-based alerts
+  - Add notification system integration
+  - Create alert history and management
+
+### Phase 4: Production Readiness (Weeks 7-8)
+
+#### 4.1 Error Handling & Recovery
+- [ ] Implement comprehensive error handling across all bridges
+  - Add detailed error classification
+  - Create user-friendly error messages
+  - Implement logging for troubleshooting
+- [ ] Add automatic recovery for failed processes
+  - Implement watchdog monitoring
+  - Create recovery procedures for common failures
+  - Add configurable retry policies
+- [ ] Create diagnostic tools for troubleshooting
+  - Add log collection and analysis
+  - Implement connection testing utilities
+  - Create environment verification tools
+- [ ] Implement graceful degradation for unavailable features
+  - Add feature availability checking
+  - Create fallback mechanisms for missing dependencies
+  - Implement clear user notifications
+
+#### 4.2 Documentation & Examples
+- [ ] Create user documentation for all new features
+  - Write comprehensive feature guides
+  - Add screenshots and diagrams
+  - Create troubleshooting sections
+- [ ] Add example code for common operations
+  - Implement copyable code snippets
+  - Create runnable examples
+  - Add outcome explanations
+- [ ] Develop interactive tutorials for the dashboard
+  - Create guided walkthroughs
+  - Add task-based tutorials
+  - Implement progressive learning path
+- [ ] Create video demonstrations for complex workflows
+  - Record key feature demonstrations
+  - Add annotated workflow examples
+  - Create installation and setup guides
+
+#### 4.3 Performance Optimization
+- [ ] Profile and optimize Python-JavaScript bridges
+  - Conduct detailed performance analysis
+  - Identify and eliminate bottlenecks
+  - Add performance metrics and monitoring
+- [ ] Implement background processing for intensive operations
+  - Move compute-intensive tasks to background
+  - Add progress reporting for long operations
+  - Implement cancellation capability
+- [ ] Add caching strategies for frequent operations
+  - Implement multi-level cache
+  - Create cache invalidation policies
+  - Add cache statistics monitoring
+- [ ] Optimize memory usage for large datasets
+  - Implement streaming for large data
+  - Add memory usage limits
+  - Create adaptive resource allocation
+
+#### 4.4 Security Review
+- [ ] Conduct security audit of IPC mechanisms
+  - Review message validation
+  - Check for privilege escalation
+  - Identify and fix potential vulnerabilities
+- [ ] Implement input validation for all bridge methods
+  - Add schema validation for all inputs
+  - Create sanitization for user inputs
+  - Implement strict typing
+- [ ] Add capability-based access control for sensitive operations
+  - Implement UCAN integration
+  - Create permission management
+  - Add audit logging for security events
+- [ ] Create secure storage for credentials
+  - Implement encrypted credential storage
+  - Add key rotation mechanisms
+  - Create secure access policies
+
+### Phase 5: Containerization & Kubernetes Integration (Weeks 9-10)
+
+#### 5.1 Helm Chart Development
+- [ ] Create Helm chart for deploying hallucinate_app
+  - Develop main chart structure
+  - Add dependency management
+  - Create comprehensive templates
+- [ ] Implement role-based deployment templates
+  - Create master node configuration
+  - Add worker node templates
+  - Implement leecher node options
+- [ ] Add resource configuration for different environments
+  - Create production resource profiles
+  - Add development configurations
+  - Implement auto-scaling policies
+- [ ] Create service definitions for internal/external access
+  - Implement service discovery
+  - Add ingress configuration
+  - Create network policies
+
+#### 5.2 Kubernetes Dashboard Integration
+- [ ] Develop Kubernetes status monitoring dashboard
+  - Add cluster status visualization
+  - Create pod monitoring interface
+  - Implement resource usage tracking
+- [ ] Implement scale controls for worker nodes
+  - Add manual scaling interface
+  - Create auto-scaling configuration
+  - Implement node management
+- [ ] Add configuration management interface
+  - Create ConfigMap editor
+  - Add Secret management
+  - Implement configuration validation
+- [ ] Create deployment pipeline integration
+  - Add CI/CD pipeline configuration
+  - Create deployment automation
+  - Implement rollback capabilities
+
+### IPFS Module Testing and Web GUI Integration
+
+The hallucinate_app includes a comprehensive Testing Dashboard that integrates with the IPFS Kit Python module and other related modules. This dashboard allows users to test, benchmark, and monitor all IPFS-related modules through a web interface within the Electron application.
+
+#### Dashboard Architecture
+
+The dashboard consists of several key components:
+
+1. **IPFS Modules Test Dashboard**: A central dashboard (`ipfs_modules_test_dashboard.js`) that provides:
+   - Module selection UI for all IPFS Python modules (ipfs_kit_py, ipfs_datasets_py, ipfs_faiss_py, etc.)
+   - Test execution interface with real-time result visualization
+   - Benchmarking tools with performance metrics charts
+   - History tracking for all test and benchmark runs
+   - Service status monitoring and control
+
+2. **Module-Specific Testing Panels**: Specialized interfaces for each module:
+   - Test configuration options customized for each module
+   - Module-specific benchmark profiles
+   - Visualization tools appropriate to each module's functionality
+   - Integration with Prometheus metrics for performance monitoring
+
+3. **IPC Communication Layer**: 
+   - Two-way communication between Electron UI and Python processes
+   - Command dispatching to appropriate Python modules
+   - Real-time result streaming back to the UI
+   - Progress monitoring for long-running operations
+
+#### Web UI and Kubernetes Integration
+
+The system also provides a Kubernetes/Helm integration for deploying the IPFS Kit Python module in containerized environments:
+
+1. **Helm Chart Structure**:
+   - Complete Helm charts for deploying IPFS Kit in Kubernetes
+   - Role-based deployment templates (master, worker, leecher)
+   - Pre-configured resource settings for different node types
+   - Service definitions for internal and external access
+   - Persistent volume claims for data storage
+
+2. **Kubernetes Dashboard Integration**:
+   - Real-time monitoring of cluster health and status
+   - Module-specific metrics visualization via Grafana dashboards
+   - Resource usage tracking across all nodes
+   - Horizontal scaling controls for worker nodes
+   - Configuration management interface
+
+#### Usage Example
+
+The Testing Dashboard is accessible from the main application menu and provides a simple interface to:
+
+```javascript
+// Example code from the application that launches the IPFS modules test dashboard
+function launchIPFSTestDashboard() {
+  // Create the dashboard window
+  const dashboardWindow = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false
+    }
+  });
+  
+  // Load the dashboard HTML
+  dashboardWindow.loadFile('path/to/ipfs_modules_dashboard.html');
+  
+  // Set up IPC handlers for Python module communication
+  ipcMain.on('run-ipfs-kit-test', async (event, testConfig) => {
+    try {
+      // Run the test in the Python process
+      const result = await pythonBridge.runIPFSKitTest(testConfig);
+      // Send the result back to the renderer
+      event.sender.send('ipfs-kit-test-result', result);
+    } catch (error) {
+      event.sender.send('ipfs-kit-test-error', error.message);
+    }
+  });
+  
+  // Similar handlers for other modules and operations
+}
+```
+
+This allows users to run commands like:
+
+1. Start/stop IPFS services
+2. Run tests for specific modules
+3. Execute performance benchmarks
+4. View historical test results
+5. Monitor resource usage and metrics
+
+All these operations are executed in separate Python processes to ensure the main application remains responsive, with results streamed back to the UI in real-time.
 
 ## Build & Run Commands
 - **Start app**: `npm start` or `electron-forge start`
@@ -313,6 +894,9 @@ Each module follows a consistent pattern:
 - **Run bridge tests**: `npm run test:bridge`
 - **Run electron tests**: `npm run test:electron`
 - **Run Python tests**: `npm run test:python`
+- **Run IPFS Kit tests**: `npm run test:ipfs-kit`
+- **Run observability example**: `python python/hallucinate_app/examples/observability_example.py`
+- **Generate SDKs**: `python python/hallucinate_app/sdk_generator.py --all`
 - **Launch dashboard**: `npm run dashboard`
 - **Start dashboard server**: `npm run dashboard:server`
 - **Run tests with dashboard**: `npm run test:dashboard`
@@ -359,9 +943,14 @@ Each module follows a consistent pattern:
    - Develop test suites for security validation
 
 ### 3. Core Module Implementations
-1. **PyArrow Content Index** (OUT OF SCOPE)
-   - This module is considered out of scope for current development efforts
-   - Future consideration only if project requirements change
+1. **PyArrow Content Index Integration**
+   - ✅ Integrate with PyArrow Content Index from the ipfs_kit_py package
+   - ✅ Created pyarrow_index_bridge.js for JavaScript access to the Index
+   - ✅ Implemented secure_pyarrow_index_manager.js with UCAN capability verification
+   - ✅ Added dashboard integration for visualization and interaction
+   - ✅ Created comprehensive test suite for the integration
+   - ✅ Added observability with metrics and structured logging
+   - ✅ Implemented performance optimizations for large datasets
 
 2. **GraphRAG Framework**
    - ✅ Implemented GraphRAG integration layer in both Python and JavaScript
@@ -427,6 +1016,15 @@ Each module follows a consistent pattern:
    ```
 7. Configure IPFS if needed (see Configuration section)
 8. Set up UCAN development environment with w3up CLI tools
+9. For working with metrics and observability:
+   ```bash
+   pip install prometheus_client structlog psutil
+   ```
+10. For testing SDK generation:
+    ```bash
+    pip install black mypy pytest
+    npm install -g typescript eslint
+    ```
 
 ### Making Changes
 1. Focus on creating integration layers for external packages from PyPI
@@ -493,12 +1091,77 @@ Each module follows a consistent pattern:
 - Follow existing patterns when extending functionality
 - All modules should implement a test() method
 - Handle UCAN capability verification consistently across modules
+- Implement observability with metrics and structured logging
+- Generate SDKs for improved API consumption
 - Database usage patterns:
   - OrbitDB for real-time P2P document/event storage
   - FireproofDB for CRDT-based conflict resolution
   - DuckDB for analytical SQL queries and complex data transformations
   - IPLD conversion for P2P database state exchange via libp2p
   - Use the appropriate database for the data access pattern required
+
+## Observability Architecture
+
+### Prometheus Metrics Integration
+- ✅ Comprehensive metrics collection using Prometheus client
+- ✅ Custom metrics for IPFS operations, metadata index, and system resources:
+  - Counters for operations, errors, content added/retrieved
+  - Gauges for process status, metadata index size, and resource usage
+  - Histograms for operation timing and duration tracking
+  - Summaries for statistical monitoring
+- ✅ HTTP server for Prometheus scraping
+- ✅ Auto-discovery of metrics endpoint
+- ✅ Dashboard-ready metric naming conventions
+
+### Structured Logging
+- ✅ Context-aware logging with structlog
+- ✅ Thread-local context management for concurrent operations
+- ✅ JSON-formatted logs for easier processing
+- ✅ Comprehensive log levels (info, warning, error, debug)
+- ✅ Support for contextual metadata in all log entries
+- ✅ Performance tracking with timing information
+
+### Timing and Performance Tracking
+- ✅ Timer context manager for easy duration tracking
+- ✅ Decorator for timed functions
+- ✅ Operation tracking with status and error classification
+- ✅ Performance metrics with histogram distribution
+
+### Integration Points
+- ✅ IPFS Kit Bridge with full observability integration
+- ✅ Automatic metrics collection for key operations
+- ✅ Structured logging throughout application lifecycle
+- ✅ Process monitoring with resource usage tracking
+- ✅ Error tracking with detailed classification
+
+## SDK Generation
+
+### Multi-language Support
+- ✅ Comprehensive SDK generation for multiple languages:
+  - Python SDK with pip-installable package structure
+  - JavaScript/TypeScript SDK with npm compatibility
+  - Rust SDK with Cargo compatibility
+- ✅ Consistent API across languages
+- ✅ Language-specific idioms and patterns
+
+### Customization Options
+- ✅ Project-specific integrations
+- ✅ Custom dependencies and requirements
+- ✅ Example code generation
+- ✅ Mock implementations for testing
+
+### Integration Features
+- ✅ Documentation generation
+- ✅ Type hints and annotations
+- ✅ Error handling best practices
+- ✅ Authentication integration
+- ✅ Testing utilities
+
+### Use Cases
+- Generating client libraries for IPFS Kit API
+- Providing language-specific interfaces to PyArrow data
+- Enabling cross-language development with consistent APIs
+- Supporting both browser and Node.js environments for JavaScript
 
 ## Database Architecture
 
@@ -538,19 +1201,20 @@ Each module follows a consistent pattern:
   - ✅ Differential updates for DuckDB database snapshots
   - ✅ Comprehensive test suite for all synchronization patterns
 
-### PyArrow Index Structure (OUT OF SCOPE)
-Note: The PyArrow Content Index is now considered OUT OF SCOPE for current development efforts.
+### PyArrow Index Integration with ipfs_kit_py
 
-The information below is retained for reference only but will not be actively implemented:
+The PyArrow Content Index functionality is provided by the ipfs_kit_py package, which is integrated into hallucinate_app. This integration approach aligns with our development philosophy of leveraging external packages rather than reimplementing functionality.
 
-This component was initially intended to maintain a comprehensive PyArrow index with the following structure:
+The PyArrow Content Index from ipfs_kit_py provides:
 
 - Content-addressable identifiers using IPFS PinSet CIDs
 - UnixFS / fsspec Virtual Filesystem path-based organization
 - Extensive metadata schema for content tracking
 - Bidirectional JavaScript/Python access
 
-The functionality would have enabled content discovery across storage backends, efficient retrieval, and comprehensive metadata management. However, this is no longer an active development priority.
+This functionality enables content discovery across storage backends, efficient retrieval, and comprehensive metadata management. The hallucinate_app codebase focuses on creating integration layers to this existing implementation rather than developing a separate PyArrow index from scratch.
+
+Note: While implementing a PyArrow Content Index from scratch is OUT OF SCOPE, utilizing and integrating with the implementation from ipfs_kit_py is an active priority.
 
 ### Synchronization Patterns
 - ✅ Bidirectional sync between OrbitDB and FireproofDB
@@ -593,6 +1257,8 @@ The functionality would have enabled content discovery across storage backends, 
 - Resource pools should be mockable for isolated module testing
 - Database tests should verify persistence across all database systems (OrbitDB, FireproofDB, DuckDB)
 - IPLD conversion tests should validate DuckDB data can be exchanged via libp2p
+- Observability tests should verify metrics collection and structured logging
+- SDK generation tests should validate output for multiple languages
 
 ### Enhanced Testing Framework
 
@@ -1300,11 +1966,14 @@ modelTesterWindow.webContents.on('test-result', (result) => {
   - ✅ Implemented for IPFS kit and model server
   - ✅ IPC communication with message queues
   - ✅ Error handling and process lifecycle management
+  - ✅ Comprehensive observability with Prometheus metrics
+  - ✅ SDK generation for cross-language client libraries
   
 - **RESTful API**: Python servers with JavaScript clients
   - ✅ FastAPI server for model inference
   - ✅ Async communication patterns
   - ✅ Status monitoring and health checks
+  - ✅ Structured logging with contextual data
   
 - **File-based**: Shared file access for data exchange
   - ✅ Used for large data transfers
@@ -1319,6 +1988,11 @@ modelTesterWindow.webContents.on('test-result', (result) => {
   - ✅ Used for structured data communication
   - ✅ Bidirectional method calling
   - ✅ Error propagation between languages
+  
+- **ZeroRPC**: RPC for IPFS Kit Bridge
+  - ✅ Implemented for IPFS Kit Bridge
+  - ✅ Observability integration for metrics collection
+  - ✅ Structured logging for detailed debugging
 
 ### PyArrow Index Integration
 The PyArrow index from the `ipfs_kit_py` package serves as a critical shared data structure between Python and JavaScript components:

@@ -1,0 +1,21 @@
+# Core dependencies
+ipfs_kit_py[fsspec,arrow,ai_ml,api,dev]>=0.1.0
+pyarrow>=14.0.0
+fsspec>=2023.1.0
+numpy>=1.21.0
+pydantic>=2.0.0
+fastapi>=0.100.0
+uvicorn>=0.23.0
+
+# Inter-process communication
+zerorpc>=0.6.3
+msgpack>=1.0.5
+
+# Testing
+pytest>=7.3.1
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+
+# Logging
+structlog>=23.1.0
+rich>=13.4.1

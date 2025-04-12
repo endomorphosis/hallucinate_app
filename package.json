@@ -9,6 +9,11 @@
     "test:bridge": "node test/js/test_accelerate_bridge.js",
     "test:electron": "node test/js/test_accelerate_electron.js",
     "test:python": "python test/python/test_accelerate_server.py",
+    "test:ipfs-kit": "node test/js/test_ipfs_kit_dashboard.js",
+    "test:pyarrow-rt": "node --experimental-vm-modules node_modules/mocha/bin/mocha test/js/test_pyarrow_dashboard_rt.js",
+    "test:database-backup:js": "mocha test/js/test_database_backup.js",
+    "test:database-backup:py": "python test/python/test_database_backup.py",
+    "test:database-backup": "npm run test:database-backup:js && npm run test:database-backup:py",
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make"
@@ -34,6 +39,8 @@
     "@electron/fuses": "^1.8.0",
     "chai": "^4.3.7",
     "electron": "32.0.1",
+    "jsdom": "^26.0.0",
+    "mocha": "^11.1.0",
     "node-fetch": "^3.3.1"
   },
   "dependencies": {
@@ -46,6 +53,7 @@
     "ipfs_kit_js": "^1.0.22",
     "ipfs_model_manager_js": "^1.0.20",
     "ipfs_transformers_js": "^1.0.1",
+    "keytar": "^7.9.0",
     "libp2p_kit_js": "^1.0.0",
     "orbitdb_kit_js": "^1.0.9",
     "rpmbuild": "^0.0.23"

@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Database Backup Dashboard - hallucinate_app</title>
+  <link rel="stylesheet" href="../dashboard/database_backup_dashboard.css">
+  <link rel="stylesheet" href="../dashboard/database_backup_search.css">
+  <link rel="stylesheet" href="../dashboard/backup_monitoring.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+  <div class="dashboard-container">
+    <div class="dashboard-header">
+      <h1>Database Backup Dashboard</h1>
+      <div class="security-status" id="security-status-indicator">
+        <span class="status-label">Security:</span>
+        <span class="status-value" id="security-status">Initializing...</span>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="sidebar">
+        <ul class="menu">
+          <li class="menu-item" data-section="overview">Overview</li>
+          <li class="menu-item" data-section="monitoring">Real-time Monitoring</li>
+          <li class="menu-item" data-section="orbitdb">OrbitDB</li>
+          <li class="menu-item" data-section="fireproofdb">FireproofDB</li>
+          <li class="menu-item" data-section="duckdb">DuckDB</li>
+          <li class="menu-item" data-section="scheduled">Scheduled Backups</li>
+          <li class="menu-item" data-section="history">History</li>
+          <li class="menu-item" data-section="search">Advanced Search</li>
+          <li class="menu-item" data-section="settings">Settings</li>
+        </ul>
+      </div>
+
+      <div class="dashboard-content">
+        <!-- Overview Section -->
+        <div class="dashboard-section" id="overview-section">
+          <h2>Database Backup Overview</h2>
+          <div class="stats-container">
+            <div class="stat-box">
+              <h3>Total Backups</h3>
+              <div class="stat-value" id="total-backups">-</div>
+            </div>
+            <div class="stat-box">
+              <h3>Storage Used</h3>
+              <div class="stat-value" id="storage-used">-</div>
+            </div>
+            <div class="stat-box">
+              <h3>Last Backup</h3>
+              <div class="stat-value" id="last-backup">-</div>
+            </div>
+          </div>
+          
+          <div class="quick-actions">
+            <h3>Quick Actions</h3>
+            <div class="action-buttons">
+              <button id="backup-all-btn" class="action-button">Backup All Databases</button>
+              <button id="verify-all-btn" class="action-button">Verify All Backups</button>
+            </div>
+          </div>
+
+          <div class="current-operations">
+            <h3>Current Operations</h3>
+            <div id="operations-container" class="operations-container">
+              <!-- In-progress operations will be displayed here -->
+              <div class="no-operations">No operations in progress</div>
+            </div>
+          </div>
+
+          <div class="recent-activity">
+            <h3>Recent Activity</h3>
+            <div id="recent-activity-list" class="activity-list">
+              <div class="activity-empty">No recent activity to display</div>
+            </div>
+          </div>
+          
+          <div class="metrics-overview">
+            <h3>Metrics Overview</h3>
+            <div class="metrics-grid">
+              <div class="metric-card">
+                <div class="metric-title">Total Backups</div>
+                <div class="metric-chart">
+                  <canvas id="total-backups-chart"></canvas>
+                </div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-title">Backup Frequency</div>
+                <div class="metric-chart">
+                  <canvas id="backup-frequency-chart"></canvas>
+                </div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-title">Average Duration</div>
+                <div class="metric-chart">
+                  <canvas id="backup-duration-chart"></canvas>
+                </div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-title">Storage Usage</div>
+                <div class="metric-chart">
+                  <canvas id="storage-usage-chart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- OrbitDB Section -->
+        <div class="dashboard-section hidden" id="orbitdb-section">
+          <h2>OrbitDB Backup</h2>
+          
+          <div class="database-status">
+            <h3>Database Status</h3>
+            <div class="status-indicator" id="orbitdb-status">
+              <span class="status-label">Status:</span>
+              <span class="status-value">Checking...</span>
+            </div>
+            <div class="database-info">
+              <div class="info-row">
+                <span class="info-label">Collections:</span>
+                <span class="info-value" id="orbitdb-collections">-</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Documents:</span>
+                <span class="info-value" id="orbitdb-documents">-</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Size:</span>
+                <span class="info-value" id="orbitdb-size">-</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="backup-controls">
+            <h3>Backup Controls</h3>
+            <div class="control-panel">
+              <div class="form-group">
+                <label for="orbitdb-collections-select">Collections:</label>
+                <select id="orbitdb-collections-select" multiple>
+                  <option value="all">All Collections</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="orbitdb-backup-description">Description:</label>
+                <input type="text" id="orbitdb-backup-description" placeholder="Optional backup description">
+              </div>
+              <div class="form-actions">
+                <button id="orbitdb-backup-btn" class="primary-btn">Create Backup</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="backup-history">
+            <h3>OrbitDB Backup History</h3>
+            <div class="backup-list" id="orbitdb-backup-list">
+              <div class="backup-empty">No backups found</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FireproofDB Section -->
+        <div class="dashboard-section hidden" id="fireproofdb-section">
+          <h2>FireproofDB Backup</h2>
+          
+          <div class="database-status">
+            <h3>Database Status</h3>
+            <div class="status-indicator" id="fireproofdb-status">
+              <span class="status-label">Status:</span>
+              <span class="status-value">Checking...</span>
+            </div>
+            <div class="database-info">
+              <div class="info-row">
+                <span class="info-label">Tables:</span>
+                <span class="info-value" id="fireproofdb-tables">-</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Documents:</span>
+                <span class="info-value" id="fireproofdb-documents">-</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Size:</span>
+                <span class="info-value" id="fireproofdb-size">-</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="backup-controls">
+            <h3>Backup Controls</h3>
+            <div class="control-panel">
+              <div class="form-group">
+                <label for="fireproofdb-tables-select">Tables:</label>
+                <select id="fireproofdb-tables-select" multiple>
+                  <option value="all">All Tables</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="fireproofdb-backup-description">Description:</label>
+                <input type="text" id="fireproofdb-backup-description" placeholder="Optional backup description">
+              </div>
+              <div class="form-actions">
+                <button id="fireproofdb-backup-btn" class="primary-btn">Create Backup</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="backup-history">
+            <h3>FireproofDB Backup History</h3>
+            <div class="backup-list" id="fireproofdb-backup-list">
+              <div class="backup-empty">No backups found</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DuckDB Section -->
+        <div class="dashboard-section hidden" id="duckdb-section">
+          <h2>DuckDB Backup</h2>
+          
+          <div class="database-status">
+            <h3>Database Status</h3>
+            <div class="status-indicator" id="duckdb-status">
+              <span class="status-label">Status:</span>
+              <span class="status-value">Checking...</span>
+            </div>
+            <div class="database-info">
+              <div class="info-row">
+                <span class="info-label">Tables:</span>
+                <span class="info-value" id="duckdb-tables">-</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Rows:</span>
+                <span class="info-value" id="duckdb-rows">-</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Size:</span>
+                <span class="info-value" id="duckdb-size">-</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="backup-controls">
+            <h3>Backup Controls</h3>
+            <div class="control-panel">
+              <div class="form-group">
+                <label for="duckdb-tables-select">Tables:</label>
+                <select id="duckdb-tables-select" multiple>
+                  <option value="all">All Tables</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="duckdb-ipld-export">Export to IPLD:</label>
+                <input type="checkbox" id="duckdb-ipld-export" checked>
+              </div>
+              <div class="form-group">
+                <label for="duckdb-backup-description">Description:</label>
+                <input type="text" id="duckdb-backup-description" placeholder="Optional backup description">
+              </div>
+              <div class="form-actions">
+                <button id="duckdb-backup-btn" class="primary-btn">Create Backup</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="backup-history">
+            <h3>DuckDB Backup History</h3>
+            <div class="backup-list" id="duckdb-backup-list">
+              <div class="backup-empty">No backups found</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scheduled Backups Section -->
+        <div class="dashboard-section hidden" id="scheduled-section">
+          <h2>Scheduled Backups</h2>
+          
+          <div class="schedule-controls">
+            <h3>Add New Schedule</h3>
+            <div class="control-panel">
+              <div class="form-group">
+                <label for="schedule-database">Database:</label>
+                <select id="schedule-database">
+                  <option value="orbitdb">OrbitDB</option>
+                  <option value="fireproofdb">FireproofDB</option>
+                  <option value="duckdb">DuckDB</option>
+                  <option value="all">All Databases</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="schedule-interval">Interval:</label>
+                <select id="schedule-interval">
+                  <option value="3600">Hourly</option>
+                  <option value="86400">Daily</option>
+                  <option value="604800">Weekly</option>
+                  <option value="2592000">Monthly</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="schedule-retention">Retention (backups):</label>
+                <input type="number" id="schedule-retention" min="1" max="100" value="5">
+              </div>
+              <div class="form-group">
+                <label for="schedule-description">Description:</label>
+                <input type="text" id="schedule-description" placeholder="Schedule description">
+              </div>
+              <div class="form-actions">
+                <button id="schedule-add-btn" class="primary-btn">Add Schedule</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="schedule-list-container">
+            <h3>Active Schedules</h3>
+            <div class="schedule-list" id="schedules-list">
+              <div class="schedule-empty">No scheduled backups found</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- History Section -->
+        <div class="dashboard-section hidden" id="history-section">
+          <h2>Backup History</h2>
+          
+          <div class="history-filters">
+            <div class="form-group">
+              <label for="history-database">Database:</label>
+              <select id="history-database">
+                <option value="all">All Databases</option>
+                <option value="orbitdb">OrbitDB</option>
+                <option value="fireproofdb">FireproofDB</option>
+                <option value="duckdb">DuckDB</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="history-timeframe">Timeframe:</label>
+              <select id="history-timeframe">
+                <option value="day">Last 24 Hours</option>
+                <option value="week">Last Week</option>
+                <option value="month" selected>Last Month</option>
+                <option value="all">All Time</option>
+              </select>
+            </div>
+            <div class="form-actions">
+              <button id="history-refresh-btn" class="secondary-btn">Refresh</button>
+            </div>
+          </div>
+
+          <div class="history-visualization">
+            <canvas id="history-chart"></canvas>
+          </div>
+
+          <div class="history-table-container">
+            <table class="history-table" id="history-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Database</th>
+                  <th>Timestamp</th>
+                  <th>Size</th>
+                  <th>CID</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="history-table-body">
+                <tr>
+                  <td colspan="7" class="empty-message">No backup history found</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Monitoring Section -->
+        <div class="dashboard-section hidden" id="monitoring-section">
+          <h2>Real-time Backup Monitoring</h2>
+          <div id="backup-monitoring-panel"></div>
+        </div>
+
+        <!-- Advanced Search Section -->
+        <div class="dashboard-section hidden" id="search-section">
+          <h2>Advanced Backup Search</h2>
+          <div id="backup-search-container"></div>
+        </div>
+
+        <!-- Settings Section -->
+        <div class="dashboard-section hidden" id="settings-section">
+          <h2>Backup Settings</h2>
+          
+          <div class="settings-group">
+            <h3>Storage Settings</h3>
+            <div class="setting-item">
+              <div class="setting-label">
+                <label for="setting-storage-location">IPFS Storage Location:</label>
+              </div>
+              <div class="setting-control">
+                <input type="text" id="setting-storage-location" placeholder="/ipfs/backups">
+              </div>
+            </div>
+            <div class="setting-item">
+              <div class="setting-label">
+                <label for="setting-pin-backups">Pin Backups in IPFS:</label>
+              </div>
+              <div class="setting-control">
+                <input type="checkbox" id="setting-pin-backups" checked>
+              </div>
+            </div>
+            <div class="setting-item">
+              <div class="setting-label">
+                <label for="setting-metadata-index">Store Metadata in PyArrow Index:</label>
+              </div>
+              <div class="setting-control">
+                <input type="checkbox" id="setting-metadata-index" checked>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <h3>Compression Settings</h3>
+            <div class="setting-item">
+              <div class="setting-label">
+                <label for="setting-compression">Enable Compression:</label>
+              </div>
+              <div class="setting-control">
+                <input type="checkbox" id="setting-compression" checked>
+              </div>
+            </div>
+            <div class="setting-item">
+              <div class="setting-label">
+                <label for="setting-compression-level">Compression Level:</label>
+              </div>
+              <div class="setting-control">
+                <select id="setting-compression-level">
+                  <option value="1">Level 1 (Fastest)</option>
+                  <option value="3">Level 3</option>
+                  <option value="6" selected>Level 6 (Balanced)</option>
+                  <option value="9">Level 9 (Best Compression)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <h3>Security Settings</h3>
+            <div class="setting-item">
+              <div class="setting-label">
+                <label for="setting-encryption">Encrypt Backups:</label>
+              </div>
+              <div class="setting-control">
+                <input type="checkbox" id="setting-encryption" checked>
+              </div>
+            </div>
+            <div class="setting-item">
+              <div class="setting-label">
+                <label for="setting-key-rotation">Key Rotation Period (days):</label>
+              </div>
+              <div class="setting-control">
+                <input type="number" id="setting-key-rotation" min="1" max="365" value="30">
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-actions">
+            <button id="settings-save-btn" class="primary-btn">Save Settings</button>
+            <button id="settings-reset-btn" class="secondary-btn">Reset to Defaults</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    /* Add some additional styles for sync buttons */
+    .sync-button-container {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    
+    .sync-button {
+      background-color: #f8f9fa;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+    
+    .sync-button:hover {
+      background-color: #e9ecef;
+    }
+  </style>
+  <script src="../../node_modules/chart.js/dist/chart.umd.js"></script>
+  <script type="module">
+    // Import required modules
+    import { authManager } from '../auth.js';
+    import { databaseBackupBridge } from '../database_backup_bridge.js';
+    import { databaseBackupPyArrowAdapter } from '../database_backup_pyarrow_adapter.js';
+    import { registerDatabaseBackupDashboard } from '../dashboard/register_database_backup_dashboard.js';
+    import { registerBackupMonitoringDashboard } from '../dashboard/register_backup_monitoring_dashboard.js';
+    import { DatabaseBackupDashboard } from '../dashboard/database_backup_dashboard.js';
+    import BackupMonitoringDashboard from '../dashboard/backup_monitoring.js';
+    import DatabaseBackupSearch from '../dashboard/database_backup_search.js';
+
+    // Create event bus for dashboard communication
+    const eventBus = {
+      listeners: {},
+      on(event, callback) {
+        if (!this.listeners[event]) {
+          this.listeners[event] = [];
+        }
+        this.listeners[event].push(callback);
+      },
+      emit(event, data) {
+        if (this.listeners[event]) {
+          this.listeners[event].forEach(callback => callback(data));
+        }
+      }
+    };
+
+    // Initialize authentication manager
+    authManager.init().then(async () => {
+      // Update security status indicator
+      const securityStatus = document.getElementById('security-status');
+      securityStatus.textContent = authManager.options.useMockImplementation ? 
+        'Mock Mode' : 'Secured';
+      
+      // Initialize the database backup bridge
+      await databaseBackupBridge.init();
+      
+      // Initialize the dashboard
+      const dashboard = new DatabaseBackupDashboard({
+        element: document.querySelector('.dashboard-container'),
+        authManager: authManager,
+        databaseBackupBridge: databaseBackupBridge,
+        eventBus: eventBus
+      });
+      
+      // Initialize the PyArrow adapter
+      await databaseBackupPyArrowAdapter.init();
+      
+      // Initialize the search component
+      const searchContainer = document.getElementById('backup-search-container');
+      const backupSearch = new DatabaseBackupSearch({
+        container: searchContainer,
+        resources: {
+          databaseBackupPyArrowAdapter: databaseBackupPyArrowAdapter,
+          databaseBackupBridge: databaseBackupBridge,
+          authManager: authManager
+        },
+        onSelectBackup: (backup) => {
+          console.log('Selected backup:', backup);
+          eventBus.emit('backup-selected', backup);
+        }
+      });
+      
+      // Initialize the monitoring dashboard
+      const monitoringContainer = document.getElementById('backup-monitoring-panel');
+      const monitoringDashboard = new BackupMonitoringDashboard({
+        container: monitoringContainer,
+        resources: {
+          databaseBackupBridge: databaseBackupBridge,
+          databaseBackupPyArrowAdapter: databaseBackupPyArrowAdapter,
+          authManager: authManager
+        }
+      });
+      
+      // Register the dashboards
+      registerDatabaseBackupDashboard({
+        dashboard: dashboard,
+        authManager: authManager,
+        databaseBackupBridge: databaseBackupBridge,
+        eventBus: eventBus
+      });
+      
+      registerBackupMonitoringDashboard({
+        dashboard: dashboard,
+        pythonBridge: dashboard.resources?.pythonBridge,
+        resources: {
+          databaseBackupBridge: databaseBackupBridge,
+          databaseBackupPyArrowAdapter: databaseBackupPyArrowAdapter,
+          authManager: authManager
+        },
+        eventBus: eventBus
+      });
+      
+      // Initialize menu navigation
+      const menuItems = document.querySelectorAll('.menu-item');
+      const sections = document.querySelectorAll('.dashboard-section');
+      
+      menuItems.forEach(item => {
+        item.addEventListener('click', () => {
+          const sectionId = item.getAttribute('data-section');
+          
+          // Hide all sections
+          sections.forEach(section => {
+            section.classList.add('hidden');
+          });
+          
+          // Show selected section
+          document.getElementById(`${sectionId}-section`).classList.remove('hidden');
+          
+          // Update active menu item
+          menuItems.forEach(mi => mi.classList.remove('active'));
+          item.classList.add('active');
+        });
+      });
+      
+      // Set overview as active by default
+      document.querySelector('[data-section="overview"]').classList.add('active');
+      document.getElementById('overview-section').classList.remove('hidden');
+      
+      // Initialize metrics charts
+      dashboard.initMetricsCharts();
+      
+      // Load dashboard data
+      dashboard.loadDashboardData();
+      
+      // Setup event listeners for UI actions
+      document.getElementById('backup-all-btn').addEventListener('click', () => {
+        dashboard.backupAllDatabases();
+      });
+      
+      document.getElementById('verify-all-btn').addEventListener('click', () => {
+        dashboard.verifyAllBackups();
+      });
+      
+      document.getElementById('orbitdb-backup-btn').addEventListener('click', () => {
+        const collections = Array.from(document.getElementById('orbitdb-collections-select').selectedOptions)
+          .map(option => option.value);
+        const description = document.getElementById('orbitdb-backup-description').value;
+        
+        dashboard.backupOrbitDB({
+          collections: collections.includes('all') ? [] : collections,
+          metadata: { description }
+        });
+      });
+      
+      document.getElementById('fireproofdb-backup-btn').addEventListener('click', () => {
+        const tables = Array.from(document.getElementById('fireproofdb-tables-select').selectedOptions)
+          .map(option => option.value);
+        const description = document.getElementById('fireproofdb-backup-description').value;
+        
+        dashboard.backupFireproofDB({
+          tables: tables.includes('all') ? [] : tables,
+          metadata: { description }
+        });
+      });
+      
+      document.getElementById('duckdb-backup-btn').addEventListener('click', () => {
+        const tables = Array.from(document.getElementById('duckdb-tables-select').selectedOptions)
+          .map(option => option.value);
+        const exportToIpld = document.getElementById('duckdb-ipld-export').checked;
+        const description = document.getElementById('duckdb-backup-description').value;
+        
+        dashboard.backupDuckDB({
+          tables: tables.includes('all') ? [] : tables,
+          export_to_ipld: exportToIpld,
+          metadata: { description }
+        });
+      });
+      
+      document.getElementById('schedule-add-btn').addEventListener('click', () => {
+        const database = document.getElementById('schedule-database').value;
+        const interval = parseInt(document.getElementById('schedule-interval').value);
+        const retention = parseInt(document.getElementById('schedule-retention').value);
+        const description = document.getElementById('schedule-description').value;
+        
+        dashboard.addBackupSchedule({
+          database,
+          interval,
+          retention,
+          metadata: { description }
+        });
+      });
+      
+      document.getElementById('settings-save-btn').addEventListener('click', () => {
+        const settings = {
+          storage: {
+            location: document.getElementById('setting-storage-location').value,
+            pin_backups: document.getElementById('setting-pin-backups').checked,
+            use_metadata_index: document.getElementById('setting-metadata-index').checked
+          },
+          compression: {
+            enabled: document.getElementById('setting-compression').checked,
+            level: parseInt(document.getElementById('setting-compression-level').value)
+          },
+          security: {
+            encryption_enabled: document.getElementById('setting-encryption').checked,
+            key_rotation_days: parseInt(document.getElementById('setting-key-rotation').value)
+          }
+        };
+        
+        dashboard.saveSettings(settings);
+      });
+      
+      document.getElementById('settings-reset-btn').addEventListener('click', () => {
+        dashboard.resetSettings();
+      });
+      
+      document.getElementById('history-refresh-btn').addEventListener('click', () => {
+        const database = document.getElementById('history-database').value;
+        const timeframe = document.getElementById('history-timeframe').value;
+        
+        dashboard.loadBackupHistory(database, timeframe);
+      });
+      
+      // Add sync button to database types in search section
+      ['orbitdb', 'fireproofdb', 'duckdb'].forEach(dbType => {
+        const syncButton = document.createElement('button');
+        syncButton.className = 'secondary-btn sync-button';
+        syncButton.textContent = `Sync ${dbType} Backups`;
+        syncButton.addEventListener('click', async () => {
+          try {
+            const results = await backupSearch.syncBackupsToIndex(dbType);
+            alert(`Synced ${results.newly_indexed} ${dbType} backups to the PyArrow Content Index.`);
+          } catch (error) {
+            console.error(`Error syncing ${dbType} backups:`, error);
+            alert(`Error syncing ${dbType} backups: ${error.message}`);
+          }
+        });
+        
+        // Add button to the search section
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'sync-button-container';
+        buttonContainer.appendChild(syncButton);
+        
+        searchContainer.insertAdjacentElement('afterbegin', buttonContainer);
+      });
+      
+      // Load initial data
+      dashboard.loadOrbitDBCollections();
+      dashboard.loadFireproofDBTables();
+      dashboard.loadDuckDBTables();
+      dashboard.loadBackupSchedules();
+      dashboard.loadBackupHistory('all', 'month');
+      dashboard.loadSettings();
+      
+      // Set up real-time updates
+      dashboard.startStatusUpdates();
+    }).catch(error => {
+      console.error('Failed to initialize dashboard:', error);
+      document.getElementById('security-status').textContent = 'Error';
+      document.getElementById('security-status').classList.add('error');
+    });
+  </script>
+</body>
+</html>
