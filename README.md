@@ -16,6 +16,54 @@ Hallucinate App is an Electron-based desktop application that creates a bridge b
 - **Dashboard**: Comprehensive testing and monitoring interface for all modules
 - **Error Handling**: Advanced error monitoring, analysis, and automatic recovery system
 - **GraphRAG**: Graph-based Retrieval Augmented Generation for knowledge management
+- **MCP Daemon Manager**: Lifecycle management for Model Context Protocol servers
+- **SwissKnife Integration**: Web-based virtual desktop and AI-powered CLI tools
+
+## NEW: MCP Daemon Manager
+
+Hallucinate App now includes a comprehensive daemon manager for managing Model Context Protocol (MCP) servers:
+
+### Features
+
+- **Multi-Daemon Management**: Control 3 MCP servers simultaneously:
+  1. **IPFS Accelerate MCP**: Distributed AI/ML operations and inference
+  2. **SwissKnife MCP**: CLI tools and vibecoding assistance
+  3. **HuggingFace MCP**: Model and dataset management
+
+- **Lifecycle Control**: Start, stop, and restart individual or all daemons
+- **Health Monitoring**: Automatic health checks with configurable intervals
+- **Auto-Restart**: Intelligent auto-restart with max attempt limits
+- **Process Management**: Clean process spawning and graceful shutdown
+- **Event Logging**: Real-time event tracking for all daemon activities
+- **Dashboard UI**: Beautiful web interface for daemon control and monitoring
+
+### Usage
+
+Access the Daemon Manager through the application menu:
+- **Menu Bar → Daemons**: Control individual or all MCP servers
+- **Menu Bar → Windows → Daemon Manager**: Open the management dashboard
+
+The daemon manager automatically starts all MCP servers on app launch (configurable via `AUTO_START_DAEMONS` environment variable).
+
+## NEW: SwissKnife Virtual Desktop Integration
+
+The application now integrates SwissKnife, a revolutionary collaborative virtual desktop environment:
+
+### SwissKnife Features
+
+- **27+ Professional Applications**: Terminal, VibeCode IDE, AI Chat, File Manager, and more
+- **Real-time P2P Collaboration**: Multi-user workspaces with live cursor tracking
+- **Distributed Computing**: Share computational resources across peer networks
+- **AI Integration**: Access to 100,000+ HuggingFace models and 100+ premium LLMs via OpenRouter
+- **IPFS-Powered File Sharing**: Decentralized file storage and collaboration
+- **Professional Development Environment**: Monaco editor, AI assistance, live preview
+
+### Launching SwissKnife
+
+Access SwissKnife through:
+- **Menu Bar → Windows → SwissKnife Virtual Desktop**
+
+The SwissKnife window will load the collaborative virtual desktop interface, connecting to the development server on `http://localhost:3001` or using the built distribution.
 
 ## Dashboard, Security, and Error Handling Features
 
