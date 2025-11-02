@@ -1,0 +1,12 @@
+[submodule "swissknife"]
+	path = swissknife
+	url = https://github.com/endomorphosis/swissknife.git
+[submodule "ipfs_datasets_py"]
+	path = ipfs_datasets_py
+	url = https://github.com/endomorphosis/ipfs_datasets_py.git
+[submodule "ipfs_accelerate_py"]
+	path = ipfs_accelerate_py
+	url = https://github.com/endomorphosis/ipfs_accelerate_py.git
+[submodule "ipfs_kit_py"]
+	path = ipfs_kit_py
+	url = https://github.com/endomorphosis/ipfs_kit_py.git
