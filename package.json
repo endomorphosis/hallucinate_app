@@ -5,6 +5,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
+    "postinstall": "node scripts/postinstall.cjs",
+    "install:submodules": "bash scripts/install_submodule_deps.sh || python scripts/install_submodule_deps.py",
     "test": "node test/test.js",
     "test:bridge": "node test/js/test_accelerate_bridge.js",
     "test:electron": "node test/js/test_accelerate_electron.js",

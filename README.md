@@ -7,6 +7,52 @@ Hallucinate Electron App:
 
 Hallucinate App is an Electron-based desktop application that creates a bridge between IPFS and HuggingFace technologies, enabling decentralized AI model serving, dataset management, and inference. The application leverages a modular architecture with paired JavaScript and Python implementations, secure UCAN-based authentication, efficient Apache Arrow data exchange, and a resource pool pattern for module interdependencies.
 
+## Installation
+
+For detailed installation instructions, see [docs/INSTALLATION.md](docs/INSTALLATION.md).
+
+### Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/endomorphosis/hallucinate_app.git
+cd hallucinate_app
+
+# Install all dependencies (JavaScript + Python + submodules)
+npm install
+
+# Or use Make
+make install-all-deps
+```
+
+The `npm install` command automatically:
+1. Installs Node.js/JavaScript dependencies
+2. Checks if submodules need initialization
+3. Initializes git submodules (if needed)
+4. Installs Python dependencies for all submodules (if needed)
+
+**Note:** The postinstall script only runs when needed. To skip it:
+```bash
+SKIP_SUBMODULE_INSTALL=true npm install
+```
+
+### Manual Submodule Installation
+
+If you need to install submodule dependencies separately:
+
+```bash
+# Using npm script
+npm run install:submodules
+
+# Using Make
+make install-submodule-deps
+
+# Using the installation script directly
+bash scripts/install_submodule_deps.sh
+# or
+python scripts/install_submodule_deps.py
+```
+
 ### Key Features
 
 - **Decentralized AI**: Access and serve AI models through IPFS and libp2p networks
