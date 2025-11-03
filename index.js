@@ -1,8 +1,10 @@
-import { app, BrowserWindow, Menu, MenuItem, ipcMain } from 'electron';
+import { app, BrowserWindow, Menu, MenuItem, ipcMain, protocol } from 'electron';
 import { createModelTesterWindow } from './hallucinate_app/node/accelerate_model_tester.js';
 import MCPDaemonManager from './hallucinate_app/node/mcp_daemon_manager.js';
 import path from 'path';
 import url from 'url';
+import { createServer } from 'http';
+import { readFile } from 'fs/promises';
 import electron_squirrel_startup from 'electron-squirrel-startup';
 import testHandler from './hallucinate_app/node/test_handler.js';
 import benchmarkHandler from './hallucinate_app/node/benchmark_handler.js';
@@ -15,6 +17,55 @@ if (electron_squirrel_startup) {
 
 // Get the directory where the current module is located
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+
+// Create a simple static file server for SwissKnife web files
+let swissKnifeServer = null;
+const SWISSKNIFE_PORT = 8765;
+
+function startSwissKnifeServer() {
+  const swissKnifeWebDir = path.join(__dirname, 'swissknife', 'web');
+  
+  swissKnifeServer = createServer(async (req, res) => {
+    try {
+      let filePath = req.url === '/' ? '/index.html' : req.url;
+      filePath = path.join(swissKnifeWebDir, filePath);
+      
+      // Security: prevent directory traversal
+      if (!filePath.startsWith(swissKnifeWebDir)) {
+        res.writeHead(403);
+        res.end('Forbidden');
+        return;
+      }
+      
+      const ext = path.extname(filePath).toLowerCase();
+      const contentTypes = {
+        '.html': 'text/html',
+        '.css': 'text/css',
+        '.js': 'text/javascript',
+        '.json': 'application/json',
+        '.png': 'image/png',
+        '.jpg': 'image/jpeg',
+        '.gif': 'image/gif',
+        '.svg': 'image/svg+xml',
+        '.ico': 'image/x-icon'
+      };
+      
+      const contentType = contentTypes[ext] || 'application/octet-stream';
+      
+      const data = await readFile(filePath);
+      res.writeHead(200, { 'Content-Type': contentType });
+      res.end(data);
+    } catch (err) {
+      console.error('SwissKnife server error:', err.message);
+      res.writeHead(404);
+      res.end('Not Found');
+    }
+  });
+  
+  swissKnifeServer.listen(SWISSKNIFE_PORT, '127.0.0.1', () => {
+    console.log(`✅ SwissKnife web server running on http://127.0.0.1:${SWISSKNIFE_PORT}`);
+  });
+}
 
 // Initialize MCP Daemon Manager
 const daemonManager = new MCPDaemonManager();
@@ -374,24 +425,21 @@ const createSwissKnifeWindow = () => {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
-      webSecurity: false // Allow loading local resources
+      webSecurity: false, // Allow loading local resources
+      allowRunningInsecureContent: true
     },
     title: 'SwissKnife Virtual Desktop',
     icon: path.join(__dirname, 'hallucinate_app', 'assets', 'icon.png')
   });
 
-  // Try loading in order: proper web desktop, dev server, built dist, fallback message
-  const swissKnifeWebPath = path.join(__dirname, 'swissknife', 'web', 'index.html');
-  const swissKnifeDistPath = path.join(__dirname, 'swissknife', 'dist', 'index.html');
+  // Try loading in order: local server, dev server, fallback message
+  const swissKnifeLocalUrl = `http://127.0.0.1:${SWISSKNIFE_PORT}`;
   const swissKnifeDevUrl = 'http://localhost:5173';
   
-  // Try the proper web desktop first (Aero theme with 27+ apps)
-  win.loadFile(swissKnifeWebPath).catch((err) => {
-    console.log('SwissKnife web desktop not found, trying dev server...', err);
+  // Try the local server first (Aero theme with 27+ apps)
+  win.loadURL(swissKnifeLocalUrl).catch((err) => {
+    console.log('SwissKnife local server not responding, trying dev server...', err);
     return win.loadURL(swissKnifeDevUrl);
-  }).catch((err) => {
-    console.log('Dev server not running, trying dist...', err);
-    return win.loadFile(swissKnifeDistPath);
   }).catch((err) => {
     console.error('Could not load SwissKnife from any source:', err);
     // Load a helpful message instead
@@ -740,6 +788,9 @@ const createAppMenu = () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.on('ready', () => {
+  // Start the SwissKnife web server
+  startSwissKnifeServer();
+  
   createAppMenu();
   createWindow();
   
@@ -757,12 +808,19 @@ app.on('window-all-closed', () => {
   }
 });
 
-// Clean up daemons on quit
+// Clean up daemons and server on quit
 app.on('before-quit', async (event) => {
   event.preventDefault();
   
   console.log('🛑 Shutting down MCP daemons...');
   await daemonManager.stopAll();
+  
+  // Stop SwissKnife web server
+  if (swissKnifeServer) {
+    swissKnifeServer.close(() => {
+      console.log('🛑 SwissKnife web server stopped');
+    });
+  }
   
   // Now actually quit
   app.exit(0);
