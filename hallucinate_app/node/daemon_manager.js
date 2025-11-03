@@ -264,7 +264,7 @@ class DaemonManager extends EventEmitter {
       name: 'ipfs-accelerate-mcp',
       command: 'node',
       args: [
-        path.join(rootDir, 'swissknife/src/patches/mcp/mcp-server-controller.ts')
+        path.join(rootDir, 'swissknife/src/patches/mcp/mcp-server-controller.js')
       ],
       cwd: path.join(rootDir, 'swissknife'),
       env: {
