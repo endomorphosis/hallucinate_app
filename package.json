@@ -14,6 +14,14 @@
     "test:database-backup:js": "mocha test/js/test_database_backup.js",
     "test:database-backup:py": "python test/python/test_database_backup.py",
     "test:database-backup": "npm run test:database-backup:js && npm run test:database-backup:py",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:ci": "CI=true playwright test",
+    "test:e2e:report": "playwright show-report",
+    "test:daemon-manager": "node test/js/test_mcp_daemon_manager.js",
+    "test:all": "npm run test:daemon-manager && npm run test:e2e",
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make"
@@ -37,11 +45,15 @@
     "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
     "@electron-forge/plugin-fuses": "^7.4.0",
     "@electron/fuses": "^1.8.0",
+    "@playwright/test": "^1.55.0",
+    "@types/node": "^20.14.0",
     "chai": "^4.3.7",
     "electron": "32.0.1",
     "jsdom": "^26.0.0",
     "mocha": "^11.1.0",
-    "node-fetch": "^3.3.1"
+    "node-fetch": "^3.3.1",
+    "playwright": "^1.55.0",
+    "typescript": "^5.5.0"
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.1",

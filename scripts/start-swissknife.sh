@@ -1,40 +1,41 @@
 #!/bin/bash
 
 # SwissKnife Development Server Launcher
-# This script starts the SwissKnife development server for use with the Electron app
+# This script starts SwissKnife in development mode for integration with the Electron app
 
-echo "🏔️  Starting SwissKnife Development Server..."
-echo ""
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+SWISSKNIFE_DIR="$PROJECT_ROOT/swissknife"
+
+echo "🛠️  SwissKnife Development Server Launcher"
+echo "=========================================="
 
 # Check if swissknife directory exists
-if [ ! -d "swissknife" ]; then
-    echo "❌ Error: swissknife directory not found"
-    echo "   Please initialize submodules first: git submodule update --init --recursive"
+if [ ! -d "$SWISSKNIFE_DIR" ]; then
+    echo "❌ Error: SwissKnife directory not found at $SWISSKNIFE_DIR"
+    echo "Please ensure the swissknife submodule is initialized:"
+    echo "  git submodule update --init --recursive"
     exit 1
 fi
 
-# Navigate to swissknife directory
-cd swissknife
+cd "$SWISSKNIFE_DIR"
 
 # Check if node_modules exists
 if [ ! -d "node_modules" ]; then
     echo "📦 Installing SwissKnife dependencies..."
-    npm install --legacy-peer-deps
-    if [ $? -ne 0 ]; then
-        echo "❌ Error: Failed to install dependencies"
-        exit 1
-    fi
-    echo ""
+    npm install
 fi
 
-# Start the development server
-echo "🚀 Launching SwissKnife Virtual Desktop..."
-echo "   Server will be available at: http://localhost:3001"
-echo "   Press Ctrl+C to stop"
+echo ""
+echo "🚀 Starting SwissKnife development server..."
+echo "   URL: http://localhost:5173"
+echo "   MCP Integration: Ports 3001-3003"
+echo ""
+echo "💡 The Electron app will automatically connect to this server"
+echo "   Access via: Windows → SwissKnife Virtual Desktop"
 echo ""
 
-npm run desktop:collaborative
-
-# Handle exit
-echo ""
-echo "👋 SwissKnife server stopped"
+# Start the dev server
+npm run dev

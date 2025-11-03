@@ -1,0 +1,194 @@
+name: MCP Daemon Manager E2E Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'index.js'
+      - 'hallucinate_app/node/**'
+      - 'test/e2e/**'
+      - 'playwright.config.ts'
+      - '.github/workflows/mcp-daemon-e2e.yml'
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+    inputs:
+      capture_screenshots:
+        description: 'Capture screenshots'
+        required: false
+        default: 'true'
+
+jobs:
+  test-electron-app:
+    name: Test Electron App with Playwright
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node-version: [18.x, 20.x]
+      fail-fast: false
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      
+      - name: Install system dependencies (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            xvfb \
+            libgtk-3-0 \
+            libnotify-dev \
+            libgconf-2-4 \
+            libnss3 \
+            libxss1 \
+            libasound2 \
+            libxtst6 \
+            xauth
+      
+      - name: Install npm dependencies
+        run: |
+          npm ci
+          npm install -D @playwright/test playwright
+      
+      - name: Install Python MCP dependencies
+        run: |
+          cd ipfs_kit_py && pip install -e . && cd ..
+          cd ipfs_datasets_py && pip install -e . && cd ..
+          cd ipfs_accelerate_py && pip install -e . && cd ..
+      
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+      
+      - name: Run Playwright tests (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" npx playwright test
+        env:
+          CI: true
+          NODE_ENV: test
+      
+      - name: Run Playwright tests (macOS/Windows)
+        if: matrix.os != 'ubuntu-latest'
+        run: npx playwright test
+        env:
+          CI: true
+          NODE_ENV: test
+      
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-${{ matrix.os }}-node-${{ matrix.node-version }}
+          path: test-results/screenshots/
+          retention-days: 30
+      
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.os }}-node-${{ matrix.node-version }}
+          path: |
+            test-results/
+            !test-results/screenshots/
+          retention-days: 30
+      
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: html-report-${{ matrix.os }}-node-${{ matrix.node-version }}
+          path: test-results/html-report/
+          retention-days: 30
+      
+      - name: Publish test results
+        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: test-results/junit.xml
+          check_name: Test Results (${{ matrix.os }}, Node ${{ matrix.node-version }})
+  
+  generate-documentation:
+    name: Generate Documentation from Screenshots
+    needs: test-electron-app
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.inputs.capture_screenshots == 'true'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Download all screenshots
+        uses: actions/download-artifact@v4
+        with:
+          pattern: screenshots-*
+          path: collected-screenshots/
+      
+      - name: Generate screenshot documentation
+        run: |
+          mkdir -p docs/screenshots
+          
+          # Move all screenshots to docs
+          find collected-screenshots -name "*.png" -exec cp {} docs/screenshots/ \;
+          
+          # Generate index
+          cat > docs/screenshots/README.md << 'EOF'
+          # MCP Daemon Manager Screenshots
+          
+          Auto-generated screenshots from E2E tests showing the MCP daemon manager in action.
+          
+          ## Application Launch
+          ![App Launch](01-app-launch.png)
+          
+          ## Main Window
+          ![Main Window](03-main-window.png)
+          
+          ## Daemon Manager
+          ![Daemon Manager](05-daemon-manager.png)
+          ![Daemon Status](06-daemon-status.png)
+          
+          ## SwissKnife Integration
+          ![SwissKnife Window](07-swissknife-window.png)
+          
+          ## Controls
+          ![Control Buttons](08-control-buttons.png)
+          ![Event Log](09-event-log.png)
+          
+          ---
+          *Generated automatically by GitHub Actions*
+          EOF
+          
+          echo "✅ Screenshot documentation generated"
+      
+      - name: Commit screenshots
+        if: github.event_name == 'push'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/screenshots/
+          git diff --staged --quiet || git commit -m "Update screenshots from E2E tests [skip ci]"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Upload documentation
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshot-documentation
+          path: docs/screenshots/
+          retention-days: 90

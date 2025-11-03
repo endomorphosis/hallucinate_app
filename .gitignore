@@ -8,4 +8,9 @@ build
 config.toml
 .venv
 .pyc
-__pycache__
+__pycache____pycache__
+
+# Playwright test results
+test-results/
+playwright-report/
+playwright/.cache/
