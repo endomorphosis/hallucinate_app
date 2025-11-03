@@ -4,14 +4,86 @@ import MCPDaemonManager from './hallucinate_app/node/mcp_daemon_manager.js';
 import path from 'path';
 import url from 'url';
 import { createServer } from 'http';
-import { readFile } from 'fs/promises';
+import { readFile, appendFileSync } from 'fs/promises';
+import { appendFileSync as appendFileSyncSync } from 'fs';
 import electron_squirrel_startup from 'electron-squirrel-startup';
 import testHandler from './hallucinate_app/node/test_handler.js';
 import benchmarkHandler from './hallucinate_app/node/benchmark_handler.js';
 import { getDaemonManager } from './hallucinate_app/node/daemon_manager.js';
 
+// ============================================================
+// VERBOSE ERROR LOGGING CONFIGURATION
+// ============================================================
+const LOG_FILE = '/tmp/hallucinate-app-debug.log';
+const ENABLE_VERBOSE_LOGGING = true;
+
+function logError(context, error, additionalInfo = {}) {
+  const timestamp = new Date().toISOString();
+  const errorLog = {
+    timestamp,
+    context,
+    error: {
+      message: error?.message || String(error),
+      stack: error?.stack,
+      name: error?.name,
+      code: error?.code
+    },
+    ...additionalInfo
+  };
+  
+  console.error(`[${timestamp}] ❌ ERROR in ${context}:`, error);
+  if (additionalInfo && Object.keys(additionalInfo).length > 0) {
+    console.error('Additional Info:', additionalInfo);
+  }
+  
+  // Write to log file
+  if (ENABLE_VERBOSE_LOGGING) {
+    try {
+      appendFileSyncSync(LOG_FILE, JSON.stringify(errorLog, null, 2) + '\n---\n');
+    } catch (e) {
+      console.error('Failed to write to log file:', e);
+    }
+  }
+  
+  return errorLog;
+}
+
+function logInfo(context, message, data = {}) {
+  const timestamp = new Date().toISOString();
+  console.log(`[${timestamp}] ℹ️  ${context}: ${message}`);
+  if (data && Object.keys(data).length > 0) {
+    console.log('Data:', data);
+  }
+  
+  if (ENABLE_VERBOSE_LOGGING) {
+    try {
+      const logEntry = { timestamp, context, message, data };
+      appendFileSyncSync(LOG_FILE, JSON.stringify(logEntry, null, 2) + '\n');
+    } catch (e) {
+      console.error('Failed to write to log file:', e);
+    }
+  }
+}
+
+// Global error handlers
+process.on('uncaughtException', (error) => {
+  logError('UNCAUGHT_EXCEPTION', error, { fatal: true });
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  logError('UNHANDLED_REJECTION', reason, { promise: String(promise) });
+});
+
+logInfo('STARTUP', 'Hallucinate App starting...', { 
+  nodeVersion: process.version,
+  electronVersion: process.versions.electron,
+  platform: process.platform,
+  arch: process.arch
+});
+
 // Handle creating/removing shortcuts on Windows when installing/uninstalling
 if (electron_squirrel_startup) {
+  logInfo('SQUIRREL', 'Squirrel startup detected, quitting...');
   app.quit();
 }
 
@@ -23,19 +95,21 @@ let swissKnifeServer = null;
 const SWISSKNIFE_PORT = 8765;
 
 function startSwissKnifeServer() {
-  const swissKnifeWebDir = path.join(__dirname, 'swissknife', 'web');
-  
-  swissKnifeServer = createServer(async (req, res) => {
-    try {
-      let filePath = req.url === '/' ? '/index.html' : req.url;
-      filePath = path.join(swissKnifeWebDir, filePath);
-      
-      // Security: prevent directory traversal
-      if (!filePath.startsWith(swissKnifeWebDir)) {
-        res.writeHead(403);
-        res.end('Forbidden');
-        return;
-      }
+  try {
+    const swissKnifeWebDir = path.join(__dirname, 'swissknife', 'web');
+    logInfo('SWISSKNIFE_SERVER', 'Starting server...', { port: SWISSKNIFE_PORT, webDir: swissKnifeWebDir });
+    
+    swissKnifeServer = createServer(async (req, res) => {
+      try {
+        let filePath = req.url === '/' ? '/index.html' : req.url;
+        filePath = path.join(swissKnifeWebDir, filePath);
+        
+        // Security: prevent directory traversal
+        if (!filePath.startsWith(swissKnifeWebDir)) {
+          res.writeHead(403);
+          res.end('Forbidden');
+          return;
+        }
       
       const ext = path.extname(filePath).toLowerCase();
       const contentTypes = {
@@ -65,15 +139,23 @@ function startSwissKnifeServer() {
       res.writeHead(200, headers);
       res.end(data);
     } catch (err) {
-      console.error('SwissKnife server error:', err.message);
+      logError('SWISSKNIFE_SERVER_FILE', err, { url: req.url, filePath });
       res.writeHead(404);
       res.end('Not Found');
     }
   });
   
-  swissKnifeServer.listen(SWISSKNIFE_PORT, '127.0.0.1', () => {
-    console.log(`✅ SwissKnife web server running on http://127.0.0.1:${SWISSKNIFE_PORT}`);
+  swissKnifeServer.on('error', (err) => {
+    logError('SWISSKNIFE_SERVER', err, { port: SWISSKNIFE_PORT });
   });
+  
+  swissKnifeServer.listen(SWISSKNIFE_PORT, '127.0.0.1', () => {
+    logInfo('SWISSKNIFE_SERVER', `Server running at http://127.0.0.1:${SWISSKNIFE_PORT}`);
+  });
+  } catch (error) {
+    logError('SWISSKNIFE_SERVER_START', error);
+    throw error;
+  }
 }
 
 // Initialize MCP Daemon Manager
@@ -173,15 +255,38 @@ const createTestWindow = () => {
 
 // Create main application window
 const createWindow = () => {
-  // Create the SwissKnife virtual desktop as the default window
-  const mainWindow = createSwissKnifeWindow();
-  
-  // Open the DevTools in development
-  if (process.env.NODE_ENV === 'development') {
-    mainWindow.webContents.openDevTools();
+  try {
+    logInfo('WINDOW_CREATE', 'Creating main window (SwissKnife)...');
+    // Create the SwissKnife virtual desktop as the default window
+    const mainWindow = createSwissKnifeWindow();
+    
+    // Add error handlers
+    mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription, validatedURL) => {
+      logError('WINDOW_LOAD_FAIL', new Error(errorDescription), { errorCode, url: validatedURL });
+    });
+    
+    mainWindow.webContents.on('console-message', (event, level, message, line, sourceId) => {
+      const levelMap = { 0: 'INFO', 1: 'WARN', 2: 'ERROR' };
+      if (level === 2) {
+        logError('RENDERER_CONSOLE', new Error(message), { line, sourceId });
+      }
+    });
+    
+    mainWindow.webContents.on('render-process-gone', (event, details) => {
+      logError('RENDERER_CRASH', new Error('Renderer process crashed'), details);
+    });
+    
+    // Open the DevTools in development
+    if (process.env.NODE_ENV === 'development') {
+      mainWindow.webContents.openDevTools();
+    }
+    
+    logInfo('WINDOW_CREATE', 'Main window created successfully');
+    return mainWindow;
+  } catch (error) {
+    logError('WINDOW_CREATE', error);
+    throw error;
   }
-  
-  return mainWindow;
 };
 
 // Create a window for the IPFS Kit Dashboard

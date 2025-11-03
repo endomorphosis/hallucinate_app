@@ -1,0 +1,163 @@
+#!/usr/bin/env node
+
+/**
+ * Hallucinate App CLI
+ * Command-line interface for managing the Hallucinate Electron application
+ */
+
+import { spawn } from 'child_process';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const APP_DIR = __dirname;
+const ELECTRON_PATH = path.join(APP_DIR, 'node_modules', '.bin', 'electron');
+const LOG_FILE = '/tmp/hallucinate-app.log';
+
+const commands = {
+  start: {
+    description: 'Start the Hallucinate Electron app',
+    action: startApp
+  },
+  stop: {
+    description: 'Stop the Hallucinate Electron app',
+    action: stopApp
+  },
+  restart: {
+    description: 'Restart the Hallucinate Electron app',
+    action: restartApp
+  },
+  status: {
+    description: 'Check if the app is running',
+    action: checkStatus
+  },
+  logs: {
+    description: 'View application logs',
+    action: viewLogs
+  },
+  help: {
+    description: 'Show this help message',
+    action: showHelp
+  }
+};
+
+function startApp() {
+  console.log('🚀 Starting Hallucinate Electron app...');
+  
+  const electron = spawn(ELECTRON_PATH, ['--no-sandbox', '.'], {
+    cwd: APP_DIR,
+    detached: true,
+    stdio: ['ignore', 'pipe', 'pipe']
+  });
+
+  const logStream = fs.createWriteStream(LOG_FILE, { flags: 'a' });
+  
+  electron.stdout.pipe(logStream);
+  electron.stderr.pipe(logStream);
+  
+  electron.on('spawn', () => {
+    console.log(`✅ Electron app started (PID: ${electron.pid})`);
+    console.log(`📝 Logs: ${LOG_FILE}`);
+    electron.unref();
+    process.exit(0);
+  });
+  
+  electron.on('error', (err) => {
+    console.error('❌ Failed to start Electron app:', err.message);
+    process.exit(1);
+  });
+}
+
+function stopApp() {
+  console.log('🛑 Stopping Hallucinate Electron app...');
+  
+  const pkill = spawn('pkill', ['-f', 'electron.*hallucinate_app']);
+  
+  pkill.on('close', (code) => {
+    if (code === 0) {
+      console.log('✅ Electron app stopped');
+    } else {
+      console.log('ℹ️  No running Electron processes found');
+    }
+    process.exit(0);
+  });
+}
+
+function restartApp() {
+  console.log('🔄 Restarting Hallucinate Electron app...');
+  
+  const pkill = spawn('pkill', ['-9', 'electron']);
+  
+  pkill.on('close', () => {
+    setTimeout(() => {
+      startApp();
+    }, 2000);
+  });
+}
+
+function checkStatus() {
+  const pgrep = spawn('pgrep', ['-a', 'electron']);
+  let output = '';
+  
+  pgrep.stdout.on('data', (data) => {
+    output += data.toString();
+  });
+  
+  pgrep.on('close', (code) => {
+    if (code === 0 && output.includes('hallucinate_app')) {
+      const lines = output.split('\n').filter(line => line.includes('hallucinate_app'));
+      console.log('✅ Hallucinate Electron app is running:');
+      lines.forEach(line => console.log(`   ${line}`));
+    } else if (code === 0) {
+      console.log('⚠️  Other Electron processes found, but not hallucinate_app');
+      console.log(output);
+    } else {
+      console.log('❌ Hallucinate Electron app is not running');
+    }
+    process.exit(0);
+  });
+}
+
+function viewLogs() {
+  if (fs.existsSync(LOG_FILE)) {
+    const tail = spawn('tail', ['-50', LOG_FILE]);
+    tail.stdout.pipe(process.stdout);
+    tail.stderr.pipe(process.stderr);
+    tail.on('close', () => process.exit(0));
+  } else {
+    console.log('📝 No logs found at', LOG_FILE);
+    process.exit(1);
+  }
+}
+
+function showHelp() {
+  console.log('\n🎨 Hallucinate App CLI\n');
+  console.log('Usage: hallucinate-cli <command>\n');
+  console.log('Commands:');
+  
+  Object.entries(commands).forEach(([cmd, { description }]) => {
+    console.log(`  ${cmd.padEnd(12)} ${description}`);
+  });
+  
+  console.log('\nExamples:');
+  console.log('  hallucinate-cli start      # Start the app');
+  console.log('  hallucinate-cli restart    # Restart the app');
+  console.log('  hallucinate-cli status     # Check if running');
+  console.log('  hallucinate-cli logs       # View recent logs');
+  console.log('');
+  process.exit(0);
+}
+
+// Main execution
+const command = process.argv[2] || 'help';
+
+if (commands[command]) {
+  commands[command].action();
+} else {
+  console.error(`❌ Unknown command: ${command}`);
+  console.log('Run "hallucinate-cli help" for usage information');
+  process.exit(1);
+}
