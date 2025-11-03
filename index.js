@@ -41,7 +41,25 @@ testHandler.setupIpcHandlers();
 benchmarkHandler.setupIpcHandlers();
 
 // Setup daemon manager IPC handlers
-setupDaemonManagerIPC();
+ipcMain.handle('daemon:getAll', async () => {
+  return daemonManager.getAllStatus();
+});
+
+ipcMain.handle('daemon:start', async (event, daemonId) => {
+  return await daemonManager.startDaemon(daemonId);
+});
+
+ipcMain.handle('daemon:stop', async (event, daemonId) => {
+  return await daemonManager.stopDaemon(daemonId);
+});
+
+ipcMain.handle('daemon:restart', async (event, daemonId) => {
+  return await daemonManager.restartDaemon(daemonId);
+});
+
+ipcMain.handle('daemon:getLogs', async (event, daemonId, limit) => {
+  return daemonManager.getLogs(daemonId, limit);
+});
 
 // Create a window for the benchmark dashboard
 const createBenchmarkWindow = () => {
@@ -91,8 +109,8 @@ const createTestWindow = () => {
 
 // Create main application window
 const createWindow = () => {
-  // Create the test interface window instead of the model tester window
-  const mainWindow = createTestWindow();
+  // Create the SwissKnife virtual desktop as the default window
+  const mainWindow = createSwissKnifeWindow();
   
   // Open the DevTools in development
   if (process.env.NODE_ENV === 'development') {
@@ -362,70 +380,91 @@ const createSwissKnifeWindow = () => {
     icon: path.join(__dirname, 'hallucinate_app', 'assets', 'icon.png')
   });
 
-  // Check if SwissKnife is built or in dev mode
+  // Try loading in order: proper web desktop, dev server, built dist, fallback message
+  const swissKnifeWebPath = path.join(__dirname, 'swissknife', 'web', 'index.html');
   const swissKnifeDistPath = path.join(__dirname, 'swissknife', 'dist', 'index.html');
   const swissKnifeDevUrl = 'http://localhost:5173';
   
-  // Try to load built version first, fall back to dev server
-  try {
-    win.loadFile(swissKnifeDistPath).catch(() => {
-      console.log('SwissKnife dist not found, loading dev server...');
-      win.loadURL(swissKnifeDevUrl).catch((err) => {
-        console.error('Could not load SwissKnife:', err);
-        // Load a helpful message instead
-        const notAvailableHTML = `
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <title>SwissKnife Not Available</title>
-            <style>
-              body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-                margin: 0;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
-              }
-              .container {
-                text-align: center;
-                padding: 40px;
-                background: rgba(255, 255, 255, 0.1);
-                border-radius: 20px;
-                backdrop-filter: blur(10px);
-              }
-              h1 { font-size: 3em; margin: 0 0 20px 0; }
-              p { font-size: 1.2em; margin: 10px 0; }
-              code {
-                background: rgba(0, 0, 0, 0.3);
-                padding: 5px 10px;
-                border-radius: 5px;
-                display: block;
-                margin: 15px 0;
-              }
-            </style>
-          </head>
-          <body>
-            <div class="container">
-              <h1>🛠️ SwissKnife Virtual Desktop</h1>
-              <p>SwissKnife is not currently running.</p>
-              <p>To start SwissKnife, run:</p>
-              <code>cd swissknife && npm run dev</code>
-              <p>Or build and reload:</p>
-              <code>cd swissknife && npm run build</code>
-              <p>MCP servers are still running on ports 3001-3003</p>
-            </div>
-          </body>
-          </html>
-        `;
-        win.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(notAvailableHTML)}`);
-      });
-    });
-  } catch (err) {
-    console.error('Error loading SwissKnife:', err);
-  }
+  // Try the proper web desktop first (Aero theme with 27+ apps)
+  win.loadFile(swissKnifeWebPath).catch((err) => {
+    console.log('SwissKnife web desktop not found, trying dev server...', err);
+    return win.loadURL(swissKnifeDevUrl);
+  }).catch((err) => {
+    console.log('Dev server not running, trying dist...', err);
+    return win.loadFile(swissKnifeDistPath);
+  }).catch((err) => {
+    console.error('Could not load SwissKnife from any source:', err);
+    // Load a helpful message instead
+    const notAvailableHTML = `<!DOCTYPE html>
+<html>
+<head>
+  <title>SwissKnife Virtual Desktop - Setup Required</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    .container {
+      text-align: center;
+      padding: 50px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      max-width: 600px;
+    }
+    h1 { 
+      font-size: 2.5em; 
+      margin: 0 0 20px 0;
+      background: linear-gradient(45deg, #ffd700, #ff6b6b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .icon { font-size: 4em; margin-bottom: 20px; }
+    p { font-size: 1.1em; margin: 15px 0; line-height: 1.6; }
+    code {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 8px 15px;
+      border-radius: 8px;
+      display: block;
+      margin: 15px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.95em;
+    }
+    .note {
+      background: rgba(255, 193, 7, 0.2);
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 20px;
+      border-left: 4px solid #ffc107;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">🏔️</div>
+    <h1>SwissKnife Virtual Desktop</h1>
+    <p>Revolutionary Collaborative Development Environment</p>
+    <p><strong>27+ Professional Applications</strong> with Aero theme ready to launch!</p>
+    <p>To start SwissKnife with Node.js 20+:</p>
+    <code>cd swissknife && npm run desktop:collaborative</code>
+    <p>Or single-user mode:</p>
+    <code>cd swissknife && npm run desktop</code>
+    <div class="note">
+      <strong>Note:</strong> Requires Node.js 20+ (current: ${process.version})<br>
+      MCP servers are running on ports 3001-3003
+    </div>
+  </div>
+</body>
+</html>`;
+    win.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(notAvailableHTML)}`);
+  });
   
   if (process.env.NODE_ENV === 'development') {
     win.webContents.openDevTools();
