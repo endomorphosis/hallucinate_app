@@ -27,14 +27,23 @@ make install-all-deps
 
 The `npm install` command automatically:
 1. Installs Node.js/JavaScript dependencies
-2. Initializes git submodules (`ipfs_accelerate_py`, `ipfs_datasets_py`, `ipfs_kit_py`, `swissknife`)
-3. Installs Python dependencies for all submodules
+2. Checks if submodules need initialization
+3. Initializes git submodules (if needed)
+4. Installs Python dependencies for all submodules (if needed)
+
+**Note:** The postinstall script only runs when needed. To skip it:
+```bash
+SKIP_SUBMODULE_INSTALL=true npm install
+```
 
 ### Manual Submodule Installation
 
 If you need to install submodule dependencies separately:
 
 ```bash
+# Using npm script
+npm run install:submodules
+
 # Using Make
 make install-submodule-deps
 

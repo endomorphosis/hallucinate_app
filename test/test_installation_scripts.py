@@ -15,6 +15,7 @@ def test_installation_scripts():
     # Check if scripts exist
     bash_script = root_dir / "scripts" / "install_submodule_deps.sh"
     python_script = root_dir / "scripts" / "install_submodule_deps.py"
+    postinstall_script = root_dir / "scripts" / "postinstall.cjs"
     
     print("Testing installation scripts...")
     
@@ -42,6 +43,13 @@ def test_installation_scripts():
         print(f"✗ Python script not found: {python_script}")
         return False
     
+    # Test postinstall script exists
+    if postinstall_script.exists():
+        print(f"✓ Postinstall script exists: {postinstall_script}")
+    else:
+        print(f"✗ Postinstall script not found: {postinstall_script}")
+        return False
+    
     # Test bash script syntax
     try:
         result = subprocess.run(
@@ -65,6 +73,38 @@ def test_installation_scripts():
     except subprocess.CalledProcessError as e:
         print(f"✗ Python script syntax error: {e.stderr.decode()}")
         return False
+    
+    # Test postinstall script syntax
+    try:
+        result = subprocess.run(
+            ["node", "-c", str(postinstall_script)],
+            capture_output=True,
+            check=True
+        )
+        print("✓ Postinstall script syntax is valid")
+    except subprocess.CalledProcessError as e:
+        print(f"✗ Postinstall script syntax error: {e.stderr.decode()}")
+        return False
+    except FileNotFoundError:
+        print("⚠ Node.js not found, skipping postinstall script syntax check")
+    
+    # Test postinstall script with SKIP flag
+    try:
+        result = subprocess.run(
+            ["node", str(postinstall_script)],
+            capture_output=True,
+            check=True,
+            env={**os.environ, "SKIP_SUBMODULE_INSTALL": "true"}
+        )
+        if b"Skipping" in result.stdout:
+            print("✓ Postinstall script skip flag works")
+        else:
+            print("⚠ Postinstall script skip flag may not work correctly")
+    except subprocess.CalledProcessError as e:
+        print(f"✗ Postinstall script execution error: {e.stderr.decode()}")
+        return False
+    except FileNotFoundError:
+        print("⚠ Node.js not found, skipping postinstall script execution test")
     
     # Test that Python script can import required modules
     try:

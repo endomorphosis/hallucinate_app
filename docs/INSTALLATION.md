@@ -18,16 +18,36 @@ Each submodule has its own set of dependencies that need to be installed for the
 
 When you run `npm install`, the postinstall hook will automatically:
 1. Install all Node.js/JavaScript dependencies
-2. Initialize git submodules
-3. Install Python dependencies for all submodules
+2. Check if submodules need initialization
+3. Initialize git submodules (if needed)
+4. Install Python dependencies for all submodules (if needed)
 
 ```bash
 npm install
 ```
 
+The postinstall script is smart and will:
+- Only run on fresh installs or when submodules are not initialized
+- Skip in CI environments by default (set `INSTALL_SUBMODULES=true` to enable)
+- Can be skipped with `SKIP_SUBMODULE_INSTALL=true`
+
+**Skipping automatic installation:**
+```bash
+# Skip submodule installation during npm install
+SKIP_SUBMODULE_INSTALL=true npm install
+
+# Or use npm's --ignore-scripts flag
+npm install --ignore-scripts
+```
+
 ### Manual Installation
 
 If you prefer to install dependencies manually or need more control:
+
+#### Using npm script
+```bash
+npm run install:submodules
+```
 
 #### Using Make (Unix/Linux/macOS)
 
@@ -107,6 +127,18 @@ python scripts\install_submodule_deps.py
 ```
 
 ## Troubleshooting
+
+### Postinstall Script Running Every Time
+
+The postinstall script is designed to be smart and only run when needed. However, if you want to skip it:
+
+```bash
+# Skip postinstall during npm install
+SKIP_SUBMODULE_INSTALL=true npm install
+
+# Or globally disable it
+npm install --ignore-scripts
+```
 
 ### Submodules Not Initialized
 
