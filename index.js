@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, MenuItem } from 'electron';
+import { app, BrowserWindow, Menu, MenuItem, ipcMain } from 'electron';
 import { createModelTesterWindow } from './hallucinate_app/node/accelerate_model_tester.js';
 import MCPDaemonManager from './hallucinate_app/node/mcp_daemon_manager.js';
 import path from 'path';
@@ -6,6 +6,7 @@ import url from 'url';
 import electron_squirrel_startup from 'electron-squirrel-startup';
 import testHandler from './hallucinate_app/node/test_handler.js';
 import benchmarkHandler from './hallucinate_app/node/benchmark_handler.js';
+import { getDaemonManager } from './hallucinate_app/node/daemon_manager.js';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling
 if (electron_squirrel_startup) {
@@ -38,6 +39,9 @@ daemonManager.on('all-started', () => {
 // Setup test and benchmark handlers
 testHandler.setupIpcHandlers();
 benchmarkHandler.setupIpcHandlers();
+
+// Setup daemon manager IPC handlers
+setupDaemonManagerIPC();
 
 // Create a window for the benchmark dashboard
 const createBenchmarkWindow = () => {
@@ -586,6 +590,106 @@ const createAppMenu = () => {
           click: () => {
             createIPFSKitDashboardWindow();
           }
+        },
+        { type: 'separator' },
+        {
+          label: 'SwissKnife Virtual Desktop',
+          click: () => {
+            createSwissKnifeWindow();
+          }
+        },
+        {
+          label: 'Daemon Manager',
+          click: () => {
+            createDaemonManagerWindow();
+          }
+        }
+      ]
+    },
+    {
+      label: 'Daemons',
+      submenu: [
+        {
+          label: 'Start All MCP Servers',
+          click: async () => {
+            await daemonManager.startAll();
+          }
+        },
+        {
+          label: 'Stop All MCP Servers',
+          click: async () => {
+            await daemonManager.stopAll();
+          }
+        },
+        { type: 'separator' },
+        {
+          label: 'IPFS Accelerate MCP',
+          submenu: [
+            {
+              label: 'Start',
+              click: async () => {
+                await daemonManager.startDaemon('ipfs-accelerate-mcp');
+              }
+            },
+            {
+              label: 'Stop',
+              click: async () => {
+                await daemonManager.stopDaemon('ipfs-accelerate-mcp');
+              }
+            },
+            {
+              label: 'Restart',
+              click: async () => {
+                await daemonManager.restartDaemon('ipfs-accelerate-mcp');
+              }
+            }
+          ]
+        },
+        {
+          label: 'SwissKnife MCP',
+          submenu: [
+            {
+              label: 'Start',
+              click: async () => {
+                await daemonManager.startDaemon('swissknife-mcp');
+              }
+            },
+            {
+              label: 'Stop',
+              click: async () => {
+                await daemonManager.stopDaemon('swissknife-mcp');
+              }
+            },
+            {
+              label: 'Restart',
+              click: async () => {
+                await daemonManager.restartDaemon('swissknife-mcp');
+              }
+            }
+          ]
+        },
+        {
+          label: 'HuggingFace MCP',
+          submenu: [
+            {
+              label: 'Start',
+              click: async () => {
+                await daemonManager.startDaemon('huggingface-mcp');
+              }
+            },
+            {
+              label: 'Stop',
+              click: async () => {
+                await daemonManager.stopDaemon('huggingface-mcp');
+              }
+            },
+            {
+              label: 'Restart',
+              click: async () => {
+                await daemonManager.restartDaemon('huggingface-mcp');
+              }
+            }
+          ]
         }
       ]
     }
