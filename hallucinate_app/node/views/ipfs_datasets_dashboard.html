@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IPFS Datasets Dashboard</title>
+  
+  <!-- Add Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  
+  <style>
+    /* Base styles */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f7fa;
+      color: #2d3748;
+      line-height: 1.5;
+    }
+    
+    /* Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    /* Dashboard container */
+    #dashboard-container {
+      margin-top: 1rem;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      min-height: 800px;
+      padding: 2rem;
+    }
+    
+    /* Page header */
+    .page-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .page-header h1 {
+      margin: 0;
+      color: #2d3748;
+      font-size: 2rem;
+    }
+    
+    .page-header p {
+      margin: 0.5rem 0 0;
+      color: #718096;
+      font-size: 1.125rem;
+    }
+    
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .card h2 {
+      margin-top: 0;
+      color: #2d3748;
+      border-bottom: 2px solid #4299e1;
+      padding-bottom: 0.5rem;
+    }
+    
+    .info-section {
+      margin: 1rem 0;
+    }
+    
+    .info-section h3 {
+      color: #2d3748;
+      margin-bottom: 0.5rem;
+    }
+    
+    .info-section ul {
+      margin: 0.5rem 0;
+      padding-left: 1.5rem;
+    }
+    
+    .info-section li {
+      margin: 0.5rem 0;
+    }
+    
+    .alert {
+      padding: 1rem;
+      border-radius: 4px;
+      margin: 1rem 0;
+    }
+    
+    .alert-info {
+      background-color: #e6f7ff;
+      border-left: 4px solid #4299e1;
+      color: #0c5460;
+    }
+    
+    .alert-warning {
+      background-color: #fff3cd;
+      border-left: 4px solid #ffc107;
+      color: #856404;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      margin: 0.5rem;
+    }
+    
+    .btn-primary {
+      background-color: #4299e1;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: #3182ce;
+    }
+    
+    .btn-secondary {
+      background-color: #718096;
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background-color: #4a5568;
+    }
+    
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    
+    .status-item {
+      padding: 1rem;
+      background: #f7fafc;
+      border-radius: 4px;
+      border-left: 4px solid #4299e1;
+    }
+    
+    .status-label {
+      font-weight: 600;
+      color: #2d3748;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    
+    .status-value {
+      color: #718096;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="page-header">
+      <h1><i class="fas fa-database"></i> IPFS Datasets Dashboard</h1>
+      <p>Manage and browse datasets on IPFS</p>
+    </div>
+    
+    <div id="dashboard-container">
+      <div class="card">
+        <h2><i class="fas fa-info-circle"></i> Module Information</h2>
+        <div class="info-section">
+          <p>The IPFS Datasets module provides seamless integration between HuggingFace datasets and IPFS. It enables efficient loading, caching, and sharing of datasets through the IPFS network.</p>
+          
+          <h3><i class="fas fa-star"></i> Key Features:</h3>
+          <ul>
+            <li><strong>HuggingFace Integration:</strong> Direct access to thousands of datasets from the HuggingFace Hub</li>
+            <li><strong>IPFS Storage:</strong> Store and retrieve datasets using content-addressed IPFS storage</li>
+            <li><strong>Efficient Caching:</strong> Smart caching mechanisms to reduce download times</li>
+            <li><strong>Dataset Discovery:</strong> Browse and search available datasets</li>
+            <li><strong>Streaming Support:</strong> Stream large datasets without full downloads</li>
+            <li><strong>Version Control:</strong> Track dataset versions through IPFS content IDs</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="card">
+        <h2><i class="fas fa-server"></i> MCP Server Status</h2>
+        <div class="status-grid">
+          <div class="status-item">
+            <span class="status-label">Server Status:</span>
+            <span class="status-value" id="server-status">Checking...</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Port:</span>
+            <span class="status-value">3002</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Protocol:</span>
+            <span class="status-value">HTTP/MCP</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Uptime:</span>
+            <span class="status-value" id="server-uptime">--</span>
+          </div>
+        </div>
+        
+        <div class="alert alert-info">
+          <i class="fas fa-lightbulb"></i> <strong>Tip:</strong> The IPFS Datasets MCP server runs on port 3002 and provides programmatic access to dataset operations.
+        </div>
+      </div>
+      
+      <div class="card">
+        <h2><i class="fas fa-cog"></i> Quick Actions</h2>
+        <button class="btn btn-primary" id="btn-test-connection">
+          <i class="fas fa-plug"></i> Test MCP Connection
+        </button>
+        <button class="btn btn-secondary" id="btn-view-logs">
+          <i class="fas fa-file-alt"></i> View Server Logs
+        </button>
+        <button class="btn btn-secondary" id="btn-open-daemon-manager">
+          <i class="fas fa-server"></i> Open Daemon Manager
+        </button>
+      </div>
+      
+      <div class="card">
+        <h2><i class="fas fa-book"></i> Documentation & Resources</h2>
+        <div class="info-section">
+          <h3>API Endpoints:</h3>
+          <ul>
+            <li><code>/datasets/list</code> - List available datasets</li>
+            <li><code>/datasets/load</code> - Load a dataset from HuggingFace or IPFS</li>
+            <li><code>/datasets/info</code> - Get dataset metadata</li>
+            <li><code>/datasets/cache</code> - Manage dataset cache</li>
+          </ul>
+          
+          <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle"></i> <strong>Note:</strong> Ensure the IPFS Datasets MCP server is running to use these features. Start it from the Daemons menu or the Daemon Manager.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script type="module">
+    const { ipcRenderer } = window.require('electron');
+    
+    // Update server status
+    async function updateServerStatus() {
+      try {
+        const status = await ipcRenderer.invoke('daemon:getAll');
+        const datasetsStatus = status['ipfs-datasets'];
+        
+        const statusElement = document.getElementById('server-status');
+        const uptimeElement = document.getElementById('server-uptime');
+        
+        if (datasetsStatus && datasetsStatus.status === 'running') {
+          statusElement.innerHTML = '<span style="color: #10b981; font-weight: 600;"><i class="fas fa-check-circle"></i> Running</span>';
+          const uptime = Math.floor(datasetsStatus.uptime / 1000);
+          uptimeElement.textContent = `${Math.floor(uptime / 60)}m ${uptime % 60}s`;
+        } else {
+          statusElement.innerHTML = '<span style="color: #ef4444; font-weight: 600;"><i class="fas fa-times-circle"></i> Stopped</span>';
+          uptimeElement.textContent = '--';
+        }
+      } catch (error) {
+        console.error('Failed to get server status:', error);
+        document.getElementById('server-status').innerHTML = '<span style="color: #f59e0b;"><i class="fas fa-exclamation-circle"></i> Unknown</span>';
+      }
+    }
+    
+    // Test MCP connection
+    document.getElementById('btn-test-connection').addEventListener('click', async () => {
+      const button = document.getElementById('btn-test-connection');
+      button.disabled = true;
+      button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing...';
+      
+      try {
+        // Test connection to MCP server
+        const response = await fetch('http://localhost:3002/health').catch(() => null);
+        
+        if (response && response.ok) {
+          alert('✅ Connection successful! IPFS Datasets MCP server is responding.');
+        } else {
+          alert('❌ Connection failed. Please start the IPFS Datasets MCP server from the Daemons menu.');
+        }
+      } catch (error) {
+        alert('❌ Connection test failed: ' + error.message);
+      } finally {
+        button.disabled = false;
+        button.innerHTML = '<i class="fas fa-plug"></i> Test MCP Connection';
+      }
+    });
+    
+    // View server logs
+    document.getElementById('btn-view-logs').addEventListener('click', async () => {
+      try {
+        const logs = await ipcRenderer.invoke('daemon:getLogs', 'ipfs-datasets', 50);
+        if (logs && logs.length > 0) {
+          const logText = logs.map(log => `[${new Date(log.time).toLocaleTimeString()}] ${log.message}`).join('\n');
+          alert('Recent Logs:\n\n' + logText);
+        } else {
+          alert('No logs available. The server may not be running.');
+        }
+      } catch (error) {
+        alert('Failed to retrieve logs: ' + error.message);
+      }
+    });
+    
+    // Open daemon manager
+    document.getElementById('btn-open-daemon-manager').addEventListener('click', () => {
+      ipcRenderer.send('open-daemon-manager');
+    });
+    
+    // Initial status update and periodic refresh
+    updateServerStatus();
+    setInterval(updateServerStatus, 5000);
+  </script>
+</body>
+</html>
