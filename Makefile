@@ -1,4 +1,4 @@
-.PHONY: start-monitoring stop-monitoring install-deps test generate-sdks run-observability-demo helm-install helm-uninstall helm-upgrade k8s-deploy k8s-deploy-monitoring
+.PHONY: start-monitoring stop-monitoring install-deps install-all-deps install-submodule-deps test generate-sdks run-observability-demo helm-install helm-uninstall helm-upgrade k8s-deploy k8s-deploy-monitoring
 
 # Start monitoring stack with Prometheus and Grafana
 start-monitoring:
@@ -24,6 +24,16 @@ install-deps:
 	@pip install -r python/hallucinate_app/python/requirements.txt
 	@pip install prometheus_client structlog psutil
 	@echo "Dependencies installed!"
+
+# Install all dependencies including submodules
+install-all-deps: install-deps install-submodule-deps
+	@echo "All dependencies installed!"
+
+# Install submodule dependencies
+install-submodule-deps:
+	@echo "Installing submodule dependencies..."
+	@bash scripts/install_submodule_deps.sh
+	@echo "Submodule dependencies installed!"
 
 # Run all tests
 test:
@@ -113,7 +123,9 @@ help:
 	@echo "Available commands:"
 	@echo "  make start-monitoring       - Start Prometheus and Grafana monitoring stack"
 	@echo "  make stop-monitoring        - Stop monitoring stack"
-	@echo "  make install-deps           - Install dependencies"
+	@echo "  make install-deps           - Install main project dependencies"
+	@echo "  make install-submodule-deps - Install submodule dependencies"
+	@echo "  make install-all-deps       - Install all dependencies (main + submodules)"
 	@echo "  make test                   - Run all tests"
 	@echo "  make generate-sdks          - Generate SDKs for all languages"
 	@echo "  make run-observability-demo - Run observability demo"
