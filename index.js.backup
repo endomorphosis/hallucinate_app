@@ -259,7 +259,7 @@ const createWindow = () => {
   try {
     logInfo('WINDOW_CREATE', 'Creating main window (SwissKnife)...');
     // Create the SwissKnife virtual desktop as the default window
-    mainWindow = createSwissKnifeWindow();
+    const mainWindow = createSwissKnifeWindow();
     
     // Add error handlers
     mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription, validatedURL) => {
@@ -603,21 +603,19 @@ const createSwissKnifeWindow = () => {
   });
 
   // Load the main dashboard
-  win.loadFile(path.join(__dirname, 'hallucinate_app', 'node', 'views', 'dashboard.html'));
+  mainWindow.loadFile(path.join(__dirname, 'hallucinate_app', 'node', 'views', 'dashboard.html'));
   
   // Open the DevTools in development
   if (process.env.NODE_ENV === 'development') {
-    win.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
   }
   
-  // Clear the mainWindow reference when closed (if this is the main window)
-  win.on('closed', () => {
-    if (mainWindow === win) {
-      mainWindow = null;
-    }
+  // Clear the mainWindow reference when closed
+  mainWindow.on('closed', () => {
+    mainWindow = null;
   });
   
-  return win;
+  return mainWindow;
 };
 
 // Store reference to main window for navigation
@@ -670,14 +668,710 @@ const createAppMenu = () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.on('ready', () => {
+        {
+          label: '🎛️ MCP Control Panel',
+          accelerator: 'CmdOrCtrl+M',
+          click: () => {
+            navigateToView(path.join(__dirname, 'hallucinate_app', 'node', 'views', 'daemon_manager.html'));
+          }
+        },
+        { type: 'separator' },
+        {
+          label: '🚀 Start All MCP Servers',
+          accelerator: 'CmdOrCtrl+Shift+S',
+          click: async () => {
+            await daemonManager.startAll();
+          }
+        },
+        {
+          label: '🛑 Stop All MCP Servers',
+          accelerator: 'CmdOrCtrl+Shift+X',
+          click: async () => {
+            await daemonManager.stopAll();
+          }
+        },
+        {
+          label: '🔄 Restart All MCP Servers',
+          accelerator: 'CmdOrCtrl+Shift+R',
+          click: async () => {
+            await daemonManager.stopAll();
+            setTimeout(async () => await daemonManager.startAll(), 2000);
+          }
+        },
+        { type: 'separator' },
+        {
+          label: '📦 IPFS Kit MCP (Port 3001)',
+          submenu: [
+            {
+              label: '▶️ Start Server',
+              click: async () => {
+                await daemonManager.startDaemon('ipfs-kit');
+              }
+            },
+            {
+              label: '⏹️ Stop Server',
+              click: async () => {
+                await daemonManager.stopDaemon('ipfs-kit');
+              }
+            },
+            {
+              label: '🔄 Restart Server',
+              click: async () => {
+                await daemonManager.restartDaemon('ipfs-kit');
+              }
+            },
+            { type: 'separator' },
+            {
+              label: '📊 Open Web Dashboard',
+              accelerator: 'CmdOrCtrl+Alt+1',
+              click: () => {
+                createIPFSKitDashboard();
+              }
+            },
+            {
+              label: '🌐 Open in Browser',
+              click: () => {
+                shell.openExternal('http://127.0.0.1:3001/dashboard');
+              }
+            },
+            {
+              label: '📊 View Dashboard (Legacy)',
+              click: () => {
+                createIPFSKitDashboardWindow();
+              }
+            },
+            { type: 'separator' },
+            {
+              label: '📋 View Logs',
+              click: async () => {
+                const logs = await daemonManager.getLogs('ipfs-kit', 100);
+                console.log('IPFS Kit Logs:', logs);
+              }
+            }
+          ]
+        },
+        {
+          label: '📚 IPFS Datasets MCP (Port 3002)',
+          submenu: [
+            {
+              label: '▶️ Start Server',
+              click: async () => {
+                await daemonManager.startDaemon('ipfs-datasets');
+              }
+            },
+            {
+              label: '⏹️ Stop Server',
+              click: async () => {
+                await daemonManager.stopDaemon('ipfs-datasets');
+              }
+            },
+            {
+              label: '🔄 Restart Server',
+              click: async () => {
+                await daemonManager.restartDaemon('ipfs-datasets');
+              }
+            },
+            { type: 'separator' },
+            {
+              label: '� Open Web Dashboard',
+              accelerator: 'CmdOrCtrl+Alt+2',
+              click: () => {
+                createIPFSDatasetsDashboard();
+              }
+            },
+            {
+              label: '🌐 Open in Browser',
+              click: () => {
+                shell.openExternal('http://127.0.0.1:3002/dashboard');
+              }
+            },
+            { type: 'separator' },
+            {
+              label: '�🔧 Dataset Tools',
+              submenu: [
+                { label: 'Load Dataset', enabled: false },
+                { label: 'Process Dataset', enabled: false },
+                { label: 'Export to IPFS', enabled: false }
+              ]
+            },
+            {
+              label: '📋 View Logs',
+              click: async () => {
+                const logs = await daemonManager.getLogs('ipfs-datasets', 100);
+                console.log('IPFS Datasets Logs:', logs);
+              }
+            }
+          ]
+        },
+        {
+          label: '⚡ IPFS Accelerate MCP (Port 3003)',
+          submenu: [
+            {
+              label: '▶️ Start Server',
+              click: async () => {
+                await daemonManager.startDaemon('ipfs-accelerate');
+              }
+            },
+            {
+              label: '⏹️ Stop Server',
+              click: async () => {
+                await daemonManager.stopDaemon('ipfs-accelerate');
+              }
+            },
+            {
+              label: '🔄 Restart Server',
+              click: async () => {
+                await daemonManager.restartDaemon('ipfs-accelerate');
+              }
+            },
+            { type: 'separator' },
+            {
+              label: '📊 Open Web Dashboard',
+              accelerator: 'CmdOrCtrl+Alt+3',
+              click: () => {
+                createIPFSAccelerateDashboard();
+              }
+            },
+            {
+              label: '🌐 Open in Browser',
+              click: () => {
+                shell.openExternal('http://127.0.0.1:3006/dashboard');
+              }
+            },
+            { type: 'separator' },
+            {
+              label: '🧪 Model Tester',
+              click: () => {
+                createModelTesterWindow();
+              }
+            },
+            {
+              label: '📊 Benchmark Dashboard',
+              click: () => {
+                createBenchmarkWindow();
+              }
+            },
+            {
+              label: '📋 View Logs',
+              click: async () => {
+                const logs = await daemonManager.getLogs('ipfs-accelerate', 100);
+                console.log('IPFS Accelerate Logs:', logs);
+              }
+            }
+          ]
+        },
+        {
+          label: '🔪 SwissKnife MCP',
+          submenu: [
+            {
+              label: '▶️ Start Server',
+              click: async () => {
+                await daemonManager.startDaemon('swissknife');
+              }
+            },
+            {
+              label: '⏹️ Stop Server',
+              click: async () => {
+                await daemonManager.stopDaemon('swissknife');
+              }
+            },
+            {
+              label: '🔄 Restart Server',
+              click: async () => {
+                await daemonManager.restartDaemon('swissknife');
+              }
+            },
+            { type: 'separator' },
+            {
+              label: '� Open Web Dashboard',
+              accelerator: 'CmdOrCtrl+Alt+4',
+              click: () => {
+                createSwissKnifeMCPDashboard();
+              }
+            },
+            {
+              label: '🌐 Open in Browser',
+              click: () => {
+                shell.openExternal('http://127.0.0.1:3004/dashboard');
+              }
+            },
+            { type: 'separator' },
+            {
+              label: '�🖥️ Open Virtual Desktop',
+              accelerator: 'CmdOrCtrl+Alt+D',
+              click: () => {
+                createSwissKnifeWindow();
+              }
+            },
+            {
+              label: '📋 View Logs',
+              click: async () => {
+                const logs = await daemonManager.getLogs('swissknife', 100);
+                console.log('SwissKnife Logs:', logs);
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      label: 'Tools',
+      submenu: [
+        {
+          label: '📦 IPFS Kit Tools',
+          submenu: [
+            { 
+              label: 'Add to IPFS',
+              click: () => {
+                shell.openExternal('http://127.0.0.1:3001/tools/add');
+              }
+            },
+            { 
+              label: 'Get from IPFS',
+              click: () => {
+                shell.openExternal('http://127.0.0.1:3001/tools/get');
+              }
+            },
+            { 
+              label: 'Pin Content',
+              click: () => {
+                shell.openExternal('http://127.0.0.1:3001/tools/pin');
+              }
+            },
+            { 
+              label: 'IPFS Status',
+              click: () => {
+                shell.openExternal('http://127.0.0.1:3001/status');
+              }
+            },
+            { type: 'separator' },
+            { 
+              label: 'Configure IPFS Node',
+              click: () => {
+                shell.openExternal('http://127.0.0.1:3001/config');
+              }
+            },
+            { type: 'separator' },
+            {
+              label: '📊 Open Dashboard',
+              click: () => {
+                createIPFSKitDashboard();
+              }
+            }
+          ]
+        },
+        {
+          label: '📚 Dataset Tools',
+          submenu: [
+            { 
+              label: 'Load HuggingFace Dataset',
+              click: () => {
+                shell.openExternal('http://127.0.0.1:3002/tools/load');
+              }
+            },
+            { 
+              label: 'Create Custom Dataset',
+              click: () => {
+                shell.openExternal('http://127.0.0.1:3002/tools/create');
+              }
+            },
+            { 
+              label: 'Transform Dataset',
+              click: () => {
+                shell.openExternal('http://127.0.0.1:3002/tools/transform');
+              }
+            },
+            { 
+              label: 'Export Dataset',
+              click: () => {
+                shell.openExternal('http://127.0.0.1:3002/tools/export');
+              }
+            },
+            { type: 'separator' },
+            { 
+              label: 'GraphRAG PDF Processing',
+              click: () => {
+                shell.openExternal('http://127.0.0.1:3002/tools/graphrag');
+              }
+            },
+            { 
+              label: 'Legal Dataset Scraper',
+              click: () => {
+                shell.openExternal('http://127.0.0.1:3002/tools/scraper');
+              }
+            },
+            { type: 'separator' },
+            {
+              label: '📊 Open Dashboard',
+              click: () => {
+                createIPFSDatasetsDashboard();
+              }
+            }
+          ]
+        },
+        {
+          label: '⚡ Accelerate Tools',
+          submenu: [
+            { 
+              label: 'Model Inference',
+              click: () => {
+                shell.openExternal('http://127.0.0.1:3006/tools/inference');
+              }
+            },
+            { 
+              label: 'Batch Processing',
+              click: () => {
+                shell.openExternal('http://127.0.0.1:3006/tools/batch');
+              }
+            },
+            { 
+              label: 'Distributed Training',
+              click: () => {
+                shell.openExternal('http://127.0.0.1:3006/tools/training');
+              }
+            },
+            { type: 'separator' },
+            { 
+              label: 'GPU Monitor',
+              click: () => {
+                shell.openExternal('http://127.0.0.1:3006/tools/gpu');
+              }
+            },
+            { 
+              label: 'Performance Metrics',
+              click: () => {
+                shell.openExternal('http://127.0.0.1:3006/metrics');
+              }
+            },
+            { type: 'separator' },
+            {
+              label: '📊 Open Dashboard',
+              click: () => {
+                createIPFSAccelerateDashboard();
+              }
+            }
+          ]
+        },
+        {
+          label: '🔪 SwissKnife Apps',
+          submenu: [
+            { 
+              label: 'Terminal',
+              click: () => {
+                createSwissKnifeWindow();
+                // Will need to launch terminal app within desktop
+              }
+            },
+            { 
+              label: 'Code Editor',
+              click: () => {
+                createSwissKnifeWindow();
+              }
+            },
+            { 
+              label: 'File Manager',
+              click: () => {
+                createSwissKnifeWindow();
+              }
+            },
+            { 
+              label: 'AI Chat',
+              click: () => {
+                createSwissKnifeWindow();
+              }
+            },
+            { type: 'separator' },
+            { 
+              label: 'Music Studio',
+              click: () => {
+                createSwissKnifeWindow();
+              }
+            },
+            { 
+              label: 'Video Player',
+              click: () => {
+                createSwissKnifeWindow();
+              }
+            },
+            { type: 'separator' },
+            {
+              label: '🖥️ Open Virtual Desktop',
+              accelerator: 'CmdOrCtrl+D',
+              click: () => {
+                createSwissKnifeWindow();
+              }
+            },
+            {
+              label: '📊 Open MCP Dashboard',
+              click: () => {
+                createSwissKnifeMCPDashboard();
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      label: 'Configuration',
+      submenu: [
+        {
+          label: '⚙️ MCP Server Settings',
+          submenu: [
+            {
+              label: 'IPFS Kit Configuration',
+              click: () => {
+                console.log('Opening IPFS Kit config...');
+              }
+            },
+            {
+              label: 'IPFS Datasets Configuration',
+              click: () => {
+                console.log('Opening IPFS Datasets config...');
+              }
+            },
+            {
+              label: 'IPFS Accelerate Configuration',
+              click: () => {
+                console.log('Opening IPFS Accelerate config...');
+              }
+            },
+            {
+              label: 'SwissKnife Configuration',
+              click: () => {
+                console.log('Opening SwissKnife config...');
+              }
+            }
+          ]
+        },
+        { type: 'separator' },
+        {
+          label: '🌐 Network Settings',
+          submenu: [
+            { label: 'Port Configuration', enabled: false },
+            { label: 'Proxy Settings', enabled: false },
+            { label: 'IPFS Gateway', enabled: false }
+          ]
+        },
+        {
+          label: '🔐 Security Settings',
+          submenu: [
+            { label: 'API Keys', enabled: false },
+            { label: 'Authentication', enabled: false },
+            { label: 'Permissions', enabled: false }
+          ]
+        },
+        { type: 'separator' },
+        {
+          label: '📂 Open Configuration Files',
+          submenu: [
+            {
+              label: 'IPFS Kit Config',
+              click: () => {
+                console.log('Opening ipfs_kit_py config directory...');
+              }
+            },
+            {
+              label: 'IPFS Datasets Config',
+              click: () => {
+                console.log('Opening ipfs_datasets_py config directory...');
+              }
+            },
+            {
+              label: 'IPFS Accelerate Config',
+              click: () => {
+                console.log('Opening ipfs_accelerate_py config directory...');
+              }
+            },
+            {
+              label: 'SwissKnife Config',
+              click: () => {
+                console.log('Opening swissknife config directory...');
+              }
+            }
+          ]
+        },
+        { type: 'separator' },
+        {
+          label: 'Reset to Defaults',
+          click: () => {
+            console.log('Resetting all configurations to defaults...');
+          }
+        }
+      ]
+    },
+    {
+      label: 'View',
+      submenu: [
+        { 
+          label: 'Reload',
+          accelerator: 'CmdOrCtrl+R',
+          role: 'reload'
+        },
+        { 
+          label: 'Force Reload',
+          accelerator: 'CmdOrCtrl+Shift+R',
+          role: 'forceReload'
+        },
+        { 
+          label: 'Toggle Developer Tools',
+          accelerator: 'CmdOrCtrl+Shift+I',
+          role: 'toggleDevTools'
+        },
+        { type: 'separator' },
+        { 
+          label: 'Actual Size',
+          accelerator: 'CmdOrCtrl+0',
+          role: 'resetZoom'
+        },
+        { 
+          label: 'Zoom In',
+          accelerator: 'CmdOrCtrl+Plus',
+          role: 'zoomIn'
+        },
+        { 
+          label: 'Zoom Out',
+          accelerator: 'CmdOrCtrl+-',
+          role: 'zoomOut'
+        },
+        { type: 'separator' },
+        { 
+          label: 'Toggle Full Screen',
+          accelerator: 'F11',
+          role: 'togglefullscreen'
+        }
+      ]
+    },
+    {
+      label: 'Windows',
+      submenu: [
+        {
+          label: '🖥️ SwissKnife Virtual Desktop',
+          accelerator: 'CmdOrCtrl+1',
+          click: () => {
+            createSwissKnifeWindow();
+          }
+        },
+        {
+          label: '🎛️ MCP Control Panel',
+          accelerator: 'CmdOrCtrl+2',
+          click: () => {
+            createDaemonManagerWindow();
+          }
+        },
+        { type: 'separator' },
+        {
+          label: '📊 Dashboards',
+          submenu: [
+            {
+              label: 'IPFS Kit Dashboard',
+              click: () => {
+                createIPFSKitDashboardWindow();
+              }
+            },
+            {
+              label: 'Benchmark Dashboard',
+              click: () => {
+                createBenchmarkWindow();
+              }
+            }
+          ]
+        },
+        {
+          label: '🧪 Testing & Development',
+          submenu: [
+            {
+              label: 'Test Interface',
+              click: () => {
+                createTestWindow();
+              }
+            },
+            {
+              label: 'Model Tester',
+              click: () => {
+                createModelTesterWindow();
+              }
+            }
+          ]
+        },
+        { type: 'separator' },
+        {
+          label: 'Minimize',
+          accelerator: 'CmdOrCtrl+M',
+          role: 'minimize'
+        },
+        {
+          label: 'Close Window',
+          accelerator: 'CmdOrCtrl+W',
+          role: 'close'
+        }
+      ]
+    },
+    {
+      label: 'Help',
+      submenu: [
+        {
+          label: '📖 Documentation',
+          submenu: [
+            {
+              label: 'IPFS Kit Documentation',
+              click: () => {
+                require('electron').shell.openExternal('https://github.com/endomorphosis/ipfs_kit_py');
+              }
+            },
+            {
+              label: 'IPFS Datasets Documentation',
+              click: () => {
+                require('electron').shell.openExternal('https://github.com/endomorphosis/ipfs_datasets_py');
+              }
+            },
+            {
+              label: 'IPFS Accelerate Documentation',
+              click: () => {
+                require('electron').shell.openExternal('https://github.com/endomorphosis/ipfs_accelerate_py');
+              }
+            },
+            {
+              label: 'SwissKnife Documentation',
+              click: () => {
+                require('electron').shell.openExternal('https://github.com/endomorphosis/swissknife');
+              }
+            }
+          ]
+        },
+        { type: 'separator' },
+        {
+          label: '🔍 Check for Updates',
+          click: () => {
+            console.log('Checking for updates...');
+          }
+        },
+        {
+          label: 'About',
+          click: () => {
+            const { dialog } = require('electron');
+            dialog.showMessageBox({
+              type: 'info',
+              title: 'About Hallucinate App',
+              message: 'Hallucinate App v1.0.0',
+              detail: 'A comprehensive platform for IPFS-powered AI development.\n\nIncludes:\n• IPFS Kit MCP Server\n• IPFS Datasets MCP Server\n• IPFS Accelerate MCP Server\n• SwissKnife Virtual Desktop\n\n© 2025 Endomorphosis'
+            });
+          }
+        }
+      ]
+    }
+  ]);
+  
+  Menu.setApplicationMenu(appMenu);
+};
+
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+app.on('ready', () => {
   // Start the SwissKnife web server
   startSwissKnifeServer();
   
-  // Create main window first (so mainWindow reference is available for menu)
-  createWindow();
-  
-  // Create application menu (needs mainWindow to be set)
   createAppMenu();
+  createWindow();
   
   // Auto-start MCP daemons after a short delay
   setTimeout(async () => {
