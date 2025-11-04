@@ -8,6 +8,7 @@
     "postinstall": "node scripts/postinstall.cjs",
     "install:submodules": "bash scripts/install_submodule_deps.sh || python scripts/install_submodule_deps.py",
     "test": "node test/test.js",
+    "test:menu": "node test/test_programmatic_menu.js",
     "test:bridge": "node test/js/test_accelerate_bridge.js",
     "test:electron": "node test/js/test_accelerate_electron.js",
     "test:python": "python test/python/test_accelerate_server.py",
@@ -23,7 +24,7 @@
     "test:e2e:ci": "CI=true playwright test",
     "test:e2e:report": "playwright show-report",
     "test:daemon-manager": "node test/js/test_mcp_daemon_manager.js",
-    "test:all": "npm run test:daemon-manager && npm run test:e2e",
+    "test:all": "npm run test:menu && npm run test:daemon-manager && npm run test:e2e",
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make"

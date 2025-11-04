@@ -376,7 +376,15 @@ export function getAllTestableItems() {
     }
   });
   
-  // MCP Server controls
+  // MCP Server global controls
+  items.push(
+    { label: 'MCP Control Panel', accelerator: 'CmdOrCtrl+M', path: 'views/daemon_manager.html', menu: 'MCP Servers', testable: true },
+    { label: 'Start All MCP Servers', accelerator: 'CmdOrCtrl+Shift+S', action: 'startAll', menu: 'MCP Servers', testable: true },
+    { label: 'Stop All MCP Servers', accelerator: 'CmdOrCtrl+Shift+X', action: 'stopAll', menu: 'MCP Servers', testable: true },
+    { label: 'Restart All MCP Servers', accelerator: 'CmdOrCtrl+Shift+R', action: 'restartAll', menu: 'MCP Servers', testable: true }
+  );
+  
+  // MCP Server controls for each server
   mcpServers.forEach(server => {
     items.push(
       { label: `Start ${server.displayName}`, serverId: server.id, action: 'start', menu: 'MCP Servers', testable: true },
