@@ -14,3 +14,9 @@ __pycache__
 test-results/
 playwright-report/
 playwright/.cache/
+
+# Documentation automation temporary files
+changes-report.json
+docs-update.md
+summary.md
+changelog-entry.md
