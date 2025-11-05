@@ -38,6 +38,14 @@ const commands = {
     description: 'View application logs',
     action: viewLogs
   },
+  debug: {
+    description: 'View debug logs with errors highlighted',
+    action: viewDebugLogs
+  },
+  tail: {
+    description: 'Tail debug logs in real-time',
+    action: tailLogs
+  },
   help: {
     description: 'Show this help message',
     action: showHelp
@@ -50,17 +58,18 @@ function startApp() {
   const electron = spawn(ELECTRON_PATH, ['--no-sandbox', '.'], {
     cwd: APP_DIR,
     detached: true,
-    stdio: ['ignore', 'pipe', 'pipe']
+    stdio: ['ignore', 'pipe', 'pipe'],
+    env: { ...process.env, ELECTRON_ENABLE_LOGGING: '1' }
   });
-
-  const logStream = fs.createWriteStream(LOG_FILE, { flags: 'a' });
   
+  const logStream = fs.createWriteStream(LOG_FILE, { flags: 'a' });
   electron.stdout.pipe(logStream);
   electron.stderr.pipe(logStream);
   
   electron.on('spawn', () => {
     console.log(`✅ Electron app started (PID: ${electron.pid})`);
     console.log(`📝 Logs: ${LOG_FILE}`);
+    console.log(`🐛 Debug logs: /tmp/hallucinate-app-debug.log`);
     electron.unref();
     process.exit(0);
   });
@@ -74,32 +83,72 @@ function startApp() {
 function stopApp() {
   console.log('🛑 Stopping Hallucinate Electron app...');
   
-  const pkill = spawn('pkill', ['-f', 'electron.*hallucinate_app']);
+  // First try to find electron processes from this directory
+  const pgrep = spawn('pgrep', ['-f', 'electron.*--no-sandbox']);
+  let pids = '';
   
-  pkill.on('close', (code) => {
-    if (code === 0) {
-      console.log('✅ Electron app stopped');
+  pgrep.stdout.on('data', (data) => {
+    pids += data.toString();
+  });
+  
+  pgrep.on('close', (code) => {
+    if (pids.trim()) {
+      const pidList = pids.trim().split('\n');
+      console.log(`Found ${pidList.length} Electron processes to stop...`);
+      
+      // Kill all found processes
+      const kill = spawn('kill', ['-15', ...pidList]);
+      
+      kill.on('close', (killCode) => {
+        // Give processes time to cleanup
+        setTimeout(() => {
+          // Force kill any remaining
+          spawn('kill', ['-9', ...pidList]).on('close', () => {
+            console.log('✅ Electron app stopped');
+            process.exit(0);
+          });
+        }, 1000);
+      });
     } else {
       console.log('ℹ️  No running Electron processes found');
+      process.exit(0);
     }
-    process.exit(0);
   });
 }
 
 function restartApp() {
   console.log('🔄 Restarting Hallucinate Electron app...');
   
-  const pkill = spawn('pkill', ['-9', 'electron']);
+  // Use the improved stop logic
+  const pgrep = spawn('pgrep', ['-f', 'electron.*--no-sandbox']);
+  let pids = '';
   
-  pkill.on('close', () => {
-    setTimeout(() => {
-      startApp();
-    }, 2000);
+  pgrep.stdout.on('data', (data) => {
+    pids += data.toString();
+  });
+  
+  pgrep.on('close', (code) => {
+    if (pids.trim()) {
+      const pidList = pids.trim().split('\n');
+      // Force kill for faster restart
+      const kill = spawn('kill', ['-9', ...pidList]);
+      
+      kill.on('close', () => {
+        setTimeout(() => {
+          startApp();
+        }, 2000);
+      });
+    } else {
+      // No processes running, just start
+      setTimeout(() => {
+        startApp();
+      }, 1000);
+    }
   });
 }
 
 function checkStatus() {
-  const pgrep = spawn('pgrep', ['-a', 'electron']);
+  const pgrep = spawn('pgrep', ['-a', '-f', 'electron.*--no-sandbox']);
   let output = '';
   
   pgrep.stdout.on('data', (data) => {
@@ -107,13 +156,14 @@ function checkStatus() {
   });
   
   pgrep.on('close', (code) => {
-    if (code === 0 && output.includes('hallucinate_app')) {
-      const lines = output.split('\n').filter(line => line.includes('hallucinate_app'));
+    if (code === 0 && output.trim()) {
+      const lines = output.split('\n').filter(line => line.trim());
       console.log('✅ Hallucinate Electron app is running:');
-      lines.forEach(line => console.log(`   ${line}`));
-    } else if (code === 0) {
-      console.log('⚠️  Other Electron processes found, but not hallucinate_app');
-      console.log(output);
+      lines.forEach(line => {
+        if (line.trim()) {
+          console.log(`   ${line}`);
+        }
+      });
     } else {
       console.log('❌ Hallucinate Electron app is not running');
     }
@@ -131,6 +181,42 @@ function viewLogs() {
     console.log('📝 No logs found at', LOG_FILE);
     process.exit(1);
   }
+}
+
+function viewDebugLogs() {
+  const DEBUG_LOG = '/tmp/hallucinate-app-debug.log';
+  if (fs.existsSync(DEBUG_LOG)) {
+    console.log(`\n📋 Debug Log: ${DEBUG_LOG}\n`);
+    const cat = spawn('cat', [DEBUG_LOG]);
+    cat.stdout.pipe(process.stdout);
+    cat.stderr.pipe(process.stderr);
+    cat.on('close', () => process.exit(0));
+  } else {
+    console.log('📝 No debug logs found. The app may not have encountered any errors yet.');
+    console.log(`   Expected location: ${DEBUG_LOG}`);
+    process.exit(1);
+  }
+}
+
+function tailLogs() {
+  const DEBUG_LOG = '/tmp/hallucinate-app-debug.log';
+  console.log(`\n📡 Tailing debug log: ${DEBUG_LOG}`);
+  console.log('Press Ctrl+C to stop\n');
+  
+  // Create file if it doesn't exist
+  if (!fs.existsSync(DEBUG_LOG)) {
+    fs.writeFileSync(DEBUG_LOG, '');
+  }
+  
+  const tail = spawn('tail', ['-f', DEBUG_LOG]);
+  tail.stdout.pipe(process.stdout);
+  tail.stderr.pipe(process.stderr);
+  
+  process.on('SIGINT', () => {
+    tail.kill();
+    console.log('\n\n✅ Stopped tailing logs');
+    process.exit(0);
+  });
 }
 
 function showHelp() {

@@ -5,7 +5,7 @@ import MenuGenerator from './hallucinate_app/node/menu_generator.js';
 import path from 'path';
 import url from 'url';
 import { createServer } from 'http';
-import { readFile, appendFileSync } from 'fs/promises';
+import { readFile } from 'fs/promises';
 import { appendFileSync as appendFileSyncSync } from 'fs';
 import electron_squirrel_startup from 'electron-squirrel-startup';
 import testHandler from './hallucinate_app/node/test_handler.js';
@@ -32,9 +32,14 @@ function logError(context, error, additionalInfo = {}) {
     ...additionalInfo
   };
   
-  console.error(`[${timestamp}] ❌ ERROR in ${context}:`, error);
-  if (additionalInfo && Object.keys(additionalInfo).length > 0) {
-    console.error('Additional Info:', additionalInfo);
+  // Only log to console if stdout is available (not EPIPE)
+  try {
+    console.error(`[${timestamp}] ❌ ERROR in ${context}:`, error);
+    if (additionalInfo && Object.keys(additionalInfo).length > 0) {
+      console.error('Additional Info:', additionalInfo);
+    }
+  } catch (e) {
+    // Ignore EPIPE errors when writing to console
   }
   
   // Write to log file
@@ -42,7 +47,7 @@ function logError(context, error, additionalInfo = {}) {
     try {
       appendFileSyncSync(LOG_FILE, JSON.stringify(errorLog, null, 2) + '\n---\n');
     } catch (e) {
-      console.error('Failed to write to log file:', e);
+      // Ignore file write errors
     }
   }
   
@@ -51,9 +56,15 @@ function logError(context, error, additionalInfo = {}) {
 
 function logInfo(context, message, data = {}) {
   const timestamp = new Date().toISOString();
-  console.log(`[${timestamp}] ℹ️  ${context}: ${message}`);
-  if (data && Object.keys(data).length > 0) {
-    console.log('Data:', data);
+  
+  // Only log to console if stdout is available (not EPIPE)
+  try {
+    console.log(`[${timestamp}] ℹ️  ${context}: ${message}`);
+    if (data && Object.keys(data).length > 0) {
+      console.log('Data:', data);
+    }
+  } catch (e) {
+    // Ignore EPIPE errors when writing to console
   }
   
   if (ENABLE_VERBOSE_LOGGING) {
@@ -61,7 +72,7 @@ function logInfo(context, message, data = {}) {
       const logEntry = { timestamp, context, message, data };
       appendFileSyncSync(LOG_FILE, JSON.stringify(logEntry, null, 2) + '\n');
     } catch (e) {
-      console.error('Failed to write to log file:', e);
+      // Ignore file write errors
     }
   }
 }
@@ -669,25 +680,40 @@ const createAppMenu = () => {
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
-app.on('ready', () => {
-  // Start the SwissKnife web server
-  startSwissKnifeServer();
-  
-  // Create main window first (so mainWindow reference is available for menu)
-  createWindow();
-  
-  // Create application menu (needs mainWindow to be set)
-  createAppMenu();
-  
-  // Auto-start MCP daemons after a short delay
-  setTimeout(async () => {
-    console.log('🚀 Auto-starting MCP daemons...');
-    await daemonManager.startAll();
-  }, 2000);
+app.on('ready', async () => {
+  try {
+    logInfo('APP_READY', 'Electron app ready, initializing...');
+    
+    // Start the SwissKnife web server
+    await startSwissKnifeServer();
+    
+    logInfo('APP_READY', 'Creating menu...');
+    createAppMenu();
+    
+    logInfo('APP_READY', 'Creating window...');
+    createWindow();
+    
+    // Auto-start MCP daemons after a short delay
+    setTimeout(async () => {
+      try {
+        logInfo('MCP_DAEMONS', 'Auto-starting MCP daemons...');
+        await daemonManager.startAll();
+        logInfo('MCP_DAEMONS', 'All daemons started');
+      } catch (error) {
+        logError('MCP_DAEMONS_START', error);
+      }
+    }, 2000);
+  } catch (error) {
+    logError('APP_READY', error);
+    // Show error dialog
+    const { dialog } = await import('electron');
+    dialog.showErrorBox('Startup Error', `Failed to start application: ${error.message}\n\nCheck ${LOG_FILE} for details.`);
+  }
 });
 
 // Quit when all windows are closed, except on macOS.
 app.on('window-all-closed', () => {
+  logInfo('APP_LIFECYCLE', 'All windows closed');
   if (process.platform !== 'darwin') {
     app.quit();
   }
@@ -697,23 +723,30 @@ app.on('window-all-closed', () => {
 app.on('before-quit', async (event) => {
   event.preventDefault();
   
-  console.log('🛑 Shutting down MCP daemons...');
-  await daemonManager.stopAll();
-  
-  // Stop SwissKnife web server
-  if (swissKnifeServer) {
-    swissKnifeServer.close(() => {
-      console.log('🛑 SwissKnife web server stopped');
-    });
+  try {
+    logInfo('APP_QUIT', 'Shutting down MCP daemons...');
+    await daemonManager.stopAll();
+    
+    // Stop SwissKnife web server
+    if (swissKnifeServer) {
+      swissKnifeServer.close(() => {
+        logInfo('APP_QUIT', 'SwissKnife web server stopped');
+      });
+    }
+    
+    logInfo('APP_QUIT', 'Cleanup complete, exiting...');
+    // Now actually quit
+    app.exit(0);
+  } catch (error) {
+    logError('APP_QUIT', error);
+    app.exit(1);
   }
-  
-  // Now actually quit
-  app.exit(0);
 });
 
 app.on('activate', () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
+  logInfo('APP_LIFECYCLE', 'App activated');
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
   }
