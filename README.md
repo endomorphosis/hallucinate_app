@@ -13,6 +13,7 @@ For comprehensive documentation, see:
 - **[Documentation Index](docs/INDEX.md)** - Complete documentation structure
 - **[Architecture Guide](docs/ARCHITECTURE.md)** - System design and architecture
 - **[Quick Start Guide](docs/QUICK_START.md)** - Get started quickly
+- **[Quick Start: Building](docs/QUICK_START_BUILD.md)** - Build and deploy in minutes
 - **[Contributing Guide](CONTRIBUTING.md)** - How to contribute
 - **[Troubleshooting Guide](docs/TROUBLESHOOTING.md)** - Common issues and solutions
 - **[Changelog](CHANGELOG.md)** - Version history
