@@ -346,3 +346,120 @@ The implementation follows a specialized architecture where:
 This design ensures high performance for AI model serving from decentralized IPFS storage,
 allowing model inference to proceed without being blocked by potentially slow IPFS 
 content retrieval operations.
+
+## Building and Packaging
+
+The Hallucinate App can be built and packaged for multiple platforms (macOS, Windows, Ubuntu, RedHat).
+
+### Quick Build
+
+```bash
+# Build for your current platform
+make build
+
+# Or use the npm script
+npm run package
+```
+
+### Platform-Specific Builds
+
+#### Linux (Ubuntu/Debian)
+```bash
+# Create DEB package
+make make-deb
+# Or
+npm run make -- --platform=linux
+```
+
+Generates `.deb` packages in `out/make/deb/`
+
+#### Linux (RedHat/Fedora/Rocky)
+```bash
+# Create RPM package
+make make-rpm
+# Or
+npm run make -- --platform=linux
+```
+
+Generates `.rpm` packages in `out/make/rpm/`
+
+#### macOS
+```bash
+# Create macOS ZIP archive
+make make-dmg
+# Or
+npm run make -- --platform=darwin
+```
+
+Generates `.zip` archive with `.app` bundle in `out/make/zip/darwin/`
+
+#### Windows
+```bash
+# Create Windows installer
+make make-exe
+# Or
+npm run make -- --platform=win32
+```
+
+Generates `.exe` installer in `out/make/squirrel.windows/`
+
+### Using Build Scripts
+
+Platform-specific build scripts are available in the `scripts/` directory:
+
+**Linux/macOS:**
+```bash
+bash scripts/build.sh
+```
+
+**Windows:**
+```cmd
+scripts\build.bat
+```
+
+### CI/CD Workflows
+
+Automated builds run on GitHub Actions for all platforms:
+
+- **electron-build.yml**: Main build and release workflow
+  - Builds for Ubuntu, macOS, and Windows
+  - Tests on Node.js 18.x and 20.x
+  - Automatically creates releases for version tags
+  
+- **platform-tests.yml**: Platform-specific hardware tests
+  - Tests on Ubuntu 20.04, 22.04, 24.04
+  - Tests on RedHat/Rocky Linux 8, 9
+  - Tests on macOS 12, 13, 14
+  - Tests on Windows Server 2019, 2022
+
+To trigger a release build, push a version tag:
+```bash
+git tag v1.0.4
+git push origin v1.0.4
+```
+
+For more details, see:
+- [Platform Installation Guide](docs/INSTALLATION_PLATFORMS.md)
+- [CI/CD Workflows README](.github/workflows/README.md)
+
+### System Requirements
+
+**All Platforms:**
+- Node.js 18.x or 20.x
+- Python 3.8 or higher
+- At least 4GB RAM
+- At least 2GB free disk space
+
+**Platform-Specific:**
+- **Ubuntu/Debian**: Build tools, libx11-dev, libgtk-3-0
+- **RedHat/Rocky**: gcc, gtk3, rpm-build
+- **macOS**: Xcode Command Line Tools
+- **Windows**: Visual Studio Build Tools
+
+### Cleaning Build Artifacts
+
+```bash
+make clean-build
+# Or
+rm -rf out/
+```

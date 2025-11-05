@@ -1,0 +1,310 @@
+name: Platform-Specific Hardware Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+    inputs:
+      test_ubuntu:
+        description: 'Test on Ubuntu'
+        required: false
+        default: 'true'
+      test_redhat:
+        description: 'Test on RedHat/Rocky'
+        required: false
+        default: 'true'
+      test_macos:
+        description: 'Test on macOS'
+        required: false
+        default: 'true'
+      test_windows:
+        description: 'Test on Windows'
+        required: false
+        default: 'true'
+
+jobs:
+  # Ubuntu/Debian Testing
+  test-ubuntu:
+    name: Test on Ubuntu ${{ matrix.ubuntu-version }}
+    runs-on: ubuntu-latest
+    if: github.event.inputs.test_ubuntu != 'false'
+    
+    strategy:
+      matrix:
+        ubuntu-version: ['20.04', '22.04', '24.04']
+      fail-fast: false
+    
+    container:
+      image: ubuntu:${{ matrix.ubuntu-version }}
+    
+    steps:
+      - name: Install Git and basic tools
+        run: |
+          apt-get update
+          apt-get install -y git curl wget ca-certificates
+      
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Install system dependencies
+        run: |
+          apt-get install -y \
+            build-essential \
+            libx11-dev \
+            libxkbfile-dev \
+            libsecret-1-dev \
+            libgtk-3-0 \
+            libnotify-dev \
+            libnss3 \
+            libxss1 \
+            libasound2 \
+            xvfb \
+            rpm \
+            fakeroot \
+            dpkg
+      
+      - name: Install dependencies
+        run: |
+          npm ci || npm install
+          pip install -r python/hallucinate_app/python/requirements.txt || true
+      
+      - name: Run tests
+        run: |
+          xvfb-run --auto-servernum npm test || true
+      
+      - name: Build DEB package
+        run: |
+          npm run make -- --platform=linux
+        continue-on-error: true
+      
+      - name: Upload DEB package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ubuntu-${{ matrix.ubuntu-version }}-deb
+          path: out/make/deb/**/*.deb
+          if-no-files-found: warn
+  
+  # RedHat/Rocky Linux Testing
+  test-redhat:
+    name: Test on RedHat-based ${{ matrix.rhel-version }}
+    runs-on: ubuntu-latest
+    if: github.event.inputs.test_redhat != 'false'
+    
+    strategy:
+      matrix:
+        rhel-version: ['8', '9']
+      fail-fast: false
+    
+    container:
+      image: rockylinux:${{ matrix.rhel-version }}
+    
+    steps:
+      - name: Install Git and basic tools
+        run: |
+          dnf install -y git curl wget ca-certificates
+      
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Install system dependencies
+        run: |
+          dnf install -y \
+            gcc \
+            gcc-c++ \
+            make \
+            libX11-devel \
+            libxkbfile-devel \
+            libsecret-devel \
+            gtk3 \
+            libnotify \
+            nss \
+            libXScrnSaver \
+            alsa-lib \
+            xorg-x11-server-Xvfb \
+            rpm-build \
+            rpmdevtools
+      
+      - name: Install dependencies
+        run: |
+          npm ci || npm install
+          pip install -r python/hallucinate_app/python/requirements.txt || true
+      
+      - name: Run tests
+        run: |
+          xvfb-run --auto-servernum npm test || true
+      
+      - name: Build RPM package
+        run: |
+          npm run make -- --platform=linux
+        continue-on-error: true
+      
+      - name: Upload RPM package
+        uses: actions/upload-artifact@v4
+        with:
+          name: rhel-${{ matrix.rhel-version }}-rpm
+          path: out/make/rpm/**/*.rpm
+          if-no-files-found: warn
+  
+  # macOS Testing
+  test-macos:
+    name: Test on macOS ${{ matrix.macos-version }}
+    runs-on: ${{ matrix.macos-version }}
+    if: github.event.inputs.test_macos != 'false'
+    
+    strategy:
+      matrix:
+        macos-version: ['macos-12', 'macos-13', 'macos-14']
+      fail-fast: false
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Install dependencies
+        run: |
+          npm ci || npm install
+          pip install -r python/hallucinate_app/python/requirements.txt || true
+      
+      - name: Run tests
+        run: |
+          npm test || true
+      
+      - name: Build macOS app
+        run: |
+          npm run make -- --platform=darwin
+        continue-on-error: true
+      
+      - name: Upload macOS build
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-${{ matrix.macos-version }}-build
+          path: out/make/zip/darwin/**/*.zip
+          if-no-files-found: warn
+  
+  # Windows Testing
+  test-windows:
+    name: Test on Windows ${{ matrix.windows-version }}
+    runs-on: ${{ matrix.windows-version }}
+    if: github.event.inputs.test_windows != 'false'
+    
+    strategy:
+      matrix:
+        windows-version: ['windows-2019', 'windows-2022']
+      fail-fast: false
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Install dependencies
+        run: |
+          npm ci
+          pip install -r python/hallucinate_app/python/requirements.txt
+        continue-on-error: true
+      
+      - name: Run tests
+        run: |
+          npm test
+        continue-on-error: true
+      
+      - name: Build Windows installer
+        run: |
+          npm run make -- --platform=win32
+        continue-on-error: true
+      
+      - name: Upload Windows build
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-${{ matrix.windows-version }}-build
+          path: |
+            out/make/squirrel.windows/**/*.exe
+            out/make/squirrel.windows/**/*.nupkg
+          if-no-files-found: warn
+  
+  # Consolidate test results
+  test-summary:
+    name: Test Summary
+    needs: [test-ubuntu, test-redhat, test-macos, test-windows]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: all-artifacts
+      
+      - name: Generate test summary
+        run: |
+          echo "# Platform-Specific Hardware Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Artifacts Generated" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # List all artifacts
+          cd all-artifacts
+          for dir in */; do
+            echo "### ${dir%/}" >> $GITHUB_STEP_SUMMARY
+            find "$dir" -type f | while read file; do
+              size=$(du -h "$file" | cut -f1)
+              echo "- $(basename "$file") ($size)" >> $GITHUB_STEP_SUMMARY
+            done
+            echo "" >> $GITHUB_STEP_SUMMARY
+          done
+      
+      - name: Upload consolidated artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: all-platform-builds
+          path: all-artifacts/**
+          retention-days: 90

@@ -1,27 +1,72 @@
 const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
+const path = require('path');
 
 module.exports = {
   packagerConfig: {
     asar: true,
+    name: 'hallucinate_app',
+    executableName: 'hallucinate_app',
+    appBundleId: 'com.endomorphosis.hallucinate_app',
+    appCategoryType: 'public.app-category.developer-tools',
+    icon: path.join(__dirname, 'hallucinate_app', 'assets', 'icon'),
+    extraResource: [
+      path.join(__dirname, 'hallucinate_app'),
+      path.join(__dirname, 'python'),
+    ],
+    ignore: [
+      /^\/\.git($|\/)/,
+      /^\/node_modules\/\.cache($|\/)/,
+      /^\/test-results($|\/)/,
+      /^\/playwright-report($|\/)/,
+      /^\/\.venv($|\/)/,
+      /^\/venv($|\/)/,
+      /^\/__pycache__($|\/)/,
+      /\.pyc$/,
+    ],
   },
   rebuildConfig: {},
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
-      config: {},
+      config: {
+        name: 'hallucinate_app',
+        authors: 'Benjamin Barber',
+        description: 'Electron App for IPFS Huggingface Bridge',
+        // setupIcon: path.join(__dirname, 'hallucinate_app', 'assets', 'icon.ico'),
+        // loadingGif: path.join(__dirname, 'hallucinate_app', 'assets', 'loading.gif'),
+        // iconUrl: 'https://github.com/endomorphosis/hallucinate_app/raw/main/hallucinate_app/assets/icon.ico',
+      },
     },
     {
       name: '@electron-forge/maker-zip',
-      platforms: ['darwin'],
+      platforms: ['darwin', 'linux'],
     },
     {
       name: '@electron-forge/maker-deb',
-      config: {},
+      config: {
+        options: {
+          maintainer: 'Benjamin Barber',
+          homepage: 'https://github.com/endomorphosis/hallucinate_app',
+          icon: path.join(__dirname, 'hallucinate_app', 'assets', 'icon.png'),
+          categories: ['Development', 'Network'],
+          section: 'devel',
+          priority: 'optional',
+        },
+      },
     },
     {
       name: '@electron-forge/maker-rpm',
-      config: {},
+      config: {
+        options: {
+          name: 'hallucinate_app',
+          productName: 'Hallucinate App',
+          homepage: 'https://github.com/endomorphosis/hallucinate_app',
+          icon: path.join(__dirname, 'hallucinate_app', 'assets', 'icon.png'),
+          categories: ['Development', 'Network'],
+          license: 'AGPL-3.0-only',
+        },
+      },
     },
   ],
   plugins: [

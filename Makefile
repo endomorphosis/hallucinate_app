@@ -1,4 +1,4 @@
-.PHONY: start-monitoring stop-monitoring install-deps install-all-deps install-submodule-deps test generate-sdks run-observability-demo helm-install helm-uninstall helm-upgrade k8s-deploy k8s-deploy-monitoring
+.PHONY: start-monitoring stop-monitoring install-deps install-all-deps install-submodule-deps test generate-sdks run-observability-demo helm-install helm-uninstall helm-upgrade k8s-deploy k8s-deploy-monitoring build package make-deb make-rpm make-dmg make-exe clean-build
 
 # Start monitoring stack with Prometheus and Grafana
 start-monitoring:
@@ -118,23 +118,88 @@ k8s-deploy-helm:
 	@helm install hallucinate-app helm/ --set serviceMonitor.enabled=true
 	@echo "Application deployed to Kubernetes with Helm and monitoring enabled!"
 
+# Build the Electron application (platform-specific)
+build:
+	@echo "Building Electron application..."
+	@bash scripts/build.sh
+	@echo "Build complete!"
+
+# Package the Electron application
+package:
+	@echo "Packaging Electron application..."
+	@npm run package
+	@echo "Packaging complete!"
+
+# Make DEB package (Linux only)
+make-deb:
+	@echo "Creating DEB package..."
+	@npm run make -- --platform=linux
+	@echo "DEB package created!"
+
+# Make RPM package (Linux only)
+make-rpm:
+	@echo "Creating RPM package..."
+	@npm run make -- --platform=linux
+	@echo "RPM package created!"
+
+# Make DMG/ZIP for macOS (macOS only)
+make-dmg:
+	@echo "Creating macOS package..."
+	@npm run make -- --platform=darwin
+	@echo "macOS package created!"
+
+# Make Windows installer (Windows only)
+make-exe:
+	@echo "Creating Windows installer..."
+	@npm run make -- --platform=win32
+	@echo "Windows installer created!"
+
+# Clean build artifacts
+clean-build:
+	@echo "Cleaning build artifacts..."
+	@rm -rf out/
+	@rm -rf dist/
+	@echo "Build artifacts cleaned!"
+
 # Help command
 help:
 	@echo "Available commands:"
+	@echo ""
+	@echo "Monitoring:"
 	@echo "  make start-monitoring       - Start Prometheus and Grafana monitoring stack"
 	@echo "  make stop-monitoring        - Stop monitoring stack"
+	@echo ""
+	@echo "Dependencies:"
 	@echo "  make install-deps           - Install main project dependencies"
 	@echo "  make install-submodule-deps - Install submodule dependencies"
 	@echo "  make install-all-deps       - Install all dependencies (main + submodules)"
+	@echo ""
+	@echo "Building:"
+	@echo "  make build                  - Build Electron app for current platform"
+	@echo "  make package                - Package Electron app without installer"
+	@echo "  make make-deb               - Create DEB package (Linux)"
+	@echo "  make make-rpm               - Create RPM package (Linux)"
+	@echo "  make make-dmg               - Create macOS package"
+	@echo "  make make-exe               - Create Windows installer"
+	@echo "  make clean-build            - Clean build artifacts"
+	@echo ""
+	@echo "Testing:"
 	@echo "  make test                   - Run all tests"
+	@echo ""
+	@echo "Development:"
 	@echo "  make generate-sdks          - Generate SDKs for all languages"
 	@echo "  make run-observability-demo - Run observability demo"
+	@echo ""
+	@echo "Kubernetes/Helm:"
 	@echo "  make helm-install           - Install Helm chart"
 	@echo "  make helm-upgrade           - Upgrade Helm chart"
 	@echo "  make helm-uninstall         - Uninstall Helm chart"
 	@echo "  make k8s-deploy             - Deploy to Kubernetes"
 	@echo "  make k8s-deploy-monitoring  - Deploy monitoring stack to Kubernetes"
+	@echo "  make k8s-deploy-helm        - Deploy to Kubernetes with Helm and monitoring"
+	@echo ""
+	@echo "Docker:"
 	@echo "  make docker-build           - Build the Docker image"
 	@echo "  make docker-push            - Push the Docker image"
-	@echo "  make k8s-deploy-helm        - Deploy to Kubernetes with Helm and monitoring"
+	@echo ""
 	@echo "  make help                   - Show this help message"
