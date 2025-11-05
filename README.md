@@ -7,6 +7,18 @@ Hallucinate Electron App:
 
 Hallucinate App is an Electron-based desktop application that creates a bridge between IPFS and HuggingFace technologies, enabling decentralized AI model serving, dataset management, and inference. The application leverages a modular architecture with paired JavaScript and Python implementations, secure UCAN-based authentication, efficient Apache Arrow data exchange, and a resource pool pattern for module interdependencies.
 
+## 📚 Documentation
+
+For comprehensive documentation, see:
+- **[Documentation Index](docs/INDEX.md)** - Complete documentation structure
+- **[Architecture Guide](docs/ARCHITECTURE.md)** - System design and architecture
+- **[Quick Start Guide](docs/QUICK_START.md)** - Get started quickly
+- **[Contributing Guide](CONTRIBUTING.md)** - How to contribute
+- **[Troubleshooting Guide](docs/TROUBLESHOOTING.md)** - Common issues and solutions
+- **[Changelog](CHANGELOG.md)** - Version history
+
+> 💡 **Tip:** Documentation is automatically updated weekly via GitHub Actions based on code changes.
+
 ## Installation
 
 For detailed installation instructions, see [docs/INSTALLATION.md](docs/INSTALLATION.md).

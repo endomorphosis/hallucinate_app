@@ -1,0 +1,245 @@
+name: Weekly Documentation Update
+
+on:
+  schedule:
+    # Run every Monday at 9:00 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+    inputs:
+      days_back:
+        description: 'Number of days to look back for changes'
+        required: false
+        default: '7'
+      auto_commit:
+        description: 'Automatically commit documentation updates'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  analyze-changes:
+    name: Analyze Recent Changes
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for analysis
+          submodules: recursive
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          npm ci
+          pip install gitpython pyyaml markdown
+      
+      - name: Analyze code changes
+        id: analyze
+        run: |
+          python scripts/analyze_changes.py \
+            --days ${{ github.event.inputs.days_back || '7' }} \
+            --output-format json \
+            > changes-report.json
+          
+          echo "Analysis complete"
+          cat changes-report.json
+      
+      - name: Generate documentation updates
+        id: generate
+        run: |
+          python scripts/generate_doc_updates.py \
+            --input changes-report.json \
+            --output docs-update.md
+          
+          echo "Documentation updates generated"
+          if [ -f docs-update.md ]; then
+            echo "has_updates=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_updates=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Update documentation files
+        if: steps.generate.outputs.has_updates == 'true'
+        run: |
+          python scripts/update_documentation.py \
+            --changes changes-report.json \
+            --updates docs-update.md
+          
+          echo "Documentation files updated"
+      
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if git diff --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Generate change summary
+        if: steps.check_changes.outputs.has_changes == 'true'
+        id: summary
+        run: |
+          echo "## 📚 Weekly Documentation Updates" > summary.md
+          echo "" >> summary.md
+          echo "### Changes Analyzed" >> summary.md
+          echo "" >> summary.md
+          python scripts/format_changes_summary.py \
+            --input changes-report.json \
+            >> summary.md
+          
+          echo "" >> summary.md
+          echo "### Documentation Updates" >> summary.md
+          echo "" >> summary.md
+          cat docs-update.md >> summary.md
+          
+          echo "" >> summary.md
+          echo "### Files Modified" >> summary.md
+          echo "" >> summary.md
+          echo "\`\`\`" >> summary.md
+          git diff --name-only >> summary.md
+          echo "\`\`\`" >> summary.md
+          
+          cat summary.md
+      
+      - name: Create Pull Request
+        if: steps.check_changes.outputs.has_changes == 'true' && github.event.inputs.auto_commit != 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: |
+            docs: weekly documentation update
+            
+            Automated documentation updates based on code changes from the past week.
+          branch: docs/weekly-update-${{ github.run_number }}
+          delete-branch: true
+          title: '📚 Weekly Documentation Update - Week of ${{ github.event.repository.updated_at }}'
+          body-path: summary.md
+          labels: |
+            documentation
+            automated
+          assignees: ${{ github.repository_owner }}
+      
+      - name: Auto-commit changes (if requested)
+        if: steps.check_changes.outputs.has_changes == 'true' && github.event.inputs.auto_commit == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/
+          git add README.md
+          git add CHANGELOG.md
+          git commit -m "docs: weekly documentation update [skip ci]"
+          git push
+      
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation-analysis
+          path: |
+            changes-report.json
+            docs-update.md
+            summary.md
+          retention-days: 30
+      
+      - name: Comment on issues
+        if: steps.check_changes.outputs.has_changes == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Find open issues with 'documentation' label
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'documentation'
+            });
+            
+            const comment = `📚 Weekly documentation update has been generated!
+            
+            A pull request with documentation updates based on recent code changes has been created.
+            Please review and merge if appropriate.
+            
+            Run: \`https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\``;
+            
+            // Comment on relevant issues
+            for (const issue of issues.data) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: comment
+              });
+            }
+
+  update-changelog:
+    name: Update CHANGELOG
+    needs: analyze-changes
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event.inputs.auto_commit == 'true'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Generate changelog entries
+        run: |
+          python scripts/generate_changelog.py \
+            --days ${{ github.event.inputs.days_back || '7' }} \
+            --output changelog-entry.md
+      
+      - name: Update CHANGELOG.md
+        run: |
+          # Check if CHANGELOG exists, create if not
+          if [ ! -f CHANGELOG.md ]; then
+            echo "# Changelog" > CHANGELOG.md
+            echo "" >> CHANGELOG.md
+            echo "All notable changes to this project will be documented in this file." >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
+          fi
+          
+          # Insert new entry at the top (after header)
+          if [ -f changelog-entry.md ]; then
+            # Create temporary file
+            head -n 3 CHANGELOG.md > temp.md
+            echo "" >> temp.md
+            cat changelog-entry.md >> temp.md
+            echo "" >> temp.md
+            tail -n +4 CHANGELOG.md >> temp.md
+            mv temp.md CHANGELOG.md
+          fi
+      
+      - name: Commit CHANGELOG
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          if git diff --quiet CHANGELOG.md; then
+            echo "No changes to CHANGELOG.md"
+          else
+            git add CHANGELOG.md
+            git commit -m "docs: update changelog [skip ci]"
+            git push
+          fi
