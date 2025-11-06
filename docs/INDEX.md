@@ -2,6 +2,12 @@
 
 Welcome to the comprehensive documentation for Hallucinate App - a decentralized AI model serving platform built on IPFS and HuggingFace technologies.
 
+## 🌟 Platform Understanding (Start Here!)
+
+- **[Platform Overview](PLATFORM_OVERVIEW.md)** - 🆕 Complete explanation of the wrapper architecture and how everything works together
+- **[Submodules Guide](SUBMODULES.md)** - 🆕 Comprehensive documentation for SwissKnife, IPFS Kit, IPFS Datasets, and IPFS Accelerate
+- **[Containerization & Packaging](CONTAINERIZATION.md)** - 🆕 How the platform packages into .exe, .dmg, .rpm, .deb, tar.gz
+
 ## 📚 Getting Started
 
 - [Quick Start Guide](QUICK_START.md) - Get up and running quickly
