@@ -236,6 +236,291 @@ Then share:
 #### Setup:
 Add `manifest.json` and service worker to your web build.
 
+## WebNN and WebGPU Support on Mobile
+
+### Overview
+
+For machine learning and GPU-accelerated workloads on mobile platforms, understanding WebNN and WebGPU support is crucial.
+
+### WebGPU Support (Production Ready)
+
+**iOS (Safari/WebKit):**
+- ✅ **Available** in Safari 18+ (iOS 18+, released September 2024)
+- Full WebGPU support in production browsers
+- Works in Safari, Capacitor WebView, and PWAs
+- Provides hardware-accelerated compute and graphics
+- Best option for GPU-accelerated ML inference on iOS
+
+**Android (Chrome):**
+- ✅ **Available** in Chrome 121+ (released January 2024)
+- Full WebGPU support in production
+- Works in Chrome, Android WebView, Capacitor apps, and PWAs
+- Requires Vulkan-capable devices (most modern Android devices from 2019+)
+- Excellent performance for ML workloads
+
+**Compatibility Check:**
+```javascript
+// Check WebGPU availability
+if ('gpu' in navigator) {
+  const adapter = await navigator.gpu.requestAdapter();
+  if (adapter) {
+    const device = await adapter.requestDevice();
+    console.log('WebGPU is available!');
+    // Use WebGPU for ML inference
+  }
+} else {
+  console.log('WebGPU not supported, fallback to WebGL');
+}
+```
+
+### WebNN Support (Experimental)
+
+**iOS (Safari):**
+- ❌ **Not currently available** in Safari
+- Safari doesn't support WebNN API yet
+- No timeline announced for WebNN support
+- **Alternatives for iOS:**
+  - Use WebGPU compute shaders for ML
+  - Use Core ML via Capacitor native bridge
+  - Use TensorFlow.js with WebGPU backend
+  - Use ONNX Runtime Web with WebGPU
+
+**Android (Chrome):**
+- 🔬 **Experimental** in Chrome 122+ (requires flag)
+- Enable via: `chrome://flags/#enable-experimental-web-platform-features`
+- Not production-ready yet
+- Limited device support
+- **Alternatives for Android:**
+  - Use WebGPU (production-ready)
+  - Use TensorFlow Lite via Capacitor plugin
+  - Use TensorFlow.js with WebGPU backend
+  - Use ONNX Runtime Web with WebGPU
+
+### ML Framework Compatibility Matrix
+
+| Framework | iOS Support | Android Support | Backend Options |
+|-----------|-------------|-----------------|-----------------|
+| **TensorFlow.js** | ✅ Excellent | ✅ Excellent | WebGPU, WebGL, WASM |
+| **ONNX Runtime Web** | ✅ Good | ✅ Good | WebGPU, WebGL, WASM |
+| **Transformers.js** | ✅ Good | ✅ Good | WebGPU, WASM |
+| **MediaPipe** | ✅ Good | ✅ Good | WebGPU, WebGL |
+| **ML5.js** | ⚠️ WebGL only | ⚠️ WebGL only | WebGL |
+
+### Recommended Approach for Hallucinate App
+
+Since your app has a WebNN developer preview, here's the recommended mobile strategy:
+
+#### 1. Use WebGPU for Production (Recommended)
+
+**Advantages:**
+- Works on both iOS 18+ and Android Chrome 121+
+- Production-ready and stable
+- Excellent performance for ML inference
+- Direct GPU access for compute shaders
+
+**Implementation:**
+```javascript
+// WebGPU-based ML inference
+async function runInference(model, input) {
+  // Request WebGPU adapter and device
+  const adapter = await navigator.gpu.requestAdapter();
+  const device = await adapter.requestDevice();
+  
+  // Use ONNX Runtime Web with WebGPU backend
+  const session = await ort.InferenceSession.create(model, {
+    executionProviders: ['webgpu']
+  });
+  
+  // Run inference
+  const results = await session.run({ input });
+  return results;
+}
+```
+
+#### 2. Implement Progressive Enhancement
+
+```javascript
+// Progressive enhancement strategy
+async function initializeMLBackend() {
+  if ('gpu' in navigator) {
+    // WebGPU available (iOS 18+, Android Chrome 121+)
+    console.log('Using WebGPU backend');
+    return 'webgpu';
+  } else if ('ml' in navigator) {
+    // WebNN available (future-proofing)
+    console.log('Using WebNN backend');
+    return 'webnn';
+  } else if (hasWebGL2()) {
+    // WebGL2 fallback
+    console.log('Using WebGL2 backend');
+    return 'webgl';
+  } else {
+    // WASM fallback
+    console.log('Using WASM backend');
+    return 'wasm';
+  }
+}
+```
+
+#### 3. Native Acceleration Plugins (Optional)
+
+For maximum performance, add native ML acceleration:
+
+**iOS - Core ML:**
+```bash
+npm install @capacitor-community/coreml
+```
+
+```typescript
+import { CoreML } from '@capacitor-community/coreml';
+
+async function runCoreMLInference(model, input) {
+  const result = await CoreML.loadModel({ modelPath: model });
+  const output = await CoreML.predict({ input });
+  return output;
+}
+```
+
+**Android - TensorFlow Lite:**
+```bash
+npm install capacitor-tflite
+```
+
+```typescript
+import { TFLite } from 'capacitor-tflite';
+
+async function runTFLiteInference(model, input) {
+  const result = await TFLite.loadModel({ modelPath: model });
+  const output = await TFLite.run({ input });
+  return output;
+}
+```
+
+#### 4. Hybrid Strategy (Best Performance)
+
+```javascript
+async function runMLInference(model, input) {
+  // Check platform and capabilities
+  if (Capacitor.isNativePlatform()) {
+    if (Capacitor.getPlatform() === 'ios') {
+      // Use Core ML on iOS for best performance
+      return await runCoreMLInference(model, input);
+    } else if (Capacitor.getPlatform() === 'android') {
+      // Use TensorFlow Lite on Android
+      return await runTFLiteInference(model, input);
+    }
+  }
+  
+  // Web fallback with WebGPU/WebGL
+  const backend = await initializeMLBackend();
+  if (backend === 'webgpu') {
+    return await runWebGPUInference(model, input);
+  } else {
+    return await runWebGLInference(model, input);
+  }
+}
+```
+
+### Browser Compatibility Table
+
+| Platform | Browser | WebGPU | WebNN | Notes |
+|----------|---------|--------|-------|-------|
+| **iOS 18+** | Safari | ✅ Yes | ❌ No | Full WebGPU support |
+| **iOS 17** | Safari | ❌ No | ❌ No | Use WebGL/WASM |
+| **iOS PWA** | WebKit | ✅ Yes (18+) | ❌ No | Same as Safari |
+| **iOS Capacitor** | WKWebView | ✅ Yes (18+) | ❌ No | Same as Safari |
+| **Android 13+** | Chrome 121+ | ✅ Yes | 🔬 Flag | Vulkan required |
+| **Android 13+** | Chrome 122+ | ✅ Yes | 🔬 Flag | WebNN experimental |
+| **Android PWA** | Chrome | ✅ Yes | 🔬 Flag | Same as Chrome |
+| **Android Capacitor** | WebView | ✅ Yes | 🔬 Flag | Chromium-based |
+
+### Testing Recommendations
+
+1. **Device Testing:**
+   - iOS: Test on iPhone 12+ with iOS 18+
+   - Android: Test on Pixel 6+ or Samsung S21+ with Chrome 121+
+
+2. **Fallback Testing:**
+   - Test on older devices without WebGPU
+   - Ensure WebGL/WASM fallbacks work
+   - Verify performance degradation is acceptable
+
+3. **Performance Benchmarking:**
+   ```javascript
+   async function benchmarkBackends() {
+     const model = 'model.onnx';
+     const input = generateTestInput();
+     
+     // Test WebGPU
+     const gpuStart = performance.now();
+     await runWebGPUInference(model, input);
+     const gpuTime = performance.now() - gpuStart;
+     
+     // Test WebGL
+     const glStart = performance.now();
+     await runWebGLInference(model, input);
+     const glTime = performance.now() - glStart;
+     
+     console.log(`WebGPU: ${gpuTime}ms, WebGL: ${glTime}ms`);
+   }
+   ```
+
+### Additional Resources
+
+**WebGPU:**
+- [WebGPU Specification](https://www.w3.org/TR/webgpu/)
+- [WebGPU Samples](https://webgpu.github.io/webgpu-samples/)
+- [Can I Use WebGPU](https://caniuse.com/webgpu)
+
+**WebNN:**
+- [WebNN Specification](https://www.w3.org/TR/webnn/)
+- [WebNN Samples](https://webmachinelearning.github.io/webnn-samples/)
+- [WebNN Polyfill](https://github.com/webmachinelearning/webnn-polyfill)
+
+**ML Libraries:**
+- [TensorFlow.js](https://www.tensorflow.org/js)
+- [ONNX Runtime Web](https://onnxruntime.ai/docs/tutorials/web/)
+- [Transformers.js](https://huggingface.co/docs/transformers.js)
+- [MediaPipe](https://developers.google.com/mediapipe)
+
+### Migration Path from Desktop WebNN
+
+If your desktop app uses WebNN:
+
+1. **Detect Environment:**
+   ```javascript
+   const isDesktop = !Capacitor.isNativePlatform();
+   const hasWebNN = 'ml' in navigator;
+   ```
+
+2. **Adapt Backend Selection:**
+   ```javascript
+   if (isDesktop && hasWebNN) {
+     // Use WebNN on desktop (Chrome/Edge)
+     backend = 'webnn';
+   } else if ('gpu' in navigator) {
+     // Use WebGPU on mobile
+     backend = 'webgpu';
+   } else {
+     // Fallback to WebGL
+     backend = 'webgl';
+   }
+   ```
+
+3. **Unified Inference API:**
+   ```javascript
+   class MLInferenceEngine {
+     async initialize() {
+       this.backend = await this.detectBestBackend();
+       this.session = await this.createSession(this.backend);
+     }
+     
+     async run(input) {
+       return await this.session.run(input);
+     }
+   }
+   ```
+
 ## Recommended Approach
 
 ### For This Project:
