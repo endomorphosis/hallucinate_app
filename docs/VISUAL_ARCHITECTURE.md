@@ -6,27 +6,27 @@ This document provides visual representations of the Hallucinate App architectur
 
 ```
 ╔═══════════════════════════════════════════════════════════════════════════╗
-║                    HALLUCINATE APP (Electron Wrapper)                      ║
-║                     Single Distributable Application                       ║
+║                    HALLUCINATE APP (Electron Wrapper)                     ║
+║                     Single Distributable Application                      ║
 ║                   (.exe, .dmg, .rpm, .deb, tar.gz)                        ║
 ╠═══════════════════════════════════════════════════════════════════════════╣
-║                                                                            ║
-║  ┌────────────────────────────────────────────────────────────────────┐  ║
+║                                                                           ║
+║  ┌────────────────────────────────────────────────────────────────────┐   ║
 ║  │                  ELECTRON MAIN PROCESS                              │  ║
 ║  │  • Application Lifecycle                                            │  ║
 ║  │  • Window Management                                                │  ║
 ║  │  • MCP Daemon Orchestration                                         │  ║
 ║  │  • IPC Coordination                                                 │  ║
-║  └────────────────────────────────────────────────────────────────────┘  ║
-║                                 │                                          ║
+║  └────────────────────────────────────────────────────────────────────┘   ║
+║                                 │                                         ║
 ║       ┌─────────────────────────┼──────────────────────────┐              ║
 ║       │                         │                          │              ║
 ║       ▼                         ▼                          ▼              ║
-║  ┌─────────┐            ┌──────────────┐         ┌──────────────┐        ║
-║  │SwissKnife            │ MCP DAEMON   │         │  ELECTRON    │        ║
-║  │ Virtual │            │   MANAGER    │         │  RENDERER    │        ║
-║  │ Desktop │            │              │         │  PROCESSES   │        ║
-║  └─────────┘            └──────────────┘         └──────────────┘        ║
+║  ┌─────────┐            ┌──────────────┐         ┌──────────────┐         ║
+║  │SwissKnife            │ MCP DAEMON   │         │  ELECTRON    │         ║
+║  │ Virtual │            │   MANAGER    │         │  RENDERER    │         ║
+║  │ Desktop │            │              │         │  PROCESSES   │         ║
+║  └─────────┘            └──────────────┘         └──────────────┘         ║
 ║       │                         │                                         ║
 ║       │                         ├─► IPFS Kit MCP (Port 3001)              ║
 ║       │                         ├─► IPFS Datasets MCP (Port 3002)         ║
@@ -36,21 +36,21 @@ This document provides visual representations of the Hallucinate App architectur
 ║                                 │                                         ║
 ║                    HTTP/WebSocket/MCP Protocol                            ║
 ║                                 │                                         ║
-║  ┌──────────────────────────────▼──────────────────────────────────────┐ ║
-║  │              THREE PYTHON MCP SERVERS (Background)                   │ ║
-║  │                                                                       │ ║
-║  │  ┌──────────────┐  ┌───────────────┐  ┌─────────────────────────┐  │ ║
-║  │  │  IPFS Kit    │  │ IPFS Datasets │  │  IPFS Accelerate        │  │ ║
-║  │  │  MCP Server  │  │  MCP Server   │  │  MCP Server             │  │ ║
-║  │  │  :3001       │  │  :3002        │  │  :3003                  │  │ ║
-║  │  ├──────────────┤  ├───────────────┤  ├─────────────────────────┤  │ ║
-║  │  │• IPFS Ops    │  │• GraphRAG     │  │• ML Inference           │  │ ║
-║  │  │• Clusters    │  │• 200+ Tools   │  │• GPU Acceleration       │  │ ║
-║  │  │• Storage     │  │• PDF Process  │  │• Distributed Computing  │  │ ║
-║  │  │• Content     │  │• Multimedia   │  │• GitHub Integration     │  │ ║
-║  │  └──────────────┘  └───────────────┘  └─────────────────────────┘  │ ║
-║  └───────────────────────────────────────────────────────────────────────┘ ║
-║                                                                            ║
+║  ┌──────────────────────────────▼──────────────────────────────────────┐  ║
+║  │              THREE PYTHON MCP SERVERS (Background)                  │  ║
+║  │                                                                     │  ║
+║  │  ┌──────────────┐  ┌───────────────┐  ┌─────────────────────────┐   │  ║
+║  │  │  IPFS Kit    │  │ IPFS Datasets │  │  IPFS Accelerate        │   │  ║
+║  │  │  MCP Server  │  │  MCP Server   │  │  MCP Server             │   │  ║
+║  │  │  :3001       │  │  :3002        │  │  :3003                  │   │  ║
+║  │  ├──────────────┤  ├───────────────┤  ├─────────────────────────┤   │  ║
+║  │  │• IPFS Ops    │  │• GraphRAG     │  │• ML Inference           │   │  ║
+║  │  │• Clusters    │  │• 200+ Tools   │  │• GPU Acceleration       │   │  ║
+║  │  │• Storage     │  │• PDF Process  │  │• Distributed Computing  │   │  ║
+║  │  │• Content     │  │• Multimedia   │  │• GitHub Integration     │   │  ║
+║  │  └──────────────┘  └───────────────┘  └─────────────────────────┘   │  ║
+║  └─────────────────────────────────────────────────────────────────────┘  ║
+║                                                                           ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
 ```
 
@@ -90,36 +90,36 @@ This document provides visual representations of the Hallucinate App architectur
 ╔════════════════════════════════════════════════════════════════════╗
 ║          SWISSKNIFE VIRTUAL DESKTOP (In Electron Window)           ║
 ╠════════════════════════════════════════════════════════════════════╣
-║                                                                     ║
-║  ┌─────────────────────────────────────────────────────────────┐  ║
-║  │                    WINDOW MANAGER                            │  ║
-║  │  Multi-window interface with taskbar and window controls    │  ║
-║  └─────────────────────────────────────────────────────────────┘  ║
-║                                                                     ║
-║  ┌───────────────┐  ┌───────────────┐  ┌───────────────────┐     ║
-║  │   Terminal    │  │  VibeCode IDE │  │   AI Chat         │     ║
-║  │  AI-powered   │  │  Monaco Editor│  │   Multi-provider  │     ║
-║  └───────────────┘  └───────────────┘  └───────────────────┘     ║
-║                                                                     ║
-║  ┌───────────────┐  ┌───────────────┐  ┌───────────────────┐     ║
-║  │ File Manager  │  │ Model Browser │  │ OpenRouter Hub    │     ║
-║  │  + IPFS       │  │ 100K+ models  │  │ 100+ LLMs         │     ║
-║  └───────────────┘  └───────────────┘  └───────────────────┘     ║
-║                                                                     ║
-║  ┌───────────────┐  ┌───────────────┐  ┌───────────────────┐     ║
-║  │ Neural Net    │  │ Music Studio  │  │ Task Manager      │     ║
-║  │ Designer      │  │ (Strudel)     │  │ P2P Tasks         │     ║
-║  └───────────────┘  └───────────────┘  └───────────────────┘     ║
-║                                                                     ║
+║                                                                    ║
+║  ┌─────────────────────────────────────────────────────────────┐   ║
+║  │                    WINDOW MANAGER                           │   ║
+║  │  Multi-window interface with taskbar and window controls    │   ║
+║  └─────────────────────────────────────────────────────────────┘   ║
+║                                                                    ║
+║  ┌───────────────┐  ┌───────────────┐  ┌───────────────────┐       ║
+║  │   Terminal    │  │  VibeCode IDE │  │   AI Chat         │       ║
+║  │  AI-powered   │  │  Monaco Editor│  │   Multi-provider  │       ║
+║  └───────────────┘  └───────────────┘  └───────────────────┘       ║
+║                                                                    ║
+║  ┌───────────────┐  ┌───────────────┐  ┌───────────────────┐       ║
+║  │ File Manager  │  │ Model Browser │  │ OpenRouter Hub    │       ║
+║  │  + IPFS       │  │ 100K+ models  │  │ 100+ LLMs         │       ║
+║  └───────────────┘  └───────────────┘  └───────────────────┘       ║
+║                                                                    ║
+║  ┌───────────────┐  ┌───────────────┐  ┌───────────────────┐       ║
+║  │ Neural Net    │  │ Music Studio  │  │ Task Manager      │       ║
+║  │ Designer      │  │ (Strudel)     │  │ P2P Tasks         │       ║ 
+║  └───────────────┘  └───────────────┘  └───────────────────┘       ║
+║                                                                    ║
 ║            ... and 18 more applications ...                        ║
-║                                                                     ║
-║  ┌─────────────────────────────────────────────────────────────┐  ║
-║  │               P2P COLLABORATION ENGINE                       │  ║
-║  │  • WebRTC/libp2p for peer connections                        │  ║
-║  │  • CRDT for conflict-free sync                               │  ║
-║  │  • Distributed computing coordination                        │  ║
-║  └─────────────────────────────────────────────────────────────┘  ║
-║                                                                     ║
+║                                                                    ║
+║  ┌─────────────────────────────────────────────────────────────┐   ║
+║  │               P2P COLLABORATION ENGINE                      │   ║
+║  │  • WebRTC/libp2p for peer connections                       │   ║
+║  │  • CRDT for conflict-free sync                              │   ║
+║  │  • Distributed computing coordination                       │   ║
+║  └─────────────────────────────────────────────────────────────┘   ║
+║                                                                    ║
 ╚════════════════════════════════════════════════════════════════════╝
 ```
 
@@ -128,7 +128,7 @@ This document provides visual representations of the Hallucinate App architectur
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
 │                         USER ACTION                                  │
-│   Example: "Generate text using AI model"                           │
+│   Example: "Generate text using AI model"                            │
 └─────────────────────────────┬────────────────────────────────────────┘
                               │
                               ▼
@@ -205,7 +205,7 @@ SwissKnife Application
 ┌──────────────────────────────────────────────────────────────────┐
 │                    SOURCE CODE REPOSITORY                        │
 │  • Electron app code                                             │
-│  • Git submodules (SwissKnife, IPFS Kit, Datasets, Accelerate)  │
+│  • Git submodules (SwissKnife, IPFS Kit, Datasets, Accelerate)   │
 │  • Configuration files                                           │
 └─────────────────────────────┬────────────────────────────────────┘
                               │
@@ -245,22 +245,22 @@ SwissKnife Application
 ┌────────────────────────────────────────────────────────────────┐
 │              MINIMUM SYSTEM REQUIREMENTS                       │
 ├────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  Operating System:                                              │
+│                                                                │
+│  Operating System:                                             │
 │  ├─ Windows 10+                                                │
 │  ├─ macOS 12+ (Monterey)                                       │
-│  └─ Linux: Ubuntu 20.04+, Rocky 8+                            │
-│                                                                 │
-│  Hardware:                                                      │
-│  ├─ CPU: 64-bit Intel/AMD or Apple Silicon                    │
+│  └─ Linux: Ubuntu 20.04+, Rocky 8+                             │
+│                                                                │
+│  Hardware:                                                     │
+│  ├─ CPU: 64-bit Intel/AMD or Apple Silicon                     │
 │  ├─ RAM: 4GB minimum, 8GB recommended                          │
 │  └─ Disk: 2GB free (minimum), 5GB recommended                  │
-│                                                                 │
+│                                                                │
 │  For AI Workloads:                                             │
 │  ├─ RAM: 16GB+ recommended                                     │
-│  ├─ GPU: CUDA or Apple Silicon for acceleration               │
-│  └─ Disk: 10GB+ for models and datasets                       │
-│                                                                 │
+│  ├─ GPU: CUDA or Apple Silicon for acceleration                │
+│  └─ Disk: 10GB+ for models and datasets                        │
+│                                                                │
 └────────────────────────────────────────────────────────────────┘
 ```
 
@@ -321,8 +321,8 @@ Electron App (Main Wrapper)
 ┌──────────────────────────────────────────────────────────────┐
 │ 2. USER RUNS INSTALLER                                       │
 │    • Windows: Double-click .exe                              │
-│    • macOS: Extract .zip, drag .app to Applications         │
-│    • Linux: sudo dpkg -i / sudo rpm -i                      │
+│    • macOS: Extract .zip, drag .app to Applications          │
+│    • Linux: sudo dpkg -i / sudo rpm -i                       │
 └────────────────────────┬─────────────────────────────────────┘
                          │
                          ▼
@@ -360,47 +360,47 @@ Electron App (Main Wrapper)
 ┌────────────────────────────────────────────────────────────────┐
 │                      DEVELOPMENT MODE                          │
 ├────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  npm start                                                      │
-│    ├─► Electron starts in dev mode                            │
-│    ├─► DevTools open automatically                            │
+│                                                                │
+│  npm start                                                     │
+│    ├─► Electron starts in dev mode                             │
+│    ├─► DevTools open automatically                             │
 │    ├─► Hot reload enabled                                      │
 │    └─► Verbose logging                                         │
-│                                                                 │
-│  SwissKnife:                                                    │
-│    ├─► npm run desktop:collaborative (separate terminal)      │
-│    ├─► Runs on http://localhost:3001                          │
+│                                                                │
+│  SwissKnife:                                                   │
+│    ├─► npm run desktop:collaborative (separate terminal)       │
+│    ├─► Runs on http://localhost:3001                           │
 │    ├─► Hot module replacement                                  │
-│    └─► Electron connects to dev server                        │
-│                                                                 │
-│  MCP Servers:                                                   │
-│    ├─► Auto-start from Electron                               │
+│    └─► Electron connects to dev server                         │
+│                                                                │
+│  MCP Servers:                                                  │
+│    ├─► Auto-start from Electron                                │
 │    ├─► Can restart individually for testing                    │
-│    └─► Logs visible in Daemon Manager                         │
-│                                                                 │
+│    └─► Logs visible in Daemon Manager                          │
+│                                                                │
 └────────────────────────────────────────────────────────────────┘
 
 ┌────────────────────────────────────────────────────────────────┐
 │                      PRODUCTION MODE                           │
 ├────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  Launch installed application:                                  │
-│    ├─► ./hallucinate_app (or click icon)                      │
+│                                                                │
+│  Launch installed application:                                 │
+│    ├─► ./hallucinate_app (or click icon)                       │
 │    ├─► Electron starts in production mode                      │
 │    └─► All features bundled                                    │
-│                                                                 │
-│  SwissKnife:                                                    │
-│    ├─► Built files included in package                        │
-│    ├─► Served from file:// protocol                           │
-│    ├─► Optimized and minified                                 │
+│                                                                │
+│  SwissKnife:                                                   │
+│    ├─► Built files included in package                         │
+│    ├─► Served from file:// protocol                            │
+│    ├─► Optimized and minified                                  │
 │    └─► Fast startup                                            │
-│                                                                 │
-│  MCP Servers:                                                   │
-│    ├─► Auto-start on app launch                               │
-│    ├─► Bundled Python environment                             │
+│                                                                │
+│  MCP Servers:                                                  │
+│    ├─► Auto-start on app launch                                │
+│    ├─► Bundled Python environment                              │
 │    ├─► All dependencies included                               │
-│    └─► Production-ready configuration                         │
-│                                                                 │
+│    └─► Production-ready configuration                          │
+│                                                                │
 └────────────────────────────────────────────────────────────────┘
 ```
 
