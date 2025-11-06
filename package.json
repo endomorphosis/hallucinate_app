@@ -27,6 +27,7 @@
     "test:e2e:ci": "CI=true playwright test",
     "test:e2e:report": "playwright show-report",
     "test:daemon-manager": "node test/js/test_mcp_daemon_manager.js",
+    "test:release-ci": "bash test/test_release_ci.sh",
     "test:all": "npm run test:menu && npm run test:daemon-manager && npm run test:e2e",
     "start": "electron-forge start",
     "package": "electron-forge package",
