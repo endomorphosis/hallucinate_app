@@ -21,13 +21,15 @@ from enum import Enum
 from collections import defaultdict, deque
 from dataclasses import dataclass, field, asdict
 
-# Try to import GitHub issue reporter
-try:
-    from hallucinate_app.github_issue_reporter import get_reporter, IssueReportConfig
-    GITHUB_REPORTER_AVAILABLE = True
-except ImportError:
-    GITHUB_REPORTER_AVAILABLE = False
-    logger.warning("GitHub issue reporter not available")
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger("error_monitor")
+
+# GitHub reporter will be imported lazily to avoid circular imports
+GITHUB_REPORTER_AVAILABLE = False
 
 # Configure logging
 logging.basicConfig(
@@ -803,14 +805,23 @@ class ErrorMonitor:
         
         # GitHub issue reporter
         self.github_reporter = None
-        if GITHUB_REPORTER_AVAILABLE and self.config.get('enable_github_reporting', False):
-            github_config = IssueReportConfig.from_env()
-            if self.config.get('github_config'):
-                # Override with provided config
-                for key, value in self.config['github_config'].items():
-                    setattr(github_config, key, value)
-            self.github_reporter = get_reporter(github_config)
-            logger.info("GitHub issue reporter initialized")
+        if self.config.get('enable_github_reporting', False):
+            # Import here to avoid circular imports
+            try:
+                from hallucinate_app.github_issue_reporter import get_reporter, IssueReportConfig
+                global GITHUB_REPORTER_AVAILABLE
+                GITHUB_REPORTER_AVAILABLE = True
+                
+                github_config = IssueReportConfig.from_env()
+                if self.config.get('github_config'):
+                    # Override with provided config
+                    for key, value in self.config['github_config'].items():
+                        setattr(github_config, key, value)
+                self.github_reporter = get_reporter(github_config)
+                logger.info("GitHub issue reporter initialized")
+            except ImportError as e:
+                logger.warning(f"GitHub issue reporter not available: {e}")
+                GITHUB_REPORTER_AVAILABLE = False
         
         # Status tracking
         self.component_status = {}  # Status by component
