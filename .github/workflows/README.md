@@ -36,7 +36,49 @@ This directory contains GitHub Actions workflows for automated building, testing
 - Automatic GitHub Releases on version tags
 - Build output debugging
 
-### 2. platform-tests.yml - Platform-Specific Hardware Tests
+**Note:** This workflow is being superseded by `release-electron.yml` for release builds, which provides better architecture support.
+
+### 2. release-electron.yml - Comprehensive Release Workflow ⭐ NEW
+
+**Purpose:** Builds and publishes the Electron application to GitHub Releases for all major platform and architecture combinations.
+
+**Triggers:**
+- Git tags matching `v*.*.*` pattern (e.g., `v1.0.3`)
+- Manual workflow dispatch with version input
+
+**Platform/Architecture Matrix (8 combinations):**
+- Windows x64 and ARM64
+- macOS x64 (Intel) and ARM64 (Apple Silicon)
+- Linux x64 and ARM64
+- RedHat/RHEL x64 and ARM64
+
+**Outputs (18 artifacts per release):**
+- Windows: `.exe` installers and `.nupkg` packages (4 files)
+- macOS: `.zip` archives (2 files)
+- Linux: `.deb`, `.rpm`, and `.zip` packages (8 files)
+- RHEL: `.rpm` packages (2 files)
+- Mobile: See [Mobile Platform Guide](MOBILE_PLATFORM_GUIDE.md) for iOS/Android
+
+**Key Features:**
+- Parallel builds for all platforms (~25-30 minutes total)
+- Native builds for macOS architectures (macos-13 for Intel, macos-14 for Apple Silicon)
+- RHEL-optimized builds using Rocky Linux containers
+- Automatic release creation with comprehensive release notes
+- Architecture-specific artifact paths
+- Comprehensive error handling
+- 36 automated validation tests
+
+**Documentation:**
+- Quick Start: [QUICK_START.md](QUICK_START.md)
+- Full Guide: [RELEASE_CI_README.md](RELEASE_CI_README.md)
+- Platform Matrix: [RELEASE_CI_MATRIX.md](RELEASE_CI_MATRIX.md)
+
+**Testing:**
+```bash
+npm run test:release-ci
+```
+
+### 3. platform-tests.yml - Platform-Specific Hardware Tests
 
 **Purpose:** Tests the application on different OS versions to ensure compatibility.
 
@@ -74,7 +116,7 @@ This directory contains GitHub Actions workflows for automated building, testing
 - Test summary generation
 - 90-day artifact retention for all platform builds
 
-### 3. mcp-daemon-e2e.yml - MCP Daemon Manager E2E Tests
+### 4. mcp-daemon-e2e.yml - MCP Daemon Manager E2E Tests
 
 **Purpose:** End-to-end testing of the MCP daemon manager functionality.
 
@@ -97,7 +139,7 @@ This directory contains GitHub Actions workflows for automated building, testing
 
 ### Creating a Release
 
-To create a new release with automated builds:
+To create a new release with automated builds across all platforms and architectures:
 
 ```bash
 # Create and push a version tag
@@ -105,11 +147,18 @@ git tag v1.0.4
 git push origin v1.0.4
 ```
 
-The `electron-build.yml` workflow will:
-1. Build packages for all platforms
-2. Run tests on all platforms
-3. Create a GitHub release
+The `release-electron.yml` workflow will:
+1. Build packages for all 6 platform/architecture combinations in parallel
+2. Create 14 distributable packages (Windows, macOS, Linux for x64 and ARM64)
+3. Create a GitHub release with comprehensive release notes
 4. Upload all build artifacts to the release
+
+**Alternative:** Use the `electron-build.yml` workflow for testing builds on pull requests.
+
+For more details, see:
+- [Quick Start Guide](QUICK_START.md)
+- [Complete Release Documentation](RELEASE_CI_README.md)
+- [Platform Matrix Details](RELEASE_CI_MATRIX.md)
 
 ### Viewing Build Artifacts
 

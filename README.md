@@ -1,7 +1,5 @@
 Hallucinate Electron App:
 
-![357108775-19cd87d5-d049-467c-a5ea-b53a636b6422](https://github.com/user-attachments/assets/72cef41c-3b46-4746-abbb-4cf19625994f)
-![357736268-9b1695ee-a3d0-41bf-a010-8757d6138ca1](https://github.com/user-attachments/assets/cc90c796-030a-40a2-8437-a1ea9507e29b)
 
 ## Overview
 
@@ -24,6 +22,45 @@ Hallucinate App is an **Electron-based wrapper application** that:
 - **Enables** users to access all functionality through a single application
 
 Think of it as a **fully containerized AI desktop** - everything you need for decentralized AI development, pre-integrated and ready to run.
+
+## 📱 Mobile Support (NEW - Capacitor)
+
+Hallucinate App now supports iOS and Android through **Capacitor**, enabling full platform coverage across desktop and mobile:
+
+### Supported Platforms
+
+- **Desktop**: Windows, macOS, Linux, RHEL (via Electron)
+- **Mobile**: iOS, Android (via Capacitor)
+
+### Mobile Features
+
+- ✅ Native iOS and Android apps from shared web codebase
+- ✅ WebGPU hardware acceleration (iOS 18+, Android Chrome 121+)
+- ✅ WebNN support (experimental on Android)
+- ✅ ONNX model inference in browser
+- ✅ Model collection viewer
+- ✅ Experimental features (Gradio Lite, Jupyter Lite, Streamlit Lite)
+
+### Quick Start - Mobile
+
+```bash
+# Build web assets for mobile
+npm run build:web
+
+# Add iOS platform
+npm run cap:add:ios
+
+# Add Android platform  
+npm run cap:add:android
+
+# Open in native IDE
+npm run cap:open:ios      # Opens Xcode
+npm run cap:open:android  # Opens Android Studio
+```
+
+For detailed mobile setup instructions, see [CAPACITOR_SETUP.md](CAPACITOR_SETUP.md).
+
+For WebNN/WebGPU hardware acceleration details, see [Mobile Platform Guide](.github/workflows/MOBILE_PLATFORM_GUIDE.md).
 
 ## 📚 Documentation
 
@@ -486,3 +523,8 @@ make clean-build
 # Or
 rm -rf out/
 ```
+
+![357108775-19cd87d5-d049-467c-a5ea-b53a636b6422](https://github.com/user-attachments/assets/72cef41c-3b46-4746-abbb-4cf19625994f)
+![357736268-9b1695ee-a3d0-41bf-a010-8757d6138ca1](https://github.com/user-attachments/assets/cc90c796-030a-40a2-8437-a1ea9507e29b)
+
+
