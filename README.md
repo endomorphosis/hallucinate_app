@@ -29,6 +29,7 @@ Think of it as a **fully containerized AI desktop** - everything you need for de
 
 For comprehensive documentation, see:
 - **[Platform Overview](docs/PLATFORM_OVERVIEW.md)** - 🆕 Complete platform architecture and how everything fits together
+- **[Visual Architecture](docs/VISUAL_ARCHITECTURE.md)** - 🆕 Diagrams showing how the wrapper orchestrates all components
 - **[Submodules Guide](docs/SUBMODULES.md)** - 🆕 Detailed documentation for SwissKnife, IPFS Kit, Datasets, and Accelerate
 - **[Containerization Guide](docs/CONTAINERIZATION.md)** - 🆕 Packaging and distribution details (.exe, .dmg, .rpm, .deb)
 - **[Documentation Index](docs/INDEX.md)** - Complete documentation structure
