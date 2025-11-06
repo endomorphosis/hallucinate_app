@@ -8,7 +8,7 @@ The `release-electron.yml` workflow automatically builds the Hallucinate App for
 
 ## Supported Platforms and Architectures
 
-The workflow builds for the following real platform combinations:
+The workflow builds for the following platform combinations:
 
 ### Windows
 - **x64** (64-bit Intel/AMD)
@@ -22,6 +22,14 @@ The workflow builds for the following real platform combinations:
 - **x64** (64-bit Intel/AMD)
 - **arm64** (ARM64, e.g., Raspberry Pi 4, AWS Graviton)
 
+### RedHat Enterprise Linux (RHEL)
+- **x64** (64-bit Intel/AMD)
+- **arm64** (ARM64)
+- Compatible with: RHEL, CentOS, Rocky Linux, AlmaLinux, Fedora
+
+### Mobile Platforms
+For iOS and Android support, see [Mobile Platform Guide](MOBILE_PLATFORM_GUIDE.md).
+
 ## Package Formats
 
 Each platform produces the following package formats:
@@ -29,6 +37,7 @@ Each platform produces the following package formats:
 - **Windows**: `.exe` installers and `.nupkg` packages (Squirrel)
 - **macOS**: `.zip` archives
 - **Linux**: `.deb` packages, `.rpm` packages, and `.zip` archives
+- **RHEL**: `.rpm` packages optimized for RHEL-based distributions
 
 ## Triggering a Release
 

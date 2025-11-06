@@ -19,22 +19,27 @@ git push origin v1.0.4
 ```
 
 The CI workflow will automatically:
-1. Build the app for all 6 platform/architecture combinations
-2. Create 14 distributable packages
+1. Build the app for all 8 platform/architecture combinations
+2. Create 18 distributable packages
 3. Publish a GitHub Release with all packages attached
 4. Generate release notes with download instructions
 
 ## What Gets Built
 
-### 6 Platform Combinations
+### 8 Platform Combinations
 - Windows x64 & ARM64
 - macOS Intel (x64) & Apple Silicon (ARM64)  
 - Linux x64 & ARM64
+- RedHat/RHEL x64 & ARM64
 
-### 14 Package Files
+### 18 Package Files
 - **Windows**: 2 installers (.exe) + 2 update packages (.nupkg)
 - **macOS**: 2 archives (.zip)
 - **Linux**: 6 packages (DEB, RPM, ZIP for both x64 and ARM64)
+- **RHEL**: 2 packages (RPM for both x64 and ARM64)
+
+### Mobile Platforms
+For iOS and Android, see [Mobile Platform Guide](MOBILE_PLATFORM_GUIDE.md).
 
 ## Manual Release (Alternative)
 

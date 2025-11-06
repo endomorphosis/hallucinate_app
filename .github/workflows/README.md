@@ -46,23 +46,27 @@ This directory contains GitHub Actions workflows for automated building, testing
 - Git tags matching `v*.*.*` pattern (e.g., `v1.0.3`)
 - Manual workflow dispatch with version input
 
-**Platform/Architecture Matrix (6 combinations):**
+**Platform/Architecture Matrix (8 combinations):**
 - Windows x64 and ARM64
 - macOS x64 (Intel) and ARM64 (Apple Silicon)
 - Linux x64 and ARM64
+- RedHat/RHEL x64 and ARM64
 
-**Outputs (14 artifacts per release):**
+**Outputs (18 artifacts per release):**
 - Windows: `.exe` installers and `.nupkg` packages (4 files)
 - macOS: `.zip` archives (2 files)
 - Linux: `.deb`, `.rpm`, and `.zip` packages (8 files)
+- RHEL: `.rpm` packages (2 files)
+- Mobile: See [Mobile Platform Guide](MOBILE_PLATFORM_GUIDE.md) for iOS/Android
 
 **Key Features:**
-- Parallel builds for all platforms (~20-25 minutes total)
+- Parallel builds for all platforms (~25-30 minutes total)
 - Native builds for macOS architectures (macos-13 for Intel, macos-14 for Apple Silicon)
+- RHEL-optimized builds using Rocky Linux containers
 - Automatic release creation with comprehensive release notes
 - Architecture-specific artifact paths
 - Comprehensive error handling
-- 34 automated validation tests
+- 36 automated validation tests
 
 **Documentation:**
 - Quick Start: [QUICK_START.md](QUICK_START.md)

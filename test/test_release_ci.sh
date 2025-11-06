@@ -87,15 +87,15 @@ fi
 
 # Count matrix entries
 MATRIX_COUNT=$(grep -A 100 "include:" "$WORKFLOW_FILE" | grep "^ *- os:" | wc -l)
-if [ "$MATRIX_COUNT" -eq 6 ]; then
-    pass "Matrix has 6 entries (expected)"
+if [ "$MATRIX_COUNT" -eq 8 ]; then
+    pass "Matrix has 8 entries (expected: 6 desktop + 2 RHEL)"
 else
-    fail "Matrix has $MATRIX_COUNT entries (expected 6)"
+    fail "Matrix has $MATRIX_COUNT entries (expected 8)"
 fi
 
 # Check platforms
 section "7. Platform Coverage"
-for os in windows macos linux; do
+for os in windows macos linux rhel; do
     if grep -q "os: $os" "$WORKFLOW_FILE"; then
         pass "$os platform configured"
     else
@@ -108,16 +108,16 @@ section "8. Architecture Coverage"
 X64_COUNT=$(grep "arch: x64" "$WORKFLOW_FILE" | wc -l)
 ARM64_COUNT=$(grep "arch: arm64" "$WORKFLOW_FILE" | wc -l)
 
-if [ "$X64_COUNT" -eq 3 ]; then
-    pass "x64 architecture: 3 entries (Windows, macOS, Linux)"
+if [ "$X64_COUNT" -eq 4 ]; then
+    pass "x64 architecture: 4 entries (Windows, macOS, Linux, RHEL)"
 else
-    fail "x64 architecture: $X64_COUNT entries (expected 3)"
+    fail "x64 architecture: $X64_COUNT entries (expected 4)"
 fi
 
-if [ "$ARM64_COUNT" -eq 3 ]; then
-    pass "arm64 architecture: 3 entries (Windows, macOS, Linux)"
+if [ "$ARM64_COUNT" -eq 4 ]; then
+    pass "arm64 architecture: 4 entries (Windows, macOS, Linux, RHEL)"
 else
-    fail "arm64 architecture: $ARM64_COUNT entries (expected 3)"
+    fail "arm64 architecture: $ARM64_COUNT entries (expected 4)"
 fi
 
 # Check runners
@@ -183,10 +183,10 @@ fi
 # Check artifact uploads
 section "12. Artifact Uploads"
 UPLOAD_COUNT=$(grep -c "uses: actions/upload-artifact@v4" "$WORKFLOW_FILE")
-if [ "$UPLOAD_COUNT" -ge 10 ]; then
+if [ "$UPLOAD_COUNT" -ge 12 ]; then
     pass "Found $UPLOAD_COUNT artifact upload actions"
 else
-    fail "Only found $UPLOAD_COUNT artifact upload actions (expected at least 10)"
+    fail "Only found $UPLOAD_COUNT artifact upload actions (expected at least 12)"
 fi
 
 # Check Windows artifacts
@@ -214,6 +214,13 @@ if grep -q "name: linux-x64-rpm" "$WORKFLOW_FILE" && grep -q "name: linux-arm64-
     pass "Linux RPM artifacts (x64 and arm64) configured"
 else
     fail "Linux RPM artifacts incomplete"
+fi
+
+# Check RHEL artifacts
+if grep -q "name: rhel-x64-rpm" "$WORKFLOW_FILE" && grep -q "name: rhel-arm64-rpm" "$WORKFLOW_FILE"; then
+    pass "RHEL RPM artifacts (x64 and arm64) configured"
+else
+    fail "RHEL RPM artifacts incomplete"
 fi
 
 # Check release creation
