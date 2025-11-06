@@ -62,6 +62,7 @@
     "typescript": "^5.5.0"
   },
   "dependencies": {
+    "@octokit/rest": "^20.0.2",
     "electron-squirrel-startup": "^1.0.1",
     "ipfs_accelerate_js": "^1.0.0",
     "ipfs_agents_js": "^1.0.3",

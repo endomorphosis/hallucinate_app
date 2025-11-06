@@ -21,6 +21,14 @@ from enum import Enum
 from collections import defaultdict, deque
 from dataclasses import dataclass, field, asdict
 
+# Try to import GitHub issue reporter
+try:
+    from hallucinate_app.github_issue_reporter import get_reporter, IssueReportConfig
+    GITHUB_REPORTER_AVAILABLE = True
+except ImportError:
+    GITHUB_REPORTER_AVAILABLE = False
+    logger.warning("GitHub issue reporter not available")
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -793,6 +801,17 @@ class ErrorMonitor:
         # Alert handlers (functions to call when alerts are triggered)
         self.alert_handlers = []
         
+        # GitHub issue reporter
+        self.github_reporter = None
+        if GITHUB_REPORTER_AVAILABLE and self.config.get('enable_github_reporting', False):
+            github_config = IssueReportConfig.from_env()
+            if self.config.get('github_config'):
+                # Override with provided config
+                for key, value in self.config['github_config'].items():
+                    setattr(github_config, key, value)
+            self.github_reporter = get_reporter(github_config)
+            logger.info("GitHub issue reporter initialized")
+        
         # Status tracking
         self.component_status = {}  # Status by component
         self.is_running = False
@@ -1004,6 +1023,7 @@ class ErrorMonitor:
         - Add to analyzer
         - Attempt recovery
         - Check alert rules
+        - Report to GitHub if configured
         """
         # Check if this is a duplicate of an existing error
         existing_id = self._find_duplicate_error(error)
@@ -1032,6 +1052,16 @@ class ErrorMonitor:
             if not error_to_process.details.get('recovery_info'):
                 error_to_process.details['recovery_info'] = []
             error_to_process.details['recovery_info'].append(recovery_info)
+        
+        # Report to GitHub if enabled and not resolved
+        if self.github_reporter and not error_to_process.resolved:
+            try:
+                issue_url = self.github_reporter.create_issue(error_to_process)
+                if issue_url:
+                    logger.info(f"Reported error {error_to_process.id} to GitHub: {issue_url}")
+                    error_to_process.metadata['github_issue_url'] = issue_url
+            except Exception as e:
+                logger.error(f"Failed to report error to GitHub: {e}")
         
         # Check alert rules
         await self._check_alerts(error_to_process)
