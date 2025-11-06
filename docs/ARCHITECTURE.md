@@ -2,7 +2,47 @@
 
 ## System Overview
 
-Hallucinate App is an Electron-based desktop application that bridges IPFS and HuggingFace technologies, enabling decentralized AI model serving, dataset management, and inference. The application uses a modular architecture with paired JavaScript and Python implementations, secure UCAN-based authentication, and efficient data exchange mechanisms.
+Hallucinate App is an **Electron-based wrapper and orchestration platform** that integrates multiple powerful tools into a unified desktop application. The application serves as a **comprehensive container** that packages SwissKnife Virtual Desktop and three IPFS MCP servers into distributable formats for Windows, macOS, and Linux.
+
+### The Wrapper Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│              Hallucinate Electron App (Main Wrapper)                │
+│                                                                       │
+│  Packages and Orchestrates:                                          │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ 1. SwissKnife Virtual Desktop (User Interface)                 │ │
+│  │    - 27+ Professional Applications                             │ │
+│  │    - P2P Collaboration Features                                │ │
+│  │    - AI Integration (HuggingFace, OpenRouter)                  │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│                                                                       │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ 2. IPFS Kit MCP Server (Port 3001)                             │ │
+│  │    - IPFS Operations & Cluster Management                      │ │
+│  │    - Storage Backends & Content Addressing                     │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│                                                                       │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ 3. IPFS Datasets MCP Server (Port 3002)                        │ │
+│  │    - GraphRAG & Document Intelligence                          │ │
+│  │    - 200+ Tools for Data Processing                            │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│                                                                       │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ 4. IPFS Accelerate MCP Server (Port 3003)                      │ │
+│  │    - Hardware-Accelerated ML Inference                         │ │
+│  │    - Distributed AI Computing                                  │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────┘
+           ↓
+    Distributes As
+           ↓
+  .exe, .dmg, .rpm, .deb, tar.gz
+```
+
+**Key Insight:** Hallucinate App **wraps around** these components, managing their lifecycle and providing a unified interface. Users install **one application** and get access to **all components** seamlessly integrated.
 
 ## High-Level Architecture
 

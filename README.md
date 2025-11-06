@@ -5,11 +5,33 @@ Hallucinate Electron App:
 
 ## Overview
 
-Hallucinate App is an Electron-based desktop application that creates a bridge between IPFS and HuggingFace technologies, enabling decentralized AI model serving, dataset management, and inference. The application leverages a modular architecture with paired JavaScript and Python implementations, secure UCAN-based authentication, efficient Apache Arrow data exchange, and a resource pool pattern for module interdependencies.
+**Hallucinate App is a comprehensive wrapper and orchestration platform** that packages multiple powerful tools into a single, distributable desktop application. It serves as the **container** that brings together:
+
+1. **SwissKnife Virtual Desktop** - Revolutionary collaborative development environment with 27+ professional applications
+2. **IPFS Kit MCP Server** - IPFS operations, cluster management, and distributed storage
+3. **IPFS Datasets MCP Server** - AI data processing with 200+ tools, GraphRAG, and document intelligence
+4. **IPFS Accelerate MCP Server** - Hardware-accelerated ML inference and distributed computing
+
+All of these components are **packaged together into distributable formats** (`.exe`, `.dmg`, `.rpm`, `.deb`, `tar.gz`) providing users with a complete decentralized AI desktop environment in a single installation.
+
+### How It Works
+
+Hallucinate App is an **Electron-based wrapper application** that:
+- **Orchestrates** all submodule services through a unified MCP Daemon Manager
+- **Provides** a desktop interface that integrates SwissKnife Virtual Desktop
+- **Manages** three Python-based MCP servers running in the background
+- **Packages** everything into platform-specific installers for easy distribution
+- **Enables** users to access all functionality through a single application
+
+Think of it as a **fully containerized AI desktop** - everything you need for decentralized AI development, pre-integrated and ready to run.
 
 ## 📚 Documentation
 
 For comprehensive documentation, see:
+- **[Platform Overview](docs/PLATFORM_OVERVIEW.md)** - 🆕 Complete platform architecture and how everything fits together
+- **[Visual Architecture](docs/VISUAL_ARCHITECTURE.md)** - 🆕 Diagrams showing how the wrapper orchestrates all components
+- **[Submodules Guide](docs/SUBMODULES.md)** - 🆕 Detailed documentation for SwissKnife, IPFS Kit, Datasets, and Accelerate
+- **[Containerization Guide](docs/CONTAINERIZATION.md)** - 🆕 Packaging and distribution details (.exe, .dmg, .rpm, .deb)
 - **[Documentation Index](docs/INDEX.md)** - Complete documentation structure
 - **[Architecture Guide](docs/ARCHITECTURE.md)** - System design and architecture
 - **[Quick Start Guide](docs/QUICK_START.md)** - Get started quickly
