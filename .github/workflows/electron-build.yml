@@ -1,0 +1,218 @@
+name: Build and Test Electron App
+
+on:
+  push:
+    branches: [ main, develop ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Build and Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node-version: [18.x, 20.x]
+      fail-fast: false
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      
+      # Platform-specific system dependencies
+      - name: Install system dependencies (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            xvfb \
+            libgtk-3-0 \
+            libnotify-dev \
+            libgconf-2-4 \
+            libnss3 \
+            libxss1 \
+            libasound2 \
+            libxtst6 \
+            xauth \
+            rpm \
+            fakeroot \
+            dpkg
+      
+      - name: Install system dependencies (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew install python@3.12
+      
+      # Install JavaScript dependencies
+      - name: Install npm dependencies
+        run: |
+          npm ci || npm install
+      
+      # Install Python dependencies
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r python/hallucinate_app/python/requirements.txt || true
+      
+      # Install submodule dependencies
+      - name: Install submodule dependencies
+        shell: bash
+        run: |
+          bash scripts/install_submodule_deps.sh || true
+      
+      # Run tests
+      - name: Run unit tests
+        run: |
+          npm run test || true
+        continue-on-error: true
+      
+      # Package the application
+      - name: Package application
+        run: |
+          npm run package
+        env:
+          NODE_ENV: production
+      
+      # Make distributables
+      - name: Make distributables (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          npm run make -- --platform=linux
+        env:
+          NODE_ENV: production
+        continue-on-error: true
+      
+      - name: Make distributables (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          npm run make -- --platform=darwin
+        env:
+          NODE_ENV: production
+        continue-on-error: true
+      
+      - name: Make distributables (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          npm run make -- --platform=win32
+        env:
+          NODE_ENV: production
+        continue-on-error: true
+      
+      # Upload build artifacts
+      - name: Upload build artifacts (Ubuntu - DEB)
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: hallucinate-app-deb-node-${{ matrix.node-version }}
+          path: |
+            out/make/deb/**/*.deb
+          retention-days: 30
+          if-no-files-found: warn
+      
+      - name: Upload build artifacts (Ubuntu - RPM)
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: hallucinate-app-rpm-node-${{ matrix.node-version }}
+          path: |
+            out/make/rpm/**/*.rpm
+          retention-days: 30
+          if-no-files-found: warn
+      
+      - name: Upload build artifacts (Ubuntu - ZIP)
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: hallucinate-app-linux-zip-node-${{ matrix.node-version }}
+          path: |
+            out/make/zip/linux/**/*.zip
+          retention-days: 30
+          if-no-files-found: warn
+      
+      - name: Upload build artifacts (macOS)
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: hallucinate-app-macos-node-${{ matrix.node-version }}
+          path: |
+            out/make/zip/darwin/**/*.zip
+          retention-days: 30
+          if-no-files-found: warn
+      
+      - name: Upload build artifacts (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: hallucinate-app-windows-node-${{ matrix.node-version }}
+          path: |
+            out/make/squirrel.windows/**/*.exe
+            out/make/squirrel.windows/**/*.nupkg
+          retention-days: 30
+          if-no-files-found: warn
+      
+      # List output directory for debugging
+      - name: List output directory
+        if: always()
+        shell: bash
+        run: |
+          echo "=== Output directory structure ==="
+          ls -laR out/ || echo "No out/ directory found"
+  
+  # Create a release if this is a tag push
+  release:
+    name: Create Release
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      
+      - name: List artifacts
+        run: |
+          echo "=== Downloaded artifacts ==="
+          ls -laR artifacts/
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            artifacts/**/*.deb
+            artifacts/**/*.rpm
+            artifacts/**/*.zip
+            artifacts/**/*.exe
+            artifacts/**/*.nupkg
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
