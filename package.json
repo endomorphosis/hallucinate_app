@@ -27,10 +27,22 @@
     "test:e2e:ci": "CI=true playwright test",
     "test:e2e:report": "playwright show-report",
     "test:daemon-manager": "node test/js/test_mcp_daemon_manager.js",
+    "test:release-ci": "bash test/test_release_ci.sh",
     "test:all": "npm run test:menu && npm run test:daemon-manager && npm run test:e2e",
     "start": "electron-forge start",
     "package": "electron-forge package",
-    "make": "electron-forge make"
+    "make": "electron-forge make",
+    "build:web": "node scripts/build_web.js",
+    "cap:init": "cap init",
+    "cap:add:ios": "cap add ios",
+    "cap:add:android": "cap add android",
+    "cap:sync": "cap sync",
+    "cap:open:ios": "cap open ios",
+    "cap:open:android": "cap open android",
+    "cap:build:ios": "npm run build:web && cap sync ios && cd ios/App && xcodebuild -workspace App.xcworkspace -scheme App -configuration Release archive -archivePath App.xcarchive",
+    "cap:build:android": "npm run build:web && cap sync android && cd android && ./gradlew assembleRelease",
+    "cap:run:ios": "npm run build:web && cap sync ios && cap run ios",
+    "cap:run:android": "npm run build:web && cap sync android && cap run android"
   },
   "repository": {
     "type": "git",
@@ -43,6 +55,7 @@
   },
   "homepage": "https://github.com/endomorphosis/hallucinate_app#readme",
   "devDependencies": {
+    "@capacitor/cli": "^6.1.2",
     "@electron-forge/cli": "^7.4.0",
     "@electron-forge/maker-deb": "^7.4.0",
     "@electron-forge/maker-rpm": "^7.4.0",
@@ -62,6 +75,9 @@
     "typescript": "^5.5.0"
   },
   "dependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/core": "^6.1.2",
+    "@capacitor/ios": "^6.1.2",
     "electron-squirrel-startup": "^1.0.1",
     "ipfs_accelerate_js": "^1.0.0",
     "ipfs_agents_js": "^1.0.3",
