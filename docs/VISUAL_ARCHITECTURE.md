@@ -12,11 +12,11 @@ This document provides visual representations of the Hallucinate App architectur
 ╠═══════════════════════════════════════════════════════════════════════════╣
 ║                                                                           ║
 ║  ┌────────────────────────────────────────────────────────────────────┐   ║
-║  │                  ELECTRON MAIN PROCESS                              │  ║
-║  │  • Application Lifecycle                                            │  ║
-║  │  • Window Management                                                │  ║
-║  │  • MCP Daemon Orchestration                                         │  ║
-║  │  • IPC Coordination                                                 │  ║
+║  │                  ELECTRON MAIN PROCESS                             │   ║
+║  │  • Application Lifecycle                                           │   ║
+║  │  • Window Management                                               │   ║
+║  │  • MCP Daemon Orchestration                                        │   ║
+║  │  • IPC Coordination                                                │   ║
 ║  └────────────────────────────────────────────────────────────────────┘   ║
 ║                                 │                                         ║
 ║       ┌─────────────────────────┼──────────────────────────┐              ║
