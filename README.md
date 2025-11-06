@@ -1,7 +1,5 @@
 Hallucinate Electron App:
 
-![357108775-19cd87d5-d049-467c-a5ea-b53a636b6422](https://github.com/user-attachments/assets/72cef41c-3b46-4746-abbb-4cf19625994f)
-![357736268-9b1695ee-a3d0-41bf-a010-8757d6138ca1](https://github.com/user-attachments/assets/cc90c796-030a-40a2-8437-a1ea9507e29b)
 
 ## Overview
 
@@ -525,3 +523,8 @@ make clean-build
 # Or
 rm -rf out/
 ```
+
+![357108775-19cd87d5-d049-467c-a5ea-b53a636b6422](https://github.com/user-attachments/assets/72cef41c-3b46-4746-abbb-4cf19625994f)
+![357736268-9b1695ee-a3d0-41bf-a010-8757d6138ca1](https://github.com/user-attachments/assets/cc90c796-030a-40a2-8437-a1ea9507e29b)
+
+
