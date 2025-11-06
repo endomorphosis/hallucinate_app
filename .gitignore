@@ -20,3 +20,42 @@ changes-report.json
 docs-update.md
 summary.md
 changelog-entry.md
+
+# Capacitor mobile builds
+ios/
+android/
+www/
+.capacitor/
+
+# Mobile build artifacts
+*.apk
+*.aab
+*.ipa
+*.xcarchive
+*.dSYM.zip
+
+# iOS
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+xcuserdata/
+*.xccheckout
+*.moved-aside
+DerivedData
+*.hmap
+*.ipa
+*.xcuserstate
+ios/App/Pods/
+ios/App/App.xcworkspace/xcshareddata/
+
+# Android
+*.iml
+.gradle
+local.properties
+.idea/
+.DS_Store
+android/.gradle/
+android/build/
+android/app/build/
+android/.idea/

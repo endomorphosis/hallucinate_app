@@ -7,6 +7,45 @@ Hallucinate Electron App:
 
 Hallucinate App is an Electron-based desktop application that creates a bridge between IPFS and HuggingFace technologies, enabling decentralized AI model serving, dataset management, and inference. The application leverages a modular architecture with paired JavaScript and Python implementations, secure UCAN-based authentication, efficient Apache Arrow data exchange, and a resource pool pattern for module interdependencies.
 
+## 📱 Mobile Support (NEW - Capacitor)
+
+Hallucinate App now supports iOS and Android through **Capacitor**, enabling full platform coverage across desktop and mobile:
+
+### Supported Platforms
+
+- **Desktop**: Windows, macOS, Linux, RHEL (via Electron)
+- **Mobile**: iOS, Android (via Capacitor)
+
+### Mobile Features
+
+- ✅ Native iOS and Android apps from shared web codebase
+- ✅ WebGPU hardware acceleration (iOS 18+, Android Chrome 121+)
+- ✅ WebNN support (experimental on Android)
+- ✅ ONNX model inference in browser
+- ✅ Model collection viewer
+- ✅ Experimental features (Gradio Lite, Jupyter Lite, Streamlit Lite)
+
+### Quick Start - Mobile
+
+```bash
+# Build web assets for mobile
+npm run build:web
+
+# Add iOS platform
+npm run cap:add:ios
+
+# Add Android platform  
+npm run cap:add:android
+
+# Open in native IDE
+npm run cap:open:ios      # Opens Xcode
+npm run cap:open:android  # Opens Android Studio
+```
+
+For detailed mobile setup instructions, see [CAPACITOR_SETUP.md](CAPACITOR_SETUP.md).
+
+For WebNN/WebGPU hardware acceleration details, see [Mobile Platform Guide](.github/workflows/MOBILE_PLATFORM_GUIDE.md).
+
 ## 📚 Documentation
 
 For comprehensive documentation, see:
