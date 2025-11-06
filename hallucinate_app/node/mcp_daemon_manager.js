@@ -7,6 +7,8 @@ import { spawn } from 'child_process';
 import { EventEmitter } from 'events';
 import path from 'path';
 import url from 'url';
+import crypto from 'crypto';
+import { getReporter, ErrorSource, ErrorLevel } from './github_issue_reporter.js';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
@@ -16,6 +18,17 @@ class MCPDaemonManager extends EventEmitter {
     this.daemons = new Map();
     this.healthCheckInterval = null;
     this.baseDir = path.join(__dirname, '..', '..');
+    
+    // Initialize GitHub reporter if enabled
+    this.githubReporter = null;
+    if (process.env.GITHUB_ISSUE_REPORTER_ENABLED === 'true') {
+      try {
+        this.githubReporter = getReporter();
+        console.log('GitHub issue reporter initialized for MCP daemon errors');
+      } catch (error) {
+        console.error('Failed to initialize GitHub reporter:', error.message);
+      }
+    }
     
     // Define the MCP servers
     this.daemonConfigs = [
@@ -136,6 +149,11 @@ class MCPDaemonManager extends EventEmitter {
       daemon.status = 'error';
       daemon.lastError = error.message;
       this.emit('error', { daemon: daemonId, error: error.message });
+      
+      // Report to GitHub if enabled
+      if (this.githubReporter) {
+        this._reportErrorToGitHub(error, config.name, 'daemon_startup', daemonId);
+      }
     });
 
     process.on('exit', (code, signal) => {
@@ -145,6 +163,14 @@ class MCPDaemonManager extends EventEmitter {
       if (code !== 0 && code !== null) {
         daemon.lastError = `Exited with code ${code}`;
         this.emit('error', { daemon: daemonId, error: `Exited with code ${code}` });
+        
+        // Report to GitHub if enabled
+        if (this.githubReporter) {
+          const errorObj = new Error(`Daemon exited with code ${code}`);
+          errorObj.code = code;
+          errorObj.signal = signal;
+          this._reportErrorToGitHub(errorObj, config.name, 'daemon_crash', daemonId);
+        }
         
         // Auto-restart on crash (max 3 times)
         if (daemon.restartCount < 3) {
@@ -343,6 +369,52 @@ class MCPDaemonManager extends EventEmitter {
     }
     
     return daemon.logs.slice(-limit);
+  }
+  
+  /**
+   * Report an error to GitHub
+   * @private
+   */
+  async _reportErrorToGitHub(error, component, operation, daemonId) {
+    if (!this.githubReporter) {
+      return;
+    }
+    
+    try {
+      const daemon = this.daemons.get(daemonId);
+      const errorData = {
+        id: crypto.randomUUID(),
+        timestamp: new Date().toISOString(),
+        level: ErrorLevel.ERROR,
+        source: ErrorSource.MCP_SERVER,
+        component: component,
+        operation: operation,
+        message: error.message,
+        name: error.name || 'Error',
+        stackTrace: error.stack,
+        details: {
+          daemonId: daemonId,
+          port: daemon?.port,
+          restartCount: daemon?.restartCount,
+          exitCode: error.code,
+          signal: error.signal
+        },
+        metadata: {
+          errorType: error.name || 'Error',
+          nodeVersion: process.version,
+          platform: process.platform,
+          arch: process.arch,
+          daemonStatus: daemon?.status,
+          recentLogs: daemon?.logs?.slice(-5) || []
+        },
+        tags: [component.toLowerCase(), 'mcp-server', 'daemon-error'],
+        count: 1
+      };
+      
+      await this.githubReporter.createIssue(errorData);
+    } catch (reportError) {
+      console.error('Failed to report error to GitHub:', reportError);
+    }
   }
 }
 

@@ -10,6 +10,11 @@ config.toml
 .pyc
 __pycache__
 
+# Environment files with secrets
+.env
+.env.local
+.env.*.local
+
 # Playwright test results
 test-results/
 playwright-report/

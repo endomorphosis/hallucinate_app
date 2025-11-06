@@ -45,4 +45,4 @@ ipfs_embeddings_py>=0.0.24
 dataclasses-json
 llama-index
 pysbd
-qdrant_client
+qdrant_clientPyGithub>=2.1.1
