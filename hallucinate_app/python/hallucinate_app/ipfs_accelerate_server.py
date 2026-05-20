@@ -7,6 +7,10 @@ import sys
 import os
 import json
 import asyncio
+import time
+from collections import defaultdict
+import inspect
+from hallucinate_app.submodule_compat import instantiate_from_candidates, resolve_maybe_awaitable
 
 # Add parent directory to path to import ipfs_accelerate_py
 parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -22,7 +26,7 @@ logger = logging.getLogger("ipfs_accelerate_server")
 
 # Try to import ipfs_accelerate_py
 try:
-    from ipfs_accelerate_py import ipfs_accelerate_py
+    import ipfs_accelerate_py
     logger.info("Successfully imported ipfs_accelerate_py")
 except ImportError as e:
     logger.error(f"Failed to import ipfs_accelerate_py: {e}")
@@ -60,8 +64,9 @@ except ImportError as e:
                 }
             }
             
-    # Create a mock module
-    ipfs_accelerate_py = MockAccelerate
+    class MockModule:
+        ipfs_accelerate_py = MockAccelerate
+    ipfs_accelerate_py = MockModule()
 
 # FastAPI models
 class ModelRequest(BaseModel):
@@ -86,13 +91,13 @@ app.add_middleware(
 
 # Initialize accelerator
 try:
-    if isinstance(ipfs_accelerate_py, type):  # It's the mock class
-        accelerator = ipfs_accelerate_py()
-        logger.info("Initialized mock accelerator")
-    else:  # It's the real module
-        # Initialize with empty resources/metadata for now
-        accelerator = ipfs_accelerate_py({}, {})
-        logger.info("Initialized real accelerator")
+    accelerator = instantiate_from_candidates(
+        ipfs_accelerate_py,
+        ("ipfs_accelerate_py", "ipfs_accelerate", "AccelerateServer"),
+        {},
+        {}
+    )
+    logger.info("Initialized accelerator instance")
     logger.info("Accelerator initialized successfully")
 except Exception as e:
     logger.error(f"Error initializing accelerator: {e}")
@@ -101,6 +106,48 @@ except Exception as e:
 # Track loaded models
 loaded_models = {}
 active_model = None
+integration_metrics = {
+    "endpoint_calls": defaultdict(int),
+    "endpoint_errors": defaultdict(int),
+    "endpoint_retries": defaultdict(int),
+    "endpoint_total_ms": defaultdict(float),
+}
+
+
+async def run_with_metrics(endpoint_name, operation, retries=1):
+    started = time.perf_counter()
+    integration_metrics["endpoint_calls"][endpoint_name] += 1
+    attempts = 0
+    try:
+        while True:
+            attempts += 1
+            try:
+                result = operation()
+                if inspect.isawaitable(result):
+                    result = await result
+                return result
+            except Exception:
+                if attempts > retries:
+                    integration_metrics["endpoint_errors"][endpoint_name] += 1
+                    raise
+                integration_metrics["endpoint_retries"][endpoint_name] += 1
+    finally:
+        elapsed_ms = (time.perf_counter() - started) * 1000.0
+        integration_metrics["endpoint_total_ms"][endpoint_name] += elapsed_ms
+
+
+@app.get("/integration_metrics")
+def get_integration_metrics():
+    summary = {}
+    for endpoint, calls in integration_metrics["endpoint_calls"].items():
+        total_ms = integration_metrics["endpoint_total_ms"][endpoint]
+        summary[endpoint] = {
+            "calls": calls,
+            "errors": integration_metrics["endpoint_errors"][endpoint],
+            "retries": integration_metrics["endpoint_retries"][endpoint],
+            "avg_latency_ms": round((total_ms / calls), 2) if calls else 0.0
+        }
+    return {"status": "ok", "metrics": summary}
 
 @app.on_event("startup")
 async def startup_event():
@@ -108,7 +155,7 @@ async def startup_event():
     try:
         if accelerator:
             # Initialize with default models if needed
-            await accelerator.init_endpoints()
+            await run_with_metrics("startup", lambda: accelerator.init_endpoints(), retries=1)
             logger.info("Accelerator endpoints initialized")
     except Exception as e:
         logger.error(f"Startup initialization failed: {e}")
@@ -135,7 +182,7 @@ async def load_model(request: ModelRequest):
         logger.info(f"Loading model: {model_id}")
         
         # Initialize the endpoint for this model if needed
-        await accelerator.init_endpoints([model_id])
+        await run_with_metrics("load_model", lambda: accelerator.init_endpoints([model_id]), retries=1)
         
         # Track the loaded model
         loaded_models[model_id] = {
@@ -181,7 +228,11 @@ async def run_inference(request: InferenceRequest):
             raise HTTPException(status_code=400, detail="No text input provided")
         
         # Process the input
-        result = await accelerator.process_async(active_model, input_text)
+        result = await run_with_metrics(
+            "inference",
+            lambda: accelerator.process_async(active_model, input_text),
+            retries=1
+        )
         return result
     except Exception as e:
         error_msg = f"Inference failed: {str(e)}"
@@ -195,7 +246,7 @@ def run_test():
         raise HTTPException(status_code=500, detail="Accelerator not initialized")
     
     try:
-        result = accelerator.test()
+        result = resolve_maybe_awaitable(accelerator.test())
         return result
     except Exception as e:
         error_msg = f"Test failed: {str(e)}"

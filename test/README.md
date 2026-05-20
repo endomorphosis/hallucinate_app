@@ -49,6 +49,11 @@ node test/js/test_accelerate_electron.js
 python test/python/test_accelerate_server.py
 ```
 
+### Run Submodule Compatibility Contract Tests
+```bash
+python test/python/test_submodule_compatibility.py
+```
+
 ## Test Results
 
 After running tests, results will be saved to:

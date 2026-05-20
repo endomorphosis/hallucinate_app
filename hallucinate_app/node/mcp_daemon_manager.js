@@ -57,7 +57,11 @@ class MCPDaemonManager extends EventEmitter {
         args: ['-m', 'ipfs_accelerate_py.cli', 'mcp', 'start', '--port', '3003'],
         cwd: path.join(this.baseDir, 'ipfs_accelerate_py'),
         port: 3003,
-        env: { ...process.env, PYTHONUNBUFFERED: '1' }
+        env: {
+          ...process.env,
+          PYTHONUNBUFFERED: '1',
+          IPFS_ACCELERATE_ENABLE_MULTIMODAL: process.env.IPFS_ACCELERATE_ENABLE_MULTIMODAL || '1'
+        }
       }
     ];
   }

@@ -27,6 +27,7 @@ from hallucinate_app.observability import (
     timer, timed, track_operation, track_error,
     info, warning, error, debug, set_context, context
 )
+from hallucinate_app.submodule_compat import build_simple_api, call_with_param_fallback
 
 # Try to import ipfs_kit_py (graceful degradation if not available)
 try:
@@ -83,6 +84,10 @@ class IPFSKitBridge:
         self.error_count = 0
         self.last_error = None
         self.start_time = time.time()
+        self.compatibility_metrics = {
+            "signature_retries": 0,
+            "signature_failures": 0,
+        }
         
         # Initialize observability
         self._initialize_observability()
@@ -128,9 +133,11 @@ class IPFSKitBridge:
             self.ipfs_kit_instance = ipfs_kit(metadata=ipfs_kit_config)
             
             # Create high-level API
-            self.ipfs_simple_api = IPFSSimpleAPI(
-                config_path=ipfs_kit_config.get("config_path"),
-                role=ipfs_kit_config.get("role", "leecher")
+            self.ipfs_simple_api = build_simple_api(
+                IPFSSimpleAPI,
+                ipfs_kit_config.get("config_path"),
+                ipfs_kit_config.get("role", "leecher"),
+                ipfs_kit_config
             )
             
             # Initialize metadata index if enabled
@@ -227,7 +234,9 @@ class IPFSKitBridge:
                     
                     # Time the actual method execution
                     with timer(f"ipfs_{command}"):
-                        result = method(**params)
+                        result, retry_count = call_with_param_fallback(method, params)
+                        if retry_count > 0:
+                            self.compatibility_metrics["signature_retries"] += retry_count
                     
                     # Track successful operation
                     track_operation(command, status="success")
@@ -275,6 +284,8 @@ class IPFSKitBridge:
             except Exception as e:
                 # Increment error counter
                 self.error_count += 1
+                if isinstance(e, TypeError):
+                    self.compatibility_metrics["signature_failures"] += 1
                 self.last_error = {
                     "command": command,
                     "params": params,
@@ -343,7 +354,8 @@ class IPFSKitBridge:
                 "success": True,
                 "count": len(serializable_results),
                 "results": serializable_results,
-                "query": query
+                "query": query,
+                "compatibility": self.compatibility_metrics
             }
             
         except Exception as e:

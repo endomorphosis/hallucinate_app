@@ -11,7 +11,9 @@ import sys
 import json
 import logging
 import asyncio
+import time
 from typing import Dict, List, Any, Optional, Union, Callable
+from hallucinate_app.submodule_compat import instantiate_from_candidates
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, 
@@ -67,6 +69,11 @@ class IPFSDatasets:
         
         # Dataset tracking
         self.loaded_datasets = {}
+        self.integration_metrics = {
+            "load_dataset_calls": 0,
+            "load_dataset_errors": 0,
+            "load_dataset_total_ms": 0.0,
+        }
         
         logger.info("IPFS Datasets module initialized with configuration")
     
@@ -91,7 +98,12 @@ class IPFSDatasets:
             
             # Initialize the underlying ipfs_datasets_py instance if available
             if HAVE_DATASETS:
-                self.datasets_manager = ipfs_datasets_py.ipfs_datasets_py(self.resources, self.metadata)
+                self.datasets_manager = instantiate_from_candidates(
+                    ipfs_datasets_py,
+                    ("ipfs_datasets_py", "IPFSDatasetsPy", "ipfs_datasets"),
+                    self.resources,
+                    self.metadata
+                )
             
             self.initialized = True
             logger.info("IPFS Datasets module initialized successfully")
@@ -115,6 +127,8 @@ class IPFSDatasets:
             await self.init()
             
         try:
+            started_at = time.perf_counter()
+            self.integration_metrics["load_dataset_calls"] += 1
             # Create dataset key for tracking
             dataset_key = f"{dataset_name}:{split}" if split else dataset_name
             
@@ -165,6 +179,7 @@ class IPFSDatasets:
                 raise ImportError("Neither ipfs_datasets_py nor datasets is available")
                 
         except Exception as e:
+            self.integration_metrics["load_dataset_errors"] += 1
             logger.error(f"Error loading dataset {dataset_name}: {e}")
             return {
                 "success": False, 
@@ -172,6 +187,21 @@ class IPFSDatasets:
                 "dataset": dataset_name,
                 "split": split
             }
+        finally:
+            elapsed_ms = (time.perf_counter() - started_at) * 1000.0
+            self.integration_metrics["load_dataset_total_ms"] += elapsed_ms
+
+    async def get_integration_metrics(self) -> Dict[str, Any]:
+        avg_ms = 0.0
+        if self.integration_metrics["load_dataset_calls"]:
+            avg_ms = self.integration_metrics["load_dataset_total_ms"] / self.integration_metrics["load_dataset_calls"]
+        return {
+            "success": True,
+            "metrics": {
+                **self.integration_metrics,
+                "load_dataset_avg_ms": round(avg_ms, 2),
+            }
+        }
     
     async def list_datasets(self) -> Dict[str, Any]:
         """

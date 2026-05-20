@@ -23,6 +23,7 @@ if (process.env.CI === 'true' && process.env.INSTALL_SUBMODULES !== 'true') {
 }
 
 const rootDir = path.join(__dirname, '..');
+const baselinePath = path.join(rootDir, 'config', 'submodule_integration_baseline.json');
 
 /**
  * Check if submodules are initialized
@@ -46,6 +47,42 @@ function areSubmodulesInitialized() {
   }
   
   return true;
+}
+
+function checkSubmoduleBaseline() {
+  if (!fs.existsSync(baselinePath)) {
+    return;
+  }
+
+  try {
+    const baseline = JSON.parse(fs.readFileSync(baselinePath, 'utf8')).baseline || {};
+    const drifted = [];
+
+    for (const [submodule, config] of Object.entries(baseline)) {
+      const submodulePath = path.join(rootDir, submodule);
+      if (!fs.existsSync(submodulePath)) continue;
+      try {
+        const sha = execSync('git rev-parse HEAD', { cwd: submodulePath, stdio: ['ignore', 'pipe', 'ignore'] })
+          .toString()
+          .trim();
+        if (config.currentSha && sha !== config.currentSha) {
+          drifted.push({ submodule, sha, expected: config.currentSha });
+        }
+      } catch {
+        // ignore submodule rev-parse failures
+      }
+    }
+
+    if (drifted.length) {
+      console.warn('\n⚠ Submodule baseline drift detected:');
+      for (const item of drifted) {
+        console.warn(`  - ${item.submodule}: ${item.sha} (expected ${item.expected})`);
+      }
+      console.warn('Run: python scripts/manage_submodule_baseline.py apply-baseline\n');
+    }
+  } catch {
+    // ignore baseline parse errors in postinstall
+  }
 }
 
 /**
@@ -174,6 +211,8 @@ async function main() {
     console.log('Submodule dependencies already installed. Skipping...');
     console.log('(Run "npm run install:submodules" to reinstall if needed)');
   }
+
+  checkSubmoduleBaseline();
 }
 
 main().catch((err) => {
