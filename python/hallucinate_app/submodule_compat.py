@@ -69,8 +69,9 @@ def call_with_param_fallback(method: Callable[..., Any], params: Optional[Dict[s
     Call `method` using progressively more permissive signatures.
 
     Returns:
-        Tuple[result, retries_used] where retries_used is the number of
-        fallback attempts beyond the first call (0 means first attempt worked).
+        Tuple[result, retries_used] where retries_used is the index of the
+        successful attempt in the fallback chain (0 means first attempt worked,
+        1 means first fallback, 2 means second fallback).
     """
     params = params or {}
     attempts = [

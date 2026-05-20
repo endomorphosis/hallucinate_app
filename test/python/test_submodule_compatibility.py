@@ -51,6 +51,16 @@ class TestSubmoduleCompatibility(unittest.TestCase):
         self.assertEqual(result["model"], "x")
         self.assertEqual(retry_count, 0)
 
+    def test_call_with_param_fallback_second_fallback_path(self):
+        class APIStub:
+            def load(self):
+                return {"ok": True, "mode": "no-arg"}
+
+        result, retry_count = call_with_param_fallback(APIStub().load, {"model": "x"})
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["mode"], "no-arg")
+        self.assertEqual(retry_count, 2)
+
     def test_build_simple_api_falls_back_to_metadata_ctor(self):
         class SimpleAPIStub:
             def __init__(self, metadata=None):

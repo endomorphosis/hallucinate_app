@@ -70,8 +70,8 @@ function checkSubmoduleBaseline() {
         if (config.currentSha && sha !== config.currentSha) {
           drifted.push({ submodule, sha, expected: config.currentSha });
         }
-      } catch {
-        // ignore submodule rev-parse failures
+      } catch (error) {
+        console.warn(`⚠ Unable to resolve submodule SHA for ${submodule}: ${error.message}`);
       }
     }
 
