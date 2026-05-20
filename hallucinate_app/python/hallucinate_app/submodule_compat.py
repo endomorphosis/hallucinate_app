@@ -50,7 +50,10 @@ def instantiate_from_candidates(
         try:
             return _try_constructor(target, resources, metadata)
         except Exception as exc:  # pragma: no cover - diagnostic path
-            logger.debug("Constructor compatibility attempt failed", candidate=name, error=str(exc))
+            logger.debug(
+                "Constructor compatibility attempt failed",
+                extra={"candidate": name, "error": str(exc)},
+            )
             errors.append(f"{name}: {exc}")
     if errors:
         raise RuntimeError(f"No compatible constructor found. Attempts: {'; '.join(errors)}")
