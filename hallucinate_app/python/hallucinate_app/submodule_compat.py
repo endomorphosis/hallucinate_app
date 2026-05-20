@@ -68,6 +68,13 @@ def resolve_maybe_awaitable(value: Any) -> Any:
 
 
 def call_with_param_fallback(method: Callable[..., Any], params: Optional[Dict[str, Any]] = None) -> Tuple[Any, int]:
+    """
+    Call `method` using progressively more permissive signatures.
+
+    Returns:
+        Tuple[result, retries_used] where retries_used is the number of
+        fallback attempts beyond the first call (0 means first attempt worked).
+    """
     params = params or {}
     attempts = [
         lambda: method(**params),
@@ -78,7 +85,8 @@ def call_with_param_fallback(method: Callable[..., Any], params: Optional[Dict[s
     for idx, attempt in enumerate(attempts):
         try:
             result = attempt()
-            return resolve_maybe_awaitable(result), idx
+            retries_used = idx
+            return resolve_maybe_awaitable(result), retries_used
         except TypeError as exc:
             last_error = exc
     if last_error:

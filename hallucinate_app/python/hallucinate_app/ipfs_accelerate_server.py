@@ -118,6 +118,7 @@ async def run_with_metrics(endpoint_name, operation, retries=1):
     started = time.perf_counter()
     integration_metrics["endpoint_calls"][endpoint_name] += 1
     attempts = 0
+    max_attempts = max(1, retries + 1)
     try:
         while True:
             attempts += 1
@@ -127,7 +128,7 @@ async def run_with_metrics(endpoint_name, operation, retries=1):
                     result = await result
                 return result
             except Exception:
-                if attempts > retries:
+                if attempts >= max_attempts:
                     integration_metrics["endpoint_errors"][endpoint_name] += 1
                     raise
                 integration_metrics["endpoint_retries"][endpoint_name] += 1

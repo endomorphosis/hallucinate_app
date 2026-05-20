@@ -39,7 +39,17 @@ class TestSubmoduleCompatibility(unittest.TestCase):
         result, retry_count = call_with_param_fallback(APIStub().load, {"model": "x"})
         self.assertTrue(result["ok"])
         self.assertEqual(result["payload"]["model"], "x")
-        self.assertGreaterEqual(retry_count, 1)
+        self.assertEqual(retry_count, 1)
+
+    def test_call_with_param_fallback_no_retry_when_kwargs_match(self):
+        class APIStub:
+            def load(self, model=None):
+                return {"ok": True, "model": model}
+
+        result, retry_count = call_with_param_fallback(APIStub().load, {"model": "x"})
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["model"], "x")
+        self.assertEqual(retry_count, 0)
 
     def test_build_simple_api_falls_back_to_metadata_ctor(self):
         class SimpleAPIStub:
