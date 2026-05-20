@@ -61,6 +61,8 @@ function checkSubmoduleBaseline() {
     for (const [submodule, config] of Object.entries(baseline)) {
       const submodulePath = path.join(rootDir, submodule);
       if (!fs.existsSync(submodulePath)) continue;
+      const resolved = path.resolve(submodulePath);
+      if (!resolved.startsWith(path.resolve(rootDir) + path.sep)) continue;
       try {
         const sha = execSync('git rev-parse HEAD', { cwd: submodulePath, stdio: ['ignore', 'pipe', 'ignore'] })
           .toString()

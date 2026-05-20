@@ -19,6 +19,10 @@ def load_baseline():
 
 
 def run(cmd, cwd=ROOT):
+    cwd = Path(cwd).resolve()
+    root_resolved = ROOT.resolve()
+    if cwd != root_resolved and root_resolved not in cwd.parents:
+        raise RuntimeError(f"Refusing to run command outside repository: {cwd}")
     result = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
     if result.returncode != 0:
         raise RuntimeError(f"Command failed: {' '.join(cmd)}\n{result.stderr.strip()}")

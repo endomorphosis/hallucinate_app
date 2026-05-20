@@ -87,9 +87,12 @@ def call_with_param_fallback(method: Callable[..., Any], params: Optional[Dict[s
 
 
 def build_simple_api(simple_api_cls: Callable[..., Any], config_path: Optional[str], role: str, metadata: Dict[str, Any]) -> Any:
+    metadata_payload = dict(metadata or {})
+    metadata_payload.setdefault("config_path", config_path)
+    metadata_payload.setdefault("role", role)
     attempts = [
         lambda: simple_api_cls(config_path=config_path, role=role),
-        lambda: simple_api_cls(metadata={"config_path": config_path, "role": role, **(metadata or {})}),
+        lambda: simple_api_cls(metadata=metadata_payload),
         lambda: simple_api_cls(config_path, role),
         lambda: simple_api_cls(),
     ]
