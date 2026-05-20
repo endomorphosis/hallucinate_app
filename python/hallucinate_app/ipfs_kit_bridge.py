@@ -85,8 +85,8 @@ class IPFSKitBridge:
         self.last_error = None
         self.start_time = time.time()
         self.compatibility_metrics = {
-            "signature_retries": 0,
-            "signature_failures": 0,
+            "method_signature_retries": 0,
+            "method_signature_failures": 0,
         }
         
         # Initialize observability
@@ -236,7 +236,7 @@ class IPFSKitBridge:
                     with timer(f"ipfs_{command}"):
                         result, retry_count = call_with_param_fallback(method, params)
                         if retry_count > 0:
-                            self.compatibility_metrics["signature_retries"] += retry_count
+                            self.compatibility_metrics["method_signature_retries"] += retry_count
                     
                     # Track successful operation
                     track_operation(command, status="success")
@@ -285,7 +285,7 @@ class IPFSKitBridge:
                 # Increment error counter
                 self.error_count += 1
                 if isinstance(e, TypeError):
-                    self.compatibility_metrics["signature_failures"] += 1
+                    self.compatibility_metrics["method_signature_failures"] += 1
                 self.last_error = {
                     "command": command,
                     "params": params,

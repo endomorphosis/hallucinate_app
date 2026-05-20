@@ -81,6 +81,8 @@ class TestSubmoduleCompatibility(unittest.TestCase):
         for item in baseline.values():
             self.assertEqual(len(item["currentSha"]), 40)
             self.assertEqual(len(item["rollbackSha"]), 40)
+            self.assertRegex(item["currentSha"], r"^[0-9a-f]{40}$")
+            self.assertRegex(item["rollbackSha"], r"^[0-9a-f]{40}$")
 
 
 if __name__ == "__main__":

@@ -1,5 +1,10 @@
 """
-Compatibility helpers for evolving submodule APIs.
+Compatibility helpers for integration points that call fast-moving submodules.
+
+These helpers make constructor and method invocation resilient when upstream
+submodules change callable names or parameter signatures between revisions.
+They are used by integration bridges to preserve runtime compatibility across
+baseline and rollback SHA transitions.
 """
 
 import asyncio
@@ -45,6 +50,7 @@ def instantiate_from_candidates(
         try:
             return _try_constructor(target, resources, metadata)
         except Exception as exc:  # pragma: no cover - diagnostic path
+            logger.debug("Constructor compatibility attempt failed", candidate=name, error=str(exc))
             errors.append(f"{name}: {exc}")
     if errors:
         raise RuntimeError(f"No compatible constructor found. Attempts: {'; '.join(errors)}")

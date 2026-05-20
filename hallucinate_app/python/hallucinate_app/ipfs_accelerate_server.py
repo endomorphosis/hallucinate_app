@@ -127,11 +127,20 @@ async def run_with_metrics(endpoint_name, operation, retries=1):
                 if inspect.isawaitable(result):
                     result = await result
                 return result
-            except Exception:
+            except Exception as exc:
                 if attempts >= max_attempts:
                     integration_metrics["endpoint_errors"][endpoint_name] += 1
                     raise
                 integration_metrics["endpoint_retries"][endpoint_name] += 1
+                logger.debug(
+                    "Retrying endpoint operation after failure",
+                    extra={
+                        "endpoint": endpoint_name,
+                        "attempt": attempts,
+                        "max_attempts": max_attempts,
+                        "error": str(exc),
+                    },
+                )
     finally:
         elapsed_ms = (time.perf_counter() - started) * 1000.0
         integration_metrics["endpoint_total_ms"][endpoint_name] += elapsed_ms

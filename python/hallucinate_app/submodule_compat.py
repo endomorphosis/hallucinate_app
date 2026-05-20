@@ -1,5 +1,10 @@
 """
-Compatibility helpers for evolving submodule APIs.
+Compatibility helpers for integration points that call fast-moving submodules.
+
+These helpers make constructor and method invocation resilient when upstream
+submodules change callable names or parameter signatures between revisions.
+They are used by integration bridges to preserve runtime compatibility across
+baseline and rollback SHA transitions.
 """
 
 import asyncio
