@@ -6,13 +6,24 @@ import sys
 import subprocess
 import time
 import signal
+import importlib.util
 from pathlib import Path
 
 class TestAccelerateServer(unittest.TestCase):
+    @staticmethod
+    def _ensure_test_dependencies(project_root: Path):
+        required_modules = ["fastapi", "uvicorn", "requests", "pydantic"]
+        missing = [name for name in required_modules if importlib.util.find_spec(name) is None]
+        if missing:
+            print(f"Installing missing test dependencies: {', '.join(missing)}")
+            requirements_file = project_root / "test" / "requirements.txt"
+            subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", str(requirements_file)])
+
     @classmethod
     def setUpClass(cls):
         # Find the server script path - FORCE the test server for now
         project_root = Path(__file__).parents[2]
+        cls._ensure_test_dependencies(project_root)
         cls.server_path = project_root / "test" / "python" / "ipfs_accelerate_server.py"
         
         if not cls.server_path.exists():
@@ -33,7 +44,7 @@ class TestAccelerateServer(unittest.TestCase):
         # Start server
         cls.server_process = subprocess.Popen(
             [sys.executable, str(cls.server_path)],
-            stdout=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
             env=env
@@ -59,14 +70,18 @@ class TestAccelerateServer(unittest.TestCase):
         
         if retries >= max_retries:
             stderr_output = ""
-            if cls.server_process and cls.server_process.poll() is not None and cls.server_process.stderr:
+            stdout_output = ""
+            if cls.server_process and cls.server_process.poll() is not None:
                 try:
-                    stderr_output = cls.server_process.stderr.read() or ""
+                    stdout_output, stderr_output = cls.server_process.communicate(timeout=2)
                 except Exception:
                     pass
             if stderr_output:
                 print("Server stderr output:")
                 print(stderr_output)
+            if stdout_output:
+                print("Server stdout output:")
+                print(stdout_output)
             cls.tearDownClass()
             raise ConnectionError("Failed to connect to server")
     

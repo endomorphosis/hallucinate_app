@@ -153,7 +153,9 @@ export { TestAccelerateBridge };
 export default TestAccelerateBridge;
 
 // Run test if this file is executed directly
-if (process.argv[1] && path.resolve(fileURLToPath(import.meta.url)) === path.resolve(process.argv[1])) {
+const isDirectExecution = process.argv[1] &&
+  path.basename(fileURLToPath(import.meta.url)) === path.basename(process.argv[1]);
+if (isDirectExecution) {
   const tester = new TestAccelerateBridge();
   tester.runTests().then(success => {
     process.exit(success ? 0 : 1);
