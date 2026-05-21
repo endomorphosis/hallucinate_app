@@ -6,4 +6,5 @@
 /hallucinate_app/python/hallucinate_app/submodule_compat.py @endomorphosis
 /config/submodule_integration_baseline.json @endomorphosis
 /scripts/manage_submodule_baseline.py @endomorphosis
+/scripts/verify_submodule_imports.py @endomorphosis
 /docs/SUBMODULE_INTEGRATION_BASELINE.md @endomorphosis

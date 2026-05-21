@@ -1,5 +1,8 @@
 name: Submodule Integration Gates
 
+permissions:
+  contents: read
+
 on:
   pull_request:
     branches: [ main, develop ]
@@ -67,28 +70,8 @@ jobs:
       - name: Stage 1 - Baseline verification (block on drift)
         run: python scripts/manage_submodule_baseline.py verify-baseline
 
-      - name: Stage 1 - Submodule-native import smoke
-        run: |
-          python - <<'PY'
-          import importlib.util
-          import pathlib
-          import sys
-
-          root = pathlib.Path('.').resolve()
-          checks = {
-              'ipfs_accelerate_py': root / 'ipfs_accelerate_py',
-              'ipfs_datasets_py': root / 'ipfs_datasets_py',
-              'ipfs_kit_py': root / 'ipfs_kit_py',
-          }
-          for name, module_root in checks.items():
-              if not module_root.exists():
-                  raise SystemExit(f"{name} submodule directory missing: {module_root}")
-              sys.path.insert(0, str(module_root))
-              spec = importlib.util.find_spec(name)
-              if spec is None:
-                  raise SystemExit(f"Unable to import {name} from {module_root}")
-              print(f"✅ {name} import smoke passed")
-          PY
+      - name: Stage 1 - Submodule-native compile smoke
+        run: python scripts/verify_submodule_imports.py
 
       - name: Stage 2 - Compatibility contract tests
         run: python test/python/test_submodule_compatibility.py

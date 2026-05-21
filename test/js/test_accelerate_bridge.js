@@ -1,6 +1,7 @@
 import { spawn } from 'child_process';
 import path from 'path';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
 import pythonBridge from './python_bridge.js';
 
 class TestAccelerateBridge {
@@ -152,7 +153,7 @@ export { TestAccelerateBridge };
 export default TestAccelerateBridge;
 
 // Run test if this file is executed directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] && path.resolve(fileURLToPath(import.meta.url)) === path.resolve(process.argv[1])) {
   const tester = new TestAccelerateBridge();
   tester.runTests().then(success => {
     process.exit(success ? 0 : 1);

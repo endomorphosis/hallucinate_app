@@ -1,0 +1,15 @@
+{
+  "bridge": {
+    "bridge_integration": true
+  },
+  "electron": {
+    "window_creation": true,
+    "python_bridge_init": true,
+    "model_loading": true,
+    "inference": true,
+    "ui_updates": true
+  },
+  "databaseBackup": {
+    "success": true
+  }
+}

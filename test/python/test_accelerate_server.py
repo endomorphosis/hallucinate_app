@@ -33,7 +33,7 @@ class TestAccelerateServer(unittest.TestCase):
         # Start server
         cls.server_process = subprocess.Popen(
             [sys.executable, str(cls.server_path)],
-            stdout=subprocess.PIPE,
+            stdout=subprocess.DEVNULL,
             stderr=subprocess.PIPE,
             text=True,
             env=env
@@ -59,18 +59,14 @@ class TestAccelerateServer(unittest.TestCase):
         
         if retries >= max_retries:
             stderr_output = ""
-            stdout_output = ""
-            if cls.server_process and cls.server_process.poll() is not None:
+            if cls.server_process and cls.server_process.poll() is not None and cls.server_process.stderr:
                 try:
-                    stdout_output, stderr_output = cls.server_process.communicate(timeout=2)
+                    stderr_output = cls.server_process.stderr.read() or ""
                 except Exception:
                     pass
             if stderr_output:
                 print("Server stderr output:")
                 print(stderr_output)
-            if stdout_output:
-                print("Server stdout output:")
-                print(stdout_output)
             cls.tearDownClass()
             raise ConnectionError("Failed to connect to server")
     

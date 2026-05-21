@@ -121,7 +121,7 @@ Stage 2 (CI soak):
 - Required workflow: `.github/workflows/submodule-integration-gates.yml`
 - Required checks:
   - Baseline drift block (`verify-baseline`)
-  - Submodule-native import smoke (`ipfs_accelerate_py`, `ipfs_datasets_py`, `ipfs_kit_py`)
+  - Submodule-native compile smoke (`ipfs_accelerate_py`, `ipfs_datasets_py`, `ipfs_kit_py`)
   - Contract tests (`test/python/test_submodule_compatibility.py`)
   - Bridge/server smoke (`npm test`, `npm run test:python`, `npm run test:bridge`)
 
@@ -197,7 +197,7 @@ Use `/integration_metrics` plus bridge compatibility counters to validate these 
 ### Promotion checklist
 
 - [ ] `verify-baseline` passes.
-- [ ] Submodule-native import smoke passes.
+- [ ] Submodule-native compile smoke passes.
 - [ ] Contract tests pass.
 - [ ] Bridge/server smoke checks pass.
 - [ ] Telemetry thresholds are within limits.
@@ -210,4 +210,4 @@ Use `/integration_metrics` plus bridge compatibility counters to validate these 
 
 | Item | Owner | Follow-up |
 |---|---|---|
-| Full submodule-native suite selection beyond import-smoke gate | Submodule maintainers + monorepo maintainers | Expand from import-smoke to curated per-submodule test subsets as dependencies stabilize |
+| Full submodule-native suite selection beyond compile-smoke gate | Submodule maintainers + monorepo maintainers | Expand from compile-smoke to curated per-submodule test subsets as dependencies stabilize |
