@@ -11,7 +11,7 @@
     "test:menu": "node test/test_programmatic_menu.js",
     "test:bridge": "node test/js/test_accelerate_bridge.js",
     "test:electron": "node test/js/test_accelerate_electron.js",
-    "test:python": "python test/python/test_accelerate_server.py",
+    "test:python": "python -m pip install -r test/requirements.txt && python test/python/test_accelerate_server.py",
     "test:ipfs-kit": "node test/js/test_ipfs_kit_dashboard.js",
     "test:pyarrow-rt": "node --experimental-vm-modules node_modules/mocha/bin/mocha test/js/test_pyarrow_dashboard_rt.js",
     "test:database-backup:js": "mocha test/js/test_database_backup.js",

@@ -107,6 +107,29 @@ No hard-breaking change was confirmed in this monorepo run, but **constructor si
 - Build/package flow remains stable.
 - Baseline SHAs remain synchronized with `config/submodule_integration_baseline.json`.
 
+### Staged rollout gate implementation
+
+Stage 1 (local/dev):
+
+1. `python scripts/manage_submodule_baseline.py verify-baseline`
+2. `python test/python/test_submodule_compatibility.py`
+3. `npm test`
+4. `npm run test:python`
+
+Stage 2 (CI soak):
+
+- Required workflow: `.github/workflows/submodule-integration-gates.yml`
+- Required checks:
+  - Baseline drift block (`verify-baseline`)
+  - Submodule-native import smoke (`ipfs_accelerate_py`, `ipfs_datasets_py`, `ipfs_kit_py`)
+  - Contract tests (`test/python/test_submodule_compatibility.py`)
+  - Bridge/server smoke (`npm test`, `npm run test:python`, `npm run test:bridge`)
+
+Stage 3 (controlled merge + watch window):
+
+- Merge only after all Stage 2 checks pass.
+- Monitor integration telemetry (`/integration_metrics`) during post-merge soak.
+
 ---
 
 ## 5) Observability and safety controls
@@ -121,6 +144,19 @@ No hard-breaking change was confirmed in this monorepo run, but **constructor si
   - CI branch soak
   - mainline merge
   - post-merge monitoring window using telemetry endpoint/log metrics
+
+### Rollout thresholds (pause/rollback triggers)
+
+During CI soak and post-merge watch window, use these guardrails:
+
+| Signal | Threshold | Action |
+|---|---|---|
+| endpoint error rate | `errors > 0` for critical endpoints (`load_model`, `inference`) | pause rollout and investigate |
+| retry amplification | retries/calls > 0.20 for any endpoint | pause promotion and inspect compatibility fallback path |
+| latency regression | avg latency increase > 50% vs previous successful soak | require explicit approval before promotion |
+| method signature failures (`ipfs_kit_bridge`) | `method_signature_failures > 0` | block promotion until fixed or approved exception |
+
+Use `/integration_metrics` plus bridge compatibility counters to validate these thresholds.
 
 ---
 
@@ -150,12 +186,28 @@ No hard-breaking change was confirmed in this monorepo run, but **constructor si
   - execute rollback:
     - `python scripts/manage_submodule_baseline.py apply-rollback`
 
+### Rollback drill checklist (non-prod)
+
+- Run `python scripts/manage_submodule_baseline.py status`.
+- Run `python scripts/manage_submodule_baseline.py apply-rollback`.
+- Re-run smoke checks (`npm test`, `npm run test:python`, `npm run test:bridge`).
+- Confirm regressions clear and expected rollback SHAs are active.
+- Record drill result and date in release checklist/release notes.
+
+### Promotion checklist
+
+- [ ] `verify-baseline` passes.
+- [ ] Submodule-native import smoke passes.
+- [ ] Contract tests pass.
+- [ ] Bridge/server smoke checks pass.
+- [ ] Telemetry thresholds are within limits.
+- [ ] Rollback readiness confirmed (drill completed or recently validated).
+- [ ] Baseline doc + manifest updated together (when SHAs changed).
+
 ---
 
 ## Unresolved upstream items
 
 | Item | Owner | Follow-up |
 |---|---|---|
-| Baseline `npm test` currently fails due existing export mismatch in `test/test.js` import chain | Monorepo maintainers | Resolve separately; not introduced by submodule update |
-| Baseline `npm run test:python` server startup failure in current environment | Monorepo maintainers | Stabilize test server startup and dependency prerequisites in CI |
-| Full submodule-native suite selection for CI soak | Submodule maintainers + monorepo maintainers | Finalize minimal high-signal smoke subsets and lock them in workflow |
+| Full submodule-native suite selection beyond import-smoke gate | Submodule maintainers + monorepo maintainers | Expand from import-smoke to curated per-submodule test subsets as dependencies stabilize |

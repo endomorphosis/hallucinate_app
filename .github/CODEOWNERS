@@ -1,0 +1,9 @@
+# Submodule integration contract owners
+/hallucinate_app/python/hallucinate_app/ipfs_datasets.py @endomorphosis
+/hallucinate_app/python/hallucinate_app/ipfs_accelerate_server.py @endomorphosis
+/python/hallucinate_app/ipfs_kit_bridge.py @endomorphosis
+/python/hallucinate_app/submodule_compat.py @endomorphosis
+/hallucinate_app/python/hallucinate_app/submodule_compat.py @endomorphosis
+/config/submodule_integration_baseline.json @endomorphosis
+/scripts/manage_submodule_baseline.py @endomorphosis
+/docs/SUBMODULE_INTEGRATION_BASELINE.md @endomorphosis

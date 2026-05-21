@@ -1,0 +1,103 @@
+name: Submodule Integration Gates
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'config/submodule_integration_baseline.json'
+      - 'scripts/manage_submodule_baseline.py'
+      - 'test/python/test_submodule_compatibility.py'
+      - 'test/python/test_accelerate_server.py'
+      - 'test/js/test_accelerate_bridge.js'
+      - 'test/js/python_bridge.js'
+      - 'test/test.js'
+      - 'python/hallucinate_app/ipfs_kit_bridge.py'
+      - 'hallucinate_app/python/hallucinate_app/ipfs_datasets.py'
+      - 'hallucinate_app/python/hallucinate_app/ipfs_accelerate_server.py'
+      - '.github/workflows/submodule-integration-gates.yml'
+      - 'docs/SUBMODULE_INTEGRATION_BASELINE.md'
+      - '.github/CODEOWNERS'
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'config/submodule_integration_baseline.json'
+      - 'scripts/manage_submodule_baseline.py'
+      - 'test/python/test_submodule_compatibility.py'
+      - 'test/python/test_accelerate_server.py'
+      - 'test/js/test_accelerate_bridge.js'
+      - 'test/js/python_bridge.js'
+      - 'test/test.js'
+      - 'python/hallucinate_app/ipfs_kit_bridge.py'
+      - 'hallucinate_app/python/hallucinate_app/ipfs_datasets.py'
+      - 'hallucinate_app/python/hallucinate_app/ipfs_accelerate_server.py'
+      - '.github/workflows/submodule-integration-gates.yml'
+      - 'docs/SUBMODULE_INTEGRATION_BASELINE.md'
+      - '.github/CODEOWNERS'
+  workflow_dispatch:
+
+jobs:
+  integration-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          python -m pip install --upgrade pip
+          pip install -r test/requirements.txt
+          pip install pytest
+
+      - name: Stage 1 - Baseline verification (block on drift)
+        run: python scripts/manage_submodule_baseline.py verify-baseline
+
+      - name: Stage 1 - Submodule-native import smoke
+        run: |
+          python - <<'PY'
+          import importlib.util
+          import pathlib
+          import sys
+
+          root = pathlib.Path('.').resolve()
+          checks = {
+              'ipfs_accelerate_py': root / 'ipfs_accelerate_py',
+              'ipfs_datasets_py': root / 'ipfs_datasets_py',
+              'ipfs_kit_py': root / 'ipfs_kit_py',
+          }
+          for name, module_root in checks.items():
+              if not module_root.exists():
+                  raise SystemExit(f"{name} submodule directory missing: {module_root}")
+              sys.path.insert(0, str(module_root))
+              spec = importlib.util.find_spec(name)
+              if spec is None:
+                  raise SystemExit(f"Unable to import {name} from {module_root}")
+              print(f"✅ {name} import smoke passed")
+          PY
+
+      - name: Stage 2 - Compatibility contract tests
+        run: python test/python/test_submodule_compatibility.py
+
+      - name: Stage 2 - Monorepo integration smoke (test runner chain)
+        run: npm test
+
+      - name: Stage 2 - Model-serving and datasets smoke
+        run: npm run test:python
+
+      - name: Stage 2 - Bridge smoke
+        run: npm run test:bridge

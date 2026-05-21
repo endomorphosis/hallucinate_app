@@ -19,12 +19,24 @@ class TestAccelerateServer(unittest.TestCase):
             raise FileNotFoundError(f"Test server script not found at {cls.server_path}")
         
         print(f"Starting test server from: {cls.server_path}")
+
+        project_python_path = project_root / "python"
+        app_python_path = project_root / "hallucinate_app" / "python"
+        env = os.environ.copy()
+        python_path_entries = [env.get("PYTHONPATH", "")]
+        if project_python_path.exists():
+            python_path_entries.insert(0, str(project_python_path))
+        if app_python_path.exists():
+            python_path_entries.insert(0, str(app_python_path))
+        env["PYTHONPATH"] = os.pathsep.join([p for p in python_path_entries if p])
         
         # Start server
         cls.server_process = subprocess.Popen(
             [sys.executable, str(cls.server_path)],
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
+            stderr=subprocess.PIPE,
+            text=True,
+            env=env
         )
         
         # Wait for server to start
@@ -46,6 +58,19 @@ class TestAccelerateServer(unittest.TestCase):
             print(f"Waiting for server... retry {retries}/{max_retries}")
         
         if retries >= max_retries:
+            stderr_output = ""
+            stdout_output = ""
+            if cls.server_process and cls.server_process.poll() is not None:
+                try:
+                    stdout_output, stderr_output = cls.server_process.communicate(timeout=2)
+                except Exception:
+                    pass
+            if stderr_output:
+                print("Server stderr output:")
+                print(stderr_output)
+            if stdout_output:
+                print("Server stdout output:")
+                print(stdout_output)
             cls.tearDownClass()
             raise ConnectionError("Failed to connect to server")
     
@@ -133,6 +158,20 @@ class TestAccelerateServer(unittest.TestCase):
         self.assertIn('initialization', test_results)
         self.assertIn('model_loading', test_results)
         self.assertIn('inference', test_results)
+
+    def test_datasets_module_smoke(self):
+        """Smoke test datasets module loading path using mock environment"""
+        response = requests.post(
+            f"{self.server_url}/test_module/datasets",
+            json={"environment": "mock", "resources": {}, "metadata": {}}
+        )
+        self.assertEqual(response.status_code, 200, f"Datasets smoke test failed: {response.text}")
+        data = response.json()
+        self.assertIn("success", data)
+        self.assertTrue(data["success"])
+        test_results = data.get("test_results", {})
+        self.assertIn("dataset_loaded", test_results)
+        self.assertTrue(test_results["dataset_loaded"])
 
 if __name__ == "__main__":
     unittest.main()

@@ -2,8 +2,6 @@ import { TestAccelerateBridge } from './js/test_accelerate_bridge.js';
 import { MockApp } from './js/test_accelerate_electron.js';
 import fs from 'fs';
 import path from 'path';
-// Require the database backup tests
-const databaseBackupTests = require('./js/test_database_backup.js');
 
 class TestRunner {
   constructor() {

@@ -52,6 +52,22 @@ def print_status(baseline):
         print(f"  rollback={rollback}")
 
 
+def verify_baseline(baseline):
+    drift = []
+    for name, config in baseline.items():
+        current = get_submodule_sha(name)
+        target = config["currentSha"]
+        if current != target:
+            drift.append((name, current, target))
+    if drift:
+        print("Submodule baseline drift detected:")
+        for name, current, target in drift:
+            print(f"- {name}: current={current} expected={target}")
+        return False
+    print("Baseline verification passed: all submodule SHAs match manifest targets.")
+    return True
+
+
 def apply_mode(baseline, mode):
     key = "currentSha" if mode == "baseline" else "rollbackSha"
     for name, config in baseline.items():
@@ -62,13 +78,17 @@ def apply_mode(baseline, mode):
 
 def main():
     parser = argparse.ArgumentParser(description="Manage pinned submodule baseline and rollback SHAs.")
-    parser.add_argument("action", choices=["status", "apply-baseline", "apply-rollback"])
+    parser.add_argument("action", choices=["status", "verify-baseline", "apply-baseline", "apply-rollback"])
     args = parser.parse_args()
 
     baseline = load_baseline()
 
     if args.action == "status":
         print_status(baseline)
+        return
+    if args.action == "verify-baseline":
+        if not verify_baseline(baseline):
+            raise SystemExit(1)
         return
     if args.action == "apply-baseline":
         apply_mode(baseline, "baseline")

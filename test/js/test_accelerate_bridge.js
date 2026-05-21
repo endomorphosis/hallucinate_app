@@ -139,10 +139,20 @@ class TestAccelerateBridge {
       pythonBridge.startServer = originalStartServer;
     }
   }
+
+  async test() {
+    const success = await this.runTests();
+    return {
+      bridge_integration: success
+    };
+  }
 }
 
+export { TestAccelerateBridge };
+export default TestAccelerateBridge;
+
 // Run test if this file is executed directly
-if (import.meta.url.endsWith('/test_accelerate_bridge.js')) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   const tester = new TestAccelerateBridge();
   tester.runTests().then(success => {
     process.exit(success ? 0 : 1);
