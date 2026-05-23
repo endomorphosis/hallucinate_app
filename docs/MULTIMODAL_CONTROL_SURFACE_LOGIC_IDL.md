@@ -173,8 +173,11 @@ Add a top-level descriptor section named `control_surface_contract`.
 
 This must be supported first in the descriptor/runtime surfaces packaged by Hallucinate App, then mirrored to remote clients such as the Meta-glasses path.
 
-Canonical schema artifact:
+Canonical schema artifacts:
 - `hallucinate_app/swissknife/contracts/control_surface_contract.schema.json`
+- `hallucinate_app/swissknife/contracts/interaction_envelope.schema.json`
+- `hallucinate_app/swissknife/contracts/policy_decision.schema.json`
+- `hallucinate_app/swissknife/contracts/mediation_receipt.schema.json`
 
 The bundled `hallucinate_app/swissknife/` checkout is currently empty in this workspace, so `HAO-002` starts by defining the schema artifact there as the canonical source of truth that later descriptor builders and ORB surfaces will consume.
 
@@ -245,6 +248,25 @@ The bundled `hallucinate_app/swissknife/` checkout is currently empty in this wo
   }
 }
 ```
+
+### Formal policy binding fields
+`HAO-006` upgrades the descriptor schemas so policy linkage is explicit instead
+of implied by runtime adapters. The `control_surface_contract` schema now
+requires `logic_bindings` at the contract level, on every control surface, and
+on every intent/method binding. Each `logic_bindings[]` entry carries a
+`policy_bundle_ref`, a `compiled_policy_cid`, selected frame-fact kinds, optional
+norm and compiled artifact references, plus schema refs for
+`interaction_envelope`, `policy_decision`, and `mediation_receipt`.
+
+The runtime schemas mirror that chain:
+- `interaction_envelope` may carry the selected `policy_bundle_ref`,
+  `compiled_policy_cid`, and descriptor `logic_bindings` used for one attempted
+  invocation.
+- `policy_decision` records the evaluated `interaction_envelope`, matched norms,
+  invocation effects, `policy_bundle_ref`, and `compiled_policy_cid`.
+- `mediation_receipt` nests the `interaction_envelope` and `policy_decision`,
+  then records `policy_refs` so audit storage can trace an outcome back to the
+  policy bundle and compiled logic artifacts that mediated the method call.
 
 ## Canonical Runtime Envelope
 Every control surface should normalize into one envelope before policy evaluation.
