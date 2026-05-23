@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "generatedAt": "2026-05-22T15:13:45.798Z",
+  "owner": "endomorphosis/hallucinate_app",
+  "baseline": {
+    "ipfs_accelerate_py": {
+      "currentSha": "ff61c14b4df44529ff6f73efa5e26fadeda649d5",
+      "rollbackSha": "7293488f8844e3c7af9fb7d4c6728d86a208f4da"
+    },
+    "ipfs_datasets_py": {
+      "currentSha": "14755236c1831a028ac8dc2cfcbfaa0aa5870bf4",
+      "rollbackSha": "04363beba3e65f07afa81dadfb966d56d093ea3e"
+    },
+    "ipfs_kit_py": {
+      "currentSha": "3133d4fdc85a885ba7d776465bdee48f7a867e01",
+      "rollbackSha": "a433540ea34e3808a7c92b6b80d88a32150f1d88"
+    },
+    "swissknife": {
+      "currentSha": "5b4598e15709203c0fe2265fdab2f51ea822b0f2",
+      "rollbackSha": "f9dcf8e5b885f240904ff4c4cef7127c9535ea40"
+    }
+  },
+  "notes": {
+    "purpose": "Freeze integration target SHAs and preserve known-good rollback SHAs for staged rollout.",
+    "usage": "Use scripts/manage_submodule_baseline.py to verify/apply/rollback."
+  }
+}

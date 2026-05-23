@@ -1,0 +1,608 @@
+{
+  "id": "virtual-ai-os-mcp-plus-plus-service-mesh",
+  "profileVersion": "0.1.0",
+  "status": "accepted",
+  "date": "2026-05-22",
+  "owner": "hallucinate_app",
+  "dependsOn": [
+    "OS-003"
+  ],
+  "contractScope": {
+    "description": "Repository-owned MCP++ service mesh profile for Virtual AI OS service adapters.",
+    "appliesToServiceKinds": [
+      "storage",
+      "knowledge",
+      "compute",
+      "agent-shell",
+      "protocol-reference"
+    ],
+    "baselineContract": "python/hallucinate_app/virtual_os/contracts.py",
+    "normativeArtifact": "config/mcp_plus_plus_profile.json",
+    "referenceArtifacts": [
+      "ipfs_accelerate_py/ipfs_accelerate_py/mcplusplus/docs/spec/mcp++-profiles-draft.md",
+      "ipfs_accelerate_py/ipfs_accelerate_py/mcplusplus/docs/spec/transport-mcp-p2p.md",
+      "ipfs_accelerate_py/ipfs_accelerate_py/mcplusplus/docs/spec/mcp-idl.md",
+      "ipfs_accelerate_py/ipfs_accelerate_py/mcplusplus/docs/spec/cid-native-artifacts.md",
+      "ipfs_accelerate_py/ipfs_accelerate_py/mcplusplus/docs/spec/ucan-delegation.md",
+      "ipfs_accelerate_py/ipfs_accelerate_py/mcplusplus/docs/spec/event-dag-ordering.md",
+      "ipfs_accelerate_py/ipfs_accelerate_py/mcplusplus/docs/spec/risk-scheduling.md",
+      "swissknife/docs/mcp-plus-plus.md"
+    ]
+  },
+  "mcpPlusPlusProfiles": [
+    "mcp++/idl",
+    "mcp++/cid-envelope",
+    "mcp++/ucan",
+    "mcp++/event-dag",
+    "mcp++/risk-scheduler",
+    "mcp+p2p"
+  ],
+  "transport": {
+    "baseline": {
+      "id": "mcp-json-rpc",
+      "required": true,
+      "requirement": "Preserve standard MCP JSON-RPC 2.0 request, response, notification, initialization, and capability-negotiation semantics over the configured daemon endpoint.",
+      "supportedEndpointProtocols": [
+        "stdio",
+        "http",
+        "sse",
+        "websocket"
+      ],
+      "sessionRequirements": [
+        "run MCP initialize before tool, resource, prompt, or interface traffic",
+        "advertise supported MCP++ profiles in initialize capabilities",
+        "preserve JSON-RPC id correlation with multiple in-flight requests",
+        "define keepalive, timeout, retry, and idempotency behavior per endpoint",
+        "separate transport identity from execution authority"
+      ]
+    },
+    "p2p": {
+      "id": "mcp+p2p",
+      "required": false,
+      "protocolIds": [
+        "/mcp+p2p/1.0.0"
+      ],
+      "framing": {
+        "strategy": "uint32-be-length-prefixed-utf8-json",
+        "maxFrameBytes": 4194304,
+        "oversizeBehavior": "close-stream-with-protocol-error"
+      },
+      "securityRequirements": [
+        "use authenticated and encrypted libp2p channels",
+        "rate-limit inbound sessions and message volume",
+        "enforce per-peer stream, bandwidth, and in-flight request quotas",
+        "validate frame length before allocating payload buffers"
+      ],
+      "pubsub": {
+        "required": false,
+        "allowedTopics": [
+          "mcp++/interfaces/announce",
+          "mcp++/receipts/announce",
+          "mcp++/decisions/announce",
+          "mcp++/scheduler/coordination"
+        ],
+        "requirement": "Pubsub may disseminate descriptors, receipts, decisions, and scheduling signals, but request/response correctness must not depend on pubsub delivery."
+      }
+    }
+  },
+  "idl": {
+    "profile": "mcp++/idl",
+    "canonicalization": {
+      "required": true,
+      "acceptableEncodings": [
+        "canonical-json",
+        "dag-json",
+        "dag-cbor"
+      ],
+      "rules": [
+        "sort object keys deterministically",
+        "omit undefined values before hashing",
+        "preserve explicit schema and version markers",
+        "compute interface_cid from canonical bytes"
+      ]
+    },
+    "descriptorRequiredFields": [
+      "name",
+      "namespace",
+      "version",
+      "methods",
+      "errors",
+      "requires",
+      "compatibility"
+    ],
+    "descriptorRecommendedFields": [
+      "semantic_tags",
+      "observability",
+      "interaction_patterns",
+      "resource_cost_hints",
+      "schema_hash"
+    ],
+    "methodRequiredFields": [
+      "name",
+      "input_schema_cid",
+      "output_schema_cid"
+    ],
+    "repositoryMethods": [
+      "interfaces/list",
+      "interfaces/get",
+      "interfaces/compat"
+    ],
+    "optionalRepositoryMethods": [
+      "interfaces/select"
+    ],
+    "compatibilityVerdictFields": [
+      "compatible",
+      "reasons",
+      "requires_missing",
+      "suggested_alternatives"
+    ]
+  },
+  "envelope": {
+    "profile": "mcp++/cid-envelope",
+    "canonicalizationRequired": true,
+    "executionEnvelopeRequiredFields": [
+      "interface_cid",
+      "input_cid",
+      "intent_cid",
+      "parents"
+    ],
+    "executionEnvelopeOptionalFields": [
+      "policy_cid",
+      "proof_cid",
+      "context_cids",
+      "correlation_id",
+      "declared_side_effects",
+      "created_at"
+    ],
+    "artifactCidFields": [
+      "input_cid",
+      "output_cid",
+      "intent_cid",
+      "policy_cid",
+      "proof_cid",
+      "decision_cid",
+      "receipt_cid",
+      "event_cid"
+    ],
+    "receiptRequiredFields": [
+      "intent_cid",
+      "output_cid",
+      "proofs_checked",
+      "decision_cid",
+      "time_observed",
+      "receipt_cid"
+    ],
+    "receiptRecommendedFields": [
+      "envelope_cid",
+      "observed_side_effects",
+      "correlation_id",
+      "signatures",
+      "signer_did"
+    ],
+    "requirements": [
+      "wrap every cross-component tool, resource, prompt, and workflow invocation in an execution envelope",
+      "carry parent event CIDs when an invocation depends on prior events",
+      "emit a receipt for every completed, failed, denied, or cancelled invocation",
+      "bind receipts to the proofs and policy decision evaluated for the invocation"
+    ]
+  },
+  "ucanDelegation": {
+    "profile": "mcp++/ucan",
+    "identityScheme": "did:key",
+    "proofBundleField": "proof_cid",
+    "tokenField": "ucan_proofs",
+    "capabilityVocabulary": [
+      {
+        "resource": "mcp++/interfaces/{interface_cid}",
+        "actions": [
+          "mcp++/invoke",
+          "mcp++/describe"
+        ]
+      },
+      {
+        "resource": "mcp++/content/{cid}",
+        "actions": [
+          "mcp++/read-cid",
+          "mcp++/write-cid",
+          "mcp++/derive-cid"
+        ]
+      },
+      {
+        "resource": "virtual-os://services/{service_id}",
+        "actions": [
+          "read",
+          "execute",
+          "delegate",
+          "admin"
+        ]
+      },
+      {
+        "resource": "virtual-os://events/{event_stream}",
+        "actions": [
+          "emit",
+          "subscribe"
+        ]
+      }
+    ],
+    "executionTimeValidation": [
+      "verify issuer and audience DID bindings",
+      "verify token signatures",
+      "verify delegation attenuation across the proof chain",
+      "verify interface, method, content, and service capability matching",
+      "enforce caveats for time windows, budgets, peer groups, and environment constraints",
+      "reject expired or revoked proofs before dispatch"
+    ],
+    "revocation": {
+      "required": true,
+      "revocationInputs": [
+        "grant_id",
+        "issuer_did",
+        "audience_did",
+        "proof_cid",
+        "reason",
+        "revoked_at"
+      ],
+      "auditEventType": "mcp_plus_plus.ucan.revoked"
+    },
+    "osContractMapping": {
+      "grant": "CapabilityGrant",
+      "authority": "CapabilityAuthority",
+      "resource": "ResourceRef",
+      "identity": "IdentityRef"
+    }
+  },
+  "eventDag": {
+    "profile": "mcp++/event-dag",
+    "ordering": "strict-partial-order",
+    "canonicalizationRequired": true,
+    "eventNodeRequiredFields": [
+      "parents",
+      "interface_cid",
+      "intent_cid",
+      "proof_cid",
+      "decision_cid",
+      "output_cid",
+      "receipt_cid",
+      "peer_did",
+      "timestamps"
+    ],
+    "eventNodeRecommendedFields": [
+      "event_cid",
+      "envelope_cid",
+      "correlation_id",
+      "operation",
+      "artifact_cids",
+      "provenance_refs",
+      "decision_outcome",
+      "obligation_overdue"
+    ],
+    "requirements": [
+      "record parent event CIDs for every causal dependency",
+      "treat independent events as concurrent without imposing a global total order",
+      "maintain service-local tips for replay, audit, rollback, and provenance traversal",
+      "validate availability and canonicalization of referenced CIDs during replay",
+      "detect conflicting intents that touch the same exclusive resource or violate invariants"
+    ],
+    "eventTypes": [
+      "mcp_plus_plus.invocation.enqueued",
+      "mcp_plus_plus.invocation.started",
+      "mcp_plus_plus.invocation.completed",
+      "mcp_plus_plus.invocation.failed",
+      "mcp_plus_plus.invocation.denied",
+      "mcp_plus_plus.receipt.emitted",
+      "mcp_plus_plus.policy.decided",
+      "mcp_plus_plus.ucan.revoked",
+      "mcp_plus_plus.scheduler.rescheduled"
+    ],
+    "osContractMapping": {
+      "event": "EventEnvelope",
+      "bus": "EventBus",
+      "parentIds": "EventEnvelope.parent_event_ids",
+      "correlationId": "EventEnvelope.correlation_id"
+    }
+  },
+  "scheduler": {
+    "profile": "mcp++/risk-scheduler",
+    "frontier": "risk-adjusted-priority-queue",
+    "requiredInputs": [
+      "intent_cid",
+      "interface_cid",
+      "parent_event_cids",
+      "priority_hint",
+      "resource_claims",
+      "capability_grants",
+      "proof_cid",
+      "policy_cid"
+    ],
+    "optionalInputs": [
+      "peer_cluster",
+      "deadline",
+      "budget",
+      "idempotency_key",
+      "context_budget_tokens",
+      "max_retries"
+    ],
+    "riskEvidence": [
+      "policy_violation_count",
+      "missed_obligation_count",
+      "unauthorized_invocation_count",
+      "disputed_receipt_count",
+      "rollback_count",
+      "anomaly_rate"
+    ],
+    "priorityFormula": "effective_priority = priority_hint + risk_weight * normalized_risk_score",
+    "requirements": [
+      "do not dispatch until parent event dependencies are ready or explicitly bypassed by policy",
+      "reserve required ResourceClaim values before dispatching a heavy service invocation",
+      "release reserved resources when a receipt is emitted or the invocation is cancelled",
+      "emit scheduler events when priority, risk, dependency readiness, or resource availability changes",
+      "support offline mocked scheduling without live peer networking"
+    ],
+    "osContractMapping": {
+      "resourceClaims": "ResourceClaim",
+      "resourceUsage": "ResourceUsage",
+      "resourceManager": "ResourceManager",
+      "processState": "ProcessState"
+    }
+  },
+  "descriptorRequirements": {
+    "serviceDescriptorRequiredFields": [
+      "service_id",
+      "component",
+      "title",
+      "version",
+      "endpoints",
+      "capabilities",
+      "resources",
+      "metadata.mcp_plus_plus"
+    ],
+    "serviceDescriptorMcpPlusPlusMetadata": [
+      "profile_id",
+      "profile_version",
+      "supported_profiles",
+      "interface_cids",
+      "descriptor_cids",
+      "event_streams",
+      "scheduler_class",
+      "authorization_required",
+      "transport_bindings"
+    ],
+    "interfaceDescriptorRequiredFields": [
+      "name",
+      "namespace",
+      "version",
+      "methods",
+      "errors",
+      "requires",
+      "compatibility"
+    ],
+    "uiDescriptorRequiredWhenUserFacing": [
+      "descriptor_id",
+      "service_id",
+      "interface_cid",
+      "surface",
+      "input_contract",
+      "output_contract",
+      "state_contract",
+      "event_contracts",
+      "required_capabilities"
+    ],
+    "requirements": [
+      "descriptors must be content-addressed and retrievable by CID",
+      "descriptors must be treated as untrusted input and schema-validated before use",
+      "descriptors must not grant authority without matching UCAN proofs",
+      "descriptor packs must declare source repository, version, and service ownership",
+      "descriptor changes that alter method inputs, outputs, errors, or capabilities must produce a new interface_cid"
+    ]
+  },
+  "serviceRequirements": [
+    {
+      "serviceId": "ipfs-kit-mcp",
+      "component": "ipfs_kit_py",
+      "serviceKind": "storage",
+      "descriptorNamespace": "virtual_ai_os.ipfs_kit",
+      "minimumProfiles": [
+        "mcp++/idl",
+        "mcp++/cid-envelope",
+        "mcp++/ucan",
+        "mcp++/event-dag",
+        "mcp++/risk-scheduler"
+      ],
+      "requiredInterfaces": [
+        "storage.add",
+        "storage.read",
+        "storage.stat",
+        "storage.list",
+        "storage.pin",
+        "storage.unpin"
+      ],
+      "requiredCapabilities": [
+        "mcp++/read-cid",
+        "mcp++/write-cid",
+        "mcp++/derive-cid",
+        "emit",
+        "subscribe"
+      ],
+      "resourceClaims": [
+        "storage.bytes",
+        "network.requests",
+        "process.count"
+      ],
+      "emittedEventStreams": [
+        "storage.content",
+        "storage.pinset",
+        "storage.audit"
+      ]
+    },
+    {
+      "serviceId": "ipfs-datasets-mcp",
+      "component": "ipfs_datasets_py",
+      "serviceKind": "knowledge",
+      "descriptorNamespace": "virtual_ai_os.ipfs_datasets",
+      "minimumProfiles": [
+        "mcp++/idl",
+        "mcp++/cid-envelope",
+        "mcp++/ucan",
+        "mcp++/event-dag",
+        "mcp++/risk-scheduler"
+      ],
+      "requiredInterfaces": [
+        "datasets.load",
+        "datasets.transform",
+        "knowledge.query",
+        "graphrag.query",
+        "mcp_tools.list",
+        "mcp_tools.call"
+      ],
+      "requiredCapabilities": [
+        "mcp++/read-cid",
+        "mcp++/write-cid",
+        "mcp++/invoke",
+        "emit",
+        "subscribe"
+      ],
+      "resourceClaims": [
+        "storage.bytes",
+        "dataset.count",
+        "model.tokens",
+        "network.requests"
+      ],
+      "emittedEventStreams": [
+        "datasets.provenance",
+        "knowledge.audit",
+        "mcp_tools.audit"
+      ]
+    },
+    {
+      "serviceId": "ipfs-accelerate-mcp",
+      "component": "ipfs_accelerate_py",
+      "serviceKind": "compute",
+      "descriptorNamespace": "virtual_ai_os.ipfs_accelerate",
+      "minimumProfiles": [
+        "mcp++/idl",
+        "mcp++/cid-envelope",
+        "mcp++/ucan",
+        "mcp++/event-dag",
+        "mcp++/risk-scheduler"
+      ],
+      "requiredInterfaces": [
+        "hardware.profile",
+        "model.load",
+        "model.infer",
+        "model.embed",
+        "task.submit",
+        "task.status",
+        "task.cancel"
+      ],
+      "requiredCapabilities": [
+        "mcp++/invoke",
+        "mcp++/read-cid",
+        "mcp++/write-cid",
+        "execute",
+        "emit"
+      ],
+      "resourceClaims": [
+        "hardware.count",
+        "hardware.millicores",
+        "storage.bytes",
+        "model.tokens",
+        "process.count"
+      ],
+      "emittedEventStreams": [
+        "compute.jobs",
+        "compute.telemetry",
+        "compute.provenance"
+      ]
+    },
+    {
+      "serviceId": "swissknife-mcp",
+      "component": "swissknife",
+      "serviceKind": "agent-shell",
+      "descriptorNamespace": "virtual_ai_os.swissknife",
+      "minimumProfiles": [
+        "mcp++/idl",
+        "mcp++/cid-envelope",
+        "mcp++/ucan",
+        "mcp++/event-dag",
+        "mcp++/risk-scheduler"
+      ],
+      "requiredInterfaces": [
+        "descriptor_pack.ingest",
+        "descriptor.inspect",
+        "ui.generate",
+        "tool.route",
+        "auth.delegate",
+        "auth.revoke"
+      ],
+      "requiredCapabilities": [
+        "mcp++/describe",
+        "mcp++/invoke",
+        "delegate",
+        "admin",
+        "emit",
+        "subscribe"
+      ],
+      "resourceClaims": [
+        "descriptor.count",
+        "process.count",
+        "network.requests"
+      ],
+      "emittedEventStreams": [
+        "descriptor.audit",
+        "ui.runtime",
+        "auth.audit",
+        "tool.routing"
+      ]
+    },
+    {
+      "serviceId": "mcp-plus-plus-reference",
+      "component": "mcp_plus_plus",
+      "serviceKind": "protocol-reference",
+      "descriptorNamespace": "virtual_ai_os.mcp_plus_plus",
+      "minimumProfiles": [
+        "mcp++/idl",
+        "mcp++/cid-envelope",
+        "mcp++/ucan",
+        "mcp++/event-dag",
+        "mcp++/risk-scheduler",
+        "mcp+p2p"
+      ],
+      "requiredInterfaces": [
+        "profile.describe",
+        "descriptor.validate",
+        "envelope.validate",
+        "ucan.validate",
+        "event_dag.validate",
+        "scheduler.validate"
+      ],
+      "requiredCapabilities": [
+        "mcp++/describe",
+        "mcp++/invoke",
+        "mcp++/read-cid",
+        "emit"
+      ],
+      "resourceClaims": [
+        "process.count",
+        "network.requests"
+      ],
+      "emittedEventStreams": [
+        "profile.audit",
+        "conformance.audit"
+      ]
+    }
+  ],
+  "conformance": {
+    "offlineRequired": true,
+    "liveNetworkRequired": false,
+    "minimumChecks": [
+      "JSON parses with python -m json.tool",
+      "all serviceRequirements entries declare transport-compatible descriptors",
+      "all serviceRequirements entries include IDL, envelope, UCAN, event DAG, and scheduler profiles",
+      "descriptorRequiredFields include MCP-IDL required fields",
+      "executionEnvelopeRequiredFields include interface_cid, input_cid, intent_cid, and parents",
+      "UCAN validation requires execution-time proof checks and revocation checks",
+      "eventDag event node fields include parents and receipt binding",
+      "scheduler requirements include dependency readiness and resource accounting"
+    ]
+  }
+}

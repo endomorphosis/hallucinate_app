@@ -126,6 +126,8 @@ def main():
     install_requirements(accelerate_dir / "install" / "requirements_base.txt", "ipfs_accelerate_py base requirements")
     install_requirements(accelerate_dir / "requirements_dashboard.txt", "ipfs_accelerate_py dashboard requirements")
     install_requirements(accelerate_dir / "test" / "requirements.txt", "ipfs_accelerate_py test requirements")
+    install_requirements(accelerate_dir / "ipfs_accelerate_py" / "mcp" / "requirements.txt", "ipfs_accelerate_py MCP requirements")
+    install_requirements(accelerate_dir / "ipfs_accelerate_py" / "mcp" / "requirements-mcp.txt", "ipfs_accelerate_py MCP transport requirements")
     
     # Platform-specific requirements
     if is_macos():

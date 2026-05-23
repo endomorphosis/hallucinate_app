@@ -1,0 +1,234 @@
+{
+  "schemaVersion": "virtual-ai-os-daemons.v1",
+  "generatedAt": "2026-05-22T00:00:00-07:00",
+  "description": "Unified daemon launch and health-check contracts for Virtual AI OS component endpoints.",
+  "defaults": {
+    "host": "127.0.0.1",
+    "env": {
+      "PYTHONUNBUFFERED": "1",
+      "VIRTUAL_AI_OS_DAEMON": "1"
+    },
+    "launch": {
+      "shell": false,
+      "stdio": "pipe",
+      "startupTimeoutMs": 15000,
+      "shutdownTimeoutMs": 5000
+    },
+    "restartPolicy": {
+      "enabled": true,
+      "maxRestarts": 3,
+      "delayMs": 5000
+    },
+    "healthCheck": {
+      "enabled": true,
+      "type": "http",
+      "method": "GET",
+      "path": "/health",
+      "timeoutMs": 2500,
+      "intervalMs": 30000,
+      "expectedStatuses": [
+        200
+      ]
+    }
+  },
+  "daemons": [
+    {
+      "id": "ipfs_kit_py",
+      "componentId": "ipfs_kit_py",
+      "title": "IPFS Kit MCP",
+      "role": "storage kernel and content-addressed IO substrate",
+      "endpoint": {
+        "protocol": "http",
+        "host": "127.0.0.1",
+        "port": 3001,
+        "path": "/"
+      },
+      "launch": {
+        "command": "python",
+        "args": [
+          "-m",
+          "ipfs_kit_py.cli",
+          "mcp",
+          "start",
+          "--host",
+          "${host}",
+          "--port",
+          "${port}",
+          "--foreground"
+        ],
+        "cwd": "ipfs_kit_py",
+        "env": {
+          "IPFS_KIT_FAST_INIT": "1",
+          "VIRTUAL_AI_OS_COMPONENT": "ipfs_kit_py"
+        }
+      },
+      "healthCheck": {
+        "path": "/healthz"
+      },
+      "metadata": {
+        "serviceKind": "storage",
+        "mcpTransport": "http-json-rpc"
+      }
+    },
+    {
+      "id": "ipfs_datasets_py",
+      "componentId": "ipfs_datasets_py",
+      "title": "IPFS Datasets MCP",
+      "role": "knowledge fabric, dataset runtime, GraphRAG, MCP tools, and autonomous todo daemon",
+      "endpoint": {
+        "protocol": "http",
+        "host": "127.0.0.1",
+        "port": 3002,
+        "path": "/"
+      },
+      "launch": {
+        "command": "python",
+        "args": [
+          "-m",
+          "ipfs_datasets_py.mcp_server",
+          "--http",
+          "--host",
+          "${host}",
+          "--port",
+          "${port}"
+        ],
+        "cwd": "ipfs_datasets_py",
+        "env": {
+          "VIRTUAL_AI_OS_COMPONENT": "ipfs_datasets_py"
+        }
+      },
+      "healthCheck": {
+        "path": "/health"
+      },
+      "metadata": {
+        "serviceKind": "knowledge",
+        "mcpTransport": "http-json-rpc"
+      }
+    },
+    {
+      "id": "ipfs_accelerate_py",
+      "componentId": "ipfs_accelerate_py",
+      "title": "IPFS Accelerate MCP",
+      "role": "model compute runtime, hardware-aware inference, task queues, and MCP++ reference implementation host",
+      "endpoint": {
+        "protocol": "http",
+        "host": "127.0.0.1",
+        "port": 3003,
+        "path": "/"
+      },
+      "launch": {
+        "command": "python",
+        "args": [
+          "-m",
+          "ipfs_accelerate_py.mcp.cli",
+          "--host",
+          "${host}",
+          "--port",
+          "${port}",
+          "--no-p2p-task-worker",
+          "--no-p2p-service"
+        ],
+        "cwd": "ipfs_accelerate_py",
+        "env": {
+          "IPFS_ACCELERATE_ENABLE_MULTIMODAL": "1",
+          "VIRTUAL_AI_OS_COMPONENT": "ipfs_accelerate_py"
+        }
+      },
+      "healthCheck": {
+        "path": "/health"
+      },
+      "metadata": {
+        "serviceKind": "compute",
+        "mcpTransport": "http-json-rpc"
+      }
+    },
+    {
+      "id": "swissknife",
+      "componentId": "swissknife",
+      "title": "SwissKnife Virtual Desktop",
+      "role": "agent shell, descriptor-driven UI, CLI, web runtime, and MCP++ UX layer",
+      "endpoint": {
+        "protocol": "http",
+        "host": "127.0.0.1",
+        "port": 3004,
+        "path": "/"
+      },
+      "launch": {
+        "command": "npm",
+        "args": [
+          "run",
+          "virtual-desktop",
+          "--",
+          "--host",
+          "${host}",
+          "--port",
+          "${port}"
+        ],
+        "cwd": "swissknife",
+        "env": {
+          "VIRTUAL_AI_OS_COMPONENT": "swissknife"
+        }
+      },
+      "healthCheck": {
+        "path": "/",
+        "expectedStatuses": [
+          200,
+          304
+        ]
+      },
+      "metadata": {
+        "serviceKind": "agent-shell",
+        "mcpTransport": "http-ui"
+      }
+    },
+    {
+      "id": "mcp_plus_plus",
+      "componentId": "mcp_plus_plus",
+      "title": "MCP++ Service Mesh",
+      "role": "MCP++ protocol reference for service mesh semantics",
+      "endpoint": {
+        "protocol": "http",
+        "host": "127.0.0.1",
+        "port": 3005,
+        "path": "/"
+      },
+      "launch": {
+        "command": "python",
+        "args": [
+          "-m",
+          "ipfs_accelerate_py.mcp.cli",
+          "--host",
+          "${host}",
+          "--port",
+          "${port}",
+          "--mcp-p2p-port",
+          "3006",
+          "--p2p-service",
+          "--p2p-enable-tools",
+          "--no-p2p-task-worker"
+        ],
+        "cwd": "ipfs_accelerate_py",
+        "env": {
+          "IPFS_ACCELERATE_PY_MCP_P2P_SERVICE": "1",
+          "IPFS_ACCELERATE_PY_MCP_P2P_PORT": "3006",
+          "VIRTUAL_AI_OS_COMPONENT": "mcp_plus_plus"
+        }
+      },
+      "healthCheck": {
+        "path": "/health"
+      },
+      "metadata": {
+        "serviceKind": "protocol-reference",
+        "mcpTransport": "mcp++",
+        "mcpPlusPlusProfiles": [
+          "mcp++/idl",
+          "mcp++/cid-envelope",
+          "mcp++/ucan",
+          "mcp++/event-dag",
+          "mcp++/risk-scheduler",
+          "mcp+p2p"
+        ]
+      }
+    }
+  ]
+}

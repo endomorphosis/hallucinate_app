@@ -1,0 +1,16 @@
+# Submodule integration contract owners
+/hallucinate_app/python/hallucinate_app/ipfs_datasets.py @endomorphosis
+/hallucinate_app/python/hallucinate_app/ipfs_accelerate_server.py @endomorphosis
+/python/hallucinate_app/ipfs_kit_bridge.py @endomorphosis
+/python/hallucinate_app/submodule_compat.py @endomorphosis
+/hallucinate_app/python/hallucinate_app/submodule_compat.py @endomorphosis
+/config/submodule_integration_baseline.json @endomorphosis
+/scripts/manage_submodule_baseline.py @endomorphosis
+/scripts/verify_submodule_imports.py @endomorphosis
+/docs/SUBMODULE_INTEGRATION_BASELINE.md @endomorphosis
+/docs/VIRTUAL_AI_OS_INTEGRATION_TODO.md @endomorphosis
+/docs/VIRTUAL_AI_OS_SUBMODULE_REVIEW.md @endomorphosis
+/docs/VIRTUAL_AI_OS_TEST_STRATEGY.md @endomorphosis
+/config/virtual_ai_os_components.json @endomorphosis
+/config/virtual_ai_os_test_matrix.json @endomorphosis
+/scripts/virtual_os_todo_worker.py @endomorphosis

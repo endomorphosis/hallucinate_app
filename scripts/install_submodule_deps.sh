@@ -69,6 +69,8 @@ install_requirements "$ROOT_DIR/ipfs_accelerate_py/requirements.txt" "ipfs_accel
 install_requirements "$ROOT_DIR/ipfs_accelerate_py/install/requirements_base.txt" "ipfs_accelerate_py base requirements"
 install_requirements "$ROOT_DIR/ipfs_accelerate_py/requirements_dashboard.txt" "ipfs_accelerate_py dashboard requirements"
 install_requirements "$ROOT_DIR/ipfs_accelerate_py/test/requirements.txt" "ipfs_accelerate_py test requirements"
+install_requirements "$ROOT_DIR/ipfs_accelerate_py/ipfs_accelerate_py/mcp/requirements.txt" "ipfs_accelerate_py MCP requirements"
+install_requirements "$ROOT_DIR/ipfs_accelerate_py/ipfs_accelerate_py/mcp/requirements-mcp.txt" "ipfs_accelerate_py MCP transport requirements"
 
 # Optionally install platform-specific requirements for ipfs_accelerate_py
 if [[ "$OSTYPE" == "darwin"* ]]; then

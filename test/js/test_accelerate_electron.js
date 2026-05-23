@@ -113,7 +113,7 @@ class MockApp {
       
       const result = await this.pythonBridge.runInference(testInput);
       
-      this.testResults.inference = (result && result.result);
+      this.testResults.inference = Boolean(result && result.result);
       
       // Update UI via IPC
       if (this.accelerateWindow) {

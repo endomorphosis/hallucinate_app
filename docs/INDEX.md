@@ -103,6 +103,7 @@ Welcome to the comprehensive documentation for Hallucinate App - a decentralized
 - [Implementation Complete](../IMPLEMENTATION_COMPLETE.md) - Completed features
 - [Completion Summary](../COMPLETION_SUMMARY.md) - Project completion status
 - [Submodule Dependencies](SUBMODULE_DEPS_SUMMARY.md) - External dependencies
+- [Submodule Integration Baseline](SUBMODULE_INTEGRATION_BASELINE.md) - Pinned SHAs, compatibility matrix, rollout and rollback playbook
 
 ## 📸 Screenshots & Visuals
 

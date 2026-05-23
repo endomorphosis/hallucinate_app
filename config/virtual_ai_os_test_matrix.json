@@ -1,0 +1,211 @@
+{
+  "generatedAt": "2026-05-22T15:26:06+00:00",
+  "testSuites": [
+    {
+      "category": "baseline",
+      "components": [
+        "all"
+      ],
+      "description": "Verify top-level submodule SHAs match baseline manifest",
+      "id": "T001",
+      "priority": "P0",
+      "requiredBeforeMerge": true
+    },
+    {
+      "category": "contract",
+      "components": [
+        "all"
+      ],
+      "description": "Import and register every Virtual AI OS adapter",
+      "id": "T002",
+      "priority": "P0",
+      "requiredBeforeMerge": true
+    },
+    {
+      "category": "storage",
+      "components": [
+        "ipfs_kit_py"
+      ],
+      "description": "Mock VFS add/cat/stat/list through ipfs_kit_py adapter",
+      "id": "T003",
+      "priority": "P0",
+      "requiredBeforeMerge": true
+    },
+    {
+      "category": "storage",
+      "components": [
+        "ipfs_kit_py"
+      ],
+      "description": "Validate metadata index fallback and error normalization",
+      "id": "T004",
+      "priority": "P1",
+      "requiredBeforeMerge": false
+    },
+    {
+      "category": "knowledge",
+      "components": [
+        "ipfs_datasets_py"
+      ],
+      "description": "Mock dataset load and GraphRAG query shape",
+      "id": "T005",
+      "priority": "P0",
+      "requiredBeforeMerge": true
+    },
+    {
+      "category": "knowledge",
+      "components": [
+        "ipfs_datasets_py"
+      ],
+      "description": "Validate provenance emission for dataset operations",
+      "id": "T006",
+      "priority": "P1",
+      "requiredBeforeMerge": false
+    },
+    {
+      "category": "compute",
+      "components": [
+        "ipfs_accelerate_py"
+      ],
+      "description": "Mock model load and inference through accelerate adapter",
+      "id": "T007",
+      "priority": "P0",
+      "requiredBeforeMerge": true
+    },
+    {
+      "category": "compute",
+      "components": [
+        "ipfs_accelerate_py"
+      ],
+      "description": "Validate hardware profile fallback without GPU dependencies",
+      "id": "T008",
+      "priority": "P1",
+      "requiredBeforeMerge": false
+    },
+    {
+      "category": "mcp",
+      "components": [
+        "mcp_plus_plus",
+        "swissknife"
+      ],
+      "description": "Validate MCP++ descriptor, envelope, and IDL schema",
+      "id": "T009",
+      "priority": "P0",
+      "requiredBeforeMerge": true
+    },
+    {
+      "category": "mcp",
+      "components": [
+        "mcp_plus_plus",
+        "swissknife"
+      ],
+      "description": "Validate UCAN grant and revocation behavior with mocks",
+      "id": "T010",
+      "priority": "P0",
+      "requiredBeforeMerge": true
+    },
+    {
+      "category": "daemon",
+      "components": [
+        "all"
+      ],
+      "description": "Launch daemon manager against mocked service commands",
+      "id": "T011",
+      "priority": "P0",
+      "requiredBeforeMerge": true
+    },
+    {
+      "category": "daemon",
+      "components": [
+        "all"
+      ],
+      "description": "Simulate crash, stale heartbeat, restart, and degraded status",
+      "id": "T012",
+      "priority": "P1",
+      "requiredBeforeMerge": false
+    },
+    {
+      "category": "workflow",
+      "components": [
+        "ipfs_kit_py",
+        "ipfs_datasets_py",
+        "ipfs_accelerate_py"
+      ],
+      "description": "Storage to dataset to compute end-to-end mocked flow",
+      "id": "T013",
+      "priority": "P0",
+      "requiredBeforeMerge": true
+    },
+    {
+      "category": "workflow",
+      "components": [
+        "ipfs_datasets_py",
+        "ipfs_accelerate_py"
+      ],
+      "description": "GraphRAG to model to provenance workflow",
+      "id": "T014",
+      "priority": "P1",
+      "requiredBeforeMerge": false
+    },
+    {
+      "category": "ui",
+      "components": [
+        "swissknife"
+      ],
+      "description": "Validate SwissKnife descriptor pack ingestion in Hallucinate shell",
+      "id": "T015",
+      "priority": "P1",
+      "requiredBeforeMerge": false
+    },
+    {
+      "category": "ui",
+      "components": [
+        "swissknife",
+        "all"
+      ],
+      "description": "Render OS health dashboard with degraded component states",
+      "id": "T016",
+      "priority": "P1",
+      "requiredBeforeMerge": false
+    },
+    {
+      "category": "security",
+      "components": [
+        "all"
+      ],
+      "description": "Deny storage and command operations without capability grant",
+      "id": "T017",
+      "priority": "P0",
+      "requiredBeforeMerge": true
+    },
+    {
+      "category": "security",
+      "components": [
+        "all"
+      ],
+      "description": "Verify secrets and credentials are redacted in events",
+      "id": "T018",
+      "priority": "P0",
+      "requiredBeforeMerge": true
+    },
+    {
+      "category": "performance",
+      "components": [
+        "all"
+      ],
+      "description": "Smoke latency baseline for storage, query, inference, and scheduling",
+      "id": "T019",
+      "priority": "P2",
+      "requiredBeforeMerge": false
+    },
+    {
+      "category": "chaos",
+      "components": [
+        "all"
+      ],
+      "description": "Missing submodule, corrupt descriptor, no network, denied capability",
+      "id": "T020",
+      "priority": "P2",
+      "requiredBeforeMerge": false
+    }
+  ]
+}
