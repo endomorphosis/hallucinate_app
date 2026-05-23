@@ -2,6 +2,12 @@
 
 This directory contains all tests for the hallucinate_app project, specifically focused on testing the integration between the Electron GUI and the ipfs_accelerate_py model server.
 
+For the virtual AI OS integration effort, this test area also serves as the first operator-facing validation surface for Hallucinate App as a desktop shell:
+
+- verify the MCP Daemon Manager behavior that an operator depends on,
+- verify SwissKnife virtual desktop launch and bridge assumptions,
+- verify that desktop-shell failures can be diagnosed before escalating to mobile or Meta glasses clients.
+
 ## Test Structure
 
 - `test.js` - Main test runner
@@ -12,6 +18,8 @@ This directory contains all tests for the hallucinate_app project, specifically 
 - `python/` - Python tests
   - `test_accelerate_server.py` - Tests for Python model server
   - `ipfs_accelerate_server.py` - Implementation of model server for testing
+
+As the virtual AI OS operator-console coverage expands, add tests here that exercise daemon manager health reporting, SwissKnife launch orchestration, and other desktop operator workflows.
 
 ## Requirements
 

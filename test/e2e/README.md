@@ -10,6 +10,16 @@ Comprehensive Playwright test harness for the MCP Daemon Manager and SwissKnife 
 - **Automated validation** of all features
 - **Visual regression testing** capabilities
 
+For the virtual AI OS integration work, this E2E area complements the hardware-free backend and mobile harnesses that already validate task-state-to-display-widget emission without paired hardware:
+
+- backend: `tests/test_virtual_ai_os_end_to_end.py`
+- mobile: `mobile/src/utils/__tests__/displayWidgetHarness.test.js`
+- desktop/operator shell: this Playwright suite for Hallucinate App + SwissKnife + daemon-manager workflows
+
+Taken together, these harnesses give operators one repeatable path from daemon task progress to desktop/mobile/glasses fallback rendering.
+
+For physical-device readiness, this desktop operator suite should also capture evidence for degraded display handling, rollback behavior, and the operator-visible state that accompanies a mobile or glasses fallback.
+
 ## Quick Start
 
 ### Install Dependencies

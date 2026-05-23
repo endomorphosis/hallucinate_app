@@ -23,6 +23,15 @@ Hallucinate App is an **Electron-based wrapper application** that:
 
 Think of it as a **fully containerized AI desktop** - everything you need for decentralized AI development, pre-integrated and ready to run.
 
+### Virtual AI OS Operator Console Role
+
+Within the Lift Coding monorepo, Hallucinate App is the operator-facing desktop shell for the virtual AI OS.
+
+- It is the primary operator console for supervising the MCP Daemon Manager and the packaged service stack.
+- It hosts SwissKnife Virtual Desktop as the main virtual desktop surface for reviewed UI and ORB workflows.
+- It is the desktop checkpoint where background task status, daemon health, and remote-client fallbacks can be inspected before handing work off to mobile or Meta glasses surfaces.
+- It should be treated as a first-class runtime surface in the virtual AI OS, not as an optional demo wrapper.
+
 ## 📱 Mobile Support (NEW - Capacitor)
 
 Hallucinate App now supports iOS and Android through **Capacitor**, enabling full platform coverage across desktop and mobile:
@@ -155,6 +164,8 @@ Hallucinate App now includes a comprehensive daemon manager for managing Model C
 - **Event Logging**: Real-time event tracking for all daemon activities
 - **Dashboard UI**: Beautiful web interface for daemon control and monitoring
 
+The daemon manager is also the core operator workflow surface for the virtual AI OS desktop shell: operators use it to audit process health, stage service restarts, and correlate SwissKnife Virtual Desktop behavior with MCP server availability.
+
 ### Usage
 
 Access the Daemon Manager through the application menu:
@@ -182,6 +193,8 @@ Access SwissKnife through:
 - **Menu Bar → Windows → SwissKnife Virtual Desktop**
 
 The SwissKnife window will load the collaborative virtual desktop interface, connecting to the development server on `http://localhost:3001` or using the built distribution.
+
+In the virtual AI OS integration model, this SwissKnife window is the reviewed virtual desktop surface for operator-safe UI flows, while Hallucinate App remains the shell that launches, monitors, and recovers the surrounding daemon-managed services.
 
 ## Dashboard, Security, and Error Handling Features
 
