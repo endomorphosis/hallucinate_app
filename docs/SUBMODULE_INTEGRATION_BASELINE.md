@@ -1,10 +1,17 @@
-# Submodule Integration Baseline (2026-05-20)
+# Submodule Integration Baseline (2026-05-22)
 
 This document freezes the current integration baseline for:
 
 - `ipfs_accelerate_py` → `ff61c14b4df44529ff6f73efa5e26fadeda649d5`
-- `ipfs_datasets_py` → `04363beba3e65f07afa81dadfb966d56d093ea3e`
+- `ipfs_datasets_py` → `14755236c1831a028ac8dc2cfcbfaa0aa5870bf4`
 - `ipfs_kit_py` → `3133d4fdc85a885ba7d776465bdee48f7a867e01`
+- `swissknife` → `5b4598e15709203c0fe2265fdab2f51ea822b0f2`
+
+MCP++ note:
+
+- The exact URL `https://github.com/endomorphosis/mcp_plus_plus` returned `Repository not found`.
+- The accessible MCP++ repository is `https://github.com/endomorphosis/Mcp-Plus-Plus.git` / `https://github.com/endomorphosis/mcp-plus-plus.git`.
+- It is currently present as the nested submodule `ipfs_accelerate_py/ipfs_accelerate_py/mcplusplus` and is pinned to `29343be704da4e193ff143bac7daae9b0f98435d`, which matches its current `main` HEAD at the time of this update.
 
 Rollback SHAs are tracked in:
 
@@ -15,6 +22,12 @@ Operational helper:
 - `python scripts/manage_submodule_baseline.py status`
 - `python scripts/manage_submodule_baseline.py apply-baseline`
 - `python scripts/manage_submodule_baseline.py apply-rollback`
+
+Virtual AI OS integration backlog:
+
+- `docs/VIRTUAL_AI_OS_INTEGRATION_TODO.md`
+- `docs/VIRTUAL_AI_OS_SUBMODULE_REVIEW.md`
+- `docs/VIRTUAL_AI_OS_TEST_STRATEGY.md`
 
 ---
 
@@ -29,14 +42,14 @@ Operational helper:
 | Deployment/runtime scaffolding | Additional deployment scripts and service-related updates. | Internal |
 | Test/docs breadth | Significant expansion of MCP/server tests and docs. | Test-only / Internal |
 
-### `ipfs_datasets_py` (`13be1de5` → `04363beb`)
+### `ipfs_datasets_py` (`04363beb` → `14755236`)
 
 | Area | Summary | Classification |
 |---|---|---|
-| Scraper pipeline | Refactors with improved timeout handling and resilience in data collection paths. | Additive |
-| GraphRAG-related modules | Structural updates across GraphRAG and query workflows. | Internal / Additive |
-| MCP/dashboard assets | Broader MCP and dashboard evolution. | Internal |
-| Test/docs expansion | Increased test coverage and generated docs content. | Test-only / Internal |
+| Scraper pipeline | Additional checkpoint progress signals, timeout diagnostics, and state scraper logging. | Additive |
+| Logic/theorem tooling | Updates to F-logic optimizer, modal compiler/decompiler paths, legal modal parsing, and bridge layers. | Additive / Internal |
+| Daemon execution | Implementation daemon command/context handling changed for Codex-oriented execution. | Internal |
+| Test/data expansion | Added unit coverage and generated autoencoder task-vector artifacts. | Test-only / Generated data |
 
 ### `ipfs_kit_py` (`a433540e` → `3133d4fd`)
 
@@ -47,9 +60,18 @@ Operational helper:
 | MCP/server surfaces | Broader MCP and CLI path churn. | Internal |
 | Test/docs expansion | Additional docs/test content. | Test-only / Internal |
 
+### `swissknife` (`f9dcf8e5` → `5b4598e1`)
+
+| Area | Summary | Classification |
+|---|---|---|
+| MCP++ UI/UX support | Added descriptor runtime, schema-driven UI generation, ORB client/routing, descriptor inspector, and template policy support. | Additive |
+| MCP++ transport/security | Added WebSocket/HTTPS/WebRTC transport work, UCAN auth/revocation behavior, policy/scheduler, envelope, IDL, and event DAG services. | Additive / Security-sensitive |
+| IPFS descriptor packs | Added descriptor packs for `ipfs_accelerate_py` and `ipfs_datasets_py` UI integration. | Additive |
+| Tests/docs expansion | Added MCP++ tests, implementation plan docs, conformance matrix, and automation docs refreshes. | Test-only / Docs |
+
 ### Breaking-risk summary
 
-No hard-breaking change was confirmed in this monorepo run, but **constructor signatures, endpoint payload conventions, and CLI launch semantics are at risk of drift** and are handled via compatibility shims in this PR.
+No hard-breaking change was confirmed in this monorepo run, but **constructor signatures, endpoint payload conventions, CLI launch semantics, generated UI descriptor contracts, and MCP++ auth/transport behavior are at risk of drift** and are handled via compatibility shims plus the staged rollout gates below.
 
 ---
 
@@ -60,6 +82,7 @@ No hard-breaking change was confirmed in this monorepo run, but **constructor si
 | `ipfs_datasets_py` | `hallucinate_app/python/hallucinate_app/ipfs_datasets.py` | Direct constructor `ipfs_datasets_py.ipfs_datasets_py(resources, metadata)` | Compatibility constructor fallback chain (`ipfs_datasets_py`, `IPFSDatasetsPy`, `ipfs_datasets`) |
 | `ipfs_accelerate_py` | `hallucinate_app/python/hallucinate_app/ipfs_accelerate_server.py` | Direct import/class call + endpoint-specific calls | Compatibility constructor fallback chain + async/sync resolution + endpoint telemetry |
 | `ipfs_kit_py` | `python/hallucinate_app/ipfs_kit_bridge.py` | Direct `IPFSSimpleAPI(config_path=..., role=...)` and direct `method(**params)` | Constructor fallback + signature fallback (`kwargs` → `dict` payload → no-arg) with retry accounting |
+| `swissknife` | `hallucinate_app/node/mcp_daemon_manager.js`, dashboard/web descriptor runtime touchpoints | SwissKnife/MCP assets consumed as a submodule and daemon integration peer | Validate MCP++ descriptor packs, generated UI runtime, auth/transport behavior, and daemon compatibility before promotion |
 
 ### High-risk seams flagged
 
@@ -67,6 +90,8 @@ No hard-breaking change was confirmed in this monorepo run, but **constructor si
 2. **IPC schemas**: Endpoint and method payload shape drift (`kwargs` vs dict payload) between versions.
 3. **Metadata/index operations**: Any shape drift in `ArrowMetadataIndex` lookups/exports can break bridge assumptions.
 4. **Model-serving endpoints**: Request/response schema and async behavior drift in accelerate server integrations.
+5. **MCP++ generated UI contracts**: SwissKnife descriptor contracts can drift from monorepo dashboard/runtime assumptions.
+6. **MCP++ auth/transport behavior**: UCAN revocation, WebRTC/WebSocket/HTTPS transport, and ORB routing require explicit smoke coverage.
 
 ---
 
@@ -82,6 +107,7 @@ No hard-breaking change was confirmed in this monorepo run, but **constructor si
 - Added baseline + rollback tracking:
   - `config/submodule_integration_baseline.json`
   - `scripts/manage_submodule_baseline.py`
+- Updated `swissknife` into the baseline manifest so postinstall drift detection covers all top-level submodules used by this repo.
 
 ---
 

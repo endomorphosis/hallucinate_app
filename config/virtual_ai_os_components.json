@@ -1,0 +1,158 @@
+{
+  "components": [
+    {
+      "capabilities": [
+        "IPFS operations",
+        "IPLD and CAR-adjacent content handling",
+        "metadata and cache primitives",
+        "MCP server surfaces",
+        "libp2p and routing scaffolding"
+      ],
+      "id": "ipfs_kit_py",
+      "integrationContracts": [
+        "Virtual filesystem adapter",
+        "content metadata index adapter",
+        "daemon health and lifecycle adapter",
+        "capability-scoped storage operations"
+      ],
+      "majorGaps": [
+        "single stable VFS facade for monorepo consumers",
+        "explicit capability checks around destructive storage operations",
+        "typed error normalization for dashboard and agent callers"
+      ],
+      "path": "ipfs_kit_py",
+      "role": "storage kernel and content-addressed IO substrate",
+      "sha": "3133d4fdc85a885ba7d776465bdee48f7a867e01",
+      "testSeams": [
+        "mocked add/cat/stat/list operations",
+        "metadata lookup contract tests",
+        "daemon launch smoke",
+        "offline cache behavior"
+      ]
+    },
+    {
+      "capabilities": [
+        "dataset loading and processing",
+        "knowledge graph and GraphRAG services",
+        "MCP server and tool registry",
+        "legal and web data processors",
+        "todo implementation supervisor and daemon"
+      ],
+      "id": "ipfs_datasets_py",
+      "integrationContracts": [
+        "knowledge fabric adapter",
+        "GraphRAG query adapter",
+        "MCP tool namespace contract",
+        "daemon task board contract",
+        "provenance and audit event contract"
+      ],
+      "majorGaps": [
+        "curated monorepo test subset for high-signal CI",
+        "stable GraphRAG service boundary independent of optional extras",
+        "documented daemon-safe task authoring rules for this repo"
+      ],
+      "path": "ipfs_datasets_py",
+      "role": "knowledge fabric, dataset runtime, GraphRAG, MCP tools, and autonomous todo daemon",
+      "sha": "14755236c1831a028ac8dc2cfcbfaa0aa5870bf4",
+      "testSeams": [
+        "dataset load with mocked backend",
+        "GraphRAG query shape",
+        "MCP tool import and registry tests",
+        "todo daemon selection and artifact completion"
+      ]
+    },
+    {
+      "capabilities": [
+        "model server and inference APIs",
+        "hardware backend detection",
+        "worker/task scheduling",
+        "MCP server tools",
+        "MCP++ module and nested reference submodule"
+      ],
+      "id": "ipfs_accelerate_py",
+      "integrationContracts": [
+        "compute adapter",
+        "model lifecycle and inference request contract",
+        "hardware profile contract",
+        "task queue and workflow scheduler contract",
+        "MCP++ service mesh contract"
+      ],
+      "majorGaps": [
+        "stable lightweight contract tests that avoid heavy model downloads",
+        "consistent async/sync behavior across inference endpoints",
+        "resource accounting surfaced to the OS scheduler"
+      ],
+      "path": "ipfs_accelerate_py",
+      "role": "model compute runtime, hardware-aware inference, task queues, and MCP++ reference implementation host",
+      "sha": "ff61c14b4df44529ff6f73efa5e26fadeda649d5",
+      "testSeams": [
+        "mocked inference and embedding calls",
+        "hardware profile fallback",
+        "daemon launch smoke",
+        "MCP++ task queue and workflow adapter tests"
+      ]
+    },
+    {
+      "capabilities": [
+        "agent CLI and tools",
+        "MCP tool UI surfaces",
+        "descriptor runtime",
+        "schema-driven UI generation",
+        "UCAN auth and MCP++ transport services"
+      ],
+      "id": "swissknife",
+      "integrationContracts": [
+        "descriptor pack ingestion",
+        "dashboard launcher adapter",
+        "agent tool bridge",
+        "auth and revocation adapter",
+        "generated UI quality gates"
+      ],
+      "majorGaps": [
+        "monorepo-owned descriptor launcher in Hallucinate shell",
+        "contract tests between SwissKnife descriptors and Python MCP services",
+        "clear boundary between reference UI assets and production shell assets"
+      ],
+      "path": "swissknife",
+      "role": "agent shell, descriptor-driven UI, CLI, web runtime, and MCP++ UX layer",
+      "sha": "5b4598e15709203c0fe2265fdab2f51ea822b0f2",
+      "testSeams": [
+        "descriptor schema validation",
+        "generated UI runtime tests",
+        "transport and revocation unit tests",
+        "dashboard launcher smoke"
+      ]
+    },
+    {
+      "capabilities": [
+        "transport profiles",
+        "IDL and descriptor specifications",
+        "event DAG semantics",
+        "policy, scheduling, and UCAN delegation references"
+      ],
+      "id": "mcp_plus_plus",
+      "integrationContracts": [
+        "service mesh profile",
+        "descriptor conformance matrix",
+        "event envelope contract",
+        "capability delegation contract"
+      ],
+      "majorGaps": [
+        "requested underscore repository URL is not accessible",
+        "top-level repo needs an explicit policy for nested MCP++ pin ownership",
+        "wire protocol tests should run without requiring live peer networking"
+      ],
+      "path": "ipfs_accelerate_py/ipfs_accelerate_py/mcplusplus",
+      "role": "MCP++ protocol reference for service mesh semantics",
+      "sha": "29343be704da4e193ff143bac7daae9b0f98435d",
+      "testSeams": [
+        "schema conformance tests",
+        "event DAG ordering tests",
+        "transport fallback tests",
+        "UCAN grant and revocation tests"
+      ]
+    }
+  ],
+  "generatedAt": "2026-05-22T15:25:59+00:00",
+  "goal": "Virtualized AI operating system composed from repo submodules"
+}
