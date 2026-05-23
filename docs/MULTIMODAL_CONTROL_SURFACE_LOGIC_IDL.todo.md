@@ -89,7 +89,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-006 Upgrade descriptor schemas with formal policy bindings
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: runtime
@@ -317,3 +317,14 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: hallucinate_app/python/hallucinate_app/control_surface_logic_ir.py, hallucinate_app/python/hallucinate_app/test/test_control_surface_logic_ir.py, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md, data/hallucinate_multimodal_control/discovery
 - Validation: python3 -c 'exec("import json, pathlib\nstrategy = json.loads(pathlib.Path('"'"'/home/barberb/lift_coding/data/hallucinate_multimodal_control/state/hallucinate_multimodal_control_strategy.json'"'"').read_text(encoding='"'"'utf-8'"'"'))\nassert '"'"'HAO-005'"'"' not in strategy.get('"'"'blocked_tasks'"'"', [])")'
 - Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-005. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-23-hao-026-hao-005-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are actually committed in their owning repository or submodule, then remove HAO-005 from the strategy blocked_tasks list so the original backlog item can continue without an indefinite retry loop.
+
+## HAO-027 Resolve merge retry-budget failure for HAO-006
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: HAO-005
+- Outputs: hallucinate_app/swissknife/contracts/control_surface_contract.schema.json, hallucinate_app/swissknife/contracts/interaction_envelope.schema.json, hallucinate_app/swissknife/contracts/policy_decision.schema.json, hallucinate_app/swissknife/contracts/mediation_receipt.schema.json, hallucinate_app/python/hallucinate_app/test/test_control_surface_schemas.py, data/hallucinate_multimodal_control/discovery
+- Validation: python3 -c 'exec("import json, pathlib\nstrategy = json.loads(pathlib.Path('"'"'/home/barberb/lift_coding/data/hallucinate_multimodal_control/state/hallucinate_multimodal_control_strategy.json'"'"').read_text(encoding='"'"'utf-8'"'"'))\nassert '"'"'HAO-006'"'"' not in strategy.get('"'"'blocked_tasks'"'"', [])")'
+- Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-006. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-23-hao-027-hao-006-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are actually committed in their owning repository or submodule, then remove HAO-006 from the strategy blocked_tasks list so the original backlog item can continue without an indefinite retry loop.
