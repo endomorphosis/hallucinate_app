@@ -13,6 +13,13 @@ from enum import Enum
 import hashlib
 from typing import Any, Mapping
 
+from hallucinate_app.control_surface_context import (
+    DEFAULT_TIME_WINDOWS,
+    GATING_STATE_FRAMES,
+    RuntimeContext,
+    TimeWindowDefinition,
+)
+
 
 IR_VERSION = "0.1.0"
 
@@ -37,6 +44,14 @@ class TemporalGuardKind(str, Enum):
     EVENT_WINDOW = "event_window"
     EXPIRY = "expiry"
     CONTEXT_FACT = "context_fact"
+
+
+class EventCalculusRelation(str, Enum):
+    """Symbolic event-calculus predicates emitted from runtime context."""
+
+    INITIATES = "initiates"
+    TERMINATES = "terminates"
+    HOLDS_AT = "holds_at"
 
 
 class DeonticOutcome(str, Enum):
@@ -147,23 +162,38 @@ class FrameFact:
         )
 
     @classmethod
-    def context(cls, name: str, value: Any, *, subject: str = "context") -> "FrameFact":
+    def context(
+        cls,
+        name: str,
+        value: Any,
+        *,
+        subject: str = "context",
+        attrs: Mapping[str, Any] | None = None,
+    ) -> "FrameFact":
         return cls(
             fact_id=stable_control_surface_id("fact", "context", subject, name, value),
             kind=FrameFactKind.CONTEXT,
             subject=subject,
             predicate=name,
             value=value,
+            attrs=dict(attrs or {}),
         )
 
     @classmethod
-    def device(cls, name: str, value: Any) -> "FrameFact":
+    def device(
+        cls,
+        name: str,
+        value: Any,
+        *,
+        attrs: Mapping[str, Any] | None = None,
+    ) -> "FrameFact":
         return cls(
             fact_id=stable_control_surface_id("fact", "device", name, value),
             kind=FrameFactKind.DEVICE,
             subject="device",
             predicate=name,
             value=value,
+            attrs=dict(attrs or {}),
         )
 
     def as_dict(self) -> dict[str, Any]:
@@ -174,6 +204,119 @@ class FrameFact:
             "predicate": self.predicate,
             "value": self.value,
             "attrs": dict(self.attrs),
+        }
+
+
+@dataclass(frozen=True)
+class EventCalculusFact:
+    """A symbolic event-calculus fact derived from runtime context."""
+
+    relation: EventCalculusRelation | str
+    fluent: str
+    time: str = ""
+    event: str = ""
+    value: Any = True
+    attrs: dict[str, Any] = field(default_factory=dict)
+
+    @classmethod
+    def holds_at(
+        cls,
+        fluent: str,
+        *,
+        time: str = "",
+        value: Any = True,
+        attrs: Mapping[str, Any] | None = None,
+    ) -> "EventCalculusFact":
+        return cls(
+            relation=EventCalculusRelation.HOLDS_AT,
+            fluent=fluent,
+            time=time,
+            value=value,
+            attrs=dict(attrs or {}),
+        )
+
+    @classmethod
+    def initiates(
+        cls,
+        event: str,
+        fluent: str,
+        *,
+        time: str = "",
+        attrs: Mapping[str, Any] | None = None,
+    ) -> "EventCalculusFact":
+        return cls(
+            relation=EventCalculusRelation.INITIATES,
+            event=event,
+            fluent=fluent,
+            time=time,
+            attrs=dict(attrs or {}),
+        )
+
+    @classmethod
+    def terminates(
+        cls,
+        event: str,
+        fluent: str,
+        *,
+        time: str = "",
+        attrs: Mapping[str, Any] | None = None,
+    ) -> "EventCalculusFact":
+        return cls(
+            relation=EventCalculusRelation.TERMINATES,
+            event=event,
+            fluent=fluent,
+            time=time,
+            attrs=dict(attrs or {}),
+        )
+
+    def atom(self) -> str:
+        relation = _enum_value(self.relation)
+        fluent = self._fluent_term()
+        if relation == EventCalculusRelation.HOLDS_AT.value:
+            return f"holds_at({fluent},{self.time})" if self.time else f"holds_at({fluent})"
+        if relation in {
+            EventCalculusRelation.INITIATES.value,
+            EventCalculusRelation.TERMINATES.value,
+        }:
+            event = self.event or "context_observed"
+            if self.time:
+                return f"{relation}({event},{fluent},{self.time})"
+            return f"{relation}({event},{fluent})"
+        return f"{relation}({fluent})"
+
+    def _fluent_term(self) -> str:
+        if self.value is True:
+            return self.fluent
+        if self.value in ("", None):
+            return self.fluent
+        return f"{self.fluent}:{self.value}"
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "relation": _enum_value(self.relation),
+            "event": self.event,
+            "fluent": self.fluent,
+            "time": self.time,
+            "value": self.value,
+            "atom": self.atom(),
+            "attrs": dict(self.attrs),
+        }
+
+
+@dataclass(frozen=True)
+class ContextFactExtraction:
+    """Frame and event-calculus facts extracted from a runtime context."""
+
+    frame_facts: list[FrameFact] = field(default_factory=list)
+    event_calculus: list[EventCalculusFact] = field(default_factory=list)
+
+    def event_calculus_atoms(self) -> list[str]:
+        return [fact.atom() for fact in self.event_calculus]
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "frame_facts": [fact.as_dict() for fact in self.frame_facts],
+            "event_calculus": [fact.as_dict() for fact in self.event_calculus],
         }
 
 
@@ -439,22 +582,273 @@ def frame_facts_from_interaction(envelope: Any) -> list[FrameFact]:
         FrameFact.target(target_ref, method),
     ]
 
-    for state_frame in context.get("state_frames", []) or []:
-        facts.append(FrameFact.context("state_frame", str(state_frame), subject="context:state_frames"))
+    facts.extend(context_facts_from_runtime_context(context).frame_facts)
+    return facts
 
-    if context.get("local_time"):
-        facts.append(FrameFact.context("local_time", str(context.get("local_time"))))
-    if context.get("platform"):
-        facts.append(FrameFact.context("platform", str(context.get("platform"))))
-    if context.get("device_mode"):
-        facts.append(FrameFact.device("device_mode", str(context.get("device_mode"))))
 
-    for name, value in _as_mapping(context.get("location_context")).items():
-        facts.append(FrameFact.context(f"location.{name}", value, subject="context:location"))
-    for name, value in _as_mapping(context.get("device_context")).items():
+def event_calculus_facts_from_interaction(envelope: Any) -> list[EventCalculusFact]:
+    """Build event-calculus facts from the runtime context in an envelope."""
+
+    payload = _as_mapping(envelope)
+    context = _as_mapping(payload.get("context"))
+    return context_facts_from_runtime_context(context).event_calculus
+
+
+def context_facts_from_runtime_context(
+    context: Any,
+    *,
+    time_windows: tuple[TimeWindowDefinition, ...] = DEFAULT_TIME_WINDOWS,
+) -> ContextFactExtraction:
+    """Extract explicit frame and event-calculus facts from runtime context."""
+
+    runtime = (
+        context
+        if isinstance(context, RuntimeContext)
+        else RuntimeContext.from_mapping(dict(_as_mapping(context)))
+    )
+    frame_facts: list[FrameFact] = []
+    event_facts: list[EventCalculusFact] = []
+
+    _extend_unique_frame_facts(frame_facts, _base_context_frame_facts(runtime))
+    _extend_unique_frame_facts(frame_facts, _state_frame_facts(runtime))
+    _extend_unique_frame_facts(frame_facts, _time_window_frame_facts(runtime, time_windows))
+    _extend_unique_frame_facts(frame_facts, _device_mode_frame_facts(runtime))
+
+    _extend_unique_event_facts(event_facts, _state_event_calculus_facts(runtime))
+    _extend_unique_event_facts(event_facts, _time_window_event_calculus_facts(runtime, time_windows))
+    _extend_unique_event_facts(event_facts, _device_mode_event_calculus_facts(runtime))
+
+    return ContextFactExtraction(frame_facts=frame_facts, event_calculus=event_facts)
+
+
+def _base_context_frame_facts(runtime: RuntimeContext) -> list[FrameFact]:
+    facts: list[FrameFact] = []
+    if runtime.local_time:
+        facts.append(
+            FrameFact.context(
+                "local_time",
+                runtime.local_time,
+                attrs={"timezone": runtime.effective_timezone()},
+            )
+        )
+    if runtime.platform:
+        facts.append(FrameFact.context("platform", runtime.platform))
+
+    for name, value in runtime.location_context.items():
+        facts.append(
+            FrameFact.context(f"location.{name}", value, subject="context:location")
+        )
+    for name, value in runtime.device_context.items():
         facts.append(FrameFact.device(f"device_context.{name}", value))
 
     return facts
+
+
+def _state_frame_facts(runtime: RuntimeContext) -> list[FrameFact]:
+    facts: list[FrameFact] = []
+    for state_frame in runtime.normalized_state_frames():
+        facts.append(
+            FrameFact.context(
+                "state_frame",
+                state_frame,
+                subject="context:state_frames",
+                attrs={"source": "state_frames"},
+            )
+        )
+        if state_frame in GATING_STATE_FRAMES:
+            facts.append(
+                FrameFact.context(
+                    state_frame,
+                    True,
+                    subject="context:state_frames",
+                    attrs={"source": "state_frames"},
+                )
+            )
+    return facts
+
+
+def _time_window_frame_facts(
+    runtime: RuntimeContext,
+    time_windows: tuple[TimeWindowDefinition, ...],
+) -> list[FrameFact]:
+    facts: list[FrameFact] = []
+    active_window_names = {
+        name
+        for window in runtime.active_time_windows(time_windows)
+        for name in window.names()
+    }
+    for window in time_windows:
+        for name in window.names():
+            if name not in active_window_names:
+                continue
+            attrs = {
+                "start": window.start,
+                "end": window.end,
+                "timezone": runtime.effective_timezone(),
+                "source": "local_time",
+            }
+            facts.append(
+                FrameFact.context(
+                    "time_window",
+                    name,
+                    subject="context:time",
+                    attrs=attrs,
+                )
+            )
+            facts.append(
+                FrameFact.context(
+                    name,
+                    True,
+                    subject="context:time",
+                    attrs=attrs,
+                )
+            )
+    return facts
+
+
+def _device_mode_frame_facts(runtime: RuntimeContext) -> list[FrameFact]:
+    facts: list[FrameFact] = []
+    if not runtime.device_mode:
+        return facts
+
+    facts.append(FrameFact.device("device_mode", runtime.device_mode))
+    normalized_mode = runtime.normalized_device_mode()
+    if normalized_mode:
+        facts.append(
+            FrameFact.device(
+                f"device_mode.{normalized_mode}",
+                True,
+                attrs={"source": "device_mode"},
+            )
+        )
+    return facts
+
+
+def _state_event_calculus_facts(runtime: RuntimeContext) -> list[EventCalculusFact]:
+    facts: list[EventCalculusFact] = []
+    event_time = runtime.event_time()
+    active_states = set(runtime.normalized_state_frames())
+    for state_frame in sorted(active_states):
+        fluent = f"state_frame:{state_frame}"
+        facts.append(EventCalculusFact.holds_at(fluent, time=event_time))
+        facts.append(
+            EventCalculusFact.initiates(
+                "context_state_observed",
+                fluent,
+                time=event_time,
+            )
+        )
+
+    for previous_state in runtime.previous_state_frames():
+        if previous_state and previous_state not in active_states:
+            facts.append(
+                EventCalculusFact.terminates(
+                    "context_state_observed",
+                    f"state_frame:{previous_state}",
+                    time=event_time,
+                )
+            )
+
+    return facts
+
+
+def _time_window_event_calculus_facts(
+    runtime: RuntimeContext,
+    time_windows: tuple[TimeWindowDefinition, ...],
+) -> list[EventCalculusFact]:
+    facts: list[EventCalculusFact] = []
+    if runtime.parsed_local_time() is None:
+        return facts
+
+    event_time = runtime.event_time()
+    active_window_names = {
+        name
+        for window in runtime.active_time_windows(time_windows)
+        for name in window.names()
+    }
+
+    for window in time_windows:
+        attrs = {
+            "start": window.start,
+            "end": window.end,
+            "timezone": runtime.effective_timezone(),
+        }
+        for name in window.names():
+            fluent = f"time_window:{name}"
+            if name in active_window_names:
+                facts.append(
+                    EventCalculusFact.holds_at(
+                        fluent,
+                        time=event_time,
+                        attrs=attrs,
+                    )
+                )
+                facts.append(
+                    EventCalculusFact.initiates(
+                        "context_time_observed",
+                        fluent,
+                        time=event_time,
+                        attrs=attrs,
+                    )
+                )
+            else:
+                facts.append(
+                    EventCalculusFact.terminates(
+                        "context_time_observed",
+                        fluent,
+                        time=event_time,
+                        attrs=attrs,
+                    )
+                )
+
+    return facts
+
+
+def _device_mode_event_calculus_facts(runtime: RuntimeContext) -> list[EventCalculusFact]:
+    facts: list[EventCalculusFact] = []
+    event_time = runtime.event_time()
+    current_mode = runtime.normalized_device_mode()
+    if current_mode:
+        fluent = f"device_mode:{current_mode}"
+        facts.append(EventCalculusFact.holds_at(fluent, time=event_time))
+        facts.append(
+            EventCalculusFact.initiates(
+                "context_device_mode_observed",
+                fluent,
+                time=event_time,
+            )
+        )
+
+    previous_mode = runtime.previous_device_mode()
+    if previous_mode and previous_mode != current_mode:
+        facts.append(
+            EventCalculusFact.terminates(
+                "context_device_mode_observed",
+                f"device_mode:{previous_mode}",
+                time=event_time,
+            )
+        )
+    return facts
+
+
+def _extend_unique_frame_facts(target: list[FrameFact], additions: list[FrameFact]) -> None:
+    seen = {fact.fact_id for fact in target}
+    for fact in additions:
+        if fact.fact_id not in seen:
+            target.append(fact)
+            seen.add(fact.fact_id)
+
+
+def _extend_unique_event_facts(
+    target: list[EventCalculusFact],
+    additions: list[EventCalculusFact],
+) -> None:
+    seen = {fact.atom() for fact in target}
+    for fact in additions:
+        atom = fact.atom()
+        if atom not in seen:
+            target.append(fact)
+            seen.add(atom)
 
 
 def policy_from_interaction(
