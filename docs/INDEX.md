@@ -20,6 +20,8 @@ Welcome to the comprehensive documentation for Hallucinate App - a decentralized
 - [Architecture Overview](ARCHITECTURE.md) - System architecture and design principles
 - [Multi-Process Architecture](../hallucinate_app/python/hallucinate_app/README_MULTIPROCESS.md) - Process isolation and parallelization
 - [MCP Daemon Architecture](MCP_DAEMON_ARCHITECTURE.md) - Model Context Protocol daemon system
+- [Multimodal Control Surface Logic IDL Plan](MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md) - Canonical AI-OS plan for voice, gesture, mouse, and agent mediation
+- [Multimodal Control Surface Logic IDL Todo Board](MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md) - Daemon-parseable Hallucinate App backlog for multimodal control work
 
 ## 🔐 Security & Authentication
 
