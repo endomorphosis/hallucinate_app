@@ -1,0 +1,121 @@
+name: Virtual AI OS Integration Gates
+
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - '.github/workflows/virtual-ai-os-integration.yml'
+      - 'config/mcp_plus_plus_profile.json'
+      - 'config/submodule_integration_baseline.json'
+      - 'config/virtual_ai_os_components.json'
+      - 'config/virtual_ai_os_daemons.json'
+      - 'docs/VIRTUAL_AI_OS_*.md'
+      - 'docs/adr/ADR-00*-*.md'
+      - 'hallucinate_app/node/virtual_os_daemon_manager.js'
+      - 'package.json'
+      - 'yarn.lock'
+      - 'python/hallucinate_app/virtual_os/**'
+      - 'scripts/check_nested_submodules.py'
+      - 'scripts/check_virtual_os_dependency_drift.py'
+      - 'scripts/manage_submodule_baseline.py'
+      - 'scripts/verify_submodule_imports.py'
+      - 'test/integration/test_virtual_os_*.js'
+      - 'test/integration/test_virtual_os_*.py'
+      - 'test/js/test_virtual_os_*.js'
+      - 'test/mcp_plus_plus/**'
+      - 'test/python/test_virtual_os_*.py'
+      - 'test/requirements.txt'
+  push:
+    branches: [ main, develop ]
+    paths:
+      - '.github/workflows/virtual-ai-os-integration.yml'
+      - 'config/mcp_plus_plus_profile.json'
+      - 'config/submodule_integration_baseline.json'
+      - 'config/virtual_ai_os_components.json'
+      - 'config/virtual_ai_os_daemons.json'
+      - 'docs/VIRTUAL_AI_OS_*.md'
+      - 'docs/adr/ADR-00*-*.md'
+      - 'hallucinate_app/node/virtual_os_daemon_manager.js'
+      - 'package.json'
+      - 'yarn.lock'
+      - 'python/hallucinate_app/virtual_os/**'
+      - 'scripts/check_nested_submodules.py'
+      - 'scripts/check_virtual_os_dependency_drift.py'
+      - 'scripts/manage_submodule_baseline.py'
+      - 'scripts/verify_submodule_imports.py'
+      - 'test/integration/test_virtual_os_*.js'
+      - 'test/integration/test_virtual_os_*.py'
+      - 'test/js/test_virtual_os_*.js'
+      - 'test/mcp_plus_plus/**'
+      - 'test/python/test_virtual_os_*.py'
+      - 'test/requirements.txt'
+  workflow_dispatch:
+
+concurrency:
+  group: virtual-ai-os-integration-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  virtual-ai-os-gates:
+    name: Virtual AI OS fast gates
+    runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: ${{ github.workspace }}/python
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'yarn'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install JavaScript dependencies
+        run: |
+          corepack enable
+          yarn install --frozen-lockfile
+
+      - name: Install Python test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r test/requirements.txt
+
+      - name: Baseline verify
+        run: python scripts/manage_submodule_baseline.py verify-baseline
+
+      - name: Submodule import smoke
+        run: python scripts/verify_submodule_imports.py
+
+      - name: Virtual OS contract tests
+        run: python test/python/test_virtual_os_submodule_contracts.py
+
+      - name: MCP++ conformance tests
+        run: python test/mcp_plus_plus/test_virtual_os_mcp_conformance.py
+
+      - name: Virtual OS integration smoke tests
+        run: python test/python/test_virtual_os_boot.py
+
+      - name: Dependency drift detector
+        run: python scripts/check_virtual_os_dependency_drift.py
+
+      - name: Nested submodule policy
+        run: python scripts/check_nested_submodules.py
+
+      - name: Selected JavaScript tests
+        run: |
+          node test/js/test_virtual_os_daemon_manager.js
+          npm test
