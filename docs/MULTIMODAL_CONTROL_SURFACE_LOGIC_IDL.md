@@ -281,6 +281,63 @@ This envelope becomes the common input to policy evaluation and the common sourc
 Current Hallucinate runtime surface:
 - `python/hallucinate_app/control_surface_intents.py` defines the canonical `interaction_envelope` and `normalized_intent` helpers.
 - `python/hallucinate_app/control_surface_context.py` defines the actor/context payloads that preserve `delegation_chain`, `state_frames`, and device/runtime metadata across voice, gesture, mouse, and agent inputs.
+- `python/hallucinate_app/control_surface_logic_ir.py` defines the formal frame-first policy IR used between normalized envelopes and later compiler/mediation stages.
+
+## Formal Control Policy IR
+
+`control_surface_logic_ir.py` is the Hallucinate-owned intermediate
+representation for multimodal control policy. It deliberately models UI,
+device, and agent control concepts locally before any optional conversion into
+`ipfs_datasets_py` logic helpers. This keeps surface adapters from importing
+private `event_calculus`, deontic, or frame-logic internals directly.
+
+The IR includes these stable objects:
+
+- `FrameFact`: a frame-logic fact about an attempted invocation. Canonical fact
+  kinds cover actors, surfaces, events, methods, targets, context facts, and
+  device facts.
+- `TemporalGuard`: an activation guard for context or time. Guard kinds cover
+  active `state_frames`, named time windows such as quiet hours, event windows,
+  grant expiry, and generic context facts. Each guard serializes symbolic
+  `event_calculus` atoms such as `holds_at(...)` or `clipped(...)` for future
+  guarded adapters.
+- `DeonticOutcome`: the runtime decision vocabulary: `allow`, `deny`,
+  `require_confirmation`, `defer`, `rewrite`, `fallback_surface`, and
+  `rate_limit`.
+- `InvocationEffect`: the target invocation effect attached to a norm. It
+  records the method, target reference, arguments, optional rewrite method,
+  fallback surface, confirmation requirement, rate-limit key, and reason.
+- `ControlSurfaceNorm`: a deontic norm scoped over actor, surface,
+  surface event, method, and target reference, plus temporal guards and a target
+  `InvocationEffect`.
+- `ControlSurfacePolicy`: a policy snapshot or bundle containing frame facts,
+  ordered deontic norms, natural-language source text, compiled policy CIDs,
+  compiled artifacts, and explanation strings.
+
+The helper `frame_facts_from_interaction(envelope)` turns the canonical
+`interaction_envelope` into frame facts before policy evaluation. For a wrist
+gesture that attempts `display.activate` while `state_frames` include
+`sleeping`, the resulting facts include:
+
+```json
+[
+  {"kind": "actor", "predicate": "actor.type", "value": "user"},
+  {"kind": "surface", "predicate": "surface.id", "value": "gesture"},
+  {"kind": "event", "predicate": "surface_event", "value": "wrist_raise"},
+  {"kind": "method", "predicate": "intent.method", "value": "activate"},
+  {"kind": "target", "predicate": "intent.target_ref", "value": "widget:primary-action"},
+  {"kind": "context", "predicate": "state_frame", "value": "sleeping"}
+]
+```
+
+A rule like "Ignore my wrist gestures at night, because I'm sleeping" is
+represented as a `ControlSurfaceNorm` with `DeonticOutcome.DENY`, `surface` set
+to `gesture`, `surface_event` set to `wrist_raise`, guards for
+`TemporalGuard.state_frame("sleeping")` and a quiet-hours `TemporalGuard`, and
+an `InvocationEffect` targeting the attempted method. Later tasks can compile
+or evaluate the same policy through `compile_nl_to_policy`,
+`evaluate_nl_policy`, or guarded `event_calculus` adapters without changing the
+IR shape.
 
 ## Logic Model
 
@@ -365,6 +422,7 @@ This work should land here.
 
 Recommended new modules:
 - `python/hallucinate_app/control_surface_intents.py`
+- `python/hallucinate_app/control_surface_logic_ir.py`
 - `python/hallucinate_app/control_surface_policy.py`
 - `python/hallucinate_app/control_surface_context.py`
 - `python/hallucinate_app/control_surface_receipts.py`

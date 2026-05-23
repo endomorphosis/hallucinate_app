@@ -67,7 +67,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-004 Audit and pin the `ipfs_datasets_py.logic` API contract
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: logic
