@@ -78,7 +78,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-005 Define the formal multimodal control policy IR
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: logic
@@ -306,3 +306,14 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md, data/hallucinate_multimodal_control/discovery
 - Validation: PYTHONPATH=external/ipfs_datasets python3 scripts/hallucinate_multimodal_control_todo_supervisor.py --once; rg -n "HAO-025|unknowns|discovery|multimodal" hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md data/hallucinate_multimodal_control/discovery
 - Acceptance: After the initial implementation queue completes, inspect Hallucinate App, Swissknife, `ipfs_datasets_py`, and remote clients for missed work; append new daemon-parseable HAO tasks or record a dated no-new-unknowns discovery report with evidence.
+
+## HAO-026 Resolve merge retry-budget failure for HAO-005
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: HAO-004
+- Outputs: hallucinate_app/python/hallucinate_app/control_surface_logic_ir.py, hallucinate_app/python/hallucinate_app/test/test_control_surface_logic_ir.py, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md, data/hallucinate_multimodal_control/discovery
+- Validation: python3 -c 'exec("import json, pathlib\nstrategy = json.loads(pathlib.Path('"'"'/home/barberb/lift_coding/data/hallucinate_multimodal_control/state/hallucinate_multimodal_control_strategy.json'"'"').read_text(encoding='"'"'utf-8'"'"'))\nassert '"'"'HAO-005'"'"' not in strategy.get('"'"'blocked_tasks'"'"', [])")'
+- Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-005. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-23-hao-026-hao-005-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are actually committed in their owning repository or submodule, then remove HAO-005 from the strategy blocked_tasks list so the original backlog item can continue without an indefinite retry loop.

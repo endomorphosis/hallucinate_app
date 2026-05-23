@@ -223,12 +223,45 @@ class TemporalGuard:
             timezone=timezone,
         )
 
+    @classmethod
+    def event_window(
+        cls,
+        name: str,
+        *,
+        event_refs: list[str],
+        guard_id: str | None = None,
+    ) -> "TemporalGuard":
+        return cls(
+            guard_id=guard_id or stable_control_surface_id("guard", "event_window", name, *event_refs),
+            kind=TemporalGuardKind.EVENT_WINDOW,
+            predicate=name,
+            relation="after_event",
+            event_refs=list(event_refs),
+        )
+
+    @classmethod
+    def context_fact(
+        cls,
+        predicate: str,
+        expected: Any = True,
+        *,
+        relation: str = "equals",
+        guard_id: str | None = None,
+    ) -> "TemporalGuard":
+        return cls(
+            guard_id=guard_id or stable_control_surface_id("guard", "context_fact", predicate, expected),
+            kind=TemporalGuardKind.CONTEXT_FACT,
+            predicate=predicate,
+            expected=expected,
+            relation=relation,
+        )
+
     def event_calculus_atoms(self) -> list[str]:
         """Return symbolic event_calculus atoms for guarded adapters.
 
         These strings are intentionally declarative. Runtime adapters can map
         them to the optional `ipfs_datasets_py.logic.CEC.native.event_calculus`
-        helper once HAO-008 adds concrete context extraction.
+        helper once concrete context extraction lands.
         """
 
         atoms: list[str] = []
