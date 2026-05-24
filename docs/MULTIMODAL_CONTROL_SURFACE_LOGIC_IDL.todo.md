@@ -144,7 +144,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-011 Implement the runtime mediation evaluator
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: backend
