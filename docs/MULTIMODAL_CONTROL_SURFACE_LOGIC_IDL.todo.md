@@ -133,7 +133,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-010 Implement policy bundle persistence and CID references
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: data
