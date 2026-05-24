@@ -336,6 +336,15 @@ The IR includes these stable objects:
   ordered deontic norms, natural-language source text, compiled policy CIDs,
   compiled artifacts, and explanation strings.
 
+### Policy bundle persistence
+`control_surface_store.PolicyBundleStore` persists each `policy_bundle` as
+canonical JSON under `data/hallucinate_multimodal_control/policies`. The stored
+record keeps the natural-language source rules, the `compiled_policy` IR, any
+optional `ipfs_datasets_py` artifacts retained by the compiler, stable
+`policy_cid` and `compiled_policy_cid` references, the operator-facing
+`explanation` text, and a separate user/profile attachment index that points
+the active profile at the selected `policy_bundle_ref`.
+
 The helper `frame_facts_from_interaction(envelope)` turns the canonical
 `interaction_envelope` into frame facts before policy evaluation. For a wrist
 gesture that attempts `display.activate` while `state_frames` include
