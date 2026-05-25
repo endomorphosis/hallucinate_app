@@ -419,7 +419,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-036 Normalize remote client artifacts to the canonical control-surface envelope
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: integration
