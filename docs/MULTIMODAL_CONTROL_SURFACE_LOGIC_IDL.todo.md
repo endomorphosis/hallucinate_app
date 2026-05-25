@@ -361,3 +361,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: hallucinate_app/python/hallucinate_app/control_surface_policy.py, hallucinate_app/python/hallucinate_app/test/test_control_surface_policy_ipfs_logic.py, data/hallucinate_multimodal_control/discovery
 - Validation: python3 -c 'exec("import json, pathlib\nstrategy = json.loads(pathlib.Path('"'"'/home/barberb/lift_coding/data/hallucinate_multimodal_control/state/hallucinate_multimodal_control_strategy.json'"'"').read_text(encoding='"'"'utf-8'"'"'))\nassert '"'"'HAO-029'"'"' not in strategy.get('"'"'blocked_tasks'"'"', [])")'
 - Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-029. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-23-hao-030-hao-029-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are actually committed in their owning repository or submodule, then remove HAO-029 from the strategy blocked_tasks list so the original backlog item can continue without an indefinite retry loop.
+
+## HAO-031 Resolve code annotation in data/meta_glasses_display_widgets/discovery/2026-05-22-mgw-013-discovery-expansion.md:9
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, data/meta_glasses_display_widgets/discovery/2026-05-22-mgw-013-discovery-expansion.md
+- Validation: test -f data/meta_glasses_display_widgets/discovery/2026-05-22-mgw-013-discovery-expansion.md
+- Acceptance: Codebase scan filed this finding from data/meta_glasses_display_widgets/discovery/2026-05-22-mgw-013-discovery-expansion.md:9. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-25-hao-031-codebase-scan-451e3aa78952.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-032 Resolve code annotation in data/meta_glasses_display_widgets/discovery/2026-05-22-mgw-013-discovery-expansion.md:14
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, data/meta_glasses_display_widgets/discovery/2026-05-22-mgw-013-discovery-expansion.md
+- Validation: test -f data/meta_glasses_display_widgets/discovery/2026-05-22-mgw-013-discovery-expansion.md
+- Acceptance: Codebase scan filed this finding from data/meta_glasses_display_widgets/discovery/2026-05-22-mgw-013-discovery-expansion.md:14. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-25-hao-032-codebase-scan-7c7b0a1f028e.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-033 Resolve code annotation in data/meta_glasses_display_widgets/discovery/2026-05-22-mgw-013-discovery-expansion.md:63
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, data/meta_glasses_display_widgets/discovery/2026-05-22-mgw-013-discovery-expansion.md
+- Validation: test -f data/meta_glasses_display_widgets/discovery/2026-05-22-mgw-013-discovery-expansion.md
+- Acceptance: Codebase scan filed this finding from data/meta_glasses_display_widgets/discovery/2026-05-22-mgw-013-discovery-expansion.md:63. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-25-hao-033-codebase-scan-80aafe473bd6.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-034 Resolve code annotation in data/meta_glasses_display_widgets/discovery/2026-05-22-mgw-013-discovery-expansion.md:79
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, data/meta_glasses_display_widgets/discovery/2026-05-22-mgw-013-discovery-expansion.md
+- Validation: test -f data/meta_glasses_display_widgets/discovery/2026-05-22-mgw-013-discovery-expansion.md
+- Acceptance: Codebase scan filed this finding from data/meta_glasses_display_widgets/discovery/2026-05-22-mgw-013-discovery-expansion.md:79. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-25-hao-034-codebase-scan-6dd7c88ccde8.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-035 Resolve code annotation in data/meta_glasses_display_widgets/discovery/2026-05-22-mgw-014-validation-guardrails.md:25
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, data/meta_glasses_display_widgets/discovery/2026-05-22-mgw-014-validation-guardrails.md
+- Validation: test -f data/meta_glasses_display_widgets/discovery/2026-05-22-mgw-014-validation-guardrails.md
+- Acceptance: Codebase scan filed this finding from data/meta_glasses_display_widgets/discovery/2026-05-22-mgw-014-validation-guardrails.md:25. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-25-hao-035-codebase-scan-9e82839eb89c.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
