@@ -210,7 +210,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-017 Implement mouse, touch, and pointer resolver integration
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ui
