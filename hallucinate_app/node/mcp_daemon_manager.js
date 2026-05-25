@@ -377,9 +377,15 @@ class MCPDaemonManager extends EventEmitter {
 
   /**
    * Configure the shared control_surface policy hook used before invoke.
+   * If no runtime evaluator is registered, the gate emits a fail_closed
+   * require_confirmation decision and does not call the daemon transport.
    */
   setControlSurfacePolicyHook(policyHook) {
     this.controlSurfaceInvocationGate.setPolicyHook(policyHook);
+  }
+
+  setControlSurfaceRuntimePolicyEvaluator(policyEvaluator) {
+    this.controlSurfaceInvocationGate.setRuntimePolicyEvaluator(policyEvaluator);
   }
 
   /**

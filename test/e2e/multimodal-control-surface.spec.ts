@@ -278,4 +278,41 @@ test.describe('multimodal control_surface end-to-end mediation', () => {
       }
     });
   });
+
+  test('daemon-managed service mediation fails closed when no runtime policy evaluator is registered', async () => {
+    const { default: MCPDaemonManager } = await import('../../hallucinate_app/node/mcp_daemon_manager.js');
+    const manager = new MCPDaemonManager();
+    let transportInvoked = false;
+
+    const result = await manager.invokeManagedService('ipfs-kit', {
+      method: CANONICAL_METHOD,
+      target_ref: CANONICAL_TARGET_REF,
+      arguments: CANONICAL_ARGUMENTS,
+      control_surface: {
+        surface: 'agent',
+        surface_event: 'autonomous_invoke',
+        intent: CANONICAL_INTENT,
+        confidence: 0.99,
+        actor: { type: 'agent', id: 'agent:planner', delegation_chain: [] }
+      }
+    }, async () => {
+      transportInvoked = true;
+      return { invoked: true };
+    });
+
+    expect(transportInvoked).toBe(false);
+    expect(result.ok).toBe(false);
+    expect(result.denied).toBe(true);
+    expect(result.policy_decision.outcome).toBe('require_confirmation');
+    expect(result.policy_decision.metadata.fail_closed).toBe(true);
+    expect(result.policy_decision.metadata.runtime_policy_evaluator).toBe(
+      'hallucinate_app.control_surface_mediator.evaluate_control_surface_interaction'
+    );
+    expect(result.reasons.join('\n')).toContain('fail_closed');
+    expect(result.mediation_receipt.mediation_result).toMatchObject({
+      outcome: 'require_confirmation',
+      invoked: false,
+      confirmation_required: true
+    });
+  });
 });
