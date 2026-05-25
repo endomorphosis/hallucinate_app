@@ -268,6 +268,31 @@ The runtime schemas mirror that chain:
   then records `policy_refs` so audit storage can trace an outcome back to the
   policy bundle and compiled logic artifacts that mediated the method call.
 
+### Swissknife descriptor and ORB binding
+
+`HAO-014` binds the bundled Swissknife descriptor and ORB runtime to the same
+pre-invocation mediation path. Swissknife MCP++ UI descriptors carry a
+`control_surface_contract` generated from their operation contracts. The
+contract declares the shared voice, gesture, mouse, and agent surfaces, maps
+every descriptor operation through `intent_bindings`, and pins the policy hook
+names to `hallucinate_app.control_surface_mediator.evaluate_control_surface_interaction`
+with `mediation_receipt` emission enabled.
+
+The Swissknife ORB capability router now normalizes every invocation into an
+`interaction_envelope` before transport dispatch. The local `control_surface_mediator`
+checks the descriptor's allowed surface and event bindings, emits a
+`policy_decision`, attaches the resulting `mediation_receipt` to the ORB receipt,
+and only then invokes the underlying local, HTTP, websocket, or MCP-server
+transport. A denied or confirmation-blocked surface never reaches the interface
+method handler.
+
+Swissknife browser descriptor actions also stamp UI events with the same surface
+context: mouse clicks use `mouse/click`, voice helpers use `voice/utterance`,
+gesture helpers use `gesture` event names, and agent helpers use
+`agent/autonomous_invoke`. Generated app command buttons expose the same
+control-surface metadata so ORB-backed UI launches and agent-originated actions
+flow through one policy-aware mediation path.
+
 ## Canonical Runtime Envelope
 Every control surface should normalize into one envelope before policy evaluation.
 
