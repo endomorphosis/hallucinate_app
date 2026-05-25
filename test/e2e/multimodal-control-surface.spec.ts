@@ -177,6 +177,42 @@ function comparablePolicyDecision(decision: JsonMap) {
 }
 
 test.describe('multimodal control_surface end-to-end mediation', () => {
+  test('daemon-managed service invocation fails closed without a runtime policy evaluator', async () => {
+    const { default: MCPDaemonManager } = await import('../../hallucinate_app/node/mcp_daemon_manager.js');
+    const manager = new MCPDaemonManager();
+    let invokerCalled = false;
+
+    const result = await manager.invokeManagedService('ipfs-kit', {
+      method: CANONICAL_METHOD,
+      target_ref: CANONICAL_TARGET_REF,
+      arguments: CANONICAL_ARGUMENTS,
+      control_surface: {
+        surface: 'agent',
+        surface_event: 'autonomous_invoke',
+        intent: CANONICAL_INTENT,
+        confidence: 0.99,
+        actor: { type: 'agent', id: 'agent:planner', delegation_chain: ['user:operator'] }
+      }
+    }, async () => {
+      invokerCalled = true;
+      return { invoked: true };
+    });
+
+    expect(invokerCalled).toBe(false);
+    expect(result.ok).toBe(false);
+    expect(result.denied).toBe(true);
+    expect(result.policy_decision.outcome).toBe('deny');
+    expect(result.policy_decision.metadata.fail_closed).toBe(true);
+    expect(result.policy_decision.reasons.join('\n')).toContain('Default daemon-managed service mediation fail_closed');
+    expect(result.mediation_receipt.mediation_result).toMatchObject({
+      outcome: 'deny',
+      invoked: false,
+      final_method: CANONICAL_METHOD,
+      final_target_ref: CANONICAL_TARGET_REF,
+      confirmation_required: false
+    });
+  });
+
   test('voice, gesture, mouse, agent, and remote clients share the method gate and policy_decision', async () => {
     const { default: MCPDaemonManager } = await import('../../hallucinate_app/node/mcp_daemon_manager.js');
     const manager = new MCPDaemonManager();

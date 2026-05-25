@@ -20,6 +20,7 @@ class MCPDaemonManager extends EventEmitter {
     this.healthCheckInterval = null;
     this.baseDir = path.join(__dirname, '..', '..');
     this.controlSurfaceInvocationGate = options.controlSurfaceInvocationGate || new ControlSurfaceInvocationGate({
+      missingPolicyOutcome: 'deny',
       source: 'hallucinate_app.node.mcp_daemon_manager'
     });
     
@@ -377,6 +378,7 @@ class MCPDaemonManager extends EventEmitter {
 
   /**
    * Configure the shared control_surface policy hook used before invoke.
+   * Clearing the hook leaves the gate in fail_closed mode.
    */
   setControlSurfacePolicyHook(policyHook) {
     this.controlSurfaceInvocationGate.setPolicyHook(policyHook);
