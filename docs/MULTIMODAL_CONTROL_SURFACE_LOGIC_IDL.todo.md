@@ -254,7 +254,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-021 Integrate Meta-glasses, mobile, and simulator clients as remote surfaces
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: mobile
