@@ -672,7 +672,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-059 Resolve code annotation in mobile/BUILD_AND_TEST_GLASSES_PLAYER.md:289
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: quality
