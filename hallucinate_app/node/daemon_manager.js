@@ -14,6 +14,7 @@ import { spawn } from 'child_process';
 import { EventEmitter } from 'events';
 import path from 'path';
 import url from 'url';
+import { ControlSurfaceInvocationGate } from './control_surface_invocation.js';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
@@ -247,9 +248,12 @@ class MCPDaemon extends EventEmitter {
  * Daemon Manager for managing multiple MCP servers
  */
 class DaemonManager extends EventEmitter {
-  constructor() {
+  constructor(options = {}) {
     super();
     this.daemons = new Map();
+    this.controlSurfaceInvocationGate = options.controlSurfaceInvocationGate || new ControlSurfaceInvocationGate({
+      source: 'hallucinate_app.node.daemon_manager'
+    });
     this.setupDefaultDaemons();
   }
 
@@ -404,6 +408,62 @@ class DaemonManager extends EventEmitter {
       throw new Error(`Daemon not found: ${name}`);
     }
     return daemon.getStatus();
+  }
+
+  /**
+   * Configure the shared control_surface policy hook used before invoke.
+   */
+  setControlSurfacePolicyHook(policyHook) {
+    this.controlSurfaceInvocationGate.setPolicyHook(policyHook);
+  }
+
+  /**
+   * Run the single pre-invocation mediation hook for a daemon-managed MCP call.
+   */
+  async beforeInvoke(name, invocation = {}) {
+    this.requireDaemon(name);
+    return this.controlSurfaceInvocationGate.beforeInvoke(
+      this.managedInvocationPayload(name, invocation)
+    );
+  }
+
+  /**
+   * Invoke through a daemon-managed transport only after policy_decision mediation.
+   */
+  async invokeManagedService(name, invocation = {}, invoker = null) {
+    this.requireDaemon(name);
+    return this.controlSurfaceInvocationGate.invoke(
+      this.managedInvocationPayload(name, invocation),
+      invoker
+    );
+  }
+
+  requireDaemon(name) {
+    const daemon = this.daemons.get(name);
+    if (!daemon) {
+      throw new Error(`Daemon not found: ${name}`);
+    }
+    return daemon;
+  }
+
+  managedInvocationPayload(name, invocation = {}) {
+    const daemon = this.requireDaemon(name);
+    return {
+      ...invocation,
+      daemon_id: name,
+      service_id: invocation.service_id || name,
+      server_family: invocation.server_family || name,
+      transport: invocation.transport || 'mcp-server',
+      endpoint: invocation.endpoint || (
+        daemon.env?.MCP_SERVER_PORT
+          ? `http://127.0.0.1:${daemon.env.MCP_SERVER_PORT}`
+          : ''
+      ),
+      control_surface_contract_ref: (
+        invocation.control_surface_contract_ref ||
+        `control_surface_contract:mcp-daemon:${name}`
+      )
+    };
   }
 }
 

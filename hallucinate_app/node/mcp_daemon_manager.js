@@ -9,15 +9,19 @@ import path from 'path';
 import url from 'url';
 import crypto from 'crypto';
 import { getReporter, ErrorSource, ErrorLevel } from './github_issue_reporter.js';
+import { ControlSurfaceInvocationGate } from './control_surface_invocation.js';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 class MCPDaemonManager extends EventEmitter {
-  constructor() {
+  constructor(options = {}) {
     super();
     this.daemons = new Map();
     this.healthCheckInterval = null;
     this.baseDir = path.join(__dirname, '..', '..');
+    this.controlSurfaceInvocationGate = options.controlSurfaceInvocationGate || new ControlSurfaceInvocationGate({
+      source: 'hallucinate_app.node.mcp_daemon_manager'
+    });
     
     // Initialize GitHub reporter if enabled
     this.githubReporter = null;
@@ -370,6 +374,34 @@ class MCPDaemonManager extends EventEmitter {
     
     return daemon.logs.slice(-limit);
   }
+
+  /**
+   * Configure the shared control_surface policy hook used before invoke.
+   */
+  setControlSurfacePolicyHook(policyHook) {
+    this.controlSurfaceInvocationGate.setPolicyHook(policyHook);
+  }
+
+  /**
+   * Run the single pre-invocation mediation hook for an MCP-managed service.
+   */
+  async beforeInvoke(daemonId, invocation = {}) {
+    this._requireDaemonConfig(daemonId);
+    return this.controlSurfaceInvocationGate.beforeInvoke(
+      this._managedInvocationPayload(daemonId, invocation)
+    );
+  }
+
+  /**
+   * Invoke an MCP-managed transport only after policy_decision mediation.
+   */
+  async invokeManagedService(daemonId, invocation = {}, invoker = null) {
+    this._requireDaemonConfig(daemonId);
+    return this.controlSurfaceInvocationGate.invoke(
+      this._managedInvocationPayload(daemonId, invocation),
+      invoker
+    );
+  }
   
   /**
    * Report an error to GitHub
@@ -415,6 +447,30 @@ class MCPDaemonManager extends EventEmitter {
     } catch (reportError) {
       console.error('Failed to report error to GitHub:', reportError);
     }
+  }
+
+  _requireDaemonConfig(daemonId) {
+    const config = this.daemonConfigs.find(d => d.id === daemonId);
+    if (!config) {
+      throw new Error(`Unknown daemon: ${daemonId}`);
+    }
+    return config;
+  }
+
+  _managedInvocationPayload(daemonId, invocation = {}) {
+    const config = this._requireDaemonConfig(daemonId);
+    return {
+      ...invocation,
+      daemon_id: daemonId,
+      service_id: invocation.service_id || daemonId,
+      server_family: invocation.server_family || daemonId,
+      transport: invocation.transport || 'mcp-server',
+      endpoint: invocation.endpoint || `http://127.0.0.1:${config.port}`,
+      control_surface_contract_ref: (
+        invocation.control_surface_contract_ref ||
+        `control_surface_contract:mcp-daemon:${daemonId}`
+      )
+    };
   }
 }
 

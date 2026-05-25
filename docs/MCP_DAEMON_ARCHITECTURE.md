@@ -167,6 +167,33 @@ service path is connected.
   snapshots, policy creation, confirmation approval/rejection, and receipt
   viewing without enabling renderer Node integration.
 
+### Daemon-Managed Invocation Mediation
+
+`HAO-020` connects daemon-managed service calls to the same `control_surface`
+pre-invocation mediation model used by ORB surfaces. The shared Node hook lives
+in `hallucinate_app/node/control_surface_invocation.js`; both
+`MCPDaemonManager` and the legacy `DaemonManager` expose:
+
+- `setControlSurfacePolicyHook(policyHook)` to install the active runtime
+  policy evaluator.
+- `beforeInvoke(daemonId, invocation)` to return the normalized
+  `interaction_envelope`, `policy_decision`, and `mediation_receipt`.
+- `invokeManagedService(daemonId, invocation, invoker)` to run the same before
+  invoke hook and only call the supplied transport invoker when the policy
+  outcome is executable.
+
+The matching Python helper is
+`hallucinate_app.control_surface_service_invocation.before_invoke_service`.
+It normalizes MCP and ORB service attempts into the canonical interaction
+envelope, calls `control_surface_mediator.evaluate_control_surface_interaction`,
+and builds the standard `mediation_receipt`.
+
+Daemon-managed transports must use this hook before dispatching to local, HTTP,
+websocket, or `mcp-server` adapters. Blocking outcomes such as `deny`,
+`require_confirmation`, `defer`, and `rate_limit` return a denial result and
+the underlying transport callback is not invoked. Direct calls to daemon ports
+or ORB transport adapters are not a policy-aware service path.
+
 ### Menu System
 
 **Daemons Menu:**
