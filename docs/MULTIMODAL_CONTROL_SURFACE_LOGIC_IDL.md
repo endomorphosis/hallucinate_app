@@ -492,6 +492,45 @@ Recommended new modules:
 ### Remote-client integration targets
 Remote clients such as Meta glasses, mobile shells, and simulator surfaces should consume this contract and publish normalized events into the Hallucinate App mediation layer.
 
+### Remote interaction surface adoption
+`HAO-021` treats Meta-glasses, mobile, and simulator clients as remote
+interaction surface producers for the same Hallucinate-owned
+`control_surface_contract`. These clients may provide device capabilities,
+transport metadata, and raw sensor or display payloads, but they must not define
+client-local policy hooks, competing intent bindings, or a separate control
+contract.
+
+Remote events enter Hallucinate App as the same `interaction_envelope` used by
+local voice, gesture, pointer, and agent adapters:
+- `surface` remains the normalized control modality, such as `voice`,
+  `gesture`, `mouse`, or `agent`.
+- `surface_event` remains the canonical event, such as `utterance`, `tap`,
+  `swipe`, `click`, or `proposal`.
+- `raw_payload` preserves transport-specific evidence, such as DAT display
+  action data, Web App event metadata, mobile card input, simulator trace
+  entries, Neural Band/captouch values, sensor readings, and correlation IDs.
+- `context.platform` identifies the remote client runtime, such as
+  `meta_glasses`, `mobile`, or `simulator`.
+- `context.device_context.remote_surface` records the concrete device path,
+  such as `meta-rayban-display-webapp`, `dat-native-display`,
+  `mobile-shell`, or `meta-rayban-display-simulator`.
+
+The remote-surface flow is:
+1. The Meta-glasses, mobile, or simulator adapter receives a raw device event.
+2. The adapter resolves that event to the canonical interaction envelope and
+   attaches descriptor, policy, receipt, and correlation references when known.
+3. Hallucinate App validates the envelope against `control_surface_contract`.
+4. The shared mediator emits the `policy_decision` and `mediation_receipt`
+   before any ORB, MCP, display, audio, or mobile render target proceeds.
+5. The remote client executes only the mediated result, including
+   `fallback_surface`, `rewrite`, `require_confirmation`, or denial outcomes.
+
+The existing `lift_coding` mobile ORB endpoint
+`/v1/mobile/orb/publish_glasses_event` is therefore a compatibility ingress for
+remote events, not a new policy authority. Its Meta-glasses, mobile, and
+simulator paths should forward normalized envelopes and receive Hallucinate App
+mediation results rather than evaluating separate local control policy.
+
 ## Meta-Glasses Relationship
 The Meta-glasses path should be treated as:
 - a remote interaction surface,
