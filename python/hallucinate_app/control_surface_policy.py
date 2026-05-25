@@ -9,6 +9,8 @@ freeform user rules.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field, is_dataclass
+from datetime import datetime, timezone
+import inspect
 import re
 from collections.abc import Mapping
 from typing import Any
@@ -368,6 +370,7 @@ def evaluate_ipfs_nl_policy(
             "missing": list(missing),
         }
 
+    restore_evaluator = _install_ipfs_at_time_evaluator_adapter(api)
     try:
         result = api.evaluate_nl_policy(nl_text, tool=tool, actor=actor, **kwargs)
     except Exception as exc:  # pragma: no cover - exact upstream failures vary.
@@ -376,6 +379,9 @@ def evaluate_ipfs_nl_policy(
             "reason": f"evaluate_nl_policy failed: {exc}",
             "compiler_lane": IPFS_LOGIC_COMPILER_LANE,
         }
+    finally:
+        if restore_evaluator is not None:
+            restore_evaluator()
 
     payload = _serialize_ipfs_value(result)
     if isinstance(payload, dict):
@@ -385,6 +391,63 @@ def evaluate_ipfs_nl_policy(
         "decision": str(payload),
         "compiler_lane": IPFS_LOGIC_COMPILER_LANE,
     }
+
+
+def _install_ipfs_at_time_evaluator_adapter(logic_api: Any) -> Any:
+    """Temporarily adapt real upstream ``at_time`` calls to ``now``.
+
+    Some ``ipfs_datasets_py`` checkouts route ``evaluate_nl_policy`` through a
+    bridge that calls ``PolicyEvaluator.evaluate(..., at_time=...)`` while the
+    evaluator itself accepts ``now``. Keep the compatibility shim scoped to the
+    one upstream call so a failed evaluation does not poison later calls.
+    """
+
+    if getattr(logic_api, "__name__", "") != "ipfs_datasets_py.logic.api":
+        return None
+    try:
+        from ipfs_datasets_py.mcp_server.temporal_policy import PolicyEvaluator  # type: ignore
+    except Exception:
+        return None
+
+    original_evaluate = getattr(PolicyEvaluator, "evaluate", None)
+    if not callable(original_evaluate):
+        return None
+    try:
+        parameters = inspect.signature(original_evaluate).parameters
+    except (TypeError, ValueError):
+        return None
+    if "at_time" in parameters or "now" not in parameters:
+        return None
+
+    def evaluate_with_at_time(
+        self: Any,
+        intent: Any,
+        policy: Any,
+        *args: Any,
+        **call_kwargs: Any,
+    ) -> Any:
+        at_time = call_kwargs.pop("at_time", None)
+        if at_time is not None and "now" not in call_kwargs:
+            call_kwargs["now"] = _coerce_ipfs_at_time_to_datetime(at_time)
+        return original_evaluate(self, intent, policy, *args, **call_kwargs)
+
+    PolicyEvaluator.evaluate = evaluate_with_at_time  # type: ignore[method-assign]
+
+    def restore_evaluator() -> None:
+        if getattr(PolicyEvaluator, "evaluate", None) is evaluate_with_at_time:
+            PolicyEvaluator.evaluate = original_evaluate  # type: ignore[method-assign]
+
+    return restore_evaluator
+
+
+def _coerce_ipfs_at_time_to_datetime(at_time: Any) -> Any:
+    if isinstance(at_time, datetime):
+        if at_time.tzinfo is None:
+            return at_time.replace(tzinfo=timezone.utc)
+        return at_time
+    if isinstance(at_time, (int, float)):
+        return datetime.fromtimestamp(float(at_time), tz=timezone.utc)
+    return at_time
 
 
 def _strict_rejection_result(source_text: str, strict_error: str, reason: str) -> NLPolicyCompilation:
