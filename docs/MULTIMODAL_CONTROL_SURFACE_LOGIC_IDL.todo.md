@@ -727,7 +727,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-064 Close virtual AI OS objective gap: Operator shell and virtual desktop
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ui
