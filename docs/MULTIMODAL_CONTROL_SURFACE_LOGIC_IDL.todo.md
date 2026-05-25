@@ -680,3 +680,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, mobile/BUILD_AND_TEST_GLASSES_PLAYER.md
 - Validation: test -f mobile/BUILD_AND_TEST_GLASSES_PLAYER.md
 - Acceptance: Codebase scan filed this finding from mobile/BUILD_AND_TEST_GLASSES_PLAYER.md:289. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-25-hao-059-codebase-scan-4599d851a66d.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-060 Close virtual AI OS objective gap: Virtual AI OS outcome
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: ops
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, docs, tests
+- Validation: PYTHONPATH=external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -k objective_goal
+- Acceptance: Objective scan filed this gap for VAIOS-G000. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-25-hao-060-objective-gap-8e0fb6e29f18.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (Meta glasses remote terminal), and keep the supervisor-fed backlog aligned with the virtual AI OS objective heap. Add child goals when a missing proof cannot be closed by one focused task.
+
+## HAO-061 Close virtual AI OS objective gap: Objective-driven supervisor loop
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, scripts/hallucinate_multimodal_control_todo_daemon.py, tests/test_hallucinate_multimodal_control_todo_queue.py
+- Validation: PYTHONPATH=external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -k objective_goal
+- Acceptance: Objective scan filed this gap for VAIOS-G010. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-25-hao-061-objective-gap-6e4124a265a4.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md), and keep the supervisor-fed backlog aligned with the virtual AI OS objective heap. Split into scoring, evidence indexing, and task-generation children if the scanner becomes too broad.
+
+## HAO-062 Close virtual AI OS objective gap: Capability routing kernel
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, src/handsfree, tests
+- Validation: pytest tests/test_virtual_ai_os_capability_registry.py tests/test_virtual_ai_os_runtime_router.py
+- Acceptance: Objective scan filed this gap for VAIOS-G020. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-25-hao-062-objective-gap-4f0e11db46cf.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (src/handsfree/capability_registry.py), and keep the supervisor-fed backlog aligned with the virtual AI OS objective heap. Add child goals for scheduler policy, fallback routing, and normalized error contracts.
+
+## HAO-063 Close virtual AI OS objective gap: IDL, ORB, and MCP++ bridge
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md, swissknife, external/ipfs_datasets
+- Validation: PYTHONPATH=external/ipfs_datasets:hallucinate_app/python python3 hallucinate_app/python/hallucinate_app/test/test_control_surface_policy_ipfs_logic.py
+- Acceptance: Objective scan filed this gap for VAIOS-G030. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-25-hao-063-objective-gap-5eadd5fc2d80.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (interface descriptor language), and keep the supervisor-fed backlog aligned with the virtual AI OS objective heap. Add child goals for each control modality when a modality lacks descriptor, policy, and dispatch evidence.
+
+## HAO-064 Close virtual AI OS objective gap: Operator shell and virtual desktop
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ui
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, swissknife, hallucinate_app, tests
+- Validation: test -f hallucinate_app/docs/SWISSKNIFE_VIRTUAL_DESKTOP_MOCKUP.md
+- Acceptance: Objective scan filed this gap for VAIOS-G040. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-25-hao-064-objective-gap-a149b1734e9a.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (Hallucinate App operator console, ORB display harness), and keep the supervisor-fed backlog aligned with the virtual AI OS objective heap. Add child goals for task monitor, app launcher, ORB inspector, and session replay.
