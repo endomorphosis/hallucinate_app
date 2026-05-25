@@ -11,6 +11,11 @@ import path from 'path';
 
 const execAsync = promisify(exec);
 
+function withoutElectronRunAsNode() {
+  const { ELECTRON_RUN_AS_NODE, ...env } = process.env;
+  return env;
+}
+
 async function globalSetup(config: FullConfig) {
   console.log('🔧 Running global setup...');
   
@@ -32,7 +37,9 @@ async function globalSetup(config: FullConfig) {
   
   // Verify Electron is available
   try {
-    const { stdout } = await execAsync('npx electron --version');
+    const { stdout } = await execAsync('npx electron --no-sandbox --version', {
+      env: withoutElectronRunAsNode()
+    });
     console.log(`✅ Electron version: ${stdout.trim()}`);
   } catch (err) {
     console.error('❌ Electron not available:', err);

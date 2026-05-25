@@ -1,10 +1,19 @@
-import { test, expect, _electron as electron } from '@playwright/test';
-import { ElectronApplication, Page } from '@playwright/test';
+import playwrightTest from '@playwright/test';
+import type { ElectronApplication, Page } from '@playwright/test';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const { test, expect, _electron: electron } = playwrightTest as unknown as typeof import('@playwright/test');
+
+function electronLaunchEnv(extra: Record<string, string> = {}) {
+  const { ELECTRON_RUN_AS_NODE, ...env } = process.env;
+  return {
+    ...env,
+    ...extra
+  };
+}
 
 /**
  * Playwright Test Suite for Menu System
@@ -26,13 +35,12 @@ test.describe('Menu System - Visual Tests', () => {
   test.beforeAll(async () => {
     // Launch Electron app
     electronApp = await electron.launch({
-      args: [path.join(__dirname, '..', '..', 'index.js')],
-      env: {
-        ...process.env,
+      args: ['--no-sandbox', path.join(__dirname, '..', '..', 'index.js')],
+      env: electronLaunchEnv({
         NODE_ENV: 'test',
         ELECTRON_ENABLE_LOGGING: '1',
         AUTO_START_DAEMONS: 'false' // Don't start daemons for menu tests
-      }
+      })
     });
 
     // Get the first window
@@ -47,7 +55,8 @@ test.describe('Menu System - Visual Tests', () => {
 
   test.afterAll(async () => {
     // Clean up
-    await electronApp.close();
+    await electronApp?.close();
+    electronApp = undefined as any;
   });
 
   test('01 - Capture initial app window', async () => {
@@ -258,12 +267,11 @@ test.describe('Menu System - Structure Validation', () => {
   test.beforeAll(async () => {
     if (!electronApp) {
       electronApp = await electron.launch({
-        args: [path.join(__dirname, '..', '..', 'index.js')],
-        env: {
-          ...process.env,
+        args: ['--no-sandbox', path.join(__dirname, '..', '..', 'index.js')],
+        env: electronLaunchEnv({
           NODE_ENV: 'test',
           AUTO_START_DAEMONS: 'false'
-        }
+        })
       });
       window = await electronApp.firstWindow();
       await window.waitForLoadState('domcontentloaded');

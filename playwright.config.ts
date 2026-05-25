@@ -1,4 +1,6 @@
-import { defineConfig, devices } from '@playwright/test';
+import playwrightTest from '@playwright/test';
+
+const { defineConfig } = playwrightTest as unknown as typeof import('@playwright/test');
 
 /**
  * Playwright Configuration for MCP Daemon Manager Tests
@@ -20,7 +22,7 @@ export default defineConfig({
   
   // Reporter configuration
   reporter: [
-    ['html', { outputFolder: 'test-results/html-report' }],
+    ['html', { outputFolder: 'test-results/html-report', open: 'never' }],
     ['json', { outputFile: 'test-results/test-results.json' }],
     ['junit', { outputFile: 'test-results/junit.xml' }],
     ['list'],
