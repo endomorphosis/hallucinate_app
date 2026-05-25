@@ -735,3 +735,14 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, swissknife, hallucinate_app, tests
 - Validation: test -f hallucinate_app/docs/SWISSKNIFE_VIRTUAL_DESKTOP_MOCKUP.md
 - Acceptance: Objective scan filed this gap for VAIOS-G040. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-25-hao-064-objective-gap-a149b1734e9a.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (Hallucinate App operator console, ORB display harness), and keep the supervisor-fed backlog aligned with the virtual AI OS objective heap. Add child goals for task monitor, app launcher, ORB inspector, and session replay.
+
+## HAO-065 Resolve merge retry-budget failure for HAO-063
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md, swissknife, external/ipfs_datasets
+- Validation: python3 -c 'exec("import json, pathlib\nstrategy = json.loads(pathlib.Path('"'"'/home/barberb/lift_coding/data/hallucinate_multimodal_control/state/hallucinate_multimodal_control_strategy.json'"'"').read_text(encoding='"'"'utf-8'"'"'))\nassert '"'"'HAO-063'"'"' not in strategy.get('"'"'blocked_tasks'"'"', [])")'
+- Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-063. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-25-hao-065-hao-063-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are actually committed in their owning repository or submodule, run `python3 scripts/hallucinate_multimodal_control_merge_conflict_resolver.py --task-id HAO-063 --apply` when the conflict is semantic, then remove HAO-063 from the strategy blocked_tasks list so the original backlog item can continue without an indefinite retry loop.
