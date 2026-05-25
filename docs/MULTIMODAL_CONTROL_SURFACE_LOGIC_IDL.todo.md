@@ -441,7 +441,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-038 Add a real `ipfs_datasets_py` policy-evaluation compatibility regression
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: logic
