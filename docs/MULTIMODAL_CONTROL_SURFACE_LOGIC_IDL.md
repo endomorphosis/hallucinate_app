@@ -461,6 +461,124 @@ Supported runtime outcomes should include:
 - `fallback_surface`
 - `rate_limit`
 
+## Operational Safety
+
+`HAO-024` makes the multimodal control plane rollout-safe by treating
+observability, audit, security review, feature flag sequencing, and rollback as
+part of the IDL contract. Every schema, policy, and runtime mediation change
+must be able to run in shadow mode before it can block an invocation.
+
+### Rollout feature flag contract
+
+The canonical feature flag modes are `off`, `shadow`, and `enforce`.
+Implementations may add narrower cohorts, but they must preserve these mode
+semantics across Electron, Python, Swissknife ORB, daemon-managed MCP, remote
+mobile, Meta-glasses, and simulator clients.
+
+- `CONTROL_SURFACE_SCHEMA_MODE` gates descriptor,
+  `interaction_envelope`, `policy_decision`, and `mediation_receipt` schema
+  validation.
+- `CONTROL_SURFACE_POLICY_MODE` gates policy compilation, evaluator cache use,
+  and whether a policy decision can affect runtime behavior.
+- `CONTROL_SURFACE_RUNTIME_MEDIATION` gates local ORB and desktop invocation
+  mediation.
+- `CONTROL_SURFACE_DAEMON_MEDIATION` gates MCP daemon before-invoke mediation.
+- `CONTROL_SURFACE_REMOTE_CLIENTS` gates Meta-glasses, mobile, and simulator
+  event adoption.
+- `CONTROL_SURFACE_AUDIT_PAYLOADS=metadata|full-local` gates whether audit
+  persistence stores only redacted payload metadata or full raw payload evidence
+  in the local operator context.
+
+Rollout order:
+1. Enable schema validation in `shadow`; emit schema validation metrics without
+   rejecting envelopes.
+2. Enable policy evaluation in `shadow`; emit a policy decision and
+   mediation receipt while executing the previous invocation behavior.
+3. Enable runtime mediation in `enforce` for local desktop and ORB actions only.
+4. Enable daemon mediation in `enforce` after blocked-invocation metrics match
+   the shadow policy decision distribution.
+5. Enable remote clients in `enforce` only after their raw payload redaction and
+   fallback-surface behavior pass security review.
+
+### Observability and audit metrics
+
+The required metrics are deliberately low-cardinality:
+- `control_surface_interactions_total{surface,surface_event,method,source,mode}`
+- `control_surface_policy_decisions_total{outcome,surface,method,source,mode}`
+- `control_surface_policy_decision_latency_ms{surface,method,outcome,source}`
+- `control_surface_mediation_receipts_total{outcome,persisted,source,mode}`
+- `control_surface_confirmation_queue_depth{source}`
+- `control_surface_schema_validation_failures_total{schema,source,mode}`
+- `control_surface_raw_payload_redactions_total{payload_class,source}`
+- `control_surface_rollback_events_total{rollback_type,source}`
+
+Audit receipts remain the source of truth for operator investigation. Each
+receipt links `interaction_id`, `control_surface_contract_ref`,
+`policy_bundle_ref`, `compiled_policy_cid`, `policy_decision`, matched norm
+references, `mediation_result`, explanation, and receipt CID when persisted.
+Metrics and logs reference only category labels, decision IDs, receipt CIDs, and
+redacted summaries; they never use raw payload contents or high-cardinality
+actor identifiers as labels.
+
+### Raw payload privacy boundary
+
+`raw_payload` exists to preserve enough local evidence for deterministic
+mediation and audit. It is not a general telemetry channel.
+
+- Raw media, sensor, display, DOM, transcript, location, token, credential, and
+  delegation data must be classified before persistence.
+- Adapters should put large or sensitive evidence behind a CID, file handle, or
+  correlation ID and place only the reference in `raw_payload`.
+- Full payload evidence can be persisted only in the local receipt store under
+  `CONTROL_SURFACE_AUDIT_PAYLOADS=full-local`; exported reports, dashboard
+  lists, metrics, and daemon logs use redacted metadata.
+- Policy evaluation may inspect raw payload evidence during mediation, but
+  compiled policy artifacts and policy decision explanations must not embed raw
+  secrets, transcripts, media bytes, or exact location traces.
+
+### Security review gates
+
+Before any adapter, schema version, policy compiler lane, or daemon mediation
+path moves to `enforce`, review evidence must show:
+- schema validation accepts current envelopes and rejects malformed or
+  cross-contract payloads,
+- policy decision outcomes match the regression corpus for voice, gesture,
+  mouse, agent, and remote events,
+- destructive, financial, and communication-send methods still require
+  confirmation where configured,
+- raw payload redaction covers the adapter's media, sensor, location, token, and
+  credential classes,
+- direct daemon port or ORB transport paths cannot bypass the before-invoke
+  mediation hook,
+- rollback to the previous schema, policy bundle, and runtime mode was exercised
+  in staging and produced an audit record.
+
+### Rollback runbooks
+
+Schema rollback:
+1. Set `CONTROL_SURFACE_SCHEMA_MODE=shadow` or `off`.
+2. Restore the previous `control_surface_contract` schema and descriptor
+   version while keeping readers compatible with receipts already emitted.
+3. Re-run descriptor and E2E validation, then emit a `schema` rollback audit
+   event with the old and restored schema refs.
+
+Policy rollback:
+1. Set `CONTROL_SURFACE_POLICY_MODE=shadow`.
+2. Detach the failing `policy_bundle_ref` from the active profile and restore
+   the previous `compiled_policy_cid`.
+3. Clear compiler and evaluator caches, keep the reverted bundle available for
+   audit, and emit a `policy` rollback event with the operator and reason.
+
+Runtime mediation rollback:
+1. Set `CONTROL_SURFACE_RUNTIME_MEDIATION=shadow` and
+   `CONTROL_SURFACE_DAEMON_MEDIATION=shadow` to stop blocking while retaining
+   policy decision and receipt telemetry.
+2. If the mediator itself is unhealthy, set the flags to `off`, remove active
+   policy hooks from daemon managers, and restart only affected daemon or ORB
+   adapters.
+3. Verify allowed invocation recovery, confirm that blocked-invocation metrics
+   stop increasing, and emit a `runtime` rollback audit event.
+
 ## Hallucinate App Implementation Targets
 This work should land here.
 
@@ -572,6 +690,13 @@ That means:
 
 ### Phase 7: Remote-client adoption
 - Update Meta-glasses and other clients to publish into the canonical Hallucinate App contract.
+
+### Phase 8: Observability, security, and rollback controls
+- Roll out schema, policy decision, runtime mediation, daemon mediation, and
+  remote-client enforcement behind the canonical feature flag modes.
+- Publish low-cardinality metrics and audit receipts for shadow and enforce
+  modes.
+- Exercise schema, policy, and runtime rollback before broad enablement.
 
 ## Testing Strategy
 

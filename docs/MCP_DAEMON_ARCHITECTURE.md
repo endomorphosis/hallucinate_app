@@ -194,6 +194,48 @@ websocket, or `mcp-server` adapters. Blocking outcomes such as `deny`,
 the underlying transport callback is not invoked. Direct calls to daemon ports
 or ORB transport adapters are not a policy-aware service path.
 
+### Daemon Mediation Observability, Flags, And Rollback
+
+The daemon before-invoke path is guarded independently from descriptor rollout
+so operators can shadow-test policy decisions without breaking MCP availability.
+The rollout feature flag is `CONTROL_SURFACE_DAEMON_MEDIATION`:
+
+- `off`: daemon managers install no active control-surface policy hook; service
+  invocations proceed through existing transport behavior.
+- `shadow`: daemon managers call `beforeInvoke`, emit the normalized
+  `interaction_envelope`, `policy_decision`, `mediation_receipt`, metrics, and
+  audit records, but still call the transport invoker.
+- `enforce`: daemon managers treat blocking policy decision outcomes as
+  authoritative and do not invoke the underlying transport callback.
+
+Daemon metrics should be emitted with bounded labels only:
+- `mcp_control_surface_before_invoke_total{daemon,transport,mode}`
+- `mcp_control_surface_policy_decisions_total{daemon,transport,outcome,mode}`
+- `mcp_control_surface_policy_decision_latency_ms{daemon,transport,outcome}`
+- `mcp_control_surface_blocked_invocations_total{daemon,transport,outcome}`
+- `mcp_control_surface_receipts_total{daemon,persisted,mode}`
+- `mcp_control_surface_bypass_attempts_total{daemon,transport}`
+
+Daemon audit records link each mediated invocation to `service_id`, `method`,
+`control_surface_contract_ref`, `decision_id`, receipt CID when persisted, and
+the final invocation result. They must not log raw payload contents, service
+arguments, credentials, bearer tokens, delegation chains, transcripts, images,
+or sensor samples. If raw evidence is needed for a local security review, keep
+it behind the `CONTROL_SURFACE_AUDIT_PAYLOADS=full-local` boundary and expose
+only redacted receipt summaries in daemon dashboards.
+
+Runtime rollback steps for daemon mediation:
+1. Change `CONTROL_SURFACE_DAEMON_MEDIATION` from `enforce` to `shadow` to stop
+   blocking while preserving metrics and audit receipts.
+2. If shadow evaluation is also unhealthy, set the flag to `off` and call
+   `setControlSurfacePolicyHook(null)` on `MCPDaemonManager` and
+   `DaemonManager`.
+3. Restart only the affected daemon processes from the Daemon Manager UI or the
+   existing `restartDaemon` path so ports, logs, and process state stay scoped.
+4. Confirm that `mcp_control_surface_blocked_invocations_total` is no longer
+   increasing, that daemon health checks are green, and that a `runtime` rollback
+   audit event was emitted with the operator, reason, old mode, and new mode.
+
 ### Menu System
 
 **Daemons Menu:**

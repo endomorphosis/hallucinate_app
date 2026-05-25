@@ -308,6 +308,69 @@ Principal (DID)
 - **Performance Tracking**: Operation timing
 - **Error Tracking**: Detailed error information
 
+### Multimodal Control Plane Operations
+
+The multimodal control plane extends the existing observability and security
+model with rollout-safe feature flag controls around the
+`control_surface_contract`, `interaction_envelope`, `policy_decision`, and
+`mediation_receipt` path. Rollouts must start in non-enforcing shadow mode, emit
+the same metrics and audit receipts as enforcement, and only then move to
+blocking runtime mediation.
+
+Required feature flag gates:
+- `CONTROL_SURFACE_SCHEMA_MODE=off|shadow|enforce` controls descriptor and
+  envelope schema validation.
+- `CONTROL_SURFACE_POLICY_MODE=off|shadow|enforce` controls policy decision
+  evaluation and whether blocking outcomes can stop invocation.
+- `CONTROL_SURFACE_RUNTIME_MEDIATION=off|shadow|enforce` controls local desktop
+  and Swissknife ORB before-invoke mediation.
+- `CONTROL_SURFACE_DAEMON_MEDIATION=off|shadow|enforce` controls the MCP
+  before-invoke hook for daemon-managed transports.
+- `CONTROL_SURFACE_REMOTE_CLIENTS=off|shadow|enforce` controls Meta-glasses,
+  mobile, and simulator event adoption.
+- `CONTROL_SURFACE_AUDIT_PAYLOADS=metadata|full-local` controls whether audit
+  storage keeps only redacted payload metadata or the full local raw payload.
+
+Audit metrics must be low-cardinality and must not expose raw payload fields,
+arguments, actor identifiers, transcripts, images, sensor samples, or delegation
+tokens as labels. The baseline metrics are
+`control_surface_interactions_total`,
+`control_surface_policy_decisions_total`,
+`control_surface_policy_decision_latency_ms`,
+`control_surface_mediation_receipts_total`,
+`control_surface_schema_validation_failures_total`,
+`control_surface_raw_payload_redactions_total`, and
+`control_surface_rollback_events_total`. Labels are limited to stable categories
+such as `surface`, `surface_event`, `method`, `outcome`, `source`, `schema`,
+`mode`, and `rollback_type`.
+
+Raw payload privacy boundaries:
+- `raw_payload` is runtime evidence for mediation and operator audit, not a
+  metrics, log, or remote telemetry payload.
+- Media bytes, audio frames, images, location traces, DOM snapshots, secrets,
+  credentials, and delegation tokens must be replaced with a CID, correlation
+  handle, or redacted summary before any non-local export.
+- Persistent audit receipts may retain full raw payloads only in the local
+  user-context receipt store when `CONTROL_SURFACE_AUDIT_PAYLOADS=full-local`;
+  dashboards and exported reports use redacted receipt views.
+- Security review for new adapters must verify envelope schema validation,
+  redaction coverage, permission scope, confirmation gates for destructive
+  actions, and denial behavior before enforcement mode is enabled.
+
+Rollback controls are part of the architecture, not an incident afterthought:
+- Schema rollback: set `CONTROL_SURFACE_SCHEMA_MODE=shadow` or `off`, restore
+  the previous descriptor schema and contract version, keep dual-read validators
+  for receipts already emitted, and record a `schema` rollback audit event.
+- Policy rollback: detach the active `policy_bundle_ref`, restore the previous
+  `compiled_policy_cid`, clear evaluator caches, force
+  `CONTROL_SURFACE_POLICY_MODE=shadow`, and record the operator and reason in
+  the audit trail.
+- Runtime mediation rollback: set `CONTROL_SURFACE_RUNTIME_MEDIATION=shadow`
+  and `CONTROL_SURFACE_DAEMON_MEDIATION=shadow`, or set either to `off` if the
+  mediator is unhealthy, remove the active policy hook from daemon managers,
+  restart affected MCP daemons if needed, and verify that blocking policy
+  decision counts drop while shadow receipts continue.
+
 ### Dashboard Integration
 
 - Real-time status monitoring
