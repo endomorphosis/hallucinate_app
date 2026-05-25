@@ -757,3 +757,14 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/19-virtual-ai-os-submodule-integration.md
 - Validation: python3 -c 'exec("import json, pathlib\nstrategy = json.loads(pathlib.Path('"'"'/home/barberb/lift_coding/data/hallucinate_multimodal_control/state/hallucinate_multimodal_control_strategy.json'"'"').read_text(encoding='"'"'utf-8'"'"'))\nassert '"'"'HAO-057'"'"' not in strategy.get('"'"'blocked_tasks'"'"', [])")'
 - Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-057. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-25-hao-066-hao-057-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then remove HAO-057 from the strategy blocked_tasks list so the original backlog item can continue without an indefinite retry loop.
+
+## HAO-067 Resolve merge retry-budget failure for HAO-058
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/19-virtual-ai-os-submodule-integration.md
+- Validation: python3 -c 'exec("import json, pathlib\nstrategy = json.loads(pathlib.Path('"'"'/home/barberb/lift_coding/data/hallucinate_multimodal_control/state/hallucinate_multimodal_control_strategy.json'"'"').read_text(encoding='"'"'utf-8'"'"'))\nassert '"'"'HAO-058'"'"' not in strategy.get('"'"'blocked_tasks'"'"', [])")'
+- Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-058. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-25-hao-067-hao-058-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then remove HAO-058 from the strategy blocked_tasks list so the original backlog item can continue without an indefinite retry loop.
