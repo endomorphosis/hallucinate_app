@@ -155,7 +155,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-012 Emit structured decision receipts and explanations
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: backend
