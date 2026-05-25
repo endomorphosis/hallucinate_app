@@ -416,3 +416,47 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, data/meta_glasses_display_widgets/discovery/2026-05-22-mgw-014-validation-guardrails.md
 - Validation: test -f data/meta_glasses_display_widgets/discovery/2026-05-22-mgw-014-validation-guardrails.md
 - Acceptance: Codebase scan filed this finding from data/meta_glasses_display_widgets/discovery/2026-05-22-mgw-014-validation-guardrails.md:25. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-25-hao-035-codebase-scan-9e82839eb89c.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-036 Normalize remote client artifacts to the canonical control-surface envelope
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: integration
+- Depends on: HAO-014, HAO-020, HAO-021
+- Outputs: spec/meta_glasses_mobile_orb_bridge_interface.json, src/handsfree/meta_glasses_mobile_orb_artifacts.py, src/handsfree/meta_glasses_mobile_orb_adapter.py, mobile, hallucinate_app/swissknife/src/services/meta-glasses-mobile-orb-bridge.ts, data/hallucinate_multimodal_control/discovery
+- Validation: rg -n "control_surface_contract|interaction_envelope|normalized_intent|mediation_receipt" spec/meta_glasses_mobile_orb_bridge_interface.json src/handsfree/meta_glasses_mobile_orb_artifacts.py src/handsfree/meta_glasses_mobile_orb_adapter.py mobile hallucinate_app/swissknife/src/services/meta-glasses-mobile-orb-bridge.ts
+- Acceptance: Use evidence in data/hallucinate_multimodal_control/discovery/2026-05-25-hao-025-implementation-unknowns.md to replace remote-client local permit/accepted artifacts with canonical Hallucinate App `interaction_envelope`, `normalized_intent`, `policy_decision`, and `mediation_receipt` payloads for Meta-glasses, mobile, and simulator paths. Remote clients may transport receipts, but they must not define or authorize a separate policy contract.
+
+## HAO-037 Close fail-open JavaScript and Swissknife mediation gates
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: security
+- Depends on: HAO-008, HAO-009, HAO-011, HAO-014, HAO-020
+- Outputs: hallucinate_app/hallucinate_app/node/control_surface_invocation.js, hallucinate_app/hallucinate_app/node/mcp_daemon_manager.js, hallucinate_app/swissknife/src/services/control-surface-mediator.ts, hallucinate_app/swissknife/src/services/mcp-orb-capability-router.ts, hallucinate_app/test, data/hallucinate_multimodal_control/discovery
+- Validation: rg -n "policyHook|evaluate_control_surface_interaction|fail_closed|Default daemon-managed service mediation|control_surface_mediator" hallucinate_app/hallucinate_app/node hallucinate_app/swissknife/src/services hallucinate_app/test; cd hallucinate_app && npm run test:e2e
+- Acceptance: Use evidence in data/hallucinate_multimodal_control/discovery/2026-05-25-hao-025-implementation-unknowns.md to ensure daemon-managed service invocation and Swissknife ORB mediation fail closed or require confirmation when no runtime policy evaluator is registered, and route descriptor-built envelopes through the Hallucinate App policy bundle evaluator before any transport invocation.
+
+## HAO-038 Add a real `ipfs_datasets_py` policy-evaluation compatibility regression
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: logic
+- Depends on: HAO-004, HAO-008
+- Outputs: hallucinate_app/python/hallucinate_app/control_surface_policy.py, hallucinate_app/python/hallucinate_app/test/test_control_surface_policy_ipfs_logic.py, data/hallucinate_multimodal_control/discovery
+- Validation: PYTHONPATH=external/ipfs_datasets:hallucinate_app/python python3 hallucinate_app/python/hallucinate_app/test/test_control_surface_policy_ipfs_logic.py; PYTHONPATH=external/ipfs_datasets:hallucinate_app/python python3 -c 'from hallucinate_app.control_surface_policy import evaluate_ipfs_nl_policy; result = evaluate_ipfs_nl_policy("Alice may use display.activate", tool="display.activate", actor="Alice"); assert result.get("decision") in {"allow", "permit", "deny", "require_confirmation"}; assert "unexpected keyword argument" not in str(result.get("reason", ""))'
+- Acceptance: Use evidence in data/hallucinate_multimodal_control/discovery/2026-05-25-hao-025-implementation-unknowns.md and logic-api-inventory.md to add a non-fake upstream `ipfs_datasets_py.logic.api` evaluation regression, shim or adapt the `at_time`/`now` compatibility mismatch, and prove Hallucinate App fails closed for evaluator errors without permanently treating the real upstream lane as unusable.
+
+## HAO-039 Expand E2E coverage to exercise persisted policies and remote receipts
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: quality
+- Depends on: HAO-022, HAO-023, HAO-036, HAO-037
+- Outputs: hallucinate_app/test/e2e/multimodal-control-surface.spec.ts, hallucinate_app/test-results, data/hallucinate_multimodal_control/discovery
+- Validation: cd hallucinate_app && npm run test:e2e; rg -n "policy_bundle|PolicyBundleStore|require_confirmation|remote-meta-glasses|mediation_receipt" hallucinate_app/test/e2e/multimodal-control-surface.spec.ts hallucinate_app/test-results data/hallucinate_multimodal_control/discovery
+- Acceptance: Use evidence in data/hallucinate_multimodal_control/discovery/2026-05-25-hao-025-implementation-unknowns.md to extend the multimodal E2E test beyond a test-only `setControlSurfacePolicyHook` callback. The test must seed or load real policy bundles, exercise allow/deny/require-confirmation outcomes, and assert that voice, gesture, mouse, agent, and remote-client receipts come from the same Hallucinate App mediation path.
