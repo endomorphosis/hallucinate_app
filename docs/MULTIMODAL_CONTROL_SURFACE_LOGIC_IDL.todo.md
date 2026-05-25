@@ -276,7 +276,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-023 Add end-to-end multimodal control-surface tests
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: quality
