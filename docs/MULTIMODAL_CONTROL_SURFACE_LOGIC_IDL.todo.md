@@ -232,7 +232,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-019 Add operator-console policy controls and diagnostics
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ui
