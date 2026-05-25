@@ -504,3 +504,14 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: hallucinate_app/python/hallucinate_app/control_surface_policy.py, hallucinate_app/python/hallucinate_app/test/test_control_surface_policy_ipfs_logic.py, data/hallucinate_multimodal_control/discovery
 - Validation: python3 -c 'exec("import json, pathlib\nstrategy = json.loads(pathlib.Path('"'"'/home/barberb/lift_coding/data/hallucinate_multimodal_control/state/hallucinate_multimodal_control_strategy.json'"'"').read_text(encoding='"'"'utf-8'"'"'))\nassert '"'"'HAO-041'"'"' not in strategy.get('"'"'blocked_tasks'"'"', [])")'
 - Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-041. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-25-hao-043-hao-041-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are actually committed in their owning repository or submodule, then remove HAO-041 from the strategy blocked_tasks list so the original backlog item can continue without an indefinite retry loop.
+
+## HAO-044 Resolve merge retry-budget failure for HAO-042
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: HAO-013
+- Outputs: hallucinate_app/python/hallucinate_app/control_surface_policy.py, hallucinate_app/python/hallucinate_app/test/test_control_surface_policy_ipfs_logic.py, data/hallucinate_multimodal_control/discovery
+- Validation: python3 -c 'exec("import json, pathlib\nstrategy = json.loads(pathlib.Path('"'"'/home/barberb/lift_coding/data/hallucinate_multimodal_control/state/hallucinate_multimodal_control_strategy.json'"'"').read_text(encoding='"'"'utf-8'"'"'))\nassert '"'"'HAO-042'"'"' not in strategy.get('"'"'blocked_tasks'"'"', [])")'
+- Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-042. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-25-hao-044-hao-042-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are actually committed in their owning repository or submodule, then remove HAO-042 from the strategy blocked_tasks list so the original backlog item can continue without an indefinite retry loop.
