@@ -12,6 +12,7 @@ echo "🎭 Playwright Test Runner - MCP Daemon Manager"
 echo "=============================================="
 
 cd "$PROJECT_ROOT"
+PLAYWRIGHT_RUNNER="node scripts/run_playwright_test.mjs"
 
 # Parse arguments
 MODE="${1:-all}"
@@ -35,39 +36,39 @@ case "$MODE" in
   all)
     echo "🧪 Running all tests..."
     if [ "$HEADED" = "headed" ]; then
-      npx playwright test --headed
+      $PLAYWRIGHT_RUNNER test --headed
     else
-      npx playwright test
+      $PLAYWRIGHT_RUNNER test
     fi
     ;;
     
   electron)
     echo "🧪 Running Electron tests..."
     if [ "$HEADED" = "headed" ]; then
-      npx playwright test test/e2e/mcp-daemon-manager.spec.ts --headed
+      $PLAYWRIGHT_RUNNER test test/e2e/mcp-daemon-manager.spec.ts --headed
     else
-      npx playwright test test/e2e/mcp-daemon-manager.spec.ts
+      $PLAYWRIGHT_RUNNER test test/e2e/mcp-daemon-manager.spec.ts
     fi
     ;;
     
   screenshot)
     echo "📸 Running tests with screenshot capture..."
-    npx playwright test --reporter=list
+    $PLAYWRIGHT_RUNNER test --reporter=list
     ;;
     
   ci)
     echo "🤖 Running CI/CD tests..."
-    CI=true npx playwright test --reporter=list,junit,html
+    CI=true $PLAYWRIGHT_RUNNER test --reporter=list,junit,html
     ;;
     
   debug)
     echo "🐛 Running tests in debug mode..."
-    npx playwright test --debug
+    $PLAYWRIGHT_RUNNER test --debug
     ;;
     
   ui)
     echo "🎨 Running tests in UI mode..."
-    npx playwright test --ui
+    $PLAYWRIGHT_RUNNER test --ui
     ;;
     
   *)
