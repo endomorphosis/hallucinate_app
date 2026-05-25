@@ -136,6 +136,37 @@ The SwissKnife virtual desktop is the primary user interface that integrates wit
 - Auto-refresh every 10 seconds
 - Modern gradient UI with glassmorphism
 
+### Control Surface Operator Console
+**Access:** `Control Surface → Operator Console`
+
+The Hallucinate App shell includes an operator-facing `control_surface` console
+for multimodal policy operations and diagnostics. It is intentionally scoped to
+the desktop shell: operators can create strict-template policy rules, inspect the
+compiled policy artifact payloads, review confirmation-gated mediation requests,
+and approve or reject those requests before a receipt is emitted.
+The console keeps this diagnostic state in the Electron session; daemon service
+invocation can consume the same policy, mediation, and receipt shapes when the
+service path is connected.
+
+**Policy controls:**
+- Compiles strict natural-language rules such as `ignore my wrist gestures at night`
+  and `require confirmation before sending messages`.
+- Shows the resulting `policy_bundle_ref`, `compiled_policy_cid`, frame-logic
+  facts, event-calculus guard atoms, deontic norms, and operator explanations.
+- Tracks active policy refs considered by the mediation path so UI diagnostics
+  line up with the Python `control_surface_policy` and `control_surface_mediator`
+  data model.
+
+**Confirmation and receipt diagnostics:**
+- Queues sample confirmation-gated actions from compiled policies for operator
+  approval testing.
+- Approval or rejection records the mediated outcome and emits a structured
+  `mediation_receipt` with the interaction envelope, policy decision, policy
+  refs, invocation result, and receipt CID.
+- The preload bridge exposes `window.electronAPI.controlSurface` methods for
+  snapshots, policy creation, confirmation approval/rejection, and receipt
+  viewing without enabling renderer Node integration.
+
 ### Menu System
 
 **Daemons Menu:**
@@ -150,6 +181,10 @@ The SwissKnife virtual desktop is the primary user interface that integrates wit
 - Benchmark Dashboard
 - Model Tester
 - IPFS Kit Dashboard
+
+**Control Surface Menu:**
+- Operator Console
+- Queue Confirmation Demo
 
 ## Usage
 

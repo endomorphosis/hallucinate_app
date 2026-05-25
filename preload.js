@@ -29,6 +29,18 @@ contextBridge.exposeInMainWorld('electronAPI', {
     run: (benchmarkConfig) => ipcRenderer.invoke('benchmark:run', benchmarkConfig),
     getResults: () => ipcRenderer.invoke('benchmark:getResults'),
   },
+
+  // Multimodal control_surface policy controls, confirmation mediation, and receipts
+  controlSurface: {
+    getSnapshot: () => ipcRenderer.invoke('controlSurface:getSnapshot'),
+    createRule: (policyRule) => ipcRenderer.invoke('controlSurface:createRule', policyRule),
+    simulateConfirmation: (actionRequest) => ipcRenderer.invoke('controlSurface:simulateConfirmation', actionRequest),
+    approveConfirmation: (confirmationId, operatorId) =>
+      ipcRenderer.invoke('controlSurface:approveConfirmation', confirmationId, operatorId),
+    rejectConfirmation: (confirmationId, operatorId) =>
+      ipcRenderer.invoke('controlSurface:rejectConfirmation', confirmationId, operatorId),
+    openOperatorConsole: () => ipcRenderer.send('open-operator-console'),
+  },
   
   // Window management
   window: {
