@@ -293,6 +293,29 @@ gesture helpers use `gesture` event names, and agent helpers use
 control-surface metadata so ORB-backed UI launches and agent-originated actions
 flow through one policy-aware mediation path.
 
+### VAIOS-G030 objective proof: interface descriptor language
+
+This document is the scanner-visible interface descriptor language proof for the
+IDL/ORB/MCP++ bridge objective. The interface descriptor language is the
+`control_surface_contract` descriptor section and its paired
+`interaction_envelope`, `policy_decision`, and `mediation_receipt` schemas. It
+describes the control modalities, binds them to interface methods, names the
+logic-policy hooks, and gives the ORB/MCP++ runtime one mediation point before
+dispatch.
+
+Current modality evidence:
+
+| Modality | Descriptor evidence | Policy evidence | Dispatch evidence |
+| --- | --- | --- | --- |
+| Voice | `control_surface_contract.control_surfaces[].id == "voice"` with `utterance`, `confirm`, and `cancel` events in `hallucinate_app/swissknife/contracts/control_surface_contract.schema.json` and descriptor validation tests. | `control_surface_voice.py` applies confidence policy and sends voice envelopes through `evaluate_control_surface_interaction`; `test_control_surface_voice.py` covers clarification, denial, and confirmation policy. | `swissknife/test/mcp-plus-plus/mcp-orb-capability-router.test.ts` invokes the same ORB operation with `voice/utterance` and receives a mediation receipt before handler dispatch. |
+| Gesture | `control_surface_contract` declares `gesture` with `tap`, `swipe`, `hold`, and `wrist_raise`; descriptor validation rejects unmapped or unsupported gesture events. | `control_surface_gesture.py` normalizes captouch/wearable events into the shared envelope; `test_control_surface_gesture.py` proves sleep/quiet-hours wrist policy denies before invocation. | The ORB capability-router test dispatches `gesture/tap` through the same mediated `control_surface_contract` path. |
+| Mouse | `control_surface_contract` declares the `mouse` pointer surface with `click`, `double_click`, `hover`, and `focus` event bindings. | `control_surface_pointer.py` routes mouse/touch events through the shared mediator; `test_control_surface_pointer.py` covers confirmation gates for message and destructive actions. | The ORB capability-router test dispatches `mouse/click`, and denial coverage proves disallowed pointer surfaces do not reach local handlers. |
+| Agent | `control_surface_contract` declares `agent` events for `proposal`, `autonomous_invoke`, and `scheduled_action`. | `control_surface_agents.py` adds delegation/UCAN checks on top of shared policy mediation; `test_control_surface_agents.py` proves proposal confirmation, authorized delegation, and overbroad delegation denial. | The ORB capability-router test dispatches `agent/autonomous_invoke` through the same contract and records an allow mediation receipt. |
+
+No modality child goals are needed for this scan: each named control modality
+has descriptor, policy, and dispatch evidence tied to the same interface
+descriptor language and ORB/MCP++ mediation path.
+
 ## Canonical Runtime Envelope
 Every control surface should normalize into one envelope before policy evaluation.
 
