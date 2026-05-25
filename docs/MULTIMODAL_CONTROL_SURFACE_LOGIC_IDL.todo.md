@@ -430,7 +430,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-037 Close fail-open JavaScript and Swissknife mediation gates
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: security
