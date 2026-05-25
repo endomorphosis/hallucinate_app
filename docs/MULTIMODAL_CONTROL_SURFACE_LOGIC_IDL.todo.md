@@ -287,7 +287,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-024 Add observability, security review, rollout flags, and rollback controls
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
