@@ -447,7 +447,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Track: logic
 - Depends on: HAO-004, HAO-008
 - Outputs: hallucinate_app/python/hallucinate_app/control_surface_policy.py, hallucinate_app/python/hallucinate_app/test/test_control_surface_policy_ipfs_logic.py, data/hallucinate_multimodal_control/discovery
-- Validation: PYTHONPATH=external/ipfs_datasets:hallucinate_app/python python3 hallucinate_app/python/hallucinate_app/test/test_control_surface_policy_ipfs_logic.py; PYTHONPATH=external/ipfs_datasets:hallucinate_app/python python3 -c 'from hallucinate_app.control_surface_policy import evaluate_ipfs_nl_policy; result = evaluate_ipfs_nl_policy("Alice may use display.activate", tool="display.activate", actor="Alice"); assert result.get("decision") in {"allow", "permit", "deny", "require_confirmation"}; assert "unexpected keyword argument" not in str(result.get("reason", ""))'
+- Validation: PYTHONPATH=external/ipfs_datasets:hallucinate_app/python python3 hallucinate_app/python/hallucinate_app/test/test_control_surface_policy_ipfs_logic.py; PYTHONPATH=external/ipfs_datasets:hallucinate_app/python python3 -c 'exec("from hallucinate_app.control_surface_policy import evaluate_ipfs_nl_policy\nresult = evaluate_ipfs_nl_policy(\"Alice may use display.activate\", tool=\"display.activate\", actor=\"Alice\")\nassert result.get(\"decision\") in {\"allow\", \"permit\", \"deny\", \"require_confirmation\"}\nassert \"unexpected keyword argument\" not in str(result.get(\"reason\", \"\"))")'
 - Acceptance: Use evidence in data/hallucinate_multimodal_control/discovery/2026-05-25-hao-025-implementation-unknowns.md and logic-api-inventory.md to add a non-fake upstream `ipfs_datasets_py.logic.api` evaluation regression, shim or adapt the `at_time`/`now` compatibility mismatch, and prove Hallucinate App fails closed for evaluator errors without permanently treating the real upstream lane as unusable.
 
 ## HAO-039 Expand E2E coverage to exercise persisted policies and remote receipts
@@ -480,7 +480,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Track: ops
 - Depends on: HAO-013
 - Outputs: hallucinate_app/python/hallucinate_app/control_surface_policy.py, hallucinate_app/python/hallucinate_app/test/test_control_surface_policy_ipfs_logic.py, data/hallucinate_multimodal_control/discovery
-- Validation: PYTHONPATH=external/ipfs_datasets:hallucinate_app/python python3 -c 'from hallucinate_app.control_surface_policy import evaluate_ipfs_nl_policy
+- Validation: PYTHONPATH=external/ipfs_datasets:hallucinate_app/python python3 -c 'from hallucinate_app.control_surface_policy import evaluate_ipfs_nl_policy'
 - Acceptance: Retry-budget guardrail filed this from repeated validation failures in HAO-038. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-25-hao-041-hao-038-retry-budget.md to fix the validation blocker, then remove HAO-038 from the strategy blocked_tasks list so the original backlog item can continue without an indefinite retry loop.
 
 ## HAO-042 Resolve validation retry-budget failure for HAO-041
