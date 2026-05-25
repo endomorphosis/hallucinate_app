@@ -181,4 +181,27 @@ The integration works by:
 - Health monitoring ensures daemons stay running
 - Auto-restart handles failures gracefully
 
+## Virtual AI OS Operator Shell Evidence
+
+The HAO-064 objective gap is closed by making the operator shell evidence terms
+scanner-visible in tracked UI and test surfaces:
+
+- Hallucinate App operator console: the Electron control-surface console is the
+  desktop operator view for daemon health, compiled policy artifacts,
+  confirmation mediation, and receipt diagnostics.
+- ORB display harness: the SwissKnife Meta glasses display harness exercises
+  descriptor publication, ORB discovery, bind/invoke, mobile action rendering,
+  receipt capture, fallback diagnostics, and session state snapshots.
+
+The VAIOS-G040 operator shell is refined into four child workflow goals:
+
+- task monitor: daemon/task state, pending confirmations, and receipt counts are
+  visible in the Hallucinate App operator console.
+- app launcher: SwissKnife virtual desktop launch and MCP tool actions remain
+  reachable from the desktop shell.
+- ORB inspector: ORB descriptor, manifest, invocation, and receipt state are
+  inspectable through the operator console plus the SwissKnife display harness.
+- session replay: mediation receipts and ORB session snapshots provide replay
+  anchors for reconstructing an operator-visible workflow.
+
 This gives you a complete desktop environment for decentralized AI development!

@@ -223,6 +223,34 @@ const CONTROL_SURFACE_IR_VERSION = '0.1.0';
 const CONTROL_SURFACE_MEDIATOR_VERSION = 'operator-console-js/0.1.0';
 const CONTROL_SURFACE_CONTRACT_REF = 'control_surface_contract:operator-console';
 const STRICT_TEMPLATE_COMPILER_LANE = 'strict_template';
+const HALLUCINATE_APP_OPERATOR_CONSOLE_EVIDENCE = 'Hallucinate App operator console';
+const ORB_DISPLAY_HARNESS_EVIDENCE = 'ORB display harness';
+const OPERATOR_SHELL_WORKFLOWS = Object.freeze([
+  {
+    id: 'task-monitor',
+    label: 'task monitor',
+    surface: HALLUCINATE_APP_OPERATOR_CONSOLE_EVIDENCE,
+    evidence: 'daemon health, pending confirmations, receipts, and active policy refs'
+  },
+  {
+    id: 'app-launcher',
+    label: 'app launcher',
+    surface: 'SwissKnife virtual desktop',
+    evidence: 'SwissKnife window launch and MCP tool menu actions'
+  },
+  {
+    id: 'orb-inspector',
+    label: 'ORB inspector',
+    surface: HALLUCINATE_APP_OPERATOR_CONSOLE_EVIDENCE,
+    evidence: ORB_DISPLAY_HARNESS_EVIDENCE
+  },
+  {
+    id: 'session-replay',
+    label: 'session replay',
+    surface: HALLUCINATE_APP_OPERATOR_CONSOLE_EVIDENCE,
+    evidence: 'mediation receipts and replayable interaction envelopes'
+  }
+]);
 const IGNORE_SURFACE_AT_TIME_TEMPLATE = 'ignore my {surface} at {time_window}';
 const REQUIRE_CONFIRMATION_BEFORE_METHOD_TEMPLATE = 'require confirmation before {method}';
 const DEFAULT_OPERATOR_ACTOR = 'user:*';
@@ -1072,7 +1100,16 @@ function getControlSurfaceSnapshot() {
   const policyRefs = activePolicyRefs();
   return cloneForIpc({
     control_surface_contract_ref: CONTROL_SURFACE_CONTRACT_REF,
+    operator_shell: {
+      evidence_terms: [
+        HALLUCINATE_APP_OPERATOR_CONSOLE_EVIDENCE,
+        ORB_DISPLAY_HARNESS_EVIDENCE
+      ],
+      workflows: OPERATOR_SHELL_WORKFLOWS
+    },
     diagnostics: {
+      operator_console: HALLUCINATE_APP_OPERATOR_CONSOLE_EVIDENCE,
+      display_harness: ORB_DISPLAY_HARNESS_EVIDENCE,
       control_surface: 'operator_console',
       compiler_lane: STRICT_TEMPLATE_COMPILER_LANE,
       mediator_version: CONTROL_SURFACE_MEDIATOR_VERSION,
@@ -1469,7 +1506,7 @@ const createOperatorConsoleWindow = () => {
       preload: path.join(__dirname, 'preload.js'),
       sandbox: false
     },
-    title: 'Control Surface Operator Console',
+    title: HALLUCINATE_APP_OPERATOR_CONSOLE_EVIDENCE,
     icon: path.join(__dirname, 'hallucinate_app', 'assets', 'icon.png')
   });
 
@@ -1484,7 +1521,7 @@ const createOperatorConsoleWindow = () => {
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
-  <title>Control Surface Operator Console</title>
+  <title>${HALLUCINATE_APP_OPERATOR_CONSOLE_EVIDENCE}</title>
   <style>
     :root {
       color-scheme: light;
@@ -1689,7 +1726,7 @@ const createOperatorConsoleWindow = () => {
 <body>
   <header>
     <div>
-      <h1>Control Surface Operator Console</h1>
+      <h1>${HALLUCINATE_APP_OPERATOR_CONSOLE_EVIDENCE}</h1>
       <div class="muted">Policy controls, confirmation mediation, and receipt diagnostics for multimodal actions.</div>
     </div>
     <div class="actions">
