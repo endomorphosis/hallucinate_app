@@ -249,6 +249,7 @@ class TestControlSurfacePolicyIpfsLogic(unittest.TestCase):
 
 
 def _load_real_ipfs_logic_api() -> tuple[object, object]:
+    _ensure_real_ipfs_datasets_checkout_on_path()
     try:
         from ipfs_datasets_py.logic import api as logic_api  # type: ignore
         from ipfs_datasets_py.mcp_server.temporal_policy import PolicyEvaluator  # type: ignore
@@ -270,6 +271,18 @@ def _load_real_ipfs_logic_api() -> tuple[object, object]:
     if getattr(logic_api, "__name__", "") != "ipfs_datasets_py.logic.api":
         raise unittest.SkipTest("resolved logic API is not ipfs_datasets_py.logic.api")
     return logic_api, PolicyEvaluator
+
+
+def _ensure_real_ipfs_datasets_checkout_on_path() -> None:
+    """Prefer a populated checkout over an empty worktree dependency stub."""
+
+    for parent in Path(__file__).resolve().parents:
+        candidate = parent / "external" / "ipfs_datasets"
+        if (candidate / "ipfs_datasets_py" / "logic" / "api.py").is_file():
+            candidate_text = str(candidate)
+            if candidate_text not in sys.path:
+                sys.path.insert(0, candidate_text)
+            return
 
 
 if __name__ == "__main__":
