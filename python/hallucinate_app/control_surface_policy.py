@@ -8,7 +8,10 @@ freeform user rules.
 
 from __future__ import annotations
 
+from contextlib import contextmanager
 from dataclasses import asdict, dataclass, field, is_dataclass
+from datetime import datetime, timezone
+import inspect
 import re
 from collections.abc import Mapping
 from typing import Any
@@ -369,7 +372,13 @@ def evaluate_ipfs_nl_policy(
         }
 
     try:
-        result = api.evaluate_nl_policy(nl_text, tool=tool, actor=actor, **kwargs)
+        result = _call_evaluate_nl_policy(
+            api,
+            nl_text,
+            tool=tool,
+            actor=actor,
+            **kwargs,
+        )
     except Exception as exc:  # pragma: no cover - exact upstream failures vary.
         return {
             "decision": DeonticOutcome.DENY.value,
@@ -540,6 +549,75 @@ def _call_compile_nl_to_policy(
     if last_error is not None:
         raise last_error
     return compile_nl_to_policy(sentences)
+
+
+def _call_evaluate_nl_policy(
+    logic_api: Any,
+    nl_text: str,
+    *,
+    tool: str,
+    actor: str | None,
+    **kwargs: Any,
+) -> Any:
+    evaluate_nl_policy = getattr(logic_api, "evaluate_nl_policy")
+    with _ipfs_policy_evaluator_at_time_compatibility(logic_api):
+        return evaluate_nl_policy(nl_text, tool=tool, actor=actor, **kwargs)
+
+
+@contextmanager
+def _ipfs_policy_evaluator_at_time_compatibility(logic_api: Any):
+    """Temporarily adapt the upstream at_time/now evaluator mismatch."""
+
+    if _ipfs_api_module_name(logic_api) != "ipfs_datasets_py.logic.api":
+        yield
+        return
+
+    try:
+        from ipfs_datasets_py.mcp_server.temporal_policy import PolicyEvaluator  # type: ignore
+    except Exception:
+        yield
+        return
+
+    original_evaluate = getattr(PolicyEvaluator, "evaluate", None)
+    if not callable(original_evaluate):
+        yield
+        return
+
+    try:
+        signature = inspect.signature(original_evaluate)
+    except (TypeError, ValueError):
+        yield
+        return
+
+    if "at_time" in signature.parameters or "now" not in signature.parameters:
+        yield
+        return
+
+    def evaluate_with_at_time(self: Any, intent: Any, policy: Any, *args: Any, **kwargs: Any) -> Any:
+        if "at_time" in kwargs and "now" not in kwargs:
+            kwargs["now"] = _coerce_ipfs_evaluation_time(kwargs.pop("at_time"))
+        else:
+            kwargs.pop("at_time", None)
+        return original_evaluate(self, intent, policy, *args, **kwargs)
+
+    PolicyEvaluator.evaluate = evaluate_with_at_time
+    try:
+        yield
+    finally:
+        PolicyEvaluator.evaluate = original_evaluate
+
+
+def _ipfs_api_module_name(logic_api: Any) -> str:
+    name = _first_text(getattr(logic_api, "__name__", ""))
+    if name:
+        return name
+    return _first_text(getattr(type(logic_api), "__module__", ""))
+
+
+def _coerce_ipfs_evaluation_time(value: Any) -> Any:
+    if isinstance(value, (int, float)):
+        return datetime.fromtimestamp(float(value), tz=timezone.utc)
+    return value
 
 
 def _policy_from_ipfs_logic_result(
