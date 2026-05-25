@@ -1,0 +1,443 @@
+{
+  "version": "0.1.0",
+  "task_id": "HAO-022",
+  "description": "Curated multimodal control-surface policy corpus for strict compilation, NL fallback, conflict precedence, and equivalent surface normalization.",
+  "common": {
+    "user_actor": {
+      "type": "user",
+      "id": "operator-7",
+      "delegation_chain": [
+        "operator-7"
+      ]
+    },
+    "agent_actor": {
+      "type": "agent",
+      "id": "planner-agent",
+      "delegation_chain": [
+        "operator-7",
+        "planner-agent"
+      ]
+    },
+    "daytime_context": {
+      "local_time": "2026-05-24T10:00:00-07:00",
+      "state_frames": [
+        "focused"
+      ],
+      "device_mode": "interactive",
+      "platform": "hallucinate_app",
+      "device_context": {
+        "surface": "desktop-shell",
+        "timezone": "America/Los_Angeles"
+      }
+    },
+    "night_context": {
+      "local_time": "2026-05-24T23:30:00-07:00",
+      "state_frames": [
+        "sleeping"
+      ],
+      "device_mode": "quiet_hours",
+      "platform": "hallucinate_app",
+      "device_context": {
+        "surface": "desktop-shell",
+        "timezone": "America/Los_Angeles"
+      }
+    }
+  },
+  "policies": [
+    {
+      "id": "strict-ignore-wrist-night",
+      "source_text": "Ignore my wrist gestures at night.",
+      "compiler": "strict_template",
+      "actor": "user:*",
+      "timezone": "America/Los_Angeles",
+      "expected": {
+        "accepted": true,
+        "compiler_lane": "strict_template",
+        "matched_template": "ignore my {surface} at {time_window}",
+        "outcome": "deny",
+        "surface": "gesture",
+        "surface_event": "wrist_raise",
+        "method": "*",
+        "target_ref": "*",
+        "guards": [
+          {
+            "kind": "time_window",
+            "predicate": "quiet_hours"
+          }
+        ],
+        "explanation_contains": "deny norm for gesture:wrist_raise"
+      }
+    },
+    {
+      "id": "strict-require-display-activation",
+      "source_text": "Require confirmation before display activation.",
+      "compiler": "strict_template",
+      "actor": "*",
+      "timezone": "America/Los_Angeles",
+      "expected": {
+        "accepted": true,
+        "compiler_lane": "strict_template",
+        "matched_template": "require confirmation before {method}",
+        "outcome": "require_confirmation",
+        "surface": "*",
+        "surface_event": "*",
+        "intent": "display.activate",
+        "method": "activate",
+        "target_ref": "target:*",
+        "guards": [],
+        "explanation_contains": "confirmation norm for activate"
+      }
+    },
+    {
+      "id": "strict-require-message-send",
+      "source_text": "Require confirmation before sending messages.",
+      "compiler": "strict_template",
+      "actor": "*",
+      "timezone": "America/Los_Angeles",
+      "expected": {
+        "accepted": true,
+        "compiler_lane": "strict_template",
+        "matched_template": "require confirmation before {method}",
+        "outcome": "require_confirmation",
+        "intent": "communication.send",
+        "method": "send_message",
+        "target_ref": "service:messaging",
+        "guards": [],
+        "explanation_contains": "confirmation norm for send_message"
+      }
+    },
+    {
+      "id": "nl-never-let-agents-delete-records",
+      "source_text": "Never let agents delete records after midnight.",
+      "compiler": "ipfs_datasets_py_logic",
+      "actor": "user:operator-7",
+      "min_confidence": 0.7,
+      "clarify_below": 0.85,
+      "fake_logic_result": {
+        "success": true,
+        "policy": {
+          "id": "upstream-agent-delete-policy"
+        },
+        "clauses": [
+          {
+            "effect": "prohibit",
+            "actor": "agent",
+            "action": "delete_record"
+          }
+        ],
+        "dcec_formulas": [
+          "prohibited(agent, delete_record)"
+        ],
+        "errors": [],
+        "warnings": [
+          "review freeform parse before activation"
+        ],
+        "metadata": {
+          "confidence": 0.94,
+          "policy_cid": "bafy-corpus-agent-delete",
+          "outcome": "deny",
+          "method": "delete_record",
+          "target_ref": "service:records",
+          "surface": "agent",
+          "surface_event": "autonomous_invoke",
+          "explanation": "Upstream corpus compiler produced a deny norm for agent deletion."
+        }
+      },
+      "expected": {
+        "accepted": true,
+        "compiler_lane": "ipfs_datasets_py_logic",
+        "compiled_policy_cid": "bafy-corpus-agent-delete",
+        "outcome": "deny",
+        "surface": "agent",
+        "surface_event": "autonomous_invoke",
+        "method": "delete_record",
+        "target_ref": "service:records",
+        "explanation_contains": "deny norm for agent deletion"
+      }
+    },
+    {
+      "id": "nl-low-confidence-clarification",
+      "source_text": "Be careful with records.",
+      "compiler": "ipfs_datasets_py_logic",
+      "actor": "user:operator-7",
+      "min_confidence": 0.7,
+      "clarify_below": 0.85,
+      "fake_logic_result": {
+        "success": true,
+        "policy": {
+          "id": "ambiguous-records-policy"
+        },
+        "clauses": [
+          {
+            "effect": "review",
+            "action": "records"
+          }
+        ],
+        "dcec_formulas": [
+          "ambiguous(records)"
+        ],
+        "errors": [],
+        "warnings": [
+          "ambiguous actor/action"
+        ],
+        "metadata": {
+          "confidence": 0.42,
+          "policy_cid": "bafy-corpus-ambiguous-records",
+          "method": "records",
+          "target_ref": "service:records",
+          "surface": "agent",
+          "explanation": "The rule is too broad to activate safely."
+        }
+      },
+      "expected": {
+        "accepted": false,
+        "compiler_lane": "ipfs_datasets_py_logic",
+        "clarification_contains": "Clarification needed",
+        "errors_contain": "confidence 0.42 is below the required threshold 0.85"
+      }
+    }
+  ],
+  "equivalent_intent_groups": [
+    {
+      "id": "equivalent-display-activate",
+      "description": "Voice, gesture, mouse, and agent inputs normalize to display.activate and hit the same confirmation policy.",
+      "policy_ids": [
+        "strict-require-display-activation"
+      ],
+      "decided_at": "2026-05-24T17:00:01Z",
+      "expected_intent": {
+        "intent": "display.activate",
+        "method": "activate",
+        "target_ref": "widget:primary-action"
+      },
+      "expected_decision": {
+        "outcome": "require_confirmation",
+        "effect_method": "activate",
+        "effect_target_ref": "widget:primary-action",
+        "explanation": "Require user confirmation before display activation."
+      },
+      "cases": [
+        {
+          "id": "voice-activate-primary",
+          "resolver": "voice",
+          "actor_ref": "user_actor",
+          "context_ref": "daytime_context",
+          "raw_payload": {
+            "interaction_id": "corpus-voice-activate-primary",
+            "utterance": "activate primary",
+            "confidence": 0.98
+          }
+        },
+        {
+          "id": "gesture-tap-primary",
+          "resolver": "gesture",
+          "actor_ref": "user_actor",
+          "context_ref": "daytime_context",
+          "raw_payload": {
+            "interaction_id": "corpus-gesture-tap-primary",
+            "gesture_event": "singleTap",
+            "target_ref": "widget:primary-action"
+          }
+        },
+        {
+          "id": "mouse-click-primary",
+          "resolver": "pointer",
+          "actor_ref": "user_actor",
+          "context_ref": "daytime_context",
+          "raw_payload": {
+            "interaction_id": "corpus-mouse-click-primary",
+            "event_type": "click",
+            "pointer_type": "mouse",
+            "target_ref": "widget:primary-action"
+          }
+        },
+        {
+          "id": "agent-proposal-primary",
+          "resolver": "agent",
+          "context_ref": "daytime_context",
+          "raw_payload": {
+            "interaction_id": "corpus-agent-proposal-primary",
+            "surface_event": "proposal",
+            "method": "activate",
+            "intent": "display.activate",
+            "target_ref": "widget:primary-action",
+            "actor": {
+              "type": "agent",
+              "id": "planner-agent",
+              "delegation_chain": [
+                "operator-7",
+                "planner-agent"
+              ]
+            },
+            "proposal_id": "proposal-display-activate"
+          }
+        }
+      ]
+    },
+    {
+      "id": "equivalent-display-focus-next",
+      "description": "Voice, gesture, mouse, and agent inputs normalize to display.focus_next and receive the same default allow explanation.",
+      "policy_ids": [],
+      "decided_at": "2026-05-24T17:00:01Z",
+      "expected_intent": {
+        "intent": "display.focus_next",
+        "method": "focus_next",
+        "target_ref": "widget:list"
+      },
+      "expected_decision": {
+        "outcome": "allow",
+        "effect_method": "focus_next",
+        "effect_target_ref": "widget:list",
+        "explanation": "No active policy bundles were supplied; default allow permits the invocation."
+      },
+      "cases": [
+        {
+          "id": "voice-focus-next",
+          "resolver": "voice",
+          "actor_ref": "user_actor",
+          "context_ref": "daytime_context",
+          "raw_payload": {
+            "interaction_id": "corpus-voice-focus-next",
+            "utterance": "focus next",
+            "confidence": 0.98
+          }
+        },
+        {
+          "id": "gesture-swipe-next",
+          "resolver": "gesture",
+          "actor_ref": "user_actor",
+          "context_ref": "daytime_context",
+          "raw_payload": {
+            "interaction_id": "corpus-gesture-swipe-next",
+            "gesture_event": "swipeLeft",
+            "target_ref": "widget:list"
+          }
+        },
+        {
+          "id": "mouse-focus-next",
+          "resolver": "pointer",
+          "actor_ref": "user_actor",
+          "context_ref": "daytime_context",
+          "raw_payload": {
+            "interaction_id": "corpus-mouse-focus-next",
+            "event_type": "focusin",
+            "pointer_type": "mouse",
+            "target_ref": "widget:list"
+          }
+        },
+        {
+          "id": "agent-focus-next",
+          "resolver": "agent",
+          "context_ref": "daytime_context",
+          "raw_payload": {
+            "interaction_id": "corpus-agent-focus-next",
+            "surface_event": "proposal",
+            "method": "focus_next",
+            "intent": "display.focus_next",
+            "target_ref": "widget:list",
+            "actor": {
+              "type": "agent",
+              "id": "planner-agent",
+              "delegation_chain": [
+                "operator-7",
+                "planner-agent"
+              ]
+            },
+            "proposal_id": "proposal-focus-next"
+          }
+        }
+      ]
+    }
+  ],
+  "mediation_cases": [
+    {
+      "id": "quiet-hours-wrist-gesture-deny",
+      "description": "The strict quiet-hours rule denies a wrist gesture before display.activate reaches the method gate.",
+      "policy_ids": [
+        "strict-ignore-wrist-night"
+      ],
+      "resolver": "gesture",
+      "actor_ref": "user_actor",
+      "context_ref": "night_context",
+      "decided_at": "2026-05-24T23:30:01Z",
+      "raw_payload": {
+        "interaction_id": "corpus-wrist-night-deny",
+        "eventType": "raiseToWake",
+        "target_ref": "widget:primary-action",
+        "wearable": {
+          "wearable_type": "smartwatch",
+          "device_id": "watch-42",
+          "sensor": "imu"
+        },
+        "timestamp": "2026-05-24T23:30:00-07:00",
+        "sleeping": true,
+        "quiet_hours": true
+      },
+      "expected_decision": {
+        "outcome": "deny",
+        "effect_method": "activate",
+        "effect_target_ref": "widget:primary-action",
+        "matched_norm_outcome": "deny",
+        "explanation_contains": "Ignore wrist gestures while night holds."
+      }
+    },
+    {
+      "id": "deny-over-permit-conflict",
+      "description": "Deny-over-permit selects a sleeping-state denial even when a broad allow norm has higher priority.",
+      "resolver": "gesture",
+      "actor_ref": "user_actor",
+      "context_ref": "night_context",
+      "decided_at": "2026-05-24T23:30:01Z",
+      "raw_payload": {
+        "interaction_id": "corpus-conflict-wrist-activate",
+        "gesture_event": "wrist_raise",
+        "target_ref": "widget:primary-action"
+      },
+      "inline_policies": [
+        {
+          "policy_id": "policy:corpus-conflict-activation",
+          "compiled_policy_cid": "compiled:corpus-conflict-activation",
+          "confidence": 0.89,
+          "norms": [
+            {
+              "id": "allow-any-activation",
+              "outcome": "allow",
+              "priority": 200,
+              "actor": "user:*",
+              "surface": "*",
+              "surface_event": "*",
+              "method": "activate",
+              "target_ref": "target:*",
+              "reason": "General activation allow norm."
+            },
+            {
+              "id": "deny-sleeping-wrist-activation",
+              "outcome": "deny",
+              "priority": 10,
+              "actor": "user:*",
+              "surface": "gesture",
+              "surface_event": "wrist_raise",
+              "method": "activate",
+              "target_ref": "target:*",
+              "guards": [
+                {
+                  "kind": "state_frame",
+                  "expected": "sleeping"
+                }
+              ],
+              "reason": "Sleeping state denies wrist activation."
+            }
+          ]
+        }
+      ],
+      "expected_decision": {
+        "outcome": "deny",
+        "effect_method": "activate",
+        "effect_target_ref": "widget:primary-action",
+        "matched_norm_outcome": "deny",
+        "confidence": 0.89,
+        "explanation_contains": "Conflict resolution deny_over_permit selected deny over allow."
+      }
+    }
+  ]
+}
