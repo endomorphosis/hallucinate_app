@@ -177,7 +177,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-014 Bind Swissknife descriptor and ORB surfaces to the control contract
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: ui
