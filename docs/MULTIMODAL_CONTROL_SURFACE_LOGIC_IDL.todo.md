@@ -460,3 +460,14 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: hallucinate_app/test/e2e/multimodal-control-surface.spec.ts, hallucinate_app/test-results, data/hallucinate_multimodal_control/discovery
 - Validation: cd hallucinate_app && npm run test:e2e; rg -n "policy_bundle|PolicyBundleStore|require_confirmation|remote-meta-glasses|mediation_receipt" hallucinate_app/test/e2e/multimodal-control-surface.spec.ts hallucinate_app/test-results data/hallucinate_multimodal_control/discovery
 - Acceptance: Use evidence in data/hallucinate_multimodal_control/discovery/2026-05-25-hao-025-implementation-unknowns.md to extend the multimodal E2E test beyond a test-only `setControlSurfacePolicyHook` callback. The test must seed or load real policy bundles, exercise allow/deny/require-confirmation outcomes, and assert that voice, gesture, mouse, agent, and remote-client receipts come from the same Hallucinate App mediation path.
+
+## HAO-040 Resolve validation retry-budget failure for HAO-037
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: HAO-013
+- Outputs: hallucinate_app/hallucinate_app/node/control_surface_invocation.js, hallucinate_app/hallucinate_app/node/mcp_daemon_manager.js, hallucinate_app/swissknife/src/services/control-surface-mediator.ts, hallucinate_app/swissknife/src/services/mcp-orb-capability-router.ts, hallucinate_app/test, data/hallucinate_multimodal_control/discovery
+- Validation: cd hallucinate_app && npm run test:e2e
+- Acceptance: Retry-budget guardrail filed this from repeated validation failures in HAO-037. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-25-hao-040-hao-037-retry-budget.md to fix the validation blocker, then remove HAO-037 from the strategy blocked_tasks list so the original backlog item can continue without an indefinite retry loop.
