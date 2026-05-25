@@ -408,7 +408,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-035 Resolve code annotation in data/meta_glasses_display_widgets/discovery/2026-05-22-mgw-014-validation-guardrails.md:25
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: docs
