@@ -383,6 +383,13 @@ class MCPDaemonManager extends EventEmitter {
   }
 
   /**
+   * Configure the Hallucinate App runtime policy evaluator used before invoke.
+   */
+  setControlSurfaceRuntimePolicyEvaluator(policyEvaluator) {
+    this.controlSurfaceInvocationGate.setRuntimePolicyEvaluator(policyEvaluator);
+  }
+
+  /**
    * Run the single pre-invocation mediation hook for an MCP-managed service.
    */
   async beforeInvoke(daemonId, invocation = {}) {

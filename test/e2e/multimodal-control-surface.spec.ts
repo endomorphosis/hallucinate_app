@@ -19,6 +19,7 @@ const POLICY_BUNDLE_REF = {
 const COMPILED_POLICY_CID = 'local:compiled-policy:hao-023-multimodal-control-surface-e2e';
 const METHOD_GATE = 'hallucinate_app.node.control_surface_invocation.ControlSurfaceInvocationGate.beforeInvoke';
 const RECEIPT_GATE = 'hallucinate_app.node.control_surface_invocation';
+const EVALUATE_API = 'hallucinate_app.control_surface_mediator.evaluate_control_surface_interaction';
 
 const CLIENT_INVOCATIONS = [
   {
@@ -177,6 +178,44 @@ function comparablePolicyDecision(decision: JsonMap) {
 }
 
 test.describe('multimodal control_surface end-to-end mediation', () => {
+  test('daemon-managed service invocation requires confirmation when no runtime evaluator is registered', async () => {
+    const { default: MCPDaemonManager } = await import('../../hallucinate_app/node/mcp_daemon_manager.js');
+    const manager = new MCPDaemonManager();
+    let transportInvoked = false;
+
+    const result = await manager.invokeManagedService('ipfs-kit', {
+      method: 'delete_content',
+      target_ref: 'ipfs:bafy-denied',
+      arguments: { cid: 'bafy-denied' },
+      control_surface: {
+        surface: 'agent',
+        surface_event: 'autonomous_invoke',
+        intent: 'ipfs.delete_content',
+        confidence: 0.99,
+        actor: { type: 'agent', id: 'agent:planner', delegation_chain: ['user:operator'] }
+      }
+    }, async () => {
+      transportInvoked = true;
+      return { ok: true };
+    });
+
+    expect(transportInvoked).toBe(false);
+    expect(result.ok).toBe(false);
+    expect(result.denied).toBe(true);
+    expect(result.policy_decision.outcome).toBe('require_confirmation');
+    expect(result.policy_decision.metadata).toMatchObject({
+      evaluate_api: EVALUATE_API,
+      runtime_policy_evaluator_registered: false,
+      fail_closed: true
+    });
+    expect(result.policy_decision.reasons.join('\n')).toContain('No runtime policy evaluator registered');
+    expect(result.mediation_receipt.mediation_result).toMatchObject({
+      outcome: 'require_confirmation',
+      invoked: false,
+      confirmation_required: true
+    });
+  });
+
   test('voice, gesture, mouse, agent, and remote clients share the method gate and policy_decision', async () => {
     const { default: MCPDaemonManager } = await import('../../hallucinate_app/node/mcp_daemon_manager.js');
     const manager = new MCPDaemonManager();

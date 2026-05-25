@@ -13,7 +13,9 @@ export const DEFAULT_CONTROL_SURFACE_CONTRACT_REF = 'control_surface_contract:mc
 export const DEFAULT_MCP_TRANSPORT = 'mcp-server';
 export const DEFAULT_SERVICE_SURFACE = 'agent';
 export const DEFAULT_SERVICE_SURFACE_EVENT = 'autonomous_invoke';
+export const HALLUCINATE_POLICY_EVALUATE_API = 'hallucinate_app.control_surface_mediator.evaluate_control_surface_interaction';
 export const BLOCKING_POLICY_OUTCOMES = new Set(['deny', 'require_confirmation', 'defer', 'rate_limit']);
+export const DEFAULT_FAIL_CLOSED_OUTCOME = 'require_confirmation';
 
 const DEFAULT_POLICY_BUNDLE_REF = {
   policy_id: 'policy:daemon-managed-service-default',
@@ -36,6 +38,7 @@ export class ControlSurfaceMediationError extends Error {
 export class ControlSurfaceInvocationGate {
   constructor(options = {}) {
     this.policyHook = typeof options.policyHook === 'function' ? options.policyHook : null;
+    this.failClosedOutcome = blockingOutcome(options.failClosedOutcome || DEFAULT_FAIL_CLOSED_OUTCOME);
     this.contractRef = options.controlSurfaceContractRef || DEFAULT_CONTROL_SURFACE_CONTRACT_REF;
     this.source = options.source || 'hallucinate_app.node.control_surface_invocation';
   }
@@ -44,15 +47,23 @@ export class ControlSurfaceInvocationGate {
     this.policyHook = typeof policyHook === 'function' ? policyHook : null;
   }
 
+  setRuntimePolicyEvaluator(policyEvaluator) {
+    this.setPolicyHook(policyEvaluator);
+  }
+
   async beforeInvoke(invocation = {}) {
     const request = normalizeManagedServiceInvocation(invocation, {
       controlSurfaceContractRef: this.contractRef,
       source: this.source
     });
-    const hookDecision = this.policyHook
-      ? await this.policyHook(request)
-      : null;
-    const policy_decision = normalizePolicyDecision(hookDecision, request, this.source);
+    const evaluatorRegistered = Boolean(this.policyHook);
+    const hookDecision = evaluatorRegistered
+      ? await this.evaluateRuntimePolicy(request)
+      : missingRuntimePolicyEvaluatorDecision(request, this.source, this.failClosedOutcome);
+    const policy_decision = normalizePolicyDecision(hookDecision, request, this.source, {
+      evaluatorRegistered,
+      defaultOutcome: this.failClosedOutcome
+    });
     const mediation_receipt = buildMediationReceipt(policy_decision, request, this.source);
     const can_invoke = !BLOCKING_POLICY_OUTCOMES.has(policy_decision.outcome);
 
@@ -99,6 +110,28 @@ export class ControlSurfaceInvocationGate {
       policy_decision: mediation.policy_decision,
       mediation_receipt: mediation.mediation_receipt
     };
+  }
+
+  async evaluateRuntimePolicy(request) {
+    try {
+      const decision = await this.policyHook(request);
+      if (!decision || Object.keys(objectPayload(decision.policy_decision || decision)).length === 0) {
+        return invalidRuntimePolicyEvaluatorDecision(
+          request,
+          this.source,
+          'Runtime policy evaluator returned no policy_decision.',
+          this.failClosedOutcome
+        );
+      }
+      return decision;
+    } catch (error) {
+      return invalidRuntimePolicyEvaluatorDecision(
+        request,
+        this.source,
+        `Runtime policy evaluator failed: ${errorMessage(error)}`,
+        'deny'
+      );
+    }
   }
 }
 
@@ -206,14 +239,17 @@ export function normalizeManagedServiceInvocation(invocation = {}, options = {})
   };
 }
 
-export function normalizePolicyDecision(rawDecision, request, source = 'hallucinate_app.node.control_surface_invocation') {
+export function normalizePolicyDecision(rawDecision, request, source = 'hallucinate_app.node.control_surface_invocation', options = {}) {
   const raw = objectPayload(rawDecision?.policy_decision || rawDecision);
-  const outcome = normalizeOutcome(raw.outcome || raw.result || raw.effect || 'allow');
+  const outcome = normalizeOutcome(raw.outcome || raw.result || raw.effect || options.defaultOutcome || DEFAULT_FAIL_CLOSED_OUTCOME);
   const reasons = arrayPayload(raw.reasons).map(String);
+  const failClosed = Boolean(raw.fail_closed || objectPayload(raw.metadata).fail_closed || (
+    !options.evaluatorRegistered && BLOCKING_POLICY_OUTCOMES.has(outcome)
+  ));
   const explanation = text(raw.explanation) || (
     reasons.length > 0
       ? reasons.join('; ')
-      : `control_surface mediation allowed ${request.method} before invoke.`
+      : defaultDecisionExplanation(outcome, request, failClosed)
   );
   const policy_bundle_ref = firstObject(raw.policy_bundle_ref, request.interaction_envelope.policy_bundle_ref, DEFAULT_POLICY_BUNDLE_REF);
   const compiled_policy_cid = text(raw.compiled_policy_cid) || request.interaction_envelope.compiled_policy_cid;
@@ -250,11 +286,14 @@ export function normalizePolicyDecision(rawDecision, request, source = 'hallucin
         frameFact(request.interaction_envelope.interaction_id, 'event', 'surface_event', request.interaction_envelope.surface_event),
         frameFact(request.interaction_envelope.interaction_id, 'method', 'intent.method', request.method)
       ],
-    reasons: reasons.length > 0 ? reasons : ['Default daemon-managed service mediation allowed invocation.'],
+    reasons: reasons.length > 0 ? reasons : defaultDecisionReasons(outcome, failClosed),
     explanation,
     confidence: number(raw.confidence, request.interaction_envelope.normalized_intent.confidence, 1),
     metadata: {
       before_invoke_hook: 'hallucinate_app.node.control_surface_invocation.ControlSurfaceInvocationGate.beforeInvoke',
+      evaluate_api: HALLUCINATE_POLICY_EVALUATE_API,
+      runtime_policy_evaluator_registered: Boolean(options.evaluatorRegistered),
+      fail_closed: failClosed,
       transport: request.transport,
       service_id: request.service_id,
       source,
@@ -401,6 +440,80 @@ function normalizeOutcome(value) {
     return 'deny';
   }
   return outcome || 'allow';
+}
+
+function missingRuntimePolicyEvaluatorDecision(request, source, outcome = DEFAULT_FAIL_CLOSED_OUTCOME) {
+  const resolvedOutcome = blockingOutcome(outcome);
+  const reason = `No runtime policy evaluator registered for ${HALLUCINATE_POLICY_EVALUATE_API}; fail_closed before daemon-managed transport invocation.`;
+  return {
+    outcome: resolvedOutcome,
+    policy_bundle_ref: request.interaction_envelope.policy_bundle_ref,
+    compiled_policy_cid: request.interaction_envelope.compiled_policy_cid,
+    reasons: [reason],
+    explanation: reason,
+    effects: [{
+      outcome: resolvedOutcome,
+      method: request.method,
+      target_ref: request.target_ref,
+      arguments: request.invocation_payload.arguments,
+      confirmation_required: resolvedOutcome === 'require_confirmation',
+      reason
+    }],
+    metadata: {
+      evaluate_api: HALLUCINATE_POLICY_EVALUATE_API,
+      runtime_policy_evaluator_registered: false,
+      fail_closed: true,
+      source
+    }
+  };
+}
+
+function invalidRuntimePolicyEvaluatorDecision(request, source, reason, outcome = 'deny') {
+  const resolvedOutcome = blockingOutcome(outcome);
+  return {
+    outcome: resolvedOutcome,
+    policy_bundle_ref: request.interaction_envelope.policy_bundle_ref,
+    compiled_policy_cid: request.interaction_envelope.compiled_policy_cid,
+    reasons: [`${reason} fail_closed before daemon-managed transport invocation.`],
+    explanation: `${reason} fail_closed before daemon-managed transport invocation.`,
+    effects: [{
+      outcome: resolvedOutcome,
+      method: request.method,
+      target_ref: request.target_ref,
+      arguments: request.invocation_payload.arguments,
+      confirmation_required: resolvedOutcome === 'require_confirmation',
+      reason
+    }],
+    metadata: {
+      evaluate_api: HALLUCINATE_POLICY_EVALUATE_API,
+      runtime_policy_evaluator_registered: true,
+      fail_closed: true,
+      source
+    }
+  };
+}
+
+function defaultDecisionReasons(outcome, failClosed) {
+  if (failClosed) {
+    return [`control_surface policy evaluation produced ${outcome}; fail_closed before transport invocation.`];
+  }
+  return [`Hallucinate App policy bundle evaluator returned ${outcome} before daemon-managed service invocation.`];
+}
+
+function defaultDecisionExplanation(outcome, request, failClosed) {
+  if (failClosed) {
+    return `control_surface mediation ${outcome} for ${request.method}; fail_closed before transport invocation.`;
+  }
+  return `control_surface mediation returned ${outcome} for ${request.method} before invoke.`;
+}
+
+function blockingOutcome(value) {
+  const outcome = normalizeOutcome(value);
+  return BLOCKING_POLICY_OUTCOMES.has(outcome) ? outcome : DEFAULT_FAIL_CLOSED_OUTCOME;
+}
+
+function errorMessage(error) {
+  return error instanceof Error ? error.message : String(error);
 }
 
 function defaultSurfaceEvent(surface) {
