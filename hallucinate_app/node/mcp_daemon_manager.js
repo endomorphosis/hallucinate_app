@@ -377,9 +377,14 @@ class MCPDaemonManager extends EventEmitter {
 
   /**
    * Configure the shared control_surface policy hook used before invoke.
+   * Clearing the hook leaves daemon-managed service invocation fail_closed.
    */
   setControlSurfacePolicyHook(policyHook) {
     this.controlSurfaceInvocationGate.setPolicyHook(policyHook);
+  }
+
+  hasControlSurfacePolicyHook() {
+    return this.controlSurfaceInvocationGate.hasPolicyHook();
   }
 
   /**

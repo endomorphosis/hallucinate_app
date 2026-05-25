@@ -14,6 +14,8 @@ export const DEFAULT_MCP_TRANSPORT = 'mcp-server';
 export const DEFAULT_SERVICE_SURFACE = 'agent';
 export const DEFAULT_SERVICE_SURFACE_EVENT = 'autonomous_invoke';
 export const BLOCKING_POLICY_OUTCOMES = new Set(['deny', 'require_confirmation', 'defer', 'rate_limit']);
+export const SUPPORTED_POLICY_OUTCOMES = new Set(['allow', 'deny', 'require_confirmation', 'defer', 'rewrite', 'fallback_surface', 'rate_limit']);
+export const FAIL_CLOSED_POLICY_OUTCOME = 'deny';
 
 const DEFAULT_POLICY_BUNDLE_REF = {
   policy_id: 'policy:daemon-managed-service-default',
@@ -44,14 +46,16 @@ export class ControlSurfaceInvocationGate {
     this.policyHook = typeof policyHook === 'function' ? policyHook : null;
   }
 
+  hasPolicyHook() {
+    return typeof this.policyHook === 'function';
+  }
+
   async beforeInvoke(invocation = {}) {
     const request = normalizeManagedServiceInvocation(invocation, {
       controlSurfaceContractRef: this.contractRef,
       source: this.source
     });
-    const hookDecision = this.policyHook
-      ? await this.policyHook(request)
-      : null;
+    const hookDecision = await this.evaluatePolicyHook(request);
     const policy_decision = normalizePolicyDecision(hookDecision, request, this.source);
     const mediation_receipt = buildMediationReceipt(policy_decision, request, this.source);
     const can_invoke = !BLOCKING_POLICY_OUTCOMES.has(policy_decision.outcome);
@@ -69,6 +73,50 @@ export class ControlSurfaceInvocationGate {
       policy_decision,
       mediation_receipt
     };
+  }
+
+  async evaluatePolicyHook(request) {
+    if (!this.policyHook) {
+      return failClosedPolicyDecision(
+        request,
+        this.source,
+        'Default daemon-managed service mediation fail_closed: no runtime control_surface policy evaluator is registered.'
+      );
+    }
+
+    try {
+      const decision = await this.policyHook(request);
+      const rawDecision = objectPayload(decision?.policy_decision || decision);
+      if (Object.keys(rawDecision).length === 0) {
+        return failClosedPolicyDecision(
+          request,
+          this.source,
+          'Default daemon-managed service mediation fail_closed: runtime control_surface policy evaluator returned no decision.'
+        );
+      }
+      if (!text(rawDecision.outcome || rawDecision.result || rawDecision.effect)) {
+        return failClosedPolicyDecision(
+          request,
+          this.source,
+          'Default daemon-managed service mediation fail_closed: runtime control_surface policy evaluator returned a decision without an outcome.'
+        );
+      }
+      if (!isSupportedOutcomeValue(rawDecision.outcome || rawDecision.result || rawDecision.effect)) {
+        return failClosedPolicyDecision(
+          request,
+          this.source,
+          'Default daemon-managed service mediation fail_closed: runtime control_surface policy evaluator returned an unsupported outcome.'
+        );
+      }
+      return decision;
+    } catch (error) {
+      return failClosedPolicyDecision(
+        request,
+        this.source,
+        `Default daemon-managed service mediation fail_closed: runtime control_surface policy evaluator failed: ${errorMessage(error)}.`,
+        { evaluator_error: errorMessage(error) }
+      );
+    }
   }
 
   requireAllowed(mediation) {
@@ -208,12 +256,14 @@ export function normalizeManagedServiceInvocation(invocation = {}, options = {})
 
 export function normalizePolicyDecision(rawDecision, request, source = 'hallucinate_app.node.control_surface_invocation') {
   const raw = objectPayload(rawDecision?.policy_decision || rawDecision);
-  const outcome = normalizeOutcome(raw.outcome || raw.result || raw.effect || 'allow');
+  const outcome = normalizeOutcome(raw.outcome || raw.result || raw.effect || FAIL_CLOSED_POLICY_OUTCOME);
   const reasons = arrayPayload(raw.reasons).map(String);
   const explanation = text(raw.explanation) || (
     reasons.length > 0
       ? reasons.join('; ')
-      : `control_surface mediation allowed ${request.method} before invoke.`
+      : outcome === 'allow'
+        ? `control_surface mediation allowed ${request.method} before invoke.`
+        : `Default daemon-managed service mediation fail_closed before ${request.method}.`
   );
   const policy_bundle_ref = firstObject(raw.policy_bundle_ref, request.interaction_envelope.policy_bundle_ref, DEFAULT_POLICY_BUNDLE_REF);
   const compiled_policy_cid = text(raw.compiled_policy_cid) || request.interaction_envelope.compiled_policy_cid;
@@ -250,15 +300,45 @@ export function normalizePolicyDecision(rawDecision, request, source = 'hallucin
         frameFact(request.interaction_envelope.interaction_id, 'event', 'surface_event', request.interaction_envelope.surface_event),
         frameFact(request.interaction_envelope.interaction_id, 'method', 'intent.method', request.method)
       ],
-    reasons: reasons.length > 0 ? reasons : ['Default daemon-managed service mediation allowed invocation.'],
+    reasons: reasons.length > 0
+      ? reasons
+      : [`Default daemon-managed service mediation fail_closed before ${request.method}.`],
     explanation,
     confidence: number(raw.confidence, request.interaction_envelope.normalized_intent.confidence, 1),
     metadata: {
       before_invoke_hook: 'hallucinate_app.node.control_surface_invocation.ControlSurfaceInvocationGate.beforeInvoke',
       transport: request.transport,
       service_id: request.service_id,
+      evaluate_api: 'hallucinate_app.control_surface_mediator.evaluate_control_surface_interaction',
+      ...objectPayload(raw.metadata),
+      fail_closed: outcome !== 'allow' && objectPayload(raw.metadata).fail_closed === true,
       source,
-      ...objectPayload(raw.metadata)
+    }
+  };
+}
+
+export function failClosedPolicyDecision(request, source, reason, metadata = {}) {
+  return {
+    outcome: FAIL_CLOSED_POLICY_OUTCOME,
+    policy_bundle_ref: request.interaction_envelope.policy_bundle_ref || DEFAULT_POLICY_BUNDLE_REF,
+    compiled_policy_cid: request.interaction_envelope.compiled_policy_cid || DEFAULT_COMPILED_POLICY_CID,
+    matched_norms: [],
+    effects: [{
+      outcome: FAIL_CLOSED_POLICY_OUTCOME,
+      method: request.method,
+      target_ref: request.target_ref,
+      arguments: request.invocation_payload.arguments,
+      confirmation_required: false,
+      reason
+    }],
+    reasons: [reason],
+    explanation: reason,
+    confidence: request.interaction_envelope.normalized_intent.confidence,
+    metadata: {
+      fail_closed: true,
+      evaluate_api: 'hallucinate_app.control_surface_mediator.evaluate_control_surface_interaction',
+      source,
+      ...objectPayload(metadata)
     }
   };
 }
@@ -400,7 +480,16 @@ function normalizeOutcome(value) {
   if (outcome === 'block' || outcome === 'blocked') {
     return 'deny';
   }
-  return outcome || 'allow';
+  return SUPPORTED_POLICY_OUTCOMES.has(outcome) ? outcome : FAIL_CLOSED_POLICY_OUTCOME;
+}
+
+function isSupportedOutcomeValue(value) {
+  const outcome = text(value).toLowerCase();
+  return outcome === 'permit'
+    || outcome === 'permitted'
+    || outcome === 'block'
+    || outcome === 'blocked'
+    || SUPPORTED_POLICY_OUTCOMES.has(outcome);
 }
 
 function defaultSurfaceEvent(surface) {
@@ -467,6 +556,12 @@ function number(...values) {
     }
   }
   return Number.isFinite(fallback) ? fallback : 0;
+}
+
+function errorMessage(error) {
+  return error && typeof error === 'object' && 'message' in error
+    ? String(error.message)
+    : String(error);
 }
 
 export function createInvocationCorrelationId(scope = 'service-invoke') {
