@@ -76,6 +76,21 @@ class _RecordingLogicAPI:
         return SimpleNamespace(decision="deny")
 
 
+class _FailingEvaluateLogicAPI(_RecordingLogicAPI):
+    def evaluate_nl_policy(self, nl_text: str, *, tool: str, actor: str | None = None, **_: object) -> object:
+        self.evaluate_calls.append((nl_text, tool, actor))
+        raise RuntimeError("synthetic evaluator failure")
+
+
+class _AtTimeMismatchLogicAPI(_RecordingLogicAPI):
+    def evaluate_nl_policy(self, nl_text: str, *, tool: str, actor: str | None = None, **_: object) -> object:
+        self.evaluate_calls.append((nl_text, tool, actor))
+        return SimpleNamespace(
+            decision="deny",
+            reason="PolicyEvaluator.evaluate() got an unexpected keyword argument 'at_time'",
+        )
+
+
 class TestControlSurfacePolicyIpfsLogic(unittest.TestCase):
     def test_freeform_rule_routes_through_ipfs_logic_api(self) -> None:
         api = _RecordingLogicAPI()
@@ -175,6 +190,86 @@ class TestControlSurfacePolicyIpfsLogic(unittest.TestCase):
         self.assertEqual(api.evaluate_calls, [("Never let agents delete records", "delete_record", "user:alice")])
         self.assertEqual(result["decision"], "deny")
         self.assertEqual(result["compiler_lane"], IPFS_LOGIC_COMPILER_LANE)
+
+    def test_evaluate_wrapper_normalizes_upstream_signature_mismatch_reasons(self) -> None:
+        api = _AtTimeMismatchLogicAPI()
+
+        result = evaluate_ipfs_nl_policy(
+            "Alice may use display.activate",
+            tool="display.activate",
+            actor="Alice",
+            logic_api=api,
+        )
+
+        self.assertEqual(result["decision"], "deny")
+        self.assertNotIn("unexpected keyword argument", result["reason"])
+        self.assertTrue(result["upstream_signature_mismatch"])
+        self.assertEqual(
+            api.evaluate_calls,
+            [("Alice may use display.activate", "display.activate", "Alice")],
+        )
+
+    def test_evaluate_wrapper_fails_closed_without_poisoning_future_evaluations(self) -> None:
+        failing_api = _FailingEvaluateLogicAPI()
+
+        result = evaluate_ipfs_nl_policy(
+            "Never let agents delete records",
+            tool="delete_record",
+            actor="user:alice",
+            logic_api=failing_api,
+        )
+
+        self.assertEqual(result["decision"], DeonticOutcome.DENY.value)
+        self.assertIn("evaluate_nl_policy failed", result["reason"])
+        self.assertEqual(
+            failing_api.evaluate_calls,
+            [("Never let agents delete records", "delete_record", "user:alice")],
+        )
+
+        healthy_api = _RecordingLogicAPI()
+        healthy_result = evaluate_ipfs_nl_policy(
+            "Never let agents delete records",
+            tool="delete_record",
+            actor="user:alice",
+            logic_api=healthy_api,
+        )
+
+        self.assertEqual(healthy_result["decision"], "deny")
+        self.assertEqual(
+            healthy_api.evaluate_calls,
+            [("Never let agents delete records", "delete_record", "user:alice")],
+        )
+
+    def test_real_ipfs_logic_evaluator_adapts_at_time_now_mismatch(self) -> None:
+        logic_api, policy_evaluator = _load_real_ipfs_logic_api()
+        original_evaluate = policy_evaluator.evaluate
+
+        result = evaluate_ipfs_nl_policy(
+            "Alice may use display.activate",
+            tool="display.activate",
+            actor="Alice",
+            logic_api=logic_api,
+        )
+
+        self.assertIn(
+            result.get("decision"),
+            {"allow", "permit", "deny", "require_confirmation"},
+        )
+        self.assertEqual(result.get("compiler_lane"), IPFS_LOGIC_COMPILER_LANE)
+        self.assertNotIn("unexpected keyword argument", str(result.get("reason", "")))
+        self.assertIs(policy_evaluator.evaluate, original_evaluate)
+
+
+def _load_real_ipfs_logic_api() -> tuple[object, object]:
+    try:
+        from ipfs_datasets_py.logic import api as logic_api  # type: ignore
+        from ipfs_datasets_py.mcp_server.temporal_policy import PolicyEvaluator  # type: ignore
+    except Exception as exc:
+        raise unittest.SkipTest(f"real ipfs_datasets_py logic API unavailable: {exc}") from exc
+
+    if getattr(logic_api, "__name__", "") != "ipfs_datasets_py.logic.api":
+        raise unittest.SkipTest("resolved logic API is not ipfs_datasets_py.logic.api")
+    return logic_api, PolicyEvaluator
 
 
 if __name__ == "__main__":
