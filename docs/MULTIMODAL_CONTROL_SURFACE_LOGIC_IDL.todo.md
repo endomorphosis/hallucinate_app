@@ -570,3 +570,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, data/hallucinate_multimodal_control/discovery/2026-05-25-hao-044-hao-042-merge-unblock.md
 - Validation: test -f data/hallucinate_multimodal_control/discovery/2026-05-25-hao-044-hao-042-merge-unblock.md
 - Acceptance: Codebase scan filed this finding from data/hallucinate_multimodal_control/discovery/2026-05-25-hao-044-hao-042-merge-unblock.md:25. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-25-hao-049-codebase-scan-894285209757.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-050 Resolve code annotation in docs/CONFIGURATION.md:334
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, docs/CONFIGURATION.md
+- Validation: test -f docs/CONFIGURATION.md
+- Acceptance: Codebase scan filed this finding from docs/CONFIGURATION.md:334. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-25-hao-050-codebase-scan-b76ea7345dc3.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-051 Resolve code annotation in docs/observability_metrics.md:223
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, docs/observability_metrics.md
+- Validation: test -f docs/observability_metrics.md
+- Acceptance: Codebase scan filed this finding from docs/observability_metrics.md:223. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-25-hao-051-codebase-scan-adf0461bee8e.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-052 Resolve code annotation in implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.md:170
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.md
+- Validation: test -f implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.md
+- Acceptance: Codebase scan filed this finding from implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.md:170. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-25-hao-052-codebase-scan-d55a5adb5bda.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-053 Resolve code annotation in implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.md:176
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.md
+- Validation: test -f implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.md
+- Acceptance: Codebase scan filed this finding from implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.md:176. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-25-hao-053-codebase-scan-5c0fa117f860.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-054 Resolve code annotation in implementation_plan/docs/19-virtual-ai-os-submodule-integration.md:14
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/19-virtual-ai-os-submodule-integration.md
+- Validation: test -f implementation_plan/docs/19-virtual-ai-os-submodule-integration.md
+- Acceptance: Codebase scan filed this finding from implementation_plan/docs/19-virtual-ai-os-submodule-integration.md:14. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-25-hao-054-codebase-scan-b56201c89923.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
