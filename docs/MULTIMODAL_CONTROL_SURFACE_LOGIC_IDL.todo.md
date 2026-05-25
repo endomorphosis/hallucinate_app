@@ -111,7 +111,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-008 Add the general `ipfs_datasets_py` NL policy compiler adapter
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: logic
@@ -122,7 +122,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-009 Build context and event-calculus fact extraction
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: logic
@@ -331,7 +331,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-028 Resolve merge retry-budget failure for HAO-009
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -342,7 +342,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-029 Resolve merge retry-budget failure for HAO-008
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
