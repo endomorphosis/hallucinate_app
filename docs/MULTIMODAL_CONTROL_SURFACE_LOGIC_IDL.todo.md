@@ -364,7 +364,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-031 Resolve code annotation in data/meta_glasses_display_widgets/discovery/2026-05-22-mgw-013-discovery-expansion.md:9
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: docs
