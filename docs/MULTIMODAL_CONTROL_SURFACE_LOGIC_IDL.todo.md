@@ -988,3 +988,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/README.md
 - Validation: test -f scripts/README.md
 - Acceptance: Codebase scan filed this finding from scripts/README.md:139. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-087-codebase-scan-53d4fd79c853.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-088 Resolve code annotation in scripts/agent-runner.py:134
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/agent-runner.py
+- Validation: python3 -m py_compile scripts/agent-runner.py
+- Acceptance: Codebase scan filed this finding from scripts/agent-runner.py:134. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-088-codebase-scan-da57d9256ef3.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-089 Resolve code annotation in scripts/hallucinate_multimodal_control_llm_router.py:16
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_llm_router.py
+- Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_llm_router.py
+- Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_llm_router.py:16. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-089-codebase-scan-46cf052213ba.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-090 Resolve code annotation in scripts/hallucinate_multimodal_control_llm_router.py:35
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_llm_router.py
+- Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_llm_router.py
+- Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_llm_router.py:35. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-090-codebase-scan-a59310d0d681.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-091 Resolve code annotation in scripts/hallucinate_multimodal_control_llm_router.py:38
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_llm_router.py
+- Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_llm_router.py
+- Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_llm_router.py:38. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-091-codebase-scan-f9d8d381447f.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-092 Resolve code annotation in scripts/hallucinate_multimodal_control_llm_router.py:58
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_llm_router.py
+- Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_llm_router.py
+- Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_llm_router.py:58. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-092-codebase-scan-d5c7d3fa56ea.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
