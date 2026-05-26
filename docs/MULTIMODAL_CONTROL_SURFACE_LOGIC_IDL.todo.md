@@ -1318,3 +1318,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_llm_router.py
 - Validation: python3 -m py_compile scripts/virtual_ai_os_llm_router.py
 - Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_llm_router.py:59. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-117-codebase-scan-08f229ba3bff.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-118 Resolve code annotation in scripts/virtual_ai_os_todo_daemon.py:2
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_daemon.py
+- Validation: python3 -m py_compile scripts/virtual_ai_os_todo_daemon.py
+- Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_daemon.py:2. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-118-codebase-scan-7c716ec97e88.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-119 Resolve code annotation in scripts/virtual_ai_os_todo_daemon.py:14
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_daemon.py
+- Validation: python3 -m py_compile scripts/virtual_ai_os_todo_daemon.py
+- Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_daemon.py:14. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-119-codebase-scan-f697f62fb190.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-120 Resolve code annotation in scripts/virtual_ai_os_todo_daemon.py:58
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_daemon.py
+- Validation: python3 -m py_compile scripts/virtual_ai_os_todo_daemon.py
+- Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_daemon.py:58. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-120-codebase-scan-dbc172236611.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-121 Resolve code annotation in scripts/virtual_ai_os_todo_supervisor.py:2
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
+- Validation: python3 -m py_compile scripts/virtual_ai_os_todo_supervisor.py
+- Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_supervisor.py:2. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-121-codebase-scan-fe5f63acad30.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-122 Resolve code annotation in scripts/virtual_ai_os_todo_supervisor.py:16
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
+- Validation: python3 -m py_compile scripts/virtual_ai_os_todo_supervisor.py
+- Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_supervisor.py:16. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-122-codebase-scan-dd1ee54d31b3.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
