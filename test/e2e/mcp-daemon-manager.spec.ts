@@ -377,4 +377,203 @@ test.describe('MCP Daemon Manager - CLI Simulation', () => {
     expect(status).toBeTruthy();
     expect(typeof status).toBe('object');
   });
+
+  test('Operator console can inspect, route, render, and recover a daemon task without paired glasses hardware', async () => {
+    const { default: MCPDaemonManager } = await import('../../hallucinate_app/node/mcp_daemon_manager.js');
+
+    const manager = new MCPDaemonManager();
+    const daemonConfig = manager.daemonConfigs.find((config: any) => config.id === 'ipfs-datasets');
+    const daemonTask = {
+      id: 'VAI-024',
+      daemon_id: 'ipfs-datasets',
+      widget_id: 'operator-daemon-task-vai-024',
+      status: 'running',
+      progress: 0.24
+    };
+
+    manager.daemons.set(daemonTask.daemon_id, {
+      id: daemonTask.daemon_id,
+      name: daemonConfig.name,
+      process: { kill: () => undefined },
+      pid: 0,
+      port: daemonConfig.port,
+      status: 'running',
+      startTime: Date.now() - 12_000,
+      restartCount: 0,
+      lastError: null,
+      logs: [
+        {
+          time: Date.now() - 1_000,
+          level: 'info',
+          message: 'daemon task VAI-024 accepted for desktop operator inspection'
+        }
+      ]
+    });
+    manager.setControlSurfaceRuntimePolicyEvaluator(() => ({
+      outcome: 'allow',
+      reasons: ['desktop operator policy allows daemon task inspection and recovery'],
+      metadata: {
+        test_contract: 'VAI-024',
+        surface: 'Hallucinate App desktop operator console'
+      }
+    }));
+
+    const inspectedStatus = manager.getStatus(daemonTask.daemon_id);
+    const inspected = await manager.invokeManagedService(
+      daemonTask.daemon_id,
+      {
+        method: 'inspect_daemon_task',
+        target_ref: `daemon-task:${daemonTask.id}`,
+        arguments: {
+          task_id: daemonTask.id,
+          daemon_id: daemonTask.daemon_id,
+          widget_id: daemonTask.widget_id,
+          operator_surface: 'Hallucinate App daemon manager',
+          swissknife_surface: 'SwissKnife virtual desktop',
+          meta_glasses_paired: false
+        },
+        control_surface: {
+          surface: 'mouse',
+          surface_event: 'click',
+          intent: 'operator.inspect_daemon_task',
+          confidence: 1,
+          actor: { type: 'user', id: 'operator:desktop', delegation_chain: [] },
+          context: {
+            platform: 'hallucinate_app',
+            state_frames: ['desktop_operator', 'hardware_free'],
+            device_context: {
+              meta_glasses_paired: false,
+              hardware_required: false
+            }
+          }
+        }
+      },
+      async (payload: any, mediation: any) => ({
+        inspected_task_id: payload.arguments.task_id,
+        daemon_id: payload.arguments.daemon_id,
+        route: {
+          daemon: payload.daemon_id,
+          hallucinate_app: payload.arguments.operator_surface,
+          swissknife: payload.arguments.swissknife_surface,
+          transport: mediation.transport
+        },
+        render_action: {
+          type: 'desktop_render_display_widget',
+          widget_id: payload.arguments.widget_id,
+          fallback_for: 'Meta glasses',
+          render_path: 'desktop-operator-panel',
+          hardware_required: false
+        }
+      })
+    );
+
+    const recovered = await manager.invokeManagedService(
+      daemonTask.daemon_id,
+      {
+        method: 'recover_daemon_task',
+        target_ref: `daemon-task:${daemonTask.id}`,
+        arguments: {
+          task_id: daemonTask.id,
+          daemon_id: daemonTask.daemon_id,
+          widget_id: daemonTask.widget_id,
+          previous_receipt_id: inspected.mediation_receipt.receipt_id,
+          operator_surface: 'Hallucinate App daemon manager',
+          swissknife_surface: 'SwissKnife virtual desktop'
+        },
+        control_surface: {
+          surface: 'agent',
+          surface_event: 'autonomous_invoke',
+          intent: 'operator.recover_daemon_task',
+          confidence: 1,
+          actor: {
+            type: 'agent',
+            id: 'agent:desktop-operator',
+            delegation_chain: ['operator:desktop', 'agent:desktop-operator']
+          },
+          context: {
+            platform: 'hallucinate_app',
+            state_frames: ['desktop_operator', 'recovery'],
+            device_context: {
+              meta_glasses_paired: false,
+              hardware_required: false
+            }
+          }
+        }
+      },
+      async (payload: any) => {
+        const daemon = manager.daemons.get(payload.arguments.daemon_id);
+        daemon.status = 'running';
+        daemon.restartCount += 1;
+        daemon.lastError = null;
+        daemon.logs.push({
+          time: Date.now(),
+          level: 'info',
+          message: 'daemon task VAI-024 recovered through desktop operator route'
+        });
+        return {
+          recovered: true,
+          daemon_task_id: payload.arguments.task_id,
+          render_action: {
+            type: 'desktop_update_display_widget',
+            widget_id: payload.arguments.widget_id,
+            patch: {
+              status: 'running',
+              recovery_state: 'recovered'
+            }
+          }
+        };
+      }
+    );
+
+    expect(inspectedStatus).toMatchObject({
+      id: daemonTask.daemon_id,
+      status: 'running',
+      port: 3002
+    });
+    expect(inspected).toMatchObject({
+      ok: true,
+      denied: false,
+      service_id: daemonTask.daemon_id,
+      method: 'inspect_daemon_task',
+      output: {
+        inspected_task_id: daemonTask.id,
+        route: {
+          hallucinate_app: 'Hallucinate App daemon manager',
+          swissknife: 'SwissKnife virtual desktop',
+          transport: 'mcp-server'
+        },
+        render_action: {
+          type: 'desktop_render_display_widget',
+          render_path: 'desktop-operator-panel',
+          hardware_required: false
+        }
+      }
+    });
+    expect(inspected.interaction_envelope.context.platform).toBe('hallucinate_app');
+    expect(inspected.mediation_receipt.metadata.schema_refs).toEqual([
+      'control_surface_contract',
+      'interaction_envelope',
+      'policy_decision',
+      'mediation_receipt'
+    ]);
+    expect(recovered).toMatchObject({
+      ok: true,
+      denied: false,
+      method: 'recover_daemon_task',
+      output: {
+        recovered: true,
+        daemon_task_id: daemonTask.id,
+        render_action: {
+          type: 'desktop_update_display_widget',
+          patch: {
+            status: 'running',
+            recovery_state: 'recovered'
+          }
+        }
+      }
+    });
+    expect(manager.getLogs(daemonTask.daemon_id, 1)[0].message).toContain(
+      'recovered through desktop operator route'
+    );
+  });
 });
