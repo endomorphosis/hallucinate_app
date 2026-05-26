@@ -1263,3 +1263,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/smoke_demo.py
 - Validation: python3 -m py_compile scripts/smoke_demo.py
 - Acceptance: Codebase scan filed this finding from scripts/smoke_demo.py:141. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-112-codebase-scan-d3346a231149.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-113 Resolve code annotation in scripts/virtual_ai_os_llm_router.py:16
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_llm_router.py
+- Validation: python3 -m py_compile scripts/virtual_ai_os_llm_router.py
+- Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_llm_router.py:16. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-113-codebase-scan-fb79eb5bbbd9.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-114 Resolve code annotation in scripts/virtual_ai_os_llm_router.py:35
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_llm_router.py
+- Validation: python3 -m py_compile scripts/virtual_ai_os_llm_router.py
+- Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_llm_router.py:35. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-114-codebase-scan-d5df2e3d34b5.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-115 Resolve code annotation in scripts/virtual_ai_os_llm_router.py:38
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_llm_router.py
+- Validation: python3 -m py_compile scripts/virtual_ai_os_llm_router.py
+- Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_llm_router.py:38. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-115-codebase-scan-691b11a0fbc1.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-116 Resolve code annotation in scripts/virtual_ai_os_llm_router.py:57
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_llm_router.py
+- Validation: python3 -m py_compile scripts/virtual_ai_os_llm_router.py
+- Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_llm_router.py:57. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-116-codebase-scan-9060525af485.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-117 Resolve code annotation in scripts/virtual_ai_os_llm_router.py:59
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_llm_router.py
+- Validation: python3 -m py_compile scripts/virtual_ai_os_llm_router.py
+- Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_llm_router.py:59. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-117-codebase-scan-08f229ba3bff.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
