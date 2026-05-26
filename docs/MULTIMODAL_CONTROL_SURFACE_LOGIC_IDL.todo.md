@@ -1211,7 +1211,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-108 Resolve code annotation in scripts/meta_glasses_display_todo_supervisor.py:49
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: runtime
