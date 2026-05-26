@@ -573,7 +573,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-050 Resolve code annotation in docs/CONFIGURATION.md:334
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: docs
@@ -584,7 +584,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-051 Resolve code annotation in docs/observability_metrics.md:223
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: docs
@@ -595,7 +595,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-052 Resolve code annotation in implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.md:170
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: docs
@@ -606,7 +606,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-053 Resolve code annotation in implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.md:176
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: docs
@@ -617,7 +617,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-054 Resolve code annotation in implementation_plan/docs/19-virtual-ai-os-submodule-integration.md:14
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: docs
@@ -628,7 +628,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-055 Resolve code annotation in docs/CONFIGURATION.md:336
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: docs
@@ -639,7 +639,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-056 Resolve code annotation in implementation_plan/docs/19-virtual-ai-os-submodule-integration.md:194
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: docs
@@ -705,7 +705,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-062 Close virtual AI OS objective gap: Capability routing kernel
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: runtime
@@ -716,7 +716,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-063 Close virtual AI OS objective gap: IDL, ORB, and MCP++ bridge
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: runtime
@@ -760,7 +760,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-067 Resolve merge retry-budget failure for HAO-058
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
