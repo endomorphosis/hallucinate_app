@@ -823,3 +823,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md
 - Validation: test -f implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md
 - Acceptance: Codebase scan filed this finding from implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md:66. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-072-codebase-scan-8c3aa5c5ef3e.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-073 Resolve code annotation in implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md:67
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md
+- Validation: test -f implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md
+- Acceptance: Codebase scan filed this finding from implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md:67. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-073-codebase-scan-584cb35c884b.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-074 Resolve code annotation in mobile/IMPLEMENTATION_SUMMARY.md:34
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, mobile/IMPLEMENTATION_SUMMARY.md
+- Validation: test -f mobile/IMPLEMENTATION_SUMMARY.md
+- Acceptance: Codebase scan filed this finding from mobile/IMPLEMENTATION_SUMMARY.md:34. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-074-codebase-scan-84e339e19c10.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-075 Resolve code annotation in mobile/IMPLEMENTATION_SUMMARY.md:151
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, mobile/IMPLEMENTATION_SUMMARY.md
+- Validation: test -f mobile/IMPLEMENTATION_SUMMARY.md
+- Acceptance: Codebase scan filed this finding from mobile/IMPLEMENTATION_SUMMARY.md:151. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-075-codebase-scan-e706f07eec5a.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-076 Resolve code annotation in mobile/IMPLEMENTATION_SUMMARY.md:158
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, mobile/IMPLEMENTATION_SUMMARY.md
+- Validation: test -f mobile/IMPLEMENTATION_SUMMARY.md
+- Acceptance: Codebase scan filed this finding from mobile/IMPLEMENTATION_SUMMARY.md:158. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-076-codebase-scan-acbc6d9e6c02.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-077 Resolve code annotation in mobile/PR-049-IMPLEMENTATION-SUMMARY.md:53
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, mobile/PR-049-IMPLEMENTATION-SUMMARY.md
+- Validation: test -f mobile/PR-049-IMPLEMENTATION-SUMMARY.md
+- Acceptance: Codebase scan filed this finding from mobile/PR-049-IMPLEMENTATION-SUMMARY.md:53. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-077-codebase-scan-06a10ba3b69c.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
