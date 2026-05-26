@@ -1098,3 +1098,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_supervisor.py:250. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-097-codebase-scan-ad769814862c.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-098 Resolve code annotation in scripts/meta_glasses_display_llm_router.py:16
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/meta_glasses_display_llm_router.py
+- Validation: python3 -m py_compile scripts/meta_glasses_display_llm_router.py
+- Acceptance: Codebase scan filed this finding from scripts/meta_glasses_display_llm_router.py:16. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-098-codebase-scan-df931db026fa.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-099 Resolve code annotation in scripts/meta_glasses_display_llm_router.py:35
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/meta_glasses_display_llm_router.py
+- Validation: python3 -m py_compile scripts/meta_glasses_display_llm_router.py
+- Acceptance: Codebase scan filed this finding from scripts/meta_glasses_display_llm_router.py:35. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-099-codebase-scan-ee7817b82f17.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-100 Resolve code annotation in scripts/meta_glasses_display_llm_router.py:38
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/meta_glasses_display_llm_router.py
+- Validation: python3 -m py_compile scripts/meta_glasses_display_llm_router.py
+- Acceptance: Codebase scan filed this finding from scripts/meta_glasses_display_llm_router.py:38. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-100-codebase-scan-6e4fbd36e646.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-101 Resolve code annotation in scripts/meta_glasses_display_llm_router.py:57
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/meta_glasses_display_llm_router.py
+- Validation: python3 -m py_compile scripts/meta_glasses_display_llm_router.py
+- Acceptance: Codebase scan filed this finding from scripts/meta_glasses_display_llm_router.py:57. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-101-codebase-scan-51cfbb7d0bb1.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-102 Resolve code annotation in scripts/meta_glasses_display_llm_router.py:59
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/meta_glasses_display_llm_router.py
+- Validation: python3 -m py_compile scripts/meta_glasses_display_llm_router.py
+- Acceptance: Codebase scan filed this finding from scripts/meta_glasses_display_llm_router.py:59. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-102-codebase-scan-4a4abdc17147.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
