@@ -958,7 +958,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-085 Resolve code annotation in mobile/src/screens/GlassesDiagnosticsScreen.original.js:459
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: ops
