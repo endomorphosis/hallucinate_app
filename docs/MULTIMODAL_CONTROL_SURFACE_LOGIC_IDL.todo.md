@@ -1574,7 +1574,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-141 Replace placeholder runtime path in src/handsfree/ipfs_kit_adapters.py:168
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: runtime
