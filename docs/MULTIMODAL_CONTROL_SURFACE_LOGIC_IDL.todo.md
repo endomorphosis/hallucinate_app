@@ -815,7 +815,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-072 Resolve code annotation in implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md:66
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: docs
