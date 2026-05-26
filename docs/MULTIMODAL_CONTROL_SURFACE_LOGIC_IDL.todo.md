@@ -1043,3 +1043,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_llm_router.py
 - Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_llm_router.py
 - Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_llm_router.py:58. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-092-codebase-scan-d5c7d3fa56ea.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-093 Resolve code annotation in scripts/hallucinate_multimodal_control_todo_daemon.py:2
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_daemon.py
+- Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_daemon.py
+- Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_daemon.py:2. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-093-codebase-scan-2e1e939bab5f.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-094 Resolve code annotation in scripts/hallucinate_multimodal_control_todo_daemon.py:16
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_daemon.py
+- Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_daemon.py
+- Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_daemon.py:16. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-094-codebase-scan-41452d0208e1.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-095 Resolve code annotation in scripts/hallucinate_multimodal_control_todo_daemon.py:259
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_daemon.py
+- Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_daemon.py
+- Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_daemon.py:259. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-095-codebase-scan-11f9bd56c269.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-096 Resolve code annotation in scripts/hallucinate_multimodal_control_todo_supervisor.py:2
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_supervisor.py
+- Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_supervisor.py
+- Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_supervisor.py:2. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-096-codebase-scan-6f993aa3a890.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-097 Resolve code annotation in scripts/hallucinate_multimodal_control_todo_supervisor.py:250
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_supervisor.py
+- Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_supervisor.py
+- Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_supervisor.py:250. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-097-codebase-scan-ad769814862c.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
