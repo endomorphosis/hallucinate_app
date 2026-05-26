@@ -1464,7 +1464,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-131 Review swallowed exception path in src/handsfree/ipfs_accelerate_adapters.py:85
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: runtime
