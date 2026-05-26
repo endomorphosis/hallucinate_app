@@ -878,3 +878,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, mobile/PR-049-IMPLEMENTATION-SUMMARY.md
 - Validation: test -f mobile/PR-049-IMPLEMENTATION-SUMMARY.md
 - Acceptance: Codebase scan filed this finding from mobile/PR-049-IMPLEMENTATION-SUMMARY.md:53. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-077-codebase-scan-06a10ba3b69c.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-078 Resolve code annotation in mobile/PR-049-IMPLEMENTATION-SUMMARY.md:76
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, mobile/PR-049-IMPLEMENTATION-SUMMARY.md
+- Validation: test -f mobile/PR-049-IMPLEMENTATION-SUMMARY.md
+- Acceptance: Codebase scan filed this finding from mobile/PR-049-IMPLEMENTATION-SUMMARY.md:76. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-078-codebase-scan-7422b5e07c0a.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-079 Resolve code annotation in mobile/glasses/IMPLEMENTATION_STATUS.md:255
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, mobile/glasses/IMPLEMENTATION_STATUS.md
+- Validation: test -f mobile/glasses/IMPLEMENTATION_STATUS.md
+- Acceptance: Codebase scan filed this finding from mobile/glasses/IMPLEMENTATION_STATUS.md:255. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-079-codebase-scan-2e0a15bdcce1.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-080 Resolve code annotation in mobile/glasses/IMPLEMENTATION_STATUS_PR051.md:502
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, mobile/glasses/IMPLEMENTATION_STATUS_PR051.md
+- Validation: test -f mobile/glasses/IMPLEMENTATION_STATUS_PR051.md
+- Acceptance: Codebase scan filed this finding from mobile/glasses/IMPLEMENTATION_STATUS_PR051.md:502. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-080-codebase-scan-6baa51ecb406.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-081 Resolve code annotation in mobile/glasses/README.md:24
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, mobile/glasses/README.md
+- Validation: test -f mobile/glasses/README.md
+- Acceptance: Codebase scan filed this finding from mobile/glasses/README.md:24. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-081-codebase-scan-9fd50ccc053b.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-082 Resolve code annotation in mobile/modules/glasses-audio/README.md:388
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, mobile/modules/glasses-audio/README.md
+- Validation: test -f mobile/modules/glasses-audio/README.md
+- Acceptance: Codebase scan filed this finding from mobile/modules/glasses-audio/README.md:388. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-082-codebase-scan-d01559e10610.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
