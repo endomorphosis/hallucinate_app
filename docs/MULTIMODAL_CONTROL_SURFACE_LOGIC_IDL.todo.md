@@ -1101,7 +1101,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-098 Resolve code annotation in scripts/meta_glasses_display_llm_router.py:16
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: runtime
