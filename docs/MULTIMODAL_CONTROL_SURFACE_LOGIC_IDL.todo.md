@@ -936,7 +936,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-083 Resolve code annotation in mobile/modules/glasses-audio/SETUP.md:314
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: docs
