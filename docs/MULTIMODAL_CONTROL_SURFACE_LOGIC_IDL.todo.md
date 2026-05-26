@@ -1538,3 +1538,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/ipfs_kit_adapters.py
 - Validation: python3 -m py_compile src/handsfree/ipfs_kit_adapters.py
 - Acceptance: Codebase scan filed this finding from src/handsfree/ipfs_kit_adapters.py:96. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-137-codebase-scan-32fdf750a8a1.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-138 Review swallowed exception path in src/handsfree/ipfs_kit_adapters.py:88
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/ipfs_kit_adapters.py
+- Validation: python3 -m py_compile src/handsfree/ipfs_kit_adapters.py
+- Acceptance: Codebase scan filed this finding from src/handsfree/ipfs_kit_adapters.py:88. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-138-codebase-scan-5f5930d75f21.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-139 Replace placeholder runtime path in src/handsfree/ipfs_kit_adapters.py:122
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/ipfs_kit_adapters.py
+- Validation: python3 -m py_compile src/handsfree/ipfs_kit_adapters.py
+- Acceptance: Codebase scan filed this finding from src/handsfree/ipfs_kit_adapters.py:122. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-139-codebase-scan-7cdc6c25a5e1.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-140 Replace placeholder runtime path in src/handsfree/ipfs_kit_adapters.py:137
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/ipfs_kit_adapters.py
+- Validation: python3 -m py_compile src/handsfree/ipfs_kit_adapters.py
+- Acceptance: Codebase scan filed this finding from src/handsfree/ipfs_kit_adapters.py:137. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-140-codebase-scan-1ea0adf2e36a.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-141 Replace placeholder runtime path in src/handsfree/ipfs_kit_adapters.py:168
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/ipfs_kit_adapters.py
+- Validation: python3 -m py_compile src/handsfree/ipfs_kit_adapters.py
+- Acceptance: Codebase scan filed this finding from src/handsfree/ipfs_kit_adapters.py:168. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-141-codebase-scan-feb489a0c62a.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-142 Replace placeholder runtime path in src/handsfree/ipfs_kit_adapters.py:176
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/ipfs_kit_adapters.py
+- Validation: python3 -m py_compile src/handsfree/ipfs_kit_adapters.py
+- Acceptance: Codebase scan filed this finding from src/handsfree/ipfs_kit_adapters.py:176. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-142-codebase-scan-958091124cbd.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
