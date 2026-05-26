@@ -1483,3 +1483,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/ipfs_datasets_routers.py
 - Validation: python3 -m py_compile src/handsfree/ipfs_datasets_routers.py
 - Acceptance: Codebase scan filed this finding from src/handsfree/ipfs_datasets_routers.py:58. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-132-codebase-scan-b34f88cc13d5.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-133 Review swallowed exception path in src/handsfree/ipfs_datasets_routers.py:130
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/ipfs_datasets_routers.py
+- Validation: python3 -m py_compile src/handsfree/ipfs_datasets_routers.py
+- Acceptance: Codebase scan filed this finding from src/handsfree/ipfs_datasets_routers.py:130. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-133-codebase-scan-b0ce9c04c82b.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-134 Replace placeholder runtime path in src/handsfree/ipfs_kit_adapters.py:50
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/ipfs_kit_adapters.py
+- Validation: python3 -m py_compile src/handsfree/ipfs_kit_adapters.py
+- Acceptance: Codebase scan filed this finding from src/handsfree/ipfs_kit_adapters.py:50. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-134-codebase-scan-ce17f5d67a65.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-135 Replace placeholder runtime path in src/handsfree/ipfs_kit_adapters.py:84
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/ipfs_kit_adapters.py
+- Validation: python3 -m py_compile src/handsfree/ipfs_kit_adapters.py
+- Acceptance: Codebase scan filed this finding from src/handsfree/ipfs_kit_adapters.py:84. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-135-codebase-scan-9853192d204a.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-136 Review swallowed exception path in src/handsfree/ipfs_kit_adapters.py:94
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/ipfs_kit_adapters.py
+- Validation: python3 -m py_compile src/handsfree/ipfs_kit_adapters.py
+- Acceptance: Codebase scan filed this finding from src/handsfree/ipfs_kit_adapters.py:94. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-136-codebase-scan-6df4c25ab5e6.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-137 Replace placeholder runtime path in src/handsfree/ipfs_kit_adapters.py:96
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/ipfs_kit_adapters.py
+- Validation: python3 -m py_compile src/handsfree/ipfs_kit_adapters.py
+- Acceptance: Codebase scan filed this finding from src/handsfree/ipfs_kit_adapters.py:96. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-137-codebase-scan-32fdf750a8a1.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
