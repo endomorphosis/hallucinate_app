@@ -1277,7 +1277,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-114 Resolve code annotation in scripts/virtual_ai_os_llm_router.py:35
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: runtime
