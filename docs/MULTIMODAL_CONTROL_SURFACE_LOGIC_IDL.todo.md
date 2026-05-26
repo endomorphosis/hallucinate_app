@@ -1593,3 +1593,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/ipfs_kit_adapters.py
 - Validation: python3 -m py_compile src/handsfree/ipfs_kit_adapters.py
 - Acceptance: Codebase scan filed this finding from src/handsfree/ipfs_kit_adapters.py:176. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-142-codebase-scan-958091124cbd.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-143 Replace placeholder runtime path in src/handsfree/ocr/stub_provider.py:38
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/ocr/stub_provider.py
+- Validation: python3 -m py_compile src/handsfree/ocr/stub_provider.py
+- Acceptance: Codebase scan filed this finding from src/handsfree/ocr/stub_provider.py:38. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-143-codebase-scan-914627da8285.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-144 Review swallowed exception path in src/handsfree/peer_chat.py:122
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/peer_chat.py
+- Validation: python3 -m py_compile src/handsfree/peer_chat.py
+- Acceptance: Codebase scan filed this finding from src/handsfree/peer_chat.py:122. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-144-codebase-scan-e0404f01baad.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-145 Review swallowed exception path in src/handsfree/peer_chat.py:143
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/peer_chat.py
+- Validation: python3 -m py_compile src/handsfree/peer_chat.py
+- Acceptance: Codebase scan filed this finding from src/handsfree/peer_chat.py:143. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-145-codebase-scan-ab48ea3fcc0c.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-146 Review swallowed exception path in src/handsfree/peer_chat.py:164
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/peer_chat.py
+- Validation: python3 -m py_compile src/handsfree/peer_chat.py
+- Acceptance: Codebase scan filed this finding from src/handsfree/peer_chat.py:164. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-146-codebase-scan-87a17f74176c.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-147 Review swallowed exception path in src/handsfree/redis_client.py:77
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/redis_client.py
+- Validation: python3 -m py_compile src/handsfree/redis_client.py
+- Acceptance: Codebase scan filed this finding from src/handsfree/redis_client.py:77. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-147-codebase-scan-7a1ac1883655.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
