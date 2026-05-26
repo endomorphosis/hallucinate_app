@@ -1373,3 +1373,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/virtual_ai_os_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_supervisor.py:16. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-122-codebase-scan-dd1ee54d31b3.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-123 Resolve code annotation in src/handsfree/agent_providers.py:1824
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/agent_providers.py
+- Validation: python3 -m py_compile src/handsfree/agent_providers.py
+- Acceptance: Codebase scan filed this finding from src/handsfree/agent_providers.py:1824. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-123-codebase-scan-d137a2e48353.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-124 Resolve code annotation in src/handsfree/agent_providers.py:1843
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/agent_providers.py
+- Validation: python3 -m py_compile src/handsfree/agent_providers.py
+- Acceptance: Codebase scan filed this finding from src/handsfree/agent_providers.py:1843. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-124-codebase-scan-cc5b9143fd73.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-125 Resolve code annotation in src/handsfree/agent_providers.py:1845
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/agent_providers.py
+- Validation: python3 -m py_compile src/handsfree/agent_providers.py
+- Acceptance: Codebase scan filed this finding from src/handsfree/agent_providers.py:1845. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-125-codebase-scan-8acbfb19a443.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-126 Replace placeholder runtime path in src/handsfree/ai/capabilities.py:376
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/ai/capabilities.py
+- Validation: python3 -m py_compile src/handsfree/ai/capabilities.py
+- Acceptance: Codebase scan filed this finding from src/handsfree/ai/capabilities.py:376. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-126-codebase-scan-a70cd0bd27d0.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-127 Resolve code annotation in src/handsfree/config.py:53
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/config.py
+- Validation: python3 -m py_compile src/handsfree/config.py
+- Acceptance: Codebase scan filed this finding from src/handsfree/config.py:53. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-26-hao-127-codebase-scan-2ce439753ef3.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
