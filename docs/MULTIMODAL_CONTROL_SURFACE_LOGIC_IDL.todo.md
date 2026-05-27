@@ -1868,3 +1868,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, work/PR-047-ios-audio-route-monitor.md
 - Validation: test -f work/PR-047-ios-audio-route-monitor.md
 - Acceptance: Codebase scan filed this finding from work/PR-047-ios-audio-route-monitor.md:14. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-27-hao-167-codebase-scan-98ff09f42056.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-168 Resolve code annotation in work/PR-081-privacy-mode-per-profile.md:18
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, work/PR-081-privacy-mode-per-profile.md
+- Validation: test -f work/PR-081-privacy-mode-per-profile.md
+- Acceptance: Codebase scan filed this finding from work/PR-081-privacy-mode-per-profile.md:18. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-27-hao-168-codebase-scan-6dfbe572b893.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-169 Resolve code annotation in work/PR-090-agent-runner-docs-sync.md:1
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, work/PR-090-agent-runner-docs-sync.md
+- Validation: test -f work/PR-090-agent-runner-docs-sync.md
+- Acceptance: Codebase scan filed this finding from work/PR-090-agent-runner-docs-sync.md:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-27-hao-169-codebase-scan-9b624a3cfffc.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-170 Resolve code annotation in hallucinate_app/MENU_STRUCTURE.md:11
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/MENU_STRUCTURE.md
+- Validation: test -f hallucinate_app/MENU_STRUCTURE.md
+- Acceptance: Codebase scan filed this finding from hallucinate_app/MENU_STRUCTURE.md:11. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-27-hao-170-codebase-scan-adf5c0aa0a20.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-171 Resolve code annotation in hallucinate_app/docs/INDEX.md:24
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/docs/INDEX.md
+- Validation: test -f hallucinate_app/docs/INDEX.md
+- Acceptance: Codebase scan filed this finding from hallucinate_app/docs/INDEX.md:24. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-27-hao-171-codebase-scan-58d2ea49839a.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-172 Resolve code annotation in hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md:3
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md
+- Validation: test -f hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md
+- Acceptance: Codebase scan filed this finding from hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md:3. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-27-hao-172-codebase-scan-b52e44553a92.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
