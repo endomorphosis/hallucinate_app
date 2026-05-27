@@ -1813,3 +1813,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, tracking/PR-079-agent-runner-minimal.md
 - Validation: test -f tracking/PR-079-agent-runner-minimal.md
 - Acceptance: Codebase scan filed this finding from tracking/PR-079-agent-runner-minimal.md:35. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-27-hao-162-codebase-scan-13883aa045ec.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-163 Resolve code annotation in tracking/PR-083-android-expo-glasses-audio-wav-playback.md:7
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, tracking/PR-083-android-expo-glasses-audio-wav-playback.md
+- Validation: test -f tracking/PR-083-android-expo-glasses-audio-wav-playback.md
+- Acceptance: Codebase scan filed this finding from tracking/PR-083-android-expo-glasses-audio-wav-playback.md:7. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-27-hao-163-codebase-scan-587ddb056b2b.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-164 Resolve code annotation in tracking/PR-090-agent-runner-docs-sync.md:1
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, tracking/PR-090-agent-runner-docs-sync.md
+- Validation: test -f tracking/PR-090-agent-runner-docs-sync.md
+- Acceptance: Codebase scan filed this finding from tracking/PR-090-agent-runner-docs-sync.md:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-27-hao-164-codebase-scan-2c46fb58c8a1.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-165 Resolve code annotation in tracking/PR-090-agent-runner-docs-sync.md:29
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, tracking/PR-090-agent-runner-docs-sync.md
+- Validation: test -f tracking/PR-090-agent-runner-docs-sync.md
+- Acceptance: Codebase scan filed this finding from tracking/PR-090-agent-runner-docs-sync.md:29. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-27-hao-165-codebase-scan-015415cbcb23.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-166 Resolve code annotation in work/PR-046-expo-dev-client-native-glasses.md:14
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, work/PR-046-expo-dev-client-native-glasses.md
+- Validation: test -f work/PR-046-expo-dev-client-native-glasses.md
+- Acceptance: Codebase scan filed this finding from work/PR-046-expo-dev-client-native-glasses.md:14. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-27-hao-166-codebase-scan-b5f5365b1aef.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-167 Resolve code annotation in work/PR-047-ios-audio-route-monitor.md:14
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, work/PR-047-ios-audio-route-monitor.md
+- Validation: test -f work/PR-047-ios-audio-route-monitor.md
+- Acceptance: Codebase scan filed this finding from work/PR-047-ios-audio-route-monitor.md:14. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-27-hao-167-codebase-scan-98ff09f42056.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
