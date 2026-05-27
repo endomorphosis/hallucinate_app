@@ -1,12 +1,12 @@
 # Multimodal Control Surface Logic IDL Plan
 
-HAO board file:
+Daemon backlog file:
 
 ```text
 hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
 ```
 
-The HAO board is split into daemon-ingestible tasks. `HAO-000` through
+This backlog is split into daemon-ingestible `HAO-` tasks. `HAO-000` through
 `HAO-003` cover the bootstrap, canonical ownership, schema seed, and interaction
 envelope that already exist in this workspace. `HAO-004` through `HAO-025`
 decompose the remaining implementation into logic API integration, formal IR,
