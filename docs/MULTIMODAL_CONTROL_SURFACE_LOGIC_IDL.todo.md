@@ -2033,3 +2033,14 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/node/daemon_manager.js
 - Validation: test -f hallucinate_app/hallucinate_app/node/daemon_manager.js
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/node/daemon_manager.js:228. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-27-hao-182-codebase-scan-f2932e5d08ca.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-183 Resolve merge retry-budget failure for HAO-181
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/experiments/webnn-developer-preview/demos/whisper-base/whisper.js
+- Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-27-hao-183-hao-181-merge-retry-budget.md
+- Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-181. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-27-hao-183-hao-181-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-181 from strategy blocked_tasks.
