@@ -1992,7 +1992,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-179 Resolve code annotation in hallucinate_app/hallucinate_app/experiments/webnn-developer-preview/demos/whisper-base/generation_utils.js:52
 
-- Status: todo
+- Status: done
 - Completion: manual
 - Priority: P3
 - Track: ops
