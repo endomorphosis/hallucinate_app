@@ -414,6 +414,34 @@ export class AuthManager {
   }
 
   /**
+   * Delete a principal
+   * @param {string} id - Principal ID to delete
+   * @returns {Promise<boolean>} True if deletion was successful
+   */
+  async deletePrincipal(id) {
+    try {
+      if (id === 'root') {
+        throw new Error('Cannot delete root principal');
+      }
+
+      if (!this.principals[id]) {
+        throw new Error(`Principal ${id} not found`);
+      }
+
+      if (!this.options.use_mock_implementation && HAS_UCAN_AUTH && this.auth_impl.deletePrincipal) {
+        return await this.auth_impl.deletePrincipal(id);
+      }
+
+      delete this.principals[id];
+      await this._saveState();
+      return true;
+    } catch (error) {
+      logger.error(`Failed to delete principal ${id}: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
    * Issue a capability token
    * @param {string} issuerId - Principal ID of the issuer
    * @param {string} audienceId - Principal ID of the audience

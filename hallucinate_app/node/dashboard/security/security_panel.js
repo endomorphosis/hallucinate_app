@@ -23,6 +23,7 @@ class SecurityPanel {
     this.capabilities = [];
     this.selectedPrincipal = null;
     this.selectedCapability = null;
+    this.principalFilter = null;
     
     // Bind methods to maintain this context
     this._handleTabChange = this._handleTabChange.bind(this);
@@ -327,6 +328,45 @@ class SecurityPanel {
           </div>
         </div>
         
+        <!-- Dialog: Edit Principal -->
+        <div id="edit-principal-dialog" class="dialog">
+          <div class="dialog-content">
+            <div class="dialog-header">
+              <h3>Edit Principal</h3>
+              <button class="close-button" aria-label="Close">&times;</button>
+            </div>
+            
+            <div class="dialog-body">
+              <form id="edit-principal-form">
+                <div class="form-group">
+                  <label for="edit-principal-name">Name</label>
+                  <input type="text" id="edit-principal-name" required placeholder="User or Service Name">
+                </div>
+                
+                <div class="form-group">
+                  <label for="edit-principal-type">Type</label>
+                  <select id="edit-principal-type" required>
+                    <option value="user">User</option>
+                    <option value="service">Service</option>
+                    <option value="device">Device</option>
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label for="edit-principal-did">DID</label>
+                  <input type="text" id="edit-principal-did" readonly class="readonly-field">
+                  <div class="help-text">DID is an immutable identifier and cannot be changed.</div>
+                </div>
+              </form>
+            </div>
+            
+            <div class="dialog-footer">
+              <button type="button" id="btn-cancel-edit-principal" class="secondary-button">Cancel</button>
+              <button type="button" id="btn-save-principal" class="primary-button">Save</button>
+            </div>
+          </div>
+        </div>
+        
         <!-- Toast Notifications -->
         <div id="security-toast-container" class="toast-container"></div>
       </div>
@@ -379,6 +419,10 @@ class SecurityPanel {
     // Select principal dialog
     this.container.querySelector('#btn-cancel-select').addEventListener('click', () => this._closeDialog('select-principal-dialog'));
     this.container.querySelector('#dialog-principal-search').addEventListener('input', this._handleDialogPrincipalSearch.bind(this));
+    
+    // Edit principal dialog
+    this.container.querySelector('#btn-cancel-edit-principal').addEventListener('click', () => this._closeDialog('edit-principal-dialog'));
+    this.container.querySelector('#btn-save-principal').addEventListener('click', () => this._handleFormSubmit('edit-principal'));
     
     // External events
     this.eventBus.on('content-selected', this._handleContentSelected.bind(this));
@@ -495,14 +539,19 @@ class SecurityPanel {
       ? this.capabilities.filter(cap => cap.capability === filterValue)
       : this.capabilities;
     
+    // Filter further by principal if a principal filter is active
+    const displayedCapabilities = this.principalFilter
+      ? filteredCapabilities.filter(cap => cap.audience === this.principalFilter || cap.issuer === this.principalFilter)
+      : filteredCapabilities;
+    
     // Clear existing content
     capabilitiesList.innerHTML = '';
     
     // Show empty state if no capabilities
-    if (filteredCapabilities.length === 0) {
+    if (displayedCapabilities.length === 0) {
       capabilitiesList.innerHTML = `
         <tr class="empty-state">
-          <td colspan="7">${filterValue ? 'No matching capabilities found' : 'No capabilities found'}</td>
+          <td colspan="7">${filterValue || this.principalFilter ? 'No matching capabilities found' : 'No capabilities found'}</td>
         </tr>
       `;
       
@@ -513,7 +562,7 @@ class SecurityPanel {
     }
     
     // Render each capability
-    filteredCapabilities.forEach(capability => {
+    displayedCapabilities.forEach(capability => {
       const row = document.createElement('tr');
       row.className = 'capability-row';
       row.dataset.id = capability.id;
@@ -660,8 +709,7 @@ class SecurityPanel {
     });
     
     detailsPanel.querySelector('#btn-edit-principal').addEventListener('click', () => {
-      // TODO: Implement principal editing
-      this._showToast('Principal editing coming soon', 'info');
+      this._openEditPrincipalDialog(principal);
     });
     
     detailsPanel.querySelector('#btn-add-capability').addEventListener('click', () => {
@@ -674,7 +722,9 @@ class SecurityPanel {
       // Switch to capabilities tab
       this._handleTabChange({ target: this.container.querySelector('[data-tab="capabilities"]') });
       
-      // TODO: Filter capabilities to show only those for this principal
+      // Filter capabilities to show only those for this principal
+      this.principalFilter = principal.did;
+      this._renderCapabilities();
       this._showToast('Filtered to show capabilities for ' + principal.name, 'info');
     });
   }
@@ -838,6 +888,11 @@ class SecurityPanel {
     // Clear selections
     this.selectedPrincipal = null;
     this.selectedCapability = null;
+    
+    // Clear principal filter when switching away from capabilities tab
+    if (tabName !== 'capabilities') {
+      this.principalFilter = null;
+    }
   }
   
   /**
@@ -1024,6 +1079,39 @@ class SecurityPanel {
         
         // Close dialog
         this._closeDialog('add-principal-dialog');
+      }
+      else if (formType === 'edit-principal') {
+        // Get form values
+        const name = this.container.querySelector('#edit-principal-name').value;
+        const type = this.container.querySelector('#edit-principal-type').value;
+        const did = this.container.querySelector('#edit-principal-did').value;
+        
+        // Validate form
+        if (!name || !type) {
+          this._showToast('Please fill in all required fields', 'error');
+          return;
+        }
+        
+        // Update principal
+        await this.ucanManager.updatePrincipal({ did, name, type });
+        
+        // Reload principals
+        this.principals = await this.ucanManager.listPrincipals();
+        this._renderPrincipals();
+        
+        // Refresh details panel if the same principal is selected
+        if (this.selectedPrincipal && this.selectedPrincipal.did === did) {
+          this.selectedPrincipal = this.principals.find(p => p.did === did) || null;
+          if (this.selectedPrincipal) {
+            this._renderPrincipalDetails(this.selectedPrincipal);
+          }
+        }
+        
+        // Show success message
+        this._showToast('Principal updated successfully', 'success');
+        
+        // Close dialog
+        this._closeDialog('edit-principal-dialog');
       }
     } catch (error) {
       console.error(`Failed to handle ${formType}:`, error);
