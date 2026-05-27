@@ -43,6 +43,14 @@ if (
   processerPath = `${path}/processor/`;
 }
 
+// Whisper-base special token IDs (see tokenizer vocab for whisper-base)
+const WHISPER_TOKEN_START_OF_TRANSCRIPT = 50258; // <|startoftranscript|>
+const WHISPER_TOKEN_ENGLISH            = 50259; // <|en|>
+const WHISPER_TOKEN_TRANSCRIBE         = 50359; // <|transcribe|>
+const WHISPER_TOKEN_NO_TIMESTAMPS      = 50363; // <|notimestamps|>
+const WHISPER_TOKEN_TIMESTAMPS_START   = 50364; // <|0.00|> (first timestamp token)
+const WHISPER_TOKEN_END_OF_TEXT        = 50257; // <|endoftext|>
+
 // wrapper around onnxruntime and model
 export class Whisper {
   constructor(url, provider, deviceType = "gpu", dataType, mask_4d = true) {
@@ -229,9 +237,13 @@ export class Whisper {
     // start = performance.now();
     // -----------------------------------DECODER 1ST INFERENCE-----------------------------------------
     // create list of tokens for english language and transcribe task, no need of time stamps
-    // TODO: CHANGE FROM HARDCODED VALUES
-    let tokens = [50258, 50259, 50359, 50363];
-    // let tokens = [50258, 50259, 50359, 50364]; // keep timestep token
+    let tokens = [
+      WHISPER_TOKEN_START_OF_TRANSCRIPT,
+      WHISPER_TOKEN_ENGLISH,
+      WHISPER_TOKEN_TRANSCRIBE,
+      WHISPER_TOKEN_NO_TIMESTAMPS,
+    ];
+    // let tokens = [WHISPER_TOKEN_START_OF_TRANSCRIPT, WHISPER_TOKEN_ENGLISH, WHISPER_TOKEN_TRANSCRIBE, WHISPER_TOKEN_TIMESTAMPS_START]; // keep timestep token
     let attention_mask;
     if (this.mask_4d) {
       const min_val = toHalf(-65500);
@@ -366,8 +378,8 @@ export class Whisper {
 
       // add token to final buffer
       tokens = tokens.concat(new_token);
-      // break if the new token is eos_token_id: 50257 (end of sequence)
-      if (new_token == 50257) {
+      // break if the new token is eos_token_id (end of sequence)
+      if (new_token == WHISPER_TOKEN_END_OF_TEXT) {
         break;
       }
       // ----------------------------------POST PROCESSING---------------------------------------
