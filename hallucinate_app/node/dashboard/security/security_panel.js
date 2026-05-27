@@ -24,6 +24,7 @@ class SecurityPanel {
     this.selectedPrincipal = null;
     this.selectedCapability = null;
     this.principalFilter = null;
+    this.contentFilter = null; // content object to filter capabilities by CID or path
     
     // Bind methods to maintain this context
     this._handleTabChange = this._handleTabChange.bind(this);
@@ -540,9 +541,19 @@ class SecurityPanel {
       : this.capabilities;
     
     // Filter further by principal if a principal filter is active
-    const displayedCapabilities = this.principalFilter
+    const principalFiltered = this.principalFilter
       ? filteredCapabilities.filter(cap => cap.audience === this.principalFilter || cap.issuer === this.principalFilter)
       : filteredCapabilities;
+
+    // Filter further by content CID or path if a content filter is active
+    const displayedCapabilities = this.contentFilter
+      ? principalFiltered.filter(cap => {
+          const resource = cap.resource || {};
+          const matchesCid = this.contentFilter.cid && resource.cid === this.contentFilter.cid;
+          const matchesPath = this.contentFilter.path && resource.path === this.contentFilter.path;
+          return matchesCid || matchesPath;
+        })
+      : principalFiltered;
     
     // Clear existing content
     capabilitiesList.innerHTML = '';
@@ -551,7 +562,7 @@ class SecurityPanel {
     if (displayedCapabilities.length === 0) {
       capabilitiesList.innerHTML = `
         <tr class="empty-state">
-          <td colspan="7">${filterValue || this.principalFilter ? 'No matching capabilities found' : 'No capabilities found'}</td>
+          <td colspan="7">${filterValue || this.principalFilter || this.contentFilter ? 'No matching capabilities found' : 'No capabilities found'}</td>
         </tr>
       `;
       
@@ -1431,15 +1442,18 @@ class SecurityPanel {
   /**
    * Handle content selected event from main dashboard
    * @private
-   * @param {Object} content - Selected content
+   * @param {Object} content - Selected content with optional cid and/or path properties
    */
   _handleContentSelected(content) {
     // Switch to capabilities tab
     this._handleTabChange({ target: this.container.querySelector('[data-tab="capabilities"]') });
-    
-    // Filter capabilities to show only those for this content
-    // TODO: Implement filtering based on content CID or path
-    this._showToast('Filtering capabilities for selected content is not yet implemented', 'info');
+
+    // Filter capabilities to show only those for this content (by CID or path)
+    this.contentFilter = content || null;
+    this._renderCapabilities();
+
+    const label = (content && (content.cid || content.path)) || 'selected content';
+    this._showToast(`Showing capabilities for ${label}`, 'info');
   }
   
   /**
