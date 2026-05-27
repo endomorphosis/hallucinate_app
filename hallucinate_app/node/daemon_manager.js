@@ -12,6 +12,7 @@
 
 import { spawn } from 'child_process';
 import { EventEmitter } from 'events';
+import http from 'http';
 import path from 'path';
 import url from 'url';
 import { ControlSurfaceInvocationGate } from './control_surface_invocation.js';
@@ -30,6 +31,8 @@ class MCPDaemon extends EventEmitter {
     this.maxRestarts = config.maxRestarts || 5;
     this.restartDelay = config.restartDelay || 5000;
     this.healthCheckInterval = config.healthCheckInterval || 30000;
+    this.healthCheckPath = config.healthCheckPath || '/health';
+    this.healthCheckTimeoutMs = config.healthCheckTimeoutMs || 5000;
     
     this.process = null;
     this.status = 'stopped';
@@ -215,7 +218,12 @@ class MCPDaemon extends EventEmitter {
   }
 
   /**
-   * Perform health check
+   * Perform health check.
+   *
+   * First confirms the child process is alive, then — when the daemon exposes
+   * an HTTP port via env.MCP_SERVER_PORT — attempts an HTTP GET to the
+   * configured health-check path and measures the round-trip response time.
+   * Emits 'health-check' on success and 'health-check-failed' on any failure.
    */
   performHealthCheck() {
     if (!this.process || this.process.killed) {
@@ -224,9 +232,72 @@ class MCPDaemon extends EventEmitter {
       return;
     }
 
-    // Basic health check - process is alive
-    // TODO: Implement more sophisticated health checks (e.g., HTTP ping, response time)
-    this.emit('health-check', { name: this.name, status: 'healthy', pid: this.process.pid });
+    const port = this.env?.MCP_SERVER_PORT ? parseInt(this.env.MCP_SERVER_PORT, 10) : null;
+
+    if (!port) {
+      // No HTTP endpoint configured — process-alive check is sufficient.
+      this.emit('health-check', { name: this.name, status: 'healthy', pid: this.process.pid });
+      return;
+    }
+
+    const startTime = Date.now();
+    const options = {
+      hostname: '127.0.0.1',
+      port,
+      path: this.healthCheckPath,
+      method: 'GET',
+      timeout: this.healthCheckTimeoutMs
+    };
+
+    const req = http.request(options, (res) => {
+      const responseTimeMs = Date.now() - startTime;
+      const healthy = res.statusCode >= 200 && res.statusCode < 500;
+      // Drain the response body so the socket is released.
+      res.resume();
+      if (healthy) {
+        this.emit('health-check', {
+          name: this.name,
+          status: 'healthy',
+          pid: this.process?.pid,
+          responseTimeMs,
+          httpStatus: res.statusCode
+        });
+      } else {
+        console.warn(`[${this.name}] Health check HTTP ${res.statusCode} after ${responseTimeMs}ms`);
+        this.emit('health-check-failed', {
+          name: this.name,
+          reason: 'http_error',
+          httpStatus: res.statusCode,
+          responseTimeMs
+        });
+      }
+    });
+
+    req.on('timeout', () => {
+      req.destroy();
+      const elapsed = Date.now() - startTime;
+      console.warn(`[${this.name}] Health check timed out after ${elapsed}ms`);
+      this.emit('health-check-failed', {
+        name: this.name,
+        reason: 'timeout',
+        responseTimeMs: elapsed
+      });
+    });
+
+    req.on('error', (err) => {
+      // ECONNREFUSED is expected while the server is still starting up; don't
+      // escalate to an error log — a warn is sufficient.
+      const elapsed = Date.now() - startTime;
+      console.warn(`[${this.name}] Health check request failed: ${err.message} (${elapsed}ms)`);
+      this.emit('health-check-failed', {
+        name: this.name,
+        reason: 'request_error',
+        error: err.message,
+        responseTimeMs: elapsed
+      });
+    });
+
+    req.end();
   }
 
   /**
