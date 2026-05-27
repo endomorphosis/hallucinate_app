@@ -908,8 +908,57 @@ class SecurityPanel {
    * @private
    */
   _handleImportPrincipal() {
-    // TODO: Implement principal import
-    this._showToast('Principal import coming soon', 'info');
+    // Create a hidden file input and trigger it to let the user pick a JSON file
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.json,application/json';
+
+    fileInput.addEventListener('change', async () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+
+      let parsed;
+      try {
+        const text = await file.text();
+        parsed = JSON.parse(text);
+      } catch {
+        this._showToast('Invalid JSON file', 'error');
+        return;
+      }
+
+      // Accept either a single principal object or an array of principals
+      const entries = Array.isArray(parsed) ? parsed : [parsed];
+      let imported = 0;
+
+      for (const entry of entries) {
+        if (!entry.did || !entry.name) {
+          this._showToast('Principal file must include "did" and "name" fields', 'error');
+          return;
+        }
+        try {
+          await this.ucanManager.addPrincipal({
+            name: entry.name,
+            type: entry.type || 'user',
+            did: entry.did
+          });
+          imported++;
+        } catch (err) {
+          console.error('Failed to import principal:', err);
+          this._showToast(`Failed to import principal "${entry.name}": ${err.message}`, 'error');
+          return;
+        }
+      }
+
+      // Refresh principals list after successful import
+      this.principals = await this.ucanManager.listPrincipals();
+      this._renderPrincipals();
+      this._showToast(
+        imported === 1 ? 'Principal imported successfully' : `${imported} principals imported successfully`,
+        'success'
+      );
+    });
+
+    fileInput.click();
   }
   
   /**
