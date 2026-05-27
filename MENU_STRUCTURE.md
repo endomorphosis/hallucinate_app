@@ -8,7 +8,7 @@ The application menu is organized into six main sections for easy navigation:
 
 ### 1. File Menu
 - **Home** (Ctrl/Cmd+H) - Return to main dashboard
-- **Settings** (Ctrl/Cmd+,) - Application settings (TODO)
+- **Settings** (Ctrl/Cmd+,) - Application settings entry point
 - **Quit** - Exit the application
 
 ### 2. Dashboards Menu
@@ -111,7 +111,7 @@ The following keyboard shortcuts are available:
 
 - `Ctrl/Cmd + H` - Go to Home (Main Dashboard)
 - `Ctrl/Cmd + D` - Open Main Dashboard
-- `Ctrl/Cmd + ,` - Settings (planned)
+- `Ctrl/Cmd + ,` - Settings
 - `Alt + Left` - Navigate Back
 - `Alt + Right` - Navigate Forward
 - Standard Electron shortcuts (Reload, DevTools, Zoom, etc.)
