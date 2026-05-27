@@ -157,31 +157,57 @@ class PyArrowContentIndexWSServer:
             "message_count": self.message_count,
             "messages_by_type": self.messages_by_type
         }
+
+    async def send_client_error(self, websocket: websockets.WebSocketServerProtocol,
+                                error: str, message: str):
+        """Send a protocol error response to a websocket client"""
+        await websocket.send(json.dumps({
+            "type": "error",
+            "error": error,
+            "message": message,
+            "timestamp": time.time()
+        }))
     
     async def handler(self, websocket: websockets.WebSocketServerProtocol, path: str):
         """Handle websocket connections"""
         await self.register(websocket)
         try:
             async for message in websocket:
+                # Parse message. Malformed client input is handled as a protocol
+                # error; unexpected send or stats failures are allowed to surface.
                 try:
-                    # Parse message
                     data = json.loads(message)
-                    
-                    # Handle client messages
-                    if data.get("type") == "ping":
-                        await websocket.send(json.dumps({
-                            "type": "pong",
-                            "timestamp": time.time()
-                        }))
-                    elif data.get("type") == "stats":
-                        stats = await self.get_stats()
-                        await websocket.send(json.dumps({
-                            "type": "stats",
-                            "stats": stats,
-                            "timestamp": time.time()
-                        }))
-                except Exception as e:
-                    logger.error(f"Error handling message: {e}")
+                except (json.JSONDecodeError, UnicodeDecodeError) as e:
+                    logger.warning(f"Invalid JSON message from client: {e}")
+                    await self.send_client_error(
+                        websocket,
+                        "invalid_json",
+                        "Message must be valid JSON"
+                    )
+                    continue
+
+                if not isinstance(data, dict):
+                    logger.warning("Invalid websocket message envelope: expected JSON object")
+                    await self.send_client_error(
+                        websocket,
+                        "invalid_message",
+                        "Message must be a JSON object"
+                    )
+                    continue
+
+                # Handle client messages
+                if data.get("type") == "ping":
+                    await websocket.send(json.dumps({
+                        "type": "pong",
+                        "timestamp": time.time()
+                    }))
+                elif data.get("type") == "stats":
+                    stats = await self.get_stats()
+                    await websocket.send(json.dumps({
+                        "type": "stats",
+                        "stats": stats,
+                        "timestamp": time.time()
+                    }))
         except websockets.exceptions.ConnectionClosed:
             pass
         finally:
