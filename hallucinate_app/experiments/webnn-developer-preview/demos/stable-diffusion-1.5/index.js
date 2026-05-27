@@ -562,8 +562,14 @@ async function getTextTokens() {
 
 Utils.log("[Load] ONNX Runtime loaded");
 
+const planarRgbToImageDataOptions = {
+  tensorLayout: "NCHW",
+  format: "RGB",
+  norm: { bias: -1, mean: 255.0 / 2.0 },
+};
+
 function convertPlanarFloat16RgbToUint8Rgba(
-  input /*Uint16Array*/,
+  input /*Uint16Array as float16*/,
   width,
   height
 ) {
@@ -588,7 +594,7 @@ function convertPlanarFloat16RgbToUint8Rgba(
 }
 
 function convertPlanarUint8RgbToUint8Rgba(
-  input /*Uint16Array*/,
+  input /*Uint8Array*/,
   width,
   height
 ) {
@@ -601,17 +607,16 @@ function convertPlanarUint8RgbToUint8Rgba(
 
   const rgba = new Uint8ClampedArray(totalOutputBytes);
   for (let i = 0, j = 0; i < totalPixelCount; i++, j += 4) {
-    let inputValue = input[redInputOffset + i];
-    rgba[j + 0] = inputValue;
-    rgba[j + 1] = inputValue;
-    rgba[j + 2] = inputValue;
+    rgba[j + 0] = input[redInputOffset + i];
+    rgba[j + 1] = input[greenInputOffset + i];
+    rgba[j + 2] = input[blueInputOffset + i];
     rgba[j + 3] = 255;
   }
   return rgba;
 }
 
 function convertPlanarFloat32RgbToUint8Rgba(
-  input /*Uint16Array*/,
+  input /*Float32Array*/,
   width,
   height
 ) {
@@ -630,6 +635,34 @@ function convertPlanarFloat32RgbToUint8Rgba(
     rgba[j + 3] = 255;
   }
   return rgba;
+}
+
+function isNativeFloat16Array(input) {
+  return typeof Float16Array !== "undefined" && input instanceof Float16Array;
+}
+
+function convertPlanarRgbTensorToImageData(planarPixelTensor) {
+  const planarPixelData = planarPixelTensor.data;
+
+  // Use ORT when the tensor data exposes numeric channel values directly.
+  // Uint16Array float16 data stores encoded half bits and needs explicit decode.
+  if (
+    typeof planarPixelTensor.toImageData === "function" &&
+    (planarPixelData instanceof Float32Array ||
+      isNativeFloat16Array(planarPixelData))
+  ) {
+    return planarPixelTensor.toImageData(planarRgbToImageDataOptions);
+  }
+
+  let conversionFunction =
+    planarPixelData instanceof Float32Array
+      ? convertPlanarFloat32RgbToUint8Rgba
+      : planarPixelData instanceof Uint16Array
+      ? convertPlanarFloat16RgbToUint8Rgba
+      : convertPlanarUint8RgbToUint8Rgba;
+
+  let rgbaPixels = conversionFunction(planarPixelData, pixelWidth, pixelHeight);
+  return new ImageData(rgbaPixels, pixelWidth, pixelHeight);
 }
 
 async function loadModel(modelName /*:String*/, executionProvider /*:String*/) {
@@ -866,29 +899,12 @@ function displayEmptyCanvasPlaceholder() {
 }
 
 function displayPlanarRGB(
-  planarPixelData /*: Float32Array or Uint16Array as float16 or Uint8Array*/
+  planarPixelTensor /*: ort.Tensor with planar RGB data*/
 ) {
   const canvas = document.getElementById("canvas");
   const context = canvas.getContext("2d");
 
-  // TODO: See if ORT's toImageData() is flexible enough to handle this instead.
-  // It doesn't appear work correctly, just returning all white (shrug, maybe I'm passing the wrong values).
-  // https://onnxruntime.ai/docs/api/js/interfaces/Tensor-1.html#toImageData
-  // https://github.com/microsoft/onnxruntime/blob/5228332/js/common/lib/tensor-conversion.ts#L33
-  // https://github.com/microsoft/onnxruntime/blob/main/js/common/lib/tensor-factory.ts#L147
-  //
-  // let imageData = planarPixelTensor.toImageData({format: 'RGB', tensorLayout: 'NCHW', norm:{bias: 1, mean: 128}});
-
-  let conversionFunction =
-    planarPixelData instanceof Float32Array
-      ? convertPlanarFloat32RgbToUint8Rgba
-      : planarPixelData instanceof Uint16Array
-      ? convertPlanarFloat16RgbToUint8Rgba
-      : convertPlanarUint8RgbToUint8Rgba;
-
-  let rgbaPixels = conversionFunction(planarPixelData, pixelWidth, pixelHeight);
-
-  let imageData = new ImageData(rgbaPixels, pixelWidth, pixelHeight);
+  let imageData = convertPlanarRgbTensorToImageData(planarPixelTensor);
   context.putImageData(imageData, 0, 0);
 }
 
@@ -1340,7 +1356,8 @@ async function executeStableDiffusionAndDisplayOutput() {
     const executionTime = performance.now() - executionStartTime;
     performanceData.sessionrun.total = executionTime.toFixed(2);
 
-    displayPlanarRGB(await rgbPlanarPixels.getData());
+    await rgbPlanarPixels.getData();
+    displayPlanarRGB(rgbPlanarPixels);
 
     if(Utils.getSafetyChecker()) {
       // safety_checker
