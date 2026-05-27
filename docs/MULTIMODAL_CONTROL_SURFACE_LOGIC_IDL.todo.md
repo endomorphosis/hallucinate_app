@@ -1849,7 +1849,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-166 Resolve code annotation in work/PR-046-expo-dev-client-native-glasses.md:14
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: docs
