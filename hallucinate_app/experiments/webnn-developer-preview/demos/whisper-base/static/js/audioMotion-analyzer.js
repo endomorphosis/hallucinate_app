@@ -1253,9 +1253,8 @@ export default class AudioMotionAnalyzer {
 
 			  analyzerWidth  = canvas.width - centerX * ( isDualHorizontal || _mirror != 0 ),
 
-			  // channelGap is **0** if isLedDisplay == true (LEDs already have spacing); **1** if canvas height is odd (windowed); **2** if it's even
-			  // TODO: improve this, make it configurable?
-			  channelGap     = isDualVertical ? canvas.height - channelHeight * 2 : 0,
+			  // keep LED channels flush; non-LED layouts use the leftover pixel(s) to separate both vertical channels
+			  channelGap     = isDualVertical && ! isLeds ? canvas.height - channelHeight * 2 : 0,
 
 			  initialX       = centerX * ( _mirror == -1 && ! isDualHorizontal && ! _radial );
 
