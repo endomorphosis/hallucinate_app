@@ -1161,10 +1161,16 @@ class AuthDashboard {
     }
     
     if (confirm(`Are you sure you want to delete principal ${principalId}? This action cannot be undone.`)) {
-      // Show deletion not implemented message
-      this.showMessage('info', 'Principal deletion is not implemented yet');
-      
-      // TODO: Implement principal deletion
+      this.auth.deletePrincipal(principalId)
+        .then(() => {
+          this.showMessage('success', `Principal ${principalId} deleted successfully`);
+          this.loadPrincipals();
+          this.updateSummaryCounts();
+        })
+        .catch((error) => {
+          console.error('Failed to delete principal:', error);
+          this.showError(`Failed to delete principal: ${error.message}`);
+        });
     }
   }
   

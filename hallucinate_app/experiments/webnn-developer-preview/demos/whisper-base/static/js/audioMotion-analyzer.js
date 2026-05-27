@@ -1253,13 +1253,8 @@ export default class AudioMotionAnalyzer {
 
 			  analyzerWidth  = canvas.width - centerX * ( isDualHorizontal || _mirror != 0 ),
 
-			  // channelGap is derived from integer-division arithmetic on channelHeight:
-			  //   0 if isLedDisplay == true and canvas height is even (LEDs already have spacing)
-			  //   1 if canvas height is odd (either mode)
-			  //   2 if isLedDisplay == false and canvas height is even
-			  // This is intentional: the gap fills the leftover pixel(s) from the integer split
-			  // and does not need to be a separately configurable property.
-			  channelGap     = isDualVertical ? canvas.height - channelHeight * 2 : 0,
+			  // keep LED channels flush; non-LED layouts use the leftover pixel(s) to separate both vertical channels
+			  channelGap     = isDualVertical && ! isLeds ? canvas.height - channelHeight * 2 : 0,
 
 			  initialX       = centerX * ( _mirror == -1 && ! isDualHorizontal && ! _radial );
 
