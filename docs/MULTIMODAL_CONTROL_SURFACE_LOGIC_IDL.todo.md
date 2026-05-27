@@ -1805,7 +1805,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-162 Resolve code annotation in tracking/PR-079-agent-runner-minimal.md:35
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: docs
