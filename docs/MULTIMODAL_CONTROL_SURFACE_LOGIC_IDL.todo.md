@@ -1882,7 +1882,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-169 Resolve code annotation in work/PR-090-agent-runner-docs-sync.md:1
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: docs
