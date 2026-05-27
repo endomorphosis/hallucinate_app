@@ -2025,7 +2025,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-182 Resolve code annotation in hallucinate_app/hallucinate_app/node/daemon_manager.js:228
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: ops
