@@ -1,6 +1,10 @@
 # Multimodal Control Surface Logic IDL Plan
 
-Machine-readable backlog: `hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md`
+Machine-readable backlog path:
+
+```text
+hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
+```
 
 The backlog is split into daemon-ingestible `HAO-` tasks. `HAO-000` through
 `HAO-003` cover the bootstrap, canonical ownership, schema seed, and interaction
