@@ -48,17 +48,25 @@ function sample(scores) {
 }
 
 export function get_new_tokens(logits, dims, do_sample = false, temperature = 1.0, top_p = 1.0, top_k = 50) {
-    let scores = [];
-    // TODO, remove hardcode
-    if (dims[1] == 4) {
-        for (let i = 0; i < dims[2]; i++) {
-            scores.push(logits[dims[2] * (dims[1] - 1) + i]);
-        }
-    } else {
-        for (let i = 0; i < dims[2]; i++) {
-            scores.push(logits[i]);
-        }
+    if (dims.length < 2) {
+        throw new Error(`Unsupported logits shape: [${dims.join(", ")}]`);
     }
+
+    const vocab_size = dims[dims.length - 1];
+    const sequence_length = dims[dims.length - 2];
+    const batch_size = dims.slice(0, -2).reduce((size, dim) => size * dim, 1);
+
+    if (
+        batch_size !== 1 ||
+        sequence_length < 1 ||
+        vocab_size < 1 ||
+        logits.length < sequence_length * vocab_size
+    ) {
+        throw new Error(`Unsupported logits shape: [${dims.join(", ")}]`);
+    }
+
+    const scores_offset = (sequence_length - 1) * vocab_size;
+    let scores = Array.from(logits.slice(scores_offset, scores_offset + vocab_size));
 
     if (do_sample) {
         if (top_p < 0 || top_p > 1.0) {
