@@ -1816,7 +1816,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-163 Resolve code annotation in tracking/PR-083-android-expo-glasses-audio-wav-playback.md:7
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: docs
