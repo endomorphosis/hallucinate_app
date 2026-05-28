@@ -790,10 +790,10 @@ class DuckDBIPLDKit:
             }
             results["success"] = False
         
-        # Clean up test table
+        # Clean up test table; ignore errors since the table may not exist
         try:
             await self.execute("DROP TABLE IF EXISTS test_table")
-        except:
+        except Exception:
             pass
         
         return results
