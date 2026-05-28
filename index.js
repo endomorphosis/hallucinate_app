@@ -2068,7 +2068,7 @@ const createSwissKnifeMCPDashboard = () => {
 };
 
 // Create a window for SwissKnife Virtual Desktop
-const createSwissKnifeWindow = () => {
+const createSwissKnifeWindow = (appName) => {
   const win = new BrowserWindow({
     width: 1400,
     height: 1000,
@@ -2085,8 +2085,10 @@ const createSwissKnifeWindow = () => {
     icon: path.join(__dirname, 'hallucinate_app', 'assets', 'icon.png')
   });
 
-  // Load the main dashboard
-  win.loadFile(path.join(__dirname, 'hallucinate_app', 'node', 'views', 'dashboard.html'));
+  // Load the main dashboard, optionally navigating to a specific app via hash
+  win.loadFile(path.join(__dirname, 'hallucinate_app', 'node', 'views', 'dashboard.html'), {
+    hash: appName || ''
+  });
   
   // Open the DevTools in development
   if (process.env.NODE_ENV === 'development') {

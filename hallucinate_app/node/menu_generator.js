@@ -428,8 +428,7 @@ export class MenuGenerator {
 
       case 'openSwissKnifeApp':
         if (this.createSwissKnifeWindow) {
-          this.createSwissKnifeWindow();
-          // TODO: Launch specific app within SwissKnife
+          this.createSwissKnifeWindow(item.app);
         }
         break;
 
