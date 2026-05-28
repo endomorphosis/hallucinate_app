@@ -185,11 +185,15 @@ class DuckDBIPLDKit:
                         "sql": sql,
                         "execution_time_ms": (time.time() - start_time) * 1000
                     }
-                except:
-                    # For non-SELECT queries
+                except Exception:
+                    # For non-SELECT queries, df() raises; fall back to rowcount
+                    try:
+                        rows_affected = result_cursor.rowcount if hasattr(result_cursor, 'rowcount') else -1
+                    except Exception:
+                        rows_affected = -1
                     result = {
                         "success": True,
-                        "rows_affected": result_cursor.execute("SELECT changes()").fetchone()[0],
+                        "rows_affected": rows_affected,
                         "sql": sql,
                         "execution_time_ms": (time.time() - start_time) * 1000
                     }
@@ -801,6 +805,7 @@ class DuckDBIPLDKit:
         try:
             await self.execute("DROP TABLE IF EXISTS test_table")
         except Exception:
+            # Best-effort cleanup; ignore errors so test results are still returned
             pass
         
         return results
