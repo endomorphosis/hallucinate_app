@@ -812,8 +812,8 @@ class DuckDBIPLDKit:
         # Clean up test table
         try:
             await self.execute("DROP TABLE IF EXISTS test_table")
-        except Exception:
-            pass  # Best-effort cleanup; ignore errors so test results are still returned.
+        except Exception as e:
+            logger.warning("Failed to drop test table during cleanup (non-fatal): %s", e)
         
         return results
 
