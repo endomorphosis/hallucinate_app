@@ -1143,19 +1143,28 @@ class AdvancedThreadPoolManager(ThreadPoolManager):
                                 # Update metadata
                                 metadata.starvation_factor = starvation_boost
                                 
-                                # Check if we need to boost task priority
-                                # This requires resubmitting with higher priority
-                                if int(task.priority - starvation_boost) < task.priority:
-                                    # New priority would be higher (lower value), resubmit
-                                    # We can only do this effectively with the PriorityQueue implementation
-                                    # This technique depends on how the queue is implemented
+                                # Check if we need to boost task priority.
+                                # Compute boosted_priority using the same formula used when
+                                # constructing PrioritizedTask so that the guard condition and
+                                # the actual new value are always consistent.  Previously the
+                                # condition used int(priority - boost) while the constructor
+                                # used max(0, priority - int(boost)); for boost < 1.0 the
+                                # condition evaluated True but the new priority was unchanged,
+                                # causing the task to be re-enqueued with an identical priority
+                                # every aging tick.
+                                boosted_priority = max(0, task.priority - int(starvation_boost))
+                                if boosted_priority < task.priority:
+                                    # New priority is higher (lower numeric value); resubmit.
+                                    # PriorityQueue ordering is stable by insertion for equal
+                                    # priorities, so cancelling the old entry and inserting a
+                                    # new one is the only way to move a task forward.
                                     
                                     # Create a new prioritized task with boosted priority
                                     current_queue = getattr(pool, "task_queue", None)
                                     if isinstance(current_queue, PriorityQueue):
                                         # Create a new task wrapper with the same ID
                                         boosted_task = PrioritizedTask(
-                                            priority=max(0, task.priority - int(starvation_boost)),
+                                            priority=boosted_priority,
                                             task_id=task.task_id,
                                             task_type=task.task_type,
                                             function=task.function,
