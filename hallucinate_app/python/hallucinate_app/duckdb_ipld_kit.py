@@ -185,8 +185,8 @@ class DuckDBIPLDKit:
                         "sql": sql,
                         "execution_time_ms": (time.time() - start_time) * 1000
                     }
-                except:
-                    # For non-SELECT queries
+                except Exception:
+                    # For non-SELECT queries, fetchdf() raises; get affected row count instead
                     result = {
                         "success": True,
                         "rows_affected": result_cursor.execute("SELECT changes()").fetchone()[0],
@@ -701,8 +701,8 @@ class DuckDBIPLDKit:
                 try:
                     result = self.conn.execute("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='main'").fetchone()
                     table_count = result[0] if result else 0
-                except:
-                    pass
+                except Exception as e:
+                    print(f"Warning: failed to query table count: {e}")
             
             return {
                 **self.stats,
@@ -793,7 +793,7 @@ class DuckDBIPLDKit:
         # Clean up test table
         try:
             await self.execute("DROP TABLE IF EXISTS test_table")
-        except:
+        except Exception:
             pass
         
         return results
