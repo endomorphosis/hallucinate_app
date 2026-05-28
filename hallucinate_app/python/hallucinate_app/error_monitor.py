@@ -788,6 +788,11 @@ class ErrorMonitor:
         r'line \d+|at [^:]+:\d+|0x[0-9a-f]+|\d{4}-\d{2}-\d{2}|ID: [a-f0-9-]+',
         re.IGNORECASE,
     )
+    # Minimum length a normalised message must have before it is used as a
+    # substring discriminator.  A very short cleaned string (e.g. a message
+    # that was entirely a volatile token and became "XXX") would otherwise
+    # cause unrelated errors to be treated as duplicates.
+    _SIMILAR_MIN_LEN = 10
     
     def __init__(self, resources=None, config=None):
         self.resources = resources or {}
@@ -1114,12 +1119,12 @@ class ErrorMonitor:
         if clean_msg1 == clean_msg2:
             return True
         # Substring match only when the normalised string is long enough to be a
-        # meaningful discriminator.  A very short cleaned string (e.g. a message
-        # that was entirely a hex address and became "XXX") would otherwise cause
-        # unrelated errors to be treated as duplicates.
-        _MIN_SUBSTRING_LEN = 10
-        return (len(clean_msg1) >= _MIN_SUBSTRING_LEN and clean_msg1 in clean_msg2 or
-                len(clean_msg2) >= _MIN_SUBSTRING_LEN and clean_msg2 in clean_msg1)
+        # meaningful discriminator — see _SIMILAR_MIN_LEN.  Explicit parentheses
+        # clarify the and/or precedence so readers do not have to recall it.
+        return (
+            (len(clean_msg1) >= self._SIMILAR_MIN_LEN and clean_msg1 in clean_msg2)
+            or (len(clean_msg2) >= self._SIMILAR_MIN_LEN and clean_msg2 in clean_msg1)
+        )
     
     async def _check_alerts(self, error: ErrorData):
         """Check if any alert rules are triggered by this error"""
