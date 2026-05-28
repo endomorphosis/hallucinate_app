@@ -124,7 +124,7 @@ class GitHubIssueReporter:
             self.repo = self.github_client.get_repo(self.config.repository)
             logger.info(f"GitHub client initialized for repository: {self.config.repository}")
         except Exception as e:
-            logger.error(f"Failed to initialize GitHub client: {e}")
+            logger.exception(f"Failed to initialize GitHub client: {e}")
             self.github_client = None
             self.repo = None
     
@@ -368,7 +368,7 @@ class GitHubIssueReporter:
             
         except Exception as e:
             self.stats["errors"] += 1
-            logger.error(f"Failed to create GitHub issue: {e}")
+            logger.exception(f"Failed to create GitHub issue: {e}")
             return None
     
     def get_stats(self) -> Dict[str, Any]:
