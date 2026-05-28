@@ -172,8 +172,8 @@ class PlasmaManager:
             self.client.put(serialized, object_id)
             
             return object_id.binary()
-        except Exception as e:
-            logger.error(f"Failed to put object in plasma store: {e}")
+        except Exception:
+            logger.exception("Failed to put object in plasma store")
             return None
     
     def get(self, object_id: bytes) -> Any:
@@ -211,8 +211,8 @@ class PlasmaManager:
             obj = pa.deserialize(serialized)
             
             return obj
-        except Exception as e:
-            logger.error(f"Failed to get object from plasma store: {e}")
+        except Exception:
+            logger.exception("Failed to get object from plasma store")
             return None
     
     def delete(self, object_id: bytes):
@@ -232,8 +232,8 @@ class PlasmaManager:
             
             # Delete the object from the plasma store
             self.client.delete([plasma_id])
-        except Exception as e:
-            logger.error(f"Failed to delete object from plasma store: {e}")
+        except Exception:
+            logger.exception("Failed to delete object from plasma store")
 
 
 def ipfs_process_fn(command_queue, result_queue, plasma_socket=None):
