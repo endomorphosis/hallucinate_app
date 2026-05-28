@@ -2146,7 +2146,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-193 Resolve code annotation in scripts/run_vai_mgw_hao_supervisors.sh:92
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: runtime
