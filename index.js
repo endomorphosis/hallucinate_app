@@ -2068,7 +2068,9 @@ const createSwissKnifeMCPDashboard = () => {
 };
 
 // Create a window for SwissKnife Virtual Desktop
-const createSwissKnifeWindow = () => {
+// Pass an optional `app` name (e.g. 'terminal', 'editor', 'files', 'chat', 'music', 'video')
+// to deep-link into a specific app within the SwissKnife server.
+const createSwissKnifeWindow = (app) => {
   const win = new BrowserWindow({
     width: 1400,
     height: 1000,
@@ -2085,8 +2087,13 @@ const createSwissKnifeWindow = () => {
     icon: path.join(__dirname, 'hallucinate_app', 'assets', 'icon.png')
   });
 
-  // Load the main dashboard
-  win.loadFile(path.join(__dirname, 'hallucinate_app', 'node', 'views', 'dashboard.html'));
+  if (app) {
+    // Deep-link to the requested app via the SwissKnife MCP web server
+    win.loadURL(`http://127.0.0.1:3004/app/${encodeURIComponent(app)}`);
+  } else {
+    // Load the main dashboard
+    win.loadFile(path.join(__dirname, 'hallucinate_app', 'node', 'views', 'dashboard.html'));
+  }
   
   // Open the DevTools in development
   if (process.env.NODE_ENV === 'development') {
