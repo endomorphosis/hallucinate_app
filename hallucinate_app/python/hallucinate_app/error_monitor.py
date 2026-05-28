@@ -1096,16 +1096,28 @@ class ErrorMonitor:
     
     def _messages_similar(self, msg1: str, msg2: str) -> bool:
         """Check if two error messages are similar"""
+        # Guard: if either value is not a string (e.g. None came through at
+        # runtime despite the type annotation), fall back to equality so that
+        # re.sub does not raise TypeError and duplicate detection still works
+        # for the common case where both sides are the same non-string value.
+        if not isinstance(msg1, str) or not isinstance(msg2, str):
+            return msg1 == msg2
         # Remove volatile details (addresses, line numbers, timestamps, IDs).
         # _SIMILAR_PATTERN uses re.IGNORECASE so uppercase hex (0xDEADBEEF) is
         # also normalised, preventing missed duplicates.
         clean_msg1 = self._SIMILAR_PATTERN.sub('XXX', msg1)
         clean_msg2 = self._SIMILAR_PATTERN.sub('XXX', msg2)
         
-        # Check if the messages are similar (either exact match or one is substring of other)
-        return (clean_msg1 == clean_msg2 or
-                clean_msg1 in clean_msg2 or
-                clean_msg2 in clean_msg1)
+        # Exact match is always authoritative.
+        if clean_msg1 == clean_msg2:
+            return True
+        # Substring match only when the normalised string is long enough to be a
+        # meaningful discriminator.  A very short cleaned string (e.g. a message
+        # that was entirely a hex address and became "XXX") would otherwise cause
+        # unrelated errors to be treated as duplicates.
+        _MIN_SUBSTRING_LEN = 10
+        return (len(clean_msg1) >= _MIN_SUBSTRING_LEN and clean_msg1 in clean_msg2 or
+                len(clean_msg2) >= _MIN_SUBSTRING_LEN and clean_msg2 in clean_msg1)
     
     async def _check_alerts(self, error: ErrorData):
         """Check if any alert rules are triggered by this error"""
