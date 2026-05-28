@@ -99,9 +99,13 @@ class PlasmaManager:
                 self.client = plasma.connect(self.socket_path)
                 logger.info(f"Connected to existing plasma store at {self.socket_path}")
                 return
-            except Exception:
-                # No existing store, start a new one
-                pass
+            except Exception as connect_err:
+                # No existing store found; start a new one
+                logger.debug(
+                    "Could not connect to existing plasma store at %s (%s); starting a new one",
+                    self.socket_path,
+                    connect_err,
+                )
             
             # Start the plasma store
             from subprocess import Popen
