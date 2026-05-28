@@ -285,12 +285,25 @@ class TestMessagesSimilar(unittest.TestCase):
 
         When the entire volatile part of msg2 is replaced by _SIMILAR_PATTERN,
         the remaining string may be too short to be meaningful. The
-        _MIN_SUBSTRING_LEN guard must block such false matches.
+        _SIMILAR_MIN_LEN guard must block such false matches.
         """
         # msg2 is entirely an address — after normalisation it becomes "XXX" (len 3).
         msg1 = "Connection refused by remote host at port 8080"
         msg2 = "0xdeadbeef"
-        # "XXX" is shorter than _MIN_SUBSTRING_LEN (10), so no substring match.
+        # "XXX" is shorter than _SIMILAR_MIN_LEN (10), so no substring match.
+        self.assertFalse(self._similar(msg1, msg2))
+
+    def test_short_msg1_not_falsely_matched(self):
+        """A very short normalised msg1 must not produce a false-positive similarity (VAI-136).
+
+        Symmetric companion to test_short_msg2_not_falsely_matched: when msg1
+        normalises to a short token the _SIMILAR_MIN_LEN guard must block the
+        first branch of the substring-match OR expression as well.
+        """
+        # msg1 is entirely an address — after normalisation it becomes "XXX" (len 3).
+        msg1 = "0xdeadbeef"
+        msg2 = "Connection refused by remote host at port 8080"
+        # "XXX" is shorter than _SIMILAR_MIN_LEN (10), so no substring match.
         self.assertFalse(self._similar(msg1, msg2))
 
 
