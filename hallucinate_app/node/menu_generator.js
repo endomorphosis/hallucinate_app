@@ -441,8 +441,27 @@ export class MenuGenerator {
         break;
 
       case 'resetConfig':
-        console.log('Resetting all configurations to defaults...');
-        // TODO: Implement config reset
+        dialog.showMessageBox({
+          type: 'warning',
+          buttons: ['Reset', 'Cancel'],
+          defaultId: 1,
+          cancelId: 1,
+          title: 'Reset Configuration',
+          message: 'Reset all settings to defaults?',
+          detail: 'This will clear all stored configuration and reload the application. This action cannot be undone.'
+        }).then(({ response }) => {
+          if (response === 0) {
+            const win = this.mainWindow;
+            if (win && !win.isDestroyed()) {
+              win.webContents.session.clearStorageData({ storages: ['localstorage', 'cookies', 'indexdb'] })
+                .then(() => {
+                  console.log('Configuration reset to defaults.');
+                  win.webContents.reload();
+                })
+                .catch(err => console.error('Failed to clear storage during config reset:', err));
+            }
+          }
+        });
         break;
 
       case 'checkUpdates':
