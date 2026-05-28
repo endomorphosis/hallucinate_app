@@ -586,7 +586,7 @@ class IPFSFaissPy:
                         if metadata_cid:
                             try:
                                 os.unlink(meta_file_path)
-                            except:
+                            except OSError:
                                 pass
                 
                 # Infer type if not in metadata
@@ -622,7 +622,7 @@ class IPFSFaissPy:
                 # Clean up temporary files
                 try:
                     os.unlink(index_file)
-                except:
+                except OSError:
                     pass
                 
         except Exception as e:
@@ -730,7 +730,7 @@ class IPFSFaissPy:
                             # Try loading with pickle first
                             with open(index_path, 'rb') as f:
                                 index = pickle.load(f)
-                        except:
+                        except Exception:
                             # Fall back to faiss reader
                             index = faiss.read_index(index_path)
                         
