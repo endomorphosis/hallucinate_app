@@ -348,6 +348,11 @@ class AuthKeystoreIntegration:
         
         Returns:
             dict: The issued capability token, None if not authorized
+        
+        Raises:
+            ValueError: If the integration module is not initialized
+            Exception: Re-raises unexpected errors so callers can distinguish an
+                intentional authorization denial (``None``) from a backend failure.
         """
         if not self.initialized:
             raise ValueError("Integration module not initialized. Call init() first")
@@ -375,7 +380,7 @@ class AuthKeystoreIntegration:
                 })
         except Exception as e:
             logger.exception(f"Failed to issue key access capability for {provider_id}: {e}")
-            return None
+            raise
     
     async def test(self) -> Dict[str, Any]:
         """
