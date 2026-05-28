@@ -5,7 +5,7 @@
  * This enables easier testing and maintenance of menu items.
  */
 
-import { Menu, shell, dialog } from 'electron';
+import { Menu, shell, dialog, app } from 'electron';
 import {
   mcpServers,
   dashboards,
@@ -440,15 +440,37 @@ export class MenuGenerator {
         }
         break;
 
-      case 'resetConfig':
-        console.log('Resetting all configurations to defaults...');
-        // TODO: Implement config reset
+      case 'resetConfig': {
+        const { response } = await dialog.showMessageBox({
+          type: 'warning',
+          buttons: ['Cancel', 'Reset'],
+          defaultId: 0,
+          cancelId: 0,
+          title: 'Reset Configuration',
+          message: 'Reset all configurations to defaults?',
+          detail: 'This cannot be undone.'
+        });
+        if (response === 1 && this.navigateToView) {
+          this.navigateToView(resolveViewPath('views/settings.html?reset=true'));
+        }
         break;
+      }
 
-      case 'checkUpdates':
-        console.log('Checking for updates...');
-        // TODO: Implement update checker
+      case 'checkUpdates': {
+        const version = app.getVersion();
+        const { response: updateResponse } = await dialog.showMessageBox({
+          type: 'info',
+          buttons: ['Close', 'View Releases'],
+          defaultId: 0,
+          title: 'Check for Updates',
+          message: `Hallucinate App v${version}`,
+          detail: 'Visit the releases page to check for a newer version.'
+        });
+        if (updateResponse === 1) {
+          shell.openExternal('https://github.com/endomorphosis/hallucinate_app/releases');
+        }
         break;
+      }
 
       case 'showAbout':
         dialog.showMessageBox({
