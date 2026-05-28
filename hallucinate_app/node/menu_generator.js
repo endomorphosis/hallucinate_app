@@ -428,7 +428,7 @@ export class MenuGenerator {
 
       case 'openSwissKnifeApp':
         if (this.createSwissKnifeWindow) {
-          this.createSwissKnifeWindow(item.app);
+          this.createSwissKnifeWindow(item?.app);
         }
         break;
 
