@@ -230,7 +230,12 @@ class AuthKeystoreIntegration:
             auth_token: UCAN capability token
         
         Returns:
-            list: Array of provider names if authorized, None otherwise
+            list: Array of provider names if authorized, None if authorization denied.
+        
+        Raises:
+            Exception: Re-raises any unexpected runtime error after logging it, so
+                callers can distinguish a genuine authorization denial (``None``) from
+                an unexpected backend failure.
         """
         if not self.initialized:
             raise ValueError("Integration module not initialized. Call init() first")
@@ -253,7 +258,7 @@ class AuthKeystoreIntegration:
                 return await self.keystore.list_providers()
         except Exception as e:
             logger.exception(f"Failed to list authorized providers: {e}")
-            return None
+            raise
     
     async def get_authorized_key_info(self, provider: str, auth_token: str) -> Optional[Dict[str, Any]]:
         """
