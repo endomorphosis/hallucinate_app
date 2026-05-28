@@ -2344,7 +2344,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-211 Resolve code annotation in hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py:1103
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P2
 - Track: runtime
