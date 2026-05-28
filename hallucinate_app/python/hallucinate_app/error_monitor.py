@@ -1111,9 +1111,16 @@ class ErrorMonitor:
         clean_msg1 = self._SIMILAR_PATTERN.sub('XXX', msg1)
         clean_msg2 = self._SIMILAR_PATTERN.sub('XXX', msg2)
         
-        # Exact match is always authoritative.
+        # Exact match when the cleaned string is long enough to carry real
+        # signal.  When both messages normalise to the same *short* string
+        # (e.g. two bare hex addresses "0xDEAD" and "0xBEEF" both become
+        # "XXX"), the cleaned string offers no discriminating information and
+        # treating the pair as similar would collapse unrelated error buckets.
+        # In that degenerate case we only consider them similar when the
+        # original messages were themselves identical (genuine duplicate).
         if clean_msg1 == clean_msg2:
-            return True
+            if len(clean_msg1) >= self._SIMILAR_MIN_LEN or msg1 == msg2:
+                return True
         # Substring match only when the normalised string is long enough to be a
         # meaningful discriminator.  A very short cleaned string (e.g. a message
         # that was entirely a hex address and became "XXX") would otherwise cause
