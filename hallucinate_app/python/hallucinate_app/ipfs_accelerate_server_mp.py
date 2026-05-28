@@ -189,6 +189,10 @@ class PlasmaManager:
             
         Returns:
             Any: The retrieved object
+            
+        Raises:
+            Exception: Re-raises any plasma/Arrow exception so callers receive the
+                error rather than a confusing None return value.
         """
         if not self.has_arrow:
             # File-based fallback
@@ -217,7 +221,7 @@ class PlasmaManager:
             return obj
         except Exception:
             logger.exception("Failed to get object from plasma store")
-            return None
+            raise
     
     def delete(self, object_id: bytes):
         """
