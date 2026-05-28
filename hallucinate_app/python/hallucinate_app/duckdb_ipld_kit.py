@@ -697,16 +697,18 @@ class DuckDBIPLDKit:
         else:
             # Get real table count
             table_count = 0
+            table_count_error = None
             if self.conn:
                 try:
                     result = self.conn.execute("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='main'").fetchone()
                     table_count = result[0] if result else 0
-                except Exception:
+                except Exception as e:
                     # information_schema may not be available in all DuckDB versions;
                     # fall back to 0 rather than propagating the error.
                     table_count = 0
-            
-            return {
+                    table_count_error = str(e)
+
+            stats = {
                 **self.stats,
                 "table_count": table_count,
                 "conn_open": self.conn is not None,
@@ -714,6 +716,9 @@ class DuckDBIPLDKit:
                 "read_only": self.read_only,
                 "mock": False
             }
+            if table_count_error is not None:
+                stats["table_count_error"] = table_count_error
+            return stats
     
     async def test(self):
         """Run a self-test"""
