@@ -140,7 +140,7 @@ class PlasmaManager:
             self.store_process.terminate()
             logger.info("Terminated plasma store process")
     
-    def put(self, obj: Any) -> Optional[bytes]:
+    def put(self, obj: Any) -> bytes:
         """
         Put an object in the plasma store
         
@@ -149,6 +149,10 @@ class PlasmaManager:
             
         Returns:
             bytes: Object ID that can be used to retrieve the object
+            
+        Raises:
+            Exception: Propagates any plasma or serialization error so callers
+                are not silently handed a ``None`` object ID.
         """
         if not self.has_arrow:
             # File-based fallback
@@ -173,8 +177,8 @@ class PlasmaManager:
             
             return object_id.binary()
         except Exception as e:
-            logger.error(f"Failed to put object in plasma store: {e}")
-            return None
+            logger.error(f"Failed to put object in plasma store: {e}", exc_info=True)
+            raise
     
     def get(self, object_id: bytes) -> Any:
         """
@@ -195,7 +199,7 @@ class PlasmaManager:
             # Clean up the temporary file
             try:
                 os.unlink(file_path)
-            except:
+            except OSError:
                 pass
             
             return obj
@@ -212,7 +216,7 @@ class PlasmaManager:
             
             return obj
         except Exception as e:
-            logger.error(f"Failed to get object from plasma store: {e}")
+            logger.error(f"Failed to get object from plasma store: {e}", exc_info=True)
             return None
     
     def delete(self, object_id: bytes):
@@ -233,7 +237,7 @@ class PlasmaManager:
             # Delete the object from the plasma store
             self.client.delete([plasma_id])
         except Exception as e:
-            logger.error(f"Failed to delete object from plasma store: {e}")
+            logger.error(f"Failed to delete object from plasma store: {e}", exc_info=True)
 
 
 def ipfs_process_fn(command_queue, result_queue, plasma_socket=None):
@@ -348,7 +352,7 @@ def ipfs_process_fn(command_queue, result_queue, plasma_socket=None):
                     if "data_ref" in params and not "path" in params:
                         try:
                             os.unlink(path)
-                        except:
+                        except OSError:
                             pass
                     
                     # Return the result
