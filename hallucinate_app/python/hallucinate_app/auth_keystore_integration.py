@@ -149,7 +149,7 @@ class AuthKeystoreIntegration:
                 return await self.keystore.get_key(provider)
         except Exception as e:
             logger.exception(f"Failed to get authorized key for {provider}: {e}")
-            return None
+            raise
     
     async def set_authorized_key(self, provider: str, key: str, auth_token: str, 
                                 options: Dict[str, Any] = None) -> bool:
@@ -186,7 +186,7 @@ class AuthKeystoreIntegration:
                 return await self.keystore.set_key(provider, key, options)
         except Exception as e:
             logger.exception(f"Failed to set authorized key for {provider}: {e}")
-            return False
+            raise
     
     async def delete_authorized_key(self, provider: str, auth_token: str) -> bool:
         """
@@ -220,7 +220,7 @@ class AuthKeystoreIntegration:
                 return await self.keystore.delete_key(provider)
         except Exception as e:
             logger.exception(f"Failed to delete authorized key for {provider}: {e}")
-            return False
+            raise
     
     async def list_authorized_providers(self, auth_token: str) -> Optional[List[str]]:
         """
@@ -253,7 +253,7 @@ class AuthKeystoreIntegration:
                 return await self.keystore.list_providers()
         except Exception as e:
             logger.exception(f"Failed to list authorized providers: {e}")
-            return None
+            raise
     
     async def get_authorized_key_info(self, provider: str, auth_token: str) -> Optional[Dict[str, Any]]:
         """
@@ -287,7 +287,7 @@ class AuthKeystoreIntegration:
                 return await self.keystore.get_key_info(provider)
         except Exception as e:
             logger.exception(f"Failed to get authorized key info for {provider}: {e}")
-            return None
+            raise
     
     async def rotate_authorized_key(self, provider: str, new_key: str, auth_token: str,
                                    options: Dict[str, Any] = None) -> bool:
@@ -324,7 +324,7 @@ class AuthKeystoreIntegration:
                 return await self.keystore.rotate_key(provider, new_key, options)
         except Exception as e:
             logger.exception(f"Failed to rotate authorized key for {provider}: {e}")
-            return False
+            raise
     
     async def issue_key_access_capability(self, provider_id: str, principal_id: str, 
                                         admin_auth_token: str) -> Optional[Dict[str, Any]]:
@@ -365,7 +365,7 @@ class AuthKeystoreIntegration:
                 })
         except Exception as e:
             logger.exception(f"Failed to issue key access capability for {provider_id}: {e}")
-            return None
+            raise
     
     async def test(self) -> Dict[str, Any]:
         """
