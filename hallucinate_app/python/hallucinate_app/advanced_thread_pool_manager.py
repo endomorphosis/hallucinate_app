@@ -1143,19 +1143,19 @@ class AdvancedThreadPoolManager(ThreadPoolManager):
                                 # Update metadata
                                 metadata.starvation_factor = starvation_boost
                                 
-                                # Check if we need to boost task priority
-                                # This requires resubmitting with higher priority
-                                if int(task.priority - starvation_boost) < task.priority:
-                                    # New priority would be higher (lower value), resubmit
-                                    # We can only do this effectively with the PriorityQueue implementation
-                                    # This technique depends on how the queue is implemented
-                                    
-                                    # Create a new prioritized task with boosted priority
+                                # Check if we need to boost task priority.
+                                # PriorityQueue does not support in-place re-prioritization,
+                                # so we add a new copy with the higher priority and mark
+                                # the old entry as CANCELLED so the worker skips it.
+                                # We only requeue when the integer priority level actually
+                                # improves to avoid churning the queue with no-op requeues.
+                                boosted_priority = max(0, task.priority - int(starvation_boost))
+                                if boosted_priority < task.priority:
                                     current_queue = getattr(pool, "task_queue", None)
                                     if isinstance(current_queue, PriorityQueue):
                                         # Create a new task wrapper with the same ID
                                         boosted_task = PrioritizedTask(
-                                            priority=max(0, task.priority - int(starvation_boost)),
+                                            priority=boosted_priority,
                                             task_id=task.task_id,
                                             task_type=task.task_type,
                                             function=task.function,
