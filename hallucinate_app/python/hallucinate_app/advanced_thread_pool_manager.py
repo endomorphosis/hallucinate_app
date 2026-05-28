@@ -1167,9 +1167,11 @@ class AdvancedThreadPoolManager(ThreadPoolManager):
                                             future=task.future
                                         )
                                         
-                                        # Replace in the queue
-                                        # This is a hack that depends on queue implementation
-                                        # Note: In a real implementation, we would need a better solution
+                                        # Invalidate the original task so the worker skips it when
+                                        # dequeued.  The worker checks for CANCELLED state and
+                                        # calls task_done() without executing the function, which
+                                        # prevents the same logical task from running twice.
+                                        task.state = TaskState.CANCELLED
                                         current_queue.put(boosted_task)
                                         
                                         # Update the active tasks record
