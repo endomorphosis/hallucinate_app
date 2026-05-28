@@ -209,5 +209,53 @@ class TestErrorMonitor(unittest.TestCase):
                 await error_monitor._process_error(error_data)
                 error_monitor.processing_queue.task_done()
 
+class TestMessagesSimilar(unittest.TestCase):
+    """Focused tests for ErrorMonitor._messages_similar (VAI-131).
+
+    Validates that _SIMILAR_PATTERN normalises volatile details — especially
+    that re.IGNORECASE causes 0xDEADBEEF and 0xdeadbeef to be treated
+    identically, preventing duplicate-detection misses.
+    """
+
+    def setUp(self):
+        from hallucinate_app.error_monitor import ErrorMonitor
+        self.monitor = ErrorMonitor()
+
+    # -- hex address normalisation (IGNORECASE is the key guard) --
+
+    def test_hex_uppercase_and_lowercase_are_similar(self):
+        msg1 = "Segfault at address 0xDEADBEEF in module foo"
+        msg2 = "Segfault at address 0xdeadbeef in module foo"
+        self.assertTrue(
+            self.monitor._messages_similar(msg1, msg2),
+            "Upper- and lower-case hex addresses should be normalised to the same token",
+        )
+
+    def test_identical_messages_are_similar(self):
+        msg = "Connection refused on port 5432"
+        self.assertTrue(self.monitor._messages_similar(msg, msg))
+
+    # -- line-number normalisation --
+
+    def test_different_line_numbers_are_similar(self):
+        msg1 = "Error at line 42 in parser"
+        msg2 = "Error at line 99 in parser"
+        self.assertTrue(self.monitor._messages_similar(msg1, msg2))
+
+    # -- date normalisation --
+
+    def test_different_dates_are_similar(self):
+        msg1 = "Snapshot taken 2025-01-01 failed"
+        msg2 = "Snapshot taken 2026-12-31 failed"
+        self.assertTrue(self.monitor._messages_similar(msg1, msg2))
+
+    # -- truly different messages should NOT be similar --
+
+    def test_distinct_messages_are_not_similar(self):
+        msg1 = "Disk full on /var/log"
+        msg2 = "Connection timeout to database"
+        self.assertFalse(self.monitor._messages_similar(msg1, msg2))
+
+
 if __name__ == '__main__':
     unittest.main()
