@@ -185,11 +185,18 @@ class DuckDBIPLDKit:
                         "sql": sql,
                         "execution_time_ms": (time.time() - start_time) * 1000
                     }
-                except:
-                    # For non-SELECT queries
+                except Exception:
+                    # For non-SELECT queries (INSERT/UPDATE/DELETE), .df() is unavailable.
+                    # Use .rowcount; fall back to -1 if not set (DuckDB may return None).
+                    try:
+                        rows_affected = result_cursor.rowcount
+                        if rows_affected is None:
+                            rows_affected = -1
+                    except Exception:
+                        rows_affected = -1
                     result = {
                         "success": True,
-                        "rows_affected": result_cursor.execute("SELECT changes()").fetchone()[0],
+                        "rows_affected": rows_affected,
                         "sql": sql,
                         "execution_time_ms": (time.time() - start_time) * 1000
                     }
@@ -801,7 +808,7 @@ class DuckDBIPLDKit:
         try:
             await self.execute("DROP TABLE IF EXISTS test_table")
         except Exception:
-            pass
+            pass  # Best-effort cleanup; test result already captured above.
         
         return results
 
