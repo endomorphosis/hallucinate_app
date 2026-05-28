@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: white;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2em;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .settings-section {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+
+    .settings-section h2 {
+      font-size: 1.1em;
+      color: #667eea;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #f8f8f8;
+    }
+
+    .setting-row:last-child {
+      border-bottom: none;
+    }
+
+    .setting-label {
+      font-size: 0.95em;
+      color: #444;
+      flex: 1;
+    }
+
+    .setting-label small {
+      display: block;
+      color: #999;
+      font-size: 0.8em;
+      margin-top: 2px;
+    }
+
+    .setting-control {
+      margin-left: 16px;
+    }
+
+    .setting-control input[type="text"],
+    .setting-control input[type="number"],
+    .setting-control select {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 0.9em;
+      width: 200px;
+      color: #333;
+      background: #fafafa;
+    }
+
+    .setting-control input[type="text"]:focus,
+    .setting-control input[type="number"]:focus,
+    .setting-control select:focus {
+      outline: none;
+      border-color: #667eea;
+      background: white;
+    }
+
+    .toggle {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 26px;
+    }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #ccc;
+      border-radius: 26px;
+      transition: 0.3s;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+
+    .toggle input:checked + .toggle-slider {
+      background: #667eea;
+    }
+
+    .toggle input:checked + .toggle-slider:before {
+      transform: translateX(22px);
+    }
+
+    .btn-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .btn {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95em;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5a6fd6;
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #666;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .status-msg {
+      display: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 0.9em;
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #c8e6c9;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⚙️ Settings</h1>
+
+    <div id="statusMsg" class="status-msg">Settings saved successfully.</div>
+
+    <div class="settings-section">
+      <h2>General</h2>
+      <div class="setting-row">
+        <div class="setting-label">
+          Theme
+          <small>Application colour scheme</small>
+        </div>
+        <div class="setting-control">
+          <select id="theme">
+            <option value="system">System Default</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-label">
+          Start Daemons on Launch
+          <small>Automatically start MCP daemons when the app opens</small>
+        </div>
+        <div class="setting-control">
+          <label class="toggle">
+            <input type="checkbox" id="autoStart" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-label">
+          Show Notifications
+          <small>Display system notifications for daemon status changes</small>
+        </div>
+        <div class="setting-control">
+          <label class="toggle">
+            <input type="checkbox" id="notifications" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h2>MCP Servers</h2>
+      <div class="setting-row">
+        <div class="setting-label">
+          IPFS Kit MCP Port
+          <small>Port for the IPFS Kit MCP server</small>
+        </div>
+        <div class="setting-control">
+          <input type="number" id="ipfsKitPort" value="3001" min="1024" max="65535">
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-label">
+          IPFS Datasets MCP Port
+          <small>Port for the IPFS Datasets MCP server</small>
+        </div>
+        <div class="setting-control">
+          <input type="number" id="ipfsDatasetsPort" value="3002" min="1024" max="65535">
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-label">
+          IPFS Accelerate MCP Port
+          <small>Port for the IPFS Accelerate MCP server</small>
+        </div>
+        <div class="setting-control">
+          <input type="number" id="ipfsAcceleratePort" value="3006" min="1024" max="65535">
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h2>Developer</h2>
+      <div class="setting-row">
+        <div class="setting-label">
+          Enable DevTools
+          <small>Open developer tools on startup (development mode)</small>
+        </div>
+        <div class="setting-control">
+          <label class="toggle">
+            <input type="checkbox" id="devtools">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-label">
+          Log Level
+          <small>Verbosity of application logs</small>
+        </div>
+        <div class="setting-control">
+          <select id="logLevel">
+            <option value="error">Error</option>
+            <option value="warn">Warn</option>
+            <option value="info" selected>Info</option>
+            <option value="debug">Debug</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="history.back()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+    </div>
+  </div>
+
+  <script>
+    function loadSettings() {
+      try {
+        const saved = JSON.parse(localStorage.getItem('appSettings') || '{}');
+        if (saved.theme) document.getElementById('theme').value = saved.theme;
+        if (saved.autoStart !== undefined) document.getElementById('autoStart').checked = saved.autoStart;
+        if (saved.notifications !== undefined) document.getElementById('notifications').checked = saved.notifications;
+        if (saved.ipfsKitPort) document.getElementById('ipfsKitPort').value = saved.ipfsKitPort;
+        if (saved.ipfsDatasetsPort) document.getElementById('ipfsDatasetsPort').value = saved.ipfsDatasetsPort;
+        if (saved.ipfsAcceleratePort) document.getElementById('ipfsAcceleratePort').value = saved.ipfsAcceleratePort;
+        if (saved.devtools !== undefined) document.getElementById('devtools').checked = saved.devtools;
+        if (saved.logLevel) document.getElementById('logLevel').value = saved.logLevel;
+      } catch (e) {
+        console.warn('Failed to load settings:', e);
+      }
+    }
+
+    function saveSettings() {
+      const settings = {
+        theme: document.getElementById('theme').value,
+        autoStart: document.getElementById('autoStart').checked,
+        notifications: document.getElementById('notifications').checked,
+        ipfsKitPort: parseInt(document.getElementById('ipfsKitPort').value, 10),
+        ipfsDatasetsPort: parseInt(document.getElementById('ipfsDatasetsPort').value, 10),
+        ipfsAcceleratePort: parseInt(document.getElementById('ipfsAcceleratePort').value, 10),
+        devtools: document.getElementById('devtools').checked,
+        logLevel: document.getElementById('logLevel').value
+      };
+      try {
+        localStorage.setItem('appSettings', JSON.stringify(settings));
+        const msg = document.getElementById('statusMsg');
+        msg.style.display = 'block';
+        setTimeout(() => { msg.style.display = 'none'; }, 3000);
+      } catch (e) {
+        console.error('Failed to save settings:', e);
+      }
+    }
+
+    loadSettings();
+  </script>
+</body>
+</html>

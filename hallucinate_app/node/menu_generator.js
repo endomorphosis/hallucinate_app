@@ -417,8 +417,7 @@ export class MenuGenerator {
         break;
 
       case 'openSettings':
-        console.log('Opening settings...');
-        // TODO: Implement settings window
+        this.navigateToView(resolveViewPath('views/settings.html'));
         break;
 
       case 'openSwissKnifeWindow':
