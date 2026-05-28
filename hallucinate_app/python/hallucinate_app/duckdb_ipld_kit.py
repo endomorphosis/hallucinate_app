@@ -701,8 +701,10 @@ class DuckDBIPLDKit:
                 try:
                     result = self.conn.execute("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='main'").fetchone()
                     table_count = result[0] if result else 0
-                except:
-                    pass
+                except Exception:
+                    # information_schema may not be available in all DuckDB versions;
+                    # fall back to 0 rather than propagating the error.
+                    table_count = 0
             
             return {
                 **self.stats,
@@ -793,7 +795,7 @@ class DuckDBIPLDKit:
         # Clean up test table
         try:
             await self.execute("DROP TABLE IF EXISTS test_table")
-        except:
+        except Exception:
             pass
         
         return results
