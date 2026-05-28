@@ -780,6 +780,12 @@ class ErrorMonitor:
     Tracks errors across the application, analyzes patterns, attempts recovery,
     and triggers alerts when necessary.
     """
+
+    # Compiled once; re.IGNORECASE ensures both 0xDEADBEEF and 0xdeadbeef are normalised
+    _SIMILAR_PATTERN = re.compile(
+        r'line \d+|at [^:]+:\d+|0x[0-9a-fA-F]+|\d{4}-\d{2}-\d{2}|ID: [a-fA-F0-9-]+',
+        re.IGNORECASE,
+    )
     
     def __init__(self, resources=None, config=None):
         self.resources = resources or {}
@@ -1090,10 +1096,11 @@ class ErrorMonitor:
     
     def _messages_similar(self, msg1: str, msg2: str) -> bool:
         """Check if two error messages are similar"""
-        # Remove specific details like line numbers, timestamps, etc.
-        pattern = r'line \d+|at [^:]+:\d+|0x[0-9a-f]+|\d{4}-\d{2}-\d{2}|ID: [a-f0-9-]+'
-        clean_msg1 = re.sub(pattern, 'XXX', msg1)
-        clean_msg2 = re.sub(pattern, 'XXX', msg2)
+        # Remove volatile details (addresses, line numbers, timestamps, IDs).
+        # _SIMILAR_PATTERN uses re.IGNORECASE so uppercase hex (0xDEADBEEF) is
+        # also normalised, preventing missed duplicates.
+        clean_msg1 = self._SIMILAR_PATTERN.sub('XXX', msg1)
+        clean_msg2 = self._SIMILAR_PATTERN.sub('XXX', msg2)
         
         # Check if the messages are similar (either exact match or one is substring of other)
         return (clean_msg1 == clean_msg2 or
