@@ -140,7 +140,7 @@ class PlasmaManager:
             self.store_process.terminate()
             logger.info("Terminated plasma store process")
     
-    def put(self, obj: Any) -> Optional[bytes]:
+    def put(self, obj: Any) -> bytes:
         """
         Put an object in the plasma store
         
@@ -149,6 +149,10 @@ class PlasmaManager:
             
         Returns:
             bytes: Object ID that can be used to retrieve the object
+            
+        Raises:
+            Exception: Re-raises any exception from the plasma store so callers
+                receive the error rather than a confusing None return value.
         """
         if not self.has_arrow:
             # File-based fallback
@@ -174,7 +178,7 @@ class PlasmaManager:
             return object_id.binary()
         except Exception:
             logger.exception("Failed to put object in plasma store")
-            return None
+            raise
     
     def get(self, object_id: bytes) -> Any:
         """
@@ -195,7 +199,7 @@ class PlasmaManager:
             # Clean up the temporary file
             try:
                 os.unlink(file_path)
-            except:
+            except OSError:
                 pass
             
             return obj
@@ -348,7 +352,7 @@ def ipfs_process_fn(command_queue, result_queue, plasma_socket=None):
                     if "data_ref" in params and not "path" in params:
                         try:
                             os.unlink(path)
-                        except:
+                        except OSError:
                             pass
                     
                     # Return the result
