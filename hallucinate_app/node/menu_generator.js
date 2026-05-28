@@ -5,7 +5,7 @@
  * This enables easier testing and maintenance of menu items.
  */
 
-import { Menu, shell, dialog } from 'electron';
+import { Menu, shell, dialog, app } from 'electron';
 import {
   mcpServers,
   dashboards,
@@ -441,14 +441,39 @@ export class MenuGenerator {
         break;
 
       case 'resetConfig':
-        console.log('Resetting all configurations to defaults...');
-        // TODO: Implement config reset
+        dialog.showMessageBox(this.mainWindow, {
+          type: 'warning',
+          title: 'Reset Configuration',
+          message: 'Reset all configurations to defaults?',
+          detail: 'This will revert all MCP server settings, network settings, and security settings to their default values. This action cannot be undone.',
+          buttons: ['Reset', 'Cancel'],
+          defaultId: 1,
+          cancelId: 1
+        }).then(({ response }) => {
+          if (response === 0) {
+            this.navigateToView(resolveViewPath('views/settings.html?reset=true'));
+          }
+        });
         break;
 
-      case 'checkUpdates':
-        console.log('Checking for updates...');
-        // TODO: Implement update checker
+      case 'checkUpdates': {
+        const currentVersion = app.getVersion();
+        const releasesUrl = 'https://github.com/endomorphosis/hallucinate_app/releases';
+        dialog.showMessageBox(this.mainWindow, {
+          type: 'info',
+          title: 'Check for Updates',
+          message: `Current version: ${currentVersion}`,
+          detail: 'Visit the releases page to check for the latest version.',
+          buttons: ['Open Releases Page', 'Close'],
+          defaultId: 0,
+          cancelId: 1
+        }).then(({ response }) => {
+          if (response === 0) {
+            shell.openExternal(releasesUrl);
+          }
+        });
         break;
+      }
 
       case 'showAbout':
         dialog.showMessageBox({
