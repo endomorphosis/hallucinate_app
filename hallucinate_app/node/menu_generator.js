@@ -441,17 +441,25 @@ export class MenuGenerator {
         break;
 
       case 'resetConfig':
-        dialog.showMessageBox(this.mainWindow, {
+        dialog.showMessageBox({
           type: 'warning',
-          title: 'Reset Configuration',
-          message: 'Reset all configurations to defaults?',
-          detail: 'This will revert all MCP server settings, network settings, and security settings to their default values. This action cannot be undone.',
           buttons: ['Reset', 'Cancel'],
           defaultId: 1,
-          cancelId: 1
+          cancelId: 1,
+          title: 'Reset Configuration',
+          message: 'Reset all settings to defaults?',
+          detail: 'This will clear all stored configuration and reload the application. This action cannot be undone.'
         }).then(({ response }) => {
           if (response === 0) {
-            this.navigateToView(resolveViewPath('views/settings.html?reset=true'));
+            const win = this.mainWindow;
+            if (win && !win.isDestroyed()) {
+              win.webContents.session.clearStorageData({ storages: ['localstorage', 'cookies', 'indexdb'] })
+                .then(() => {
+                  console.log('Configuration reset to defaults.');
+                  win.webContents.reload();
+                })
+                .catch(err => console.error('Failed to clear storage during config reset:', err));
+            }
           }
         });
         break;
