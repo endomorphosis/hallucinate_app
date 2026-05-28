@@ -368,7 +368,15 @@ class GitHubIssueReporter:
             
         except Exception as e:
             self.stats["errors"] += 1
-            logger.error(f"Failed to create GitHub issue: {e}")
+            if GITHUB_AVAILABLE and isinstance(e, GithubException):
+                logger.error(
+                    "Failed to create GitHub issue (API error %s): %s",
+                    e.status,
+                    e.data,
+                    exc_info=True,
+                )
+            else:
+                logger.error("Failed to create GitHub issue: %s", e, exc_info=True)
             return None
     
     def get_stats(self) -> Dict[str, Any]:
