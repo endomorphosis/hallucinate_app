@@ -483,11 +483,12 @@ export class MenuGenerator {
         break;
       }
 
-      case 'showAbout':
+      case 'showAbout': {
+        const aboutVersion = app.getVersion();
         dialog.showMessageBox({
           type: 'info',
           title: 'About Hallucinate App',
-          message: 'Hallucinate App v1.0.0',
+          message: `Hallucinate App v${aboutVersion}`,
           detail: `A comprehensive platform for IPFS-powered AI development.
 
 Includes:
@@ -499,6 +500,7 @@ Includes:
 © 2025 Endomorphosis`
         });
         break;
+      }
 
       default:
         console.warn(`Unknown action: ${action}`);
