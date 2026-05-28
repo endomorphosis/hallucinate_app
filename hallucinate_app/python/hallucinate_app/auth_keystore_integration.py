@@ -126,7 +126,13 @@ class AuthKeystoreIntegration:
             auth_token: UCAN capability token
         
         Returns:
-            str: API key if authorized, None otherwise
+            str: API key if authorized, None if unauthorized or provider not found.
+        
+        Raises:
+            ValueError: If the integration module is not initialized
+            Exception: Re-raises any unexpected runtime error after logging it, so
+                callers can distinguish a genuine authorization denial (``None``) from
+                an unexpected backend failure.
         """
         if not self.initialized:
             raise ValueError("Integration module not initialized. Call init() first")
@@ -149,7 +155,7 @@ class AuthKeystoreIntegration:
                 return await self.keystore.get_key(provider)
         except Exception as e:
             logger.exception(f"Failed to get authorized key for {provider}: {e}")
-            return None
+            raise
     
     async def set_authorized_key(self, provider: str, key: str, auth_token: str, 
                                 options: Dict[str, Any] = None) -> bool:
