@@ -2080,7 +2080,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-187 Resolve code annotation in hallucinate_app/hallucinate_app/node/menu_generator.js:444
 
-- Status: todo
+- Status: done
 - Completion: manual
 - Priority: P3
 - Track: ops
