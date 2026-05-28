@@ -5,6 +5,7 @@ Provides integration between DuckDB and IPLD for P2P database exchange
 Enables analytical SQL queries with IPLD conversion for data sharing via libp2p
 """
 
+import logging
 import os
 import json
 import time
@@ -12,6 +13,8 @@ import asyncio
 import tempfile
 from typing import Dict, List, Any, Optional, Union, Tuple
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 try:
     import duckdb
@@ -185,14 +188,16 @@ class DuckDBIPLDKit:
                         "sql": sql,
                         "execution_time_ms": (time.time() - start_time) * 1000
                     }
-                except Exception:
+                except Exception as df_exc:
                     # For non-SELECT queries (INSERT/UPDATE/DELETE), .df() is unavailable.
                     # Use .rowcount; fall back to -1 if attribute is missing or DuckDB returns None.
+                    logger.debug("result_cursor.df() unavailable (expected for non-SELECT): %s", df_exc)
                     try:
                         rows_affected = result_cursor.rowcount if hasattr(result_cursor, 'rowcount') else -1
                         if rows_affected is None:
                             rows_affected = -1
-                    except Exception:
+                    except Exception as rc_exc:
+                        logger.debug("result_cursor.rowcount unavailable, defaulting to -1: %s", rc_exc)
                         rows_affected = -1
                     result = {
                         "success": True,
