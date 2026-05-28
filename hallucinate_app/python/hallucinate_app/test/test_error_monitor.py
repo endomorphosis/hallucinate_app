@@ -210,7 +210,12 @@ class TestErrorMonitor(unittest.TestCase):
                 error_monitor.processing_queue.task_done()
 
 class TestMessagesSimilar(unittest.TestCase):
-    """Focused tests for ErrorMonitor._messages_similar / _SIMILAR_PATTERN."""
+    """Focused tests for ErrorMonitor._messages_similar / _SIMILAR_PATTERN (VAI-131).
+
+    Validates that _SIMILAR_PATTERN normalises volatile details — especially
+    that re.IGNORECASE causes 0xDEADBEEF and 0xdeadbeef to be treated
+    identically, preventing duplicate-detection misses.
+    """
 
     def setUp(self):
         self.monitor = ErrorMonitor()
