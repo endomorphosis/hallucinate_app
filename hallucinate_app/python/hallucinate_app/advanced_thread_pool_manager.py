@@ -1152,6 +1152,11 @@ class AdvancedThreadPoolManager(ThreadPoolManager):
                                 # condition evaluated True but the new priority was unchanged,
                                 # causing the task to be re-enqueued with an identical priority
                                 # every aging tick.
+                                # PriorityQueue does not support in-place re-prioritization,
+                                # so we add a new copy with the higher priority and mark
+                                # the old entry as CANCELLED so the worker skips it.
+                                # We only requeue when the integer priority level actually
+                                # improves to avoid churning the queue with no-op requeues.
                                 boosted_priority = max(0, task.priority - int(starvation_boost))
                                 if boosted_priority < task.priority:
                                     # New priority is higher (lower numeric value); resubmit.
