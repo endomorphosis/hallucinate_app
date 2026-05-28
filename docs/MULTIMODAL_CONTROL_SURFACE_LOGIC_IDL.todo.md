@@ -2099,3 +2099,168 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/node/menu_generator.js
 - Validation: test -f hallucinate_app/hallucinate_app/node/menu_generator.js
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/node/menu_generator.js:449. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-188-codebase-scan-924df9ad9af7.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-189 Resolve code annotation in scripts/hallucinate_multimodal_control_todo_supervisor.py:301
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_supervisor.py
+- Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_supervisor.py
+- Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_supervisor.py:301. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-189-codebase-scan-7d52a8f929c8.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-190 Resolve code annotation in scripts/hallucinate_multimodal_control_todo_supervisor.py:303
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_supervisor.py
+- Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_supervisor.py
+- Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_supervisor.py:303. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-190-codebase-scan-fbd7ce184cdf.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-191 Resolve code annotation in scripts/meta_glasses_display_todo_supervisor.py:302
+
+- Status: completed
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/meta_glasses_display_todo_supervisor.py
+- Validation: python3 -m py_compile scripts/meta_glasses_display_todo_supervisor.py
+- Acceptance: Codebase scan filed this finding from scripts/meta_glasses_display_todo_supervisor.py:302. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-191-codebase-scan-e0ee641647d4.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-192 Resolve code annotation in scripts/meta_glasses_display_todo_supervisor.py:304
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/meta_glasses_display_todo_supervisor.py
+- Validation: python3 -m py_compile scripts/meta_glasses_display_todo_supervisor.py
+- Acceptance: Codebase scan filed this finding from scripts/meta_glasses_display_todo_supervisor.py:304. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-192-codebase-scan-8461e40bbb4a.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-193 Resolve code annotation in scripts/run_vai_mgw_hao_supervisors.sh:92
+
+- Status: completed
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/run_vai_mgw_hao_supervisors.sh
+- Validation: test -f scripts/run_vai_mgw_hao_supervisors.sh
+- Acceptance: Codebase scan filed this finding from scripts/run_vai_mgw_hao_supervisors.sh:92. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-193-codebase-scan-167e512adcc4.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-194 Resolve code annotation in scripts/hallucinate_multimodal_control_todo_supervisor.py:301
+
+- Status: completed
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_supervisor.py
+- Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_supervisor.py
+- Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_supervisor.py:301. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-194-codebase-scan-f1f1d24fab6e.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-195 Resolve code annotation in scripts/hallucinate_multimodal_control_todo_supervisor.py:302
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_supervisor.py
+- Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_supervisor.py
+- Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_supervisor.py:302. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-195-codebase-scan-d560bccc2eec.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-196 Resolve code annotation in scripts/hallucinate_multimodal_control_todo_supervisor.py:304
+
+- Status: completed
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_supervisor.py
+- Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_supervisor.py
+- Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_supervisor.py:304. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-196-codebase-scan-56c456b3af6b.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-197 Resolve code annotation in scripts/hallucinate_multimodal_control_todo_supervisor.py:305
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_supervisor.py
+- Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_supervisor.py
+- Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_supervisor.py:305. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-197-codebase-scan-5e4f836c3e48.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-198 Resolve code annotation in scripts/virtual_ai_os_todo_supervisor.py:161
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
+- Validation: python3 -m py_compile scripts/virtual_ai_os_todo_supervisor.py
+- Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_supervisor.py:161. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-198-codebase-scan-e7db865dfae5.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-199 Resolve code annotation in scripts/hallucinate_multimodal_control_todo_supervisor.py:301
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_supervisor.py
+- Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_supervisor.py
+- Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_supervisor.py:301. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-199-codebase-scan-6a08fa66da0b.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-200 Resolve code annotation in hallucinate_app/hallucinate_app/python/hallucinate_app/advanced_thread_pool_manager.py:1171
+
+- Status: todo
+- Completion: manual
+- Priority: P2
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/advanced_thread_pool_manager.py
+- Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/advanced_thread_pool_manager.py
+- Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/advanced_thread_pool_manager.py:1171. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-200-codebase-scan-74c66b0a97e9.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-201 Review swallowed exception path in hallucinate_app/hallucinate_app/python/hallucinate_app/auth_keystore_integration.py:150
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/auth_keystore_integration.py
+- Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/auth_keystore_integration.py
+- Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/auth_keystore_integration.py:150. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-201-codebase-scan-befeb053e24b.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-202 Review swallowed exception path in hallucinate_app/hallucinate_app/python/hallucinate_app/auth_keystore_integration.py:254
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/auth_keystore_integration.py
+- Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/auth_keystore_integration.py
+- Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/auth_keystore_integration.py:254. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-202-codebase-scan-12771f5b880f.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-203 Review swallowed exception path in hallucinate_app/hallucinate_app/python/hallucinate_app/auth_keystore_integration.py:288
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/auth_keystore_integration.py
+- Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/auth_keystore_integration.py
+- Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/auth_keystore_integration.py:288. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-203-codebase-scan-6c366e445285.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.

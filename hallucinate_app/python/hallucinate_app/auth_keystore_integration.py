@@ -114,7 +114,7 @@ class AuthKeystoreIntegration:
                 self.initialized = True
                 return True
         except Exception as e:
-            logger.error(f"Failed to initialize auth/keystore integration: {e}")
+            logger.exception(f"Failed to initialize auth/keystore integration: {e}")
             return False
     
     async def get_authorized_key(self, provider: str, auth_token: str) -> Optional[str]:
@@ -148,7 +148,7 @@ class AuthKeystoreIntegration:
                 # Get the key from keystore
                 return await self.keystore.get_key(provider)
         except Exception as e:
-            logger.error(f"Failed to get authorized key for {provider}: {e}")
+            logger.exception(f"Failed to get authorized key for {provider}: {e}")
             return None
     
     async def set_authorized_key(self, provider: str, key: str, auth_token: str, 
@@ -185,7 +185,7 @@ class AuthKeystoreIntegration:
                 # Set the key in keystore
                 return await self.keystore.set_key(provider, key, options)
         except Exception as e:
-            logger.error(f"Failed to set authorized key for {provider}: {e}")
+            logger.exception(f"Failed to set authorized key for {provider}: {e}")
             return False
     
     async def delete_authorized_key(self, provider: str, auth_token: str) -> bool:
@@ -219,7 +219,7 @@ class AuthKeystoreIntegration:
                 # Delete the key from keystore
                 return await self.keystore.delete_key(provider)
         except Exception as e:
-            logger.error(f"Failed to delete authorized key for {provider}: {e}")
+            logger.exception(f"Failed to delete authorized key for {provider}: {e}")
             return False
     
     async def list_authorized_providers(self, auth_token: str) -> Optional[List[str]]:
@@ -230,7 +230,12 @@ class AuthKeystoreIntegration:
             auth_token: UCAN capability token
         
         Returns:
-            list: Array of provider names if authorized, None otherwise
+            list: Array of provider names if authorized, None if authorization denied.
+        
+        Raises:
+            Exception: Re-raises any unexpected runtime error after logging it, so
+                callers can distinguish a genuine authorization denial (``None``) from
+                an unexpected backend failure.
         """
         if not self.initialized:
             raise ValueError("Integration module not initialized. Call init() first")
@@ -252,8 +257,8 @@ class AuthKeystoreIntegration:
                 # Get providers from keystore
                 return await self.keystore.list_providers()
         except Exception as e:
-            logger.error(f"Failed to list authorized providers: {e}")
-            return None
+            logger.exception(f"Failed to list authorized providers: {e}")
+            raise
     
     async def get_authorized_key_info(self, provider: str, auth_token: str) -> Optional[Dict[str, Any]]:
         """
@@ -264,7 +269,12 @@ class AuthKeystoreIntegration:
             auth_token: UCAN capability token
         
         Returns:
-            dict: Key information if authorized, None otherwise
+            dict: Key information if authorized, None if unauthorized or provider not found
+        
+        Raises:
+            ValueError: If the integration module is not initialized
+            Exception: Re-raises unexpected errors so callers can distinguish internal
+                       failures from intentional None (unauthorized / not found)
         """
         if not self.initialized:
             raise ValueError("Integration module not initialized. Call init() first")
@@ -286,8 +296,8 @@ class AuthKeystoreIntegration:
                 # Get key info from keystore
                 return await self.keystore.get_key_info(provider)
         except Exception as e:
-            logger.error(f"Failed to get authorized key info for {provider}: {e}")
-            return None
+            logger.exception(f"Failed to get authorized key info for {provider}: {e}")
+            raise
     
     async def rotate_authorized_key(self, provider: str, new_key: str, auth_token: str,
                                    options: Dict[str, Any] = None) -> bool:
@@ -323,7 +333,7 @@ class AuthKeystoreIntegration:
                 # Rotate the key in keystore
                 return await self.keystore.rotate_key(provider, new_key, options)
         except Exception as e:
-            logger.error(f"Failed to rotate authorized key for {provider}: {e}")
+            logger.exception(f"Failed to rotate authorized key for {provider}: {e}")
             return False
     
     async def issue_key_access_capability(self, provider_id: str, principal_id: str, 
@@ -364,7 +374,7 @@ class AuthKeystoreIntegration:
                     "with": provider_id
                 })
         except Exception as e:
-            logger.error(f"Failed to issue key access capability for {provider_id}: {e}")
+            logger.exception(f"Failed to issue key access capability for {provider_id}: {e}")
             return None
     
     async def test(self) -> Dict[str, Any]:
@@ -522,7 +532,7 @@ class AuthKeystoreIntegration:
                 
                 return test_results
         except Exception as e:
-            logger.error(f"Auth/keystore integration test failed: {e}")
+            logger.exception(f"Auth/keystore integration test failed: {e}")
             return {
                 "success": False,
                 "module": "auth_keystore_integration",
