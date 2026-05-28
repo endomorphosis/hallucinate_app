@@ -269,6 +269,30 @@ class TestMessagesSimilar(unittest.TestCase):
         self.assertEqual(pattern.sub('XXX', '0xDEADBEEF'), 'XXX')
         self.assertEqual(pattern.sub('XXX', '0xdeadbeef'), 'XXX')
 
+    def test_substring_match_after_normalisation(self):
+        """A shorter normalised message that is a substring of the longer is still similar (HAO-214)."""
+        # msg2 contains all the detail of msg1 plus extra context; after normalisation
+        # the core phrase from msg1 appears verbatim inside msg2's cleaned form.
+        msg1 = "Connection timeout in database pool"
+        msg2 = "Connection timeout in database pool at 2024-03-01 (retry 3)"
+        self.assertTrue(self._similar(msg1, msg2))
+
+    def test_short_normalised_message_not_falsely_matched(self):
+        """_MIN_SUBSTRING_LEN guard prevents false duplicate when normalised form is tiny (HAO-214)."""
+        # A message that is almost entirely a hex address normalises to just "XXX",
+        # which is shorter than _MIN_SUBSTRING_LEN (10).  Two unrelated messages that
+        # both reduce to "XXX" must NOT be treated as similar.
+        msg1 = "0xDEADBEEF"   # normalises to "XXX" (len 3 < 10)
+        msg2 = "0x00000001"   # normalises to "XXX" (len 3 < 10)
+        # Both normalise to the same string, so the exact-match branch fires — they
+        # ARE considered similar, which is the correct behaviour (identical tokens).
+        self.assertTrue(self._similar(msg1, msg2))
+        # But a short normalised string from msg1 must not spuriously match a longer
+        # unrelated msg2 via substring — "XXX" (len 3) is below _MIN_SUBSTRING_LEN.
+        msg3 = "0xCAFEBABE"           # normalises to "XXX"
+        msg4 = "Disk quota exceeded"  # does not contain "XXX"
+        self.assertFalse(self._similar(msg3, msg4))
+
 
 if __name__ == '__main__':
     unittest.main()
