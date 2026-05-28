@@ -5,7 +5,9 @@
  * This enables easier testing and maintenance of menu items.
  */
 
-import { Menu, shell, dialog } from 'electron';
+import { Menu, shell, dialog, app } from 'electron';
+import fs from 'fs';
+import path from 'path';
 import {
   mcpServers,
   dashboards,
@@ -441,8 +443,39 @@ export class MenuGenerator {
         break;
 
       case 'resetConfig':
-        console.log('Resetting all configurations to defaults...');
-        // TODO: Implement config reset
+        dialog.showMessageBox(this.mainWindow, {
+          type: 'warning',
+          title: 'Reset Configuration',
+          message: 'Reset all configurations to defaults?',
+          detail: 'This will remove all saved settings and restore factory defaults. The application will restart after the reset.',
+          buttons: ['Cancel', 'Reset'],
+          defaultId: 0,
+          cancelId: 0
+        }).then(({ response }) => {
+          if (response === 1) {
+            try {
+              const userDataPath = app.getPath('userData');
+              const configFiles = ['config.json', 'settings.json', 'preferences.json'];
+              for (const file of configFiles) {
+                const filePath = path.join(userDataPath, file);
+                if (fs.existsSync(filePath)) {
+                  fs.unlinkSync(filePath);
+                }
+              }
+              console.log('Configuration reset to defaults.');
+              app.relaunch();
+              app.exit(0);
+            } catch (err) {
+              console.error('Failed to reset configuration:', err);
+              dialog.showMessageBox(this.mainWindow, {
+                type: 'error',
+                title: 'Reset Failed',
+                message: 'Could not reset configuration.',
+                detail: err.message
+              });
+            }
+          }
+        });
         break;
 
       case 'checkUpdates':
