@@ -195,7 +195,7 @@ class PlasmaManager:
             # Clean up the temporary file
             try:
                 os.unlink(file_path)
-            except:
+            except OSError:
                 pass
             
             return obj
