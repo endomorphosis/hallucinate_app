@@ -21,7 +21,7 @@ if parent_dir not in sys.path:
     sys.path.insert(0, parent_dir)
 
 # Import required modules
-from hallucinate_app.error_monitor import error_monitor, ErrorLevel, ErrorSource, RecoveryStrategy
+from hallucinate_app.error_monitor import error_monitor, ErrorMonitor, ErrorLevel, ErrorSource, RecoveryStrategy
 from hallucinate_app.pyarrow_content_index import PyArrowContentIndex, ContentIndexError, ContentNotFoundError
 
 class TestErrorMonitor(unittest.TestCase):
@@ -208,6 +208,45 @@ class TestErrorMonitor(unittest.TestCase):
                 error_data = await error_monitor.processing_queue.get()
                 await error_monitor._process_error(error_data)
                 error_monitor.processing_queue.task_done()
+
+class TestMessagesSimilar(unittest.TestCase):
+    """Focused tests for ErrorMonitor._messages_similar / _SIMILAR_PATTERN."""
+
+    def setUp(self):
+        self.monitor = ErrorMonitor()
+
+    def _similar(self, a, b):
+        return self.monitor._messages_similar(a, b)
+
+    def test_hex_case_insensitive(self):
+        """Upper- and lower-case hex addresses must normalise to the same token."""
+        msg_lower = "Segfault at address 0xdeadbeef in module foo"
+        msg_upper = "Segfault at address 0xDEADBEEF in module foo"
+        self.assertTrue(self._similar(msg_lower, msg_upper))
+
+    def test_line_number_normalised(self):
+        """Messages differing only in line number should be considered similar."""
+        msg1 = "TypeError at src/foo.py line 42"
+        msg2 = "TypeError at src/foo.py line 99"
+        self.assertTrue(self._similar(msg1, msg2))
+
+    def test_date_normalised(self):
+        """Messages differing only in a date stamp should be considered similar."""
+        msg1 = "Backup failed on 2024-01-15"
+        msg2 = "Backup failed on 2025-12-31"
+        self.assertTrue(self._similar(msg1, msg2))
+
+    def test_distinct_messages_differ(self):
+        """Truly distinct messages must not be reported as similar."""
+        msg1 = "Connection refused by remote host"
+        msg2 = "Disk quota exceeded on /var/log"
+        self.assertFalse(self._similar(msg1, msg2))
+
+    def test_identical_messages_similar(self):
+        """Identical messages are always similar."""
+        msg = "Unexpected EOF while reading response"
+        self.assertTrue(self._similar(msg, msg))
+
 
 if __name__ == '__main__':
     unittest.main()
