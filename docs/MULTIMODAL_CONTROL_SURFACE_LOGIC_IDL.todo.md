@@ -2091,7 +2091,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-188 Resolve code annotation in hallucinate_app/hallucinate_app/node/menu_generator.js:449
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: ops
