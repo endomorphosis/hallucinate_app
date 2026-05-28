@@ -433,8 +433,11 @@ export class MenuGenerator {
         break;
 
       case 'openServerConfig':
-        console.log(`Opening configuration for ${item.serverId}...`);
-        // TODO: Implement server config window
+        if (item.serverId) {
+          this.navigateToView(resolveViewPath(`views/settings.html?server=${encodeURIComponent(item.serverId)}`));
+        } else {
+          this.navigateToView(resolveViewPath('views/settings.html'));
+        }
         break;
 
       case 'resetConfig':
