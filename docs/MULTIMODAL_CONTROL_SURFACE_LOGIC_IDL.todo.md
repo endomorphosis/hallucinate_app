@@ -2366,7 +2366,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-213 Review swallowed exception path in hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_accelerate_server_mp.py:102
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: runtime
