@@ -17,6 +17,7 @@ import sys
 import time
 import json
 import uuid
+import queue
 import logging
 import tempfile
 import multiprocessing as mp
@@ -1022,9 +1023,12 @@ class IPFSAccelerateServer:
                     else:
                         # Not our result, put it back
                         self.ml_result_queue.put(result)
-                except Exception as e:
-                    logger.error(f"Error waiting for ML result: {e}")
+                except queue.Empty:
+                    logger.error("Timed out waiting for ML result (load_model)")
                     break
+                except Exception:
+                    logger.exception("Unexpected error waiting for ML result (load_model)")
+                    raise
             
             # Store the model in our models dictionary
             if result and result.get("status") == "success":
@@ -1068,9 +1072,12 @@ class IPFSAccelerateServer:
                     else:
                         # Not our result, put it back
                         self.ml_result_queue.put(result)
-                except Exception as e:
-                    logger.error(f"Error waiting for ML result: {e}")
+                except queue.Empty:
+                    logger.error("Timed out waiting for ML result (infer)")
                     break
+                except Exception:
+                    logger.exception("Unexpected error waiting for ML result (infer)")
+                    raise
             
             if result and result.get("status") == "success":
                 test_results["steps"]["inference"] = {
@@ -1105,9 +1112,12 @@ class IPFSAccelerateServer:
                     else:
                         # Not our result, put it back
                         self.ml_result_queue.put(result)
-                except Exception as e:
-                    logger.error(f"Error waiting for ML result: {e}")
+                except queue.Empty:
+                    logger.error("Timed out waiting for ML result (unload_model)")
                     break
+                except Exception:
+                    logger.exception("Unexpected error waiting for ML result (unload_model)")
+                    raise
             
             if result and result.get("status") == "success":
                 # Remove the model from our models dictionary
