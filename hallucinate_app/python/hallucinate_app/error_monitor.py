@@ -781,9 +781,11 @@ class ErrorMonitor:
     and triggers alerts when necessary.
     """
 
-    # Compiled once; re.IGNORECASE ensures both 0xDEADBEEF and 0xdeadbeef are normalised
+    # Compiled once; re.IGNORECASE ensures both 0xDEADBEEF and 0xdeadbeef are normalised.
+    # Character classes use only lowercase ranges — re.IGNORECASE covers the uppercase
+    # variants, so explicit [A-F] / [A-Fa-f] ranges are redundant and removed.
     _SIMILAR_PATTERN = re.compile(
-        r'line \d+|at [^:]+:\d+|0x[0-9a-fA-F]+|\d{4}-\d{2}-\d{2}|ID: [a-fA-F0-9-]+',
+        r'line \d+|at [^:]+:\d+|0x[0-9a-f]+|\d{4}-\d{2}-\d{2}|ID: [a-f0-9-]+',
         re.IGNORECASE,
     )
     
