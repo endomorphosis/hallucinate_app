@@ -269,6 +269,30 @@ class TestMessagesSimilar(unittest.TestCase):
         self.assertEqual(pattern.sub('XXX', '0xDEADBEEF'), 'XXX')
         self.assertEqual(pattern.sub('XXX', '0xdeadbeef'), 'XXX')
 
+    def test_msg2_substring_of_msg1_is_similar(self):
+        """Normalised msg2 that is a substring of normalised msg1 is reported as similar (HAO-215).
+
+        This exercises the clean_msg2 branch of the return expression, ensuring
+        the explicit-parentheses rewrite does not break the second sub-condition.
+        """
+        # msg1 is longer; msg2 (after normalisation) appears inside msg1.
+        msg1 = "Fatal error in module foo: disk quota exceeded on /var/log at 2024-01-15"
+        msg2 = "disk quota exceeded on /var/log"
+        self.assertTrue(self._similar(msg1, msg2))
+
+    def test_short_msg2_not_falsely_matched(self):
+        """A very short normalised msg2 must not produce a false-positive similarity (HAO-215).
+
+        When the entire volatile part of msg2 is replaced by _SIMILAR_PATTERN,
+        the remaining string may be too short to be meaningful. The
+        _MIN_SUBSTRING_LEN guard must block such false matches.
+        """
+        # msg2 is entirely an address — after normalisation it becomes "XXX" (len 3).
+        msg1 = "Connection refused by remote host at port 8080"
+        msg2 = "0xdeadbeef"
+        # "XXX" is shorter than _MIN_SUBSTRING_LEN (10), so no substring match.
+        self.assertFalse(self._similar(msg1, msg2))
+
 
 if __name__ == '__main__':
     unittest.main()
