@@ -586,8 +586,8 @@ class IPFSFaissPy:
                         if metadata_cid:
                             try:
                                 os.unlink(meta_file_path)
-                            except:
-                                pass
+                            except OSError as e:
+                                logger.debug(f"Could not remove temporary metadata file {meta_file_path}: {e}")
                 
                 # Infer type if not in metadata
                 if "type" not in index_info:
