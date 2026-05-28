@@ -252,6 +252,23 @@ class TestMessagesSimilar(unittest.TestCase):
         msg = "Unexpected EOF while reading response"
         self.assertTrue(self._similar(msg, msg))
 
+    def test_none_inputs_do_not_raise(self):
+        """None inputs must not raise; two Nones are considered equal (VAI-132)."""
+        self.assertTrue(self._similar(None, None))  # type: ignore[arg-type]
+        self.assertFalse(self._similar(None, "some error"))  # type: ignore[arg-type]
+        self.assertFalse(self._similar("some error", None))  # type: ignore[arg-type]
+
+    def test_redundant_uppercase_ranges_removed(self):
+        """_SIMILAR_PATTERN still matches uppercase hex after removing redundant ranges (VAI-132)."""
+        import re
+        from hallucinate_app.error_monitor import ErrorMonitor
+        pattern = ErrorMonitor._SIMILAR_PATTERN
+        # Verify lowercase ranges are NOT duplicated with explicit uppercase ranges
+        self.assertNotIn('A-F', pattern.pattern)
+        # Confirm the pattern still normalises uppercase hex correctly
+        self.assertEqual(pattern.sub('XXX', '0xDEADBEEF'), 'XXX')
+        self.assertEqual(pattern.sub('XXX', '0xdeadbeef'), 'XXX')
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -781,9 +781,11 @@ class ErrorMonitor:
     and triggers alerts when necessary.
     """
 
-    # Compiled once; re.IGNORECASE ensures both 0xDEADBEEF and 0xdeadbeef are normalised
+    # Compiled once; re.IGNORECASE ensures both 0xDEADBEEF and 0xdeadbeef are normalised.
+    # Character classes use only lowercase ranges — re.IGNORECASE covers the uppercase
+    # variants, so explicit [A-F] / [A-Fa-f] ranges are redundant and removed.
     _SIMILAR_PATTERN = re.compile(
-        r'line \d+|at [^:]+:\d+|0x[0-9a-fA-F]+|\d{4}-\d{2}-\d{2}|ID: [a-fA-F0-9-]+',
+        r'line \d+|at [^:]+:\d+|0x[0-9a-f]+|\d{4}-\d{2}-\d{2}|ID: [a-f0-9-]+',
         re.IGNORECASE,
     )
     
@@ -1096,6 +1098,9 @@ class ErrorMonitor:
     
     def _messages_similar(self, msg1: str, msg2: str) -> bool:
         """Check if two error messages are similar"""
+        # Guard against None / non-string inputs that would cause re.sub to raise.
+        if not isinstance(msg1, str) or not isinstance(msg2, str):
+            return msg1 == msg2
         # Remove volatile details (addresses, line numbers, timestamps, IDs).
         # _SIMILAR_PATTERN uses re.IGNORECASE so uppercase hex (0xDEADBEEF) is
         # also normalised, preventing missed duplicates.
