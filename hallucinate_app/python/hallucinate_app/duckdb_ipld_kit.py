@@ -187,9 +187,9 @@ class DuckDBIPLDKit:
                     }
                 except Exception:
                     # For non-SELECT queries (INSERT/UPDATE/DELETE), .df() is unavailable.
-                    # Use .rowcount; fall back to -1 if not set (DuckDB may return None).
+                    # Use .rowcount; fall back to -1 if attribute is missing or DuckDB returns None.
                     try:
-                        rows_affected = result_cursor.rowcount
+                        rows_affected = result_cursor.rowcount if hasattr(result_cursor, 'rowcount') else -1
                         if rows_affected is None:
                             rows_affected = -1
                     except Exception:
@@ -808,7 +808,7 @@ class DuckDBIPLDKit:
         try:
             await self.execute("DROP TABLE IF EXISTS test_table")
         except Exception:
-            pass  # Best-effort cleanup; test result already captured above.
+            pass  # Best-effort cleanup; ignore errors so test results are still returned.
         
         return results
 
