@@ -608,7 +608,7 @@ class IPFSEmbeddingsPy:
                 # Clean up temp file
                 try:
                     os.unlink(temp_path)
-                except:
+                except OSError:
                     pass
                 raise e
                 
