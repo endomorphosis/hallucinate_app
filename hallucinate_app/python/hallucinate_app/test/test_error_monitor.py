@@ -371,6 +371,23 @@ class TestMessagesSimilar(unittest.TestCase):
         """
         self.assertTrue(self._similar("0xdeadbeef", "0xdeadbeef"))
 
+    def test_clean_msg1_substring_in_clean_msg2(self):
+        """Normalised msg1 appears as a substring inside normalised msg2 (HAO-224).
+
+        Exercises the first branch of the return expression in _messages_similar:
+            len(clean_msg1) >= _SIMILAR_MIN_LEN and clean_msg1 in clean_msg2
+
+        When msg1 is the shorter message and its normalised form appears inside
+        the longer normalised msg2, the two messages should be reported as similar.
+        This mirrors test_msg2_substring_of_msg1_is_similar (HAO-215) but
+        specifically validates the clean_msg1 production at error_monitor.py:1114.
+        """
+        msg1 = "disk quota exceeded on /var/log"
+        msg2 = "Fatal error in module foo: disk quota exceeded on /var/log at 2025-06-01"
+        # clean_msg1 = "disk quota exceeded on /var/log" (len 30, >= 10)
+        # clean_msg2 contains that substring after date is normalised
+        self.assertTrue(self._similar(msg1, msg2))
+
 
 if __name__ == '__main__':
     unittest.main()
