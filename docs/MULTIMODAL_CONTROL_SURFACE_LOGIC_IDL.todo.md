@@ -2671,3 +2671,14 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/meta_glasses_display_todo_supervisor.py
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-30-hao-240-hao-239-implementation-retry-budget.md
 - Acceptance: Implementation retry-budget guardrail filed this from repeated implementation failures in HAO-239. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-30-hao-240-hao-239-implementation-retry-budget.md to fix the setup, runtime, or timeout blocker, then mark this repair task completed so the supervisor can release HAO-239 from strategy blocked_tasks.
+
+## HAO-241 Resolve implementation retry-budget failure for HAO-240
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/meta_glasses_display_todo_supervisor.py
+- Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-30-hao-241-hao-240-implementation-retry-budget.md
+- Acceptance: Implementation retry-budget guardrail filed this from repeated implementation failures in HAO-240. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-30-hao-241-hao-240-implementation-retry-budget.md to fix the setup, runtime, or timeout blocker, then mark this repair task completed so the supervisor can release HAO-240 from strategy blocked_tasks.
