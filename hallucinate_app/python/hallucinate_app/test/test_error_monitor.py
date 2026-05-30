@@ -328,6 +328,30 @@ class TestMessagesSimilar(unittest.TestCase):
         msg2 = "Unhandled exception at src/server.py:789 while handling request"
         self.assertTrue(self._similar(msg1, msg2))
 
+    def test_msg2_date_normalised_for_deduplication(self):
+        """Volatile date in msg2 is stripped so structurally identical messages deduplicate (HAO-220).
+
+        clean_msg2 is produced by applying _SIMILAR_PATTERN to msg2.  This test
+        verifies that the date-normalisation branch (``\\d{4}-\\d{2}-\\d{2}``) works
+        symmetrically when it is msg2 that carries the volatile date, exercising
+        the exact-match path after both sides are normalised.
+        """
+        msg1 = "Batch job failed: quota exceeded on 2024-03-01"
+        msg2 = "Batch job failed: quota exceeded on 2025-11-15"
+        self.assertTrue(self._similar(msg1, msg2))
+
+    def test_clean_msg2_substring_in_clean_msg1(self):
+        """Normalised msg2 with volatile hex appears inside normalised msg1 (HAO-220).
+
+        Specifically exercises the second branch of the return expression:
+        ``len(clean_msg2) >= _SIMILAR_MIN_LEN and clean_msg2 in clean_msg1``.
+        After _SIMILAR_PATTERN substitution on msg2, its core text (minus the
+        hex address) is found as a substring of the longer normalised msg1.
+        """
+        msg1 = "Service crash: memory error at 0xdeadbeef in allocation path, retry exhausted"
+        msg2 = "memory error at 0xcafebabe in allocation path"
+        self.assertTrue(self._similar(msg1, msg2))
+
 
 if __name__ == '__main__':
     unittest.main()
