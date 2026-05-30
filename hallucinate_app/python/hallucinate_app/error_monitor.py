@@ -784,8 +784,14 @@ class ErrorMonitor:
     # Compiled once; re.IGNORECASE ensures both 0xDEADBEEF and 0xdeadbeef are normalised.
     # Character classes use only lowercase ranges — re.IGNORECASE covers the uppercase
     # variants, so explicit [A-F] / [A-Fa-f] ranges are redundant and removed.
+    # UUID pattern added (HAO-230): RFC-4122 UUIDs are common volatile tokens in
+    # error messages (e.g. request IDs, correlation IDs) and must be normalised
+    # so that two otherwise-identical messages differing only in UUIDs are still
+    # recognised as duplicates.  The UUID pattern is anchored to the full
+    # 8-4-4-4-12 hex group structure to avoid over-matching short hex words.
     _SIMILAR_PATTERN = re.compile(
-        r'line \d+|at [^:]+:\d+|0x[0-9a-f]+|\d{4}-\d{2}-\d{2}|ID: [a-f0-9-]+',
+        r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+        r'|line \d+|at [^:]+:\d+|0x[0-9a-f]+|\d{4}-\d{2}-\d{2}|ID: [a-f0-9-]+',
         re.IGNORECASE,
     )
     _SIMILAR_MIN_LEN = 10
