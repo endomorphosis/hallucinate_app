@@ -352,6 +352,25 @@ class TestMessagesSimilar(unittest.TestCase):
         msg2 = "memory error at 0xcafebabe in allocation path"
         self.assertTrue(self._similar(msg1, msg2))
 
+    def test_two_different_hex_only_messages_not_similar(self):
+        """Two messages that are entirely hex addresses must NOT be similar (HAO-221).
+
+        Both "0xdeadbeef" and "0xcafebabe" normalise to the three-character token
+        "XXX" after _SIMILAR_PATTERN substitution.  Because "XXX" is shorter than
+        _SIMILAR_MIN_LEN (10), neither the exact-match path nor the substring-match
+        path should fire, and the method must return False so that unrelated errors
+        carrying different addresses are not wrongly deduplicated.
+        """
+        self.assertFalse(self._similar("0xdeadbeef", "0xcafebabe"))
+
+    def test_identical_hex_only_messages_are_similar(self):
+        """Two identical raw messages are always similar, even when short (HAO-221).
+
+        "0xdeadbeef" compared with itself should return True because the raw
+        messages are equal; the _SIMILAR_MIN_LEN guard must not suppress this.
+        """
+        self.assertTrue(self._similar("0xdeadbeef", "0xdeadbeef"))
+
 
 if __name__ == '__main__':
     unittest.main()
