@@ -137,7 +137,7 @@ class IPFSModelManager:
             logger.info("IPFSModelManager initialized successfully")
             return True
         except Exception as e:
-            logger.error(f"IPFSModelManager initialization failed: {e}")
+            logger.exception(f"IPFSModelManager initialization failed: {e}")
             return False
         
     async def load_registry(self):
@@ -157,7 +157,7 @@ class IPFSModelManager:
                 logger.info(f"Loaded {len(self.model_registry)} models from registry")
                 return True
             except Exception as e:
-                logger.error(f"Failed to load model registry: {e}")
+                logger.exception(f"Failed to load model registry: {e}")
                 self.model_registry = {}
                 return False
         else:
@@ -183,7 +183,7 @@ class IPFSModelManager:
             logger.info(f"Saved {len(self.model_registry)} models to registry")
             return True
         except Exception as e:
-            logger.error(f"Failed to save model registry: {e}")
+            logger.exception(f"Failed to save model registry: {e}")
             return False
             
     async def list_models(self) -> Dict[str, ModelMetadata]:
@@ -281,7 +281,7 @@ class IPFSModelManager:
             return model_metadata
             
         except Exception as e:
-            logger.error(f"Failed to import model {model_id}: {e}")
+            logger.exception(f"Failed to import model {model_id}: {e}")
             return None
             
     async def import_model_from_ipfs(self, model_id: str, cid: str) -> Optional[ModelMetadata]:
@@ -336,7 +336,7 @@ class IPFSModelManager:
             return model_metadata
             
         except Exception as e:
-            logger.error(f"Failed to import model {model_id} from IPFS: {e}")
+            logger.exception(f"Failed to import model {model_id} from IPFS: {e}")
             return None
             
     async def remove_model(self, model_id: str) -> bool:
@@ -376,7 +376,7 @@ class IPFSModelManager:
                     
             return True
         except Exception as e:
-            logger.error(f"Failed to remove model {model_id}: {e}")
+            logger.exception(f"Failed to remove model {model_id}: {e}")
             return False
     
     def test(self):
@@ -420,7 +420,7 @@ class IPFSModelManager:
                     if hf_import_test:
                         loop.run_until_complete(self.remove_model(test_model))
                 except Exception as e:
-                    logger.error(f"HuggingFace import test failed: {e}")
+                    logger.exception(f"HuggingFace import test failed: {e}")
             
             # Test IPFS import if available
             ipfs_import_test = False
@@ -455,7 +455,7 @@ class IPFSModelManager:
                         pass
                         
                 except Exception as e:
-                    logger.error(f"IPFS import test failed: {e}")
+                    logger.exception(f"IPFS import test failed: {e}")
             
             # Compile results
             results = {
@@ -477,7 +477,7 @@ class IPFSModelManager:
             
             return results
         except Exception as e:
-            logger.error(f"IPFS Model Manager test failed: {e}")
+            logger.exception(f"IPFS Model Manager test failed: {e}")
             return {
                 "success": False,
                 "module": "model_manager",
