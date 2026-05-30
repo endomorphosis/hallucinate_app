@@ -287,10 +287,10 @@ class TestMessagesSimilar(unittest.TestCase):
         the remaining string may be too short to be meaningful. The
         _SIMILAR_MIN_LEN guard must block such false matches.
         """
-        # msg2 is entirely an address — after normalisation it becomes '\x00' (len 1).
+        # msg2 is entirely an address — after normalisation it becomes the sentinel '\x00' (len 1).
         msg1 = "Connection refused by remote host at port 8080"
         msg2 = "0xdeadbeef"
-        # '\x00' is shorter than _SIMILAR_MIN_LEN (10), so no substring match.
+        # The sentinel is shorter than _SIMILAR_MIN_LEN (10), so no substring match.
         self.assertFalse(self._similar(msg1, msg2))
 
     def test_short_msg1_not_falsely_matched(self):
@@ -300,10 +300,10 @@ class TestMessagesSimilar(unittest.TestCase):
         normalises to a short token the _SIMILAR_MIN_LEN guard must block the
         first branch of the substring-match OR expression as well.
         """
-        # msg1 is entirely an address — after normalisation it becomes '\x00' (len 1).
+        # msg1 is entirely an address — after normalisation it becomes the sentinel '\x00' (len 1).
         msg1 = "0xdeadbeef"
         msg2 = "Connection refused by remote host at port 8080"
-        # '\x00' is shorter than _SIMILAR_MIN_LEN (10), so no substring match.
+        # The sentinel is shorter than _SIMILAR_MIN_LEN (10), so no substring match.
         self.assertFalse(self._similar(msg1, msg2))
 
     def test_id_field_normalised(self):
