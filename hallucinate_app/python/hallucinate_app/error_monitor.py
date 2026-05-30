@@ -1111,8 +1111,15 @@ class ErrorMonitor:
         clean_msg1 = self._SIMILAR_PATTERN.sub('XXX', msg1)
         clean_msg2 = self._SIMILAR_PATTERN.sub('XXX', msg2)
         
-        # Exact match is always authoritative.
-        if clean_msg1 == clean_msg2:
+        # Exact match is authoritative only when the normalised string is long
+        # enough to be a meaningful discriminator, OR when the original messages
+        # are identical.  Two different messages that both reduce to a very short
+        # normalised form (e.g. "0xDEADBEEF" and "0x12345678" both becoming
+        # "XXX") must not be declared similar — the shared short token is an
+        # artefact of normalisation, not evidence of a common root cause.
+        if clean_msg1 == clean_msg2 and (
+            len(clean_msg1) >= self._SIMILAR_MIN_LEN or msg1 == msg2
+        ):
             return True
         # Substring match only when the normalised string is long enough to be a
         # meaningful discriminator.  A very short cleaned string (e.g. a message
