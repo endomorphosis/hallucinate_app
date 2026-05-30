@@ -404,4 +404,26 @@ class TestMessagesSimilar(unittest.TestCase):
         msg_hex_long = "Error in handler: data corrupted at 0xdeadbeef"
         self.assertTrue(self._similar(msg_static, msg_hex_long))
 
+    def test_non_string_type_guard_at_line_1115(self):
+        """isinstance guard at line 1115 prevents TypeError from re.sub (VAI-145).
+
+        When msg1 or msg2 is not a str (e.g. None, int, or any other non-string
+        runtime value), the guard introduced at line 1115 must short-circuit before
+        reaching the re.sub call, returning simple equality instead of raising
+        TypeError.  This covers every non-string combination that could arrive at
+        _messages_similar despite the str type annotation.
+        """
+        # None vs None — equal, so similar
+        self.assertTrue(self._similar(None, None))           # type: ignore[arg-type]
+        # None vs str — not equal, not similar
+        self.assertFalse(self._similar(None, "err"))         # type: ignore[arg-type]
+        self.assertFalse(self._similar("err", None))         # type: ignore[arg-type]
+        # Non-string numeric values
+        self.assertTrue(self._similar(42, 42))               # type: ignore[arg-type]
+        self.assertFalse(self._similar(42, 43))              # type: ignore[arg-type]
+        self.assertFalse(self._similar(42, "42"))            # type: ignore[arg-type]
+        # Mixed non-string types
+        self.assertFalse(self._similar(None, 0))             # type: ignore[arg-type]
+        self.assertFalse(self._similar([], ""))              # type: ignore[arg-type]
+
 
