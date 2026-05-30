@@ -2572,3 +2572,69 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/meta_glasses_display_todo_supervisor.py
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-30-hao-231-hao-192-implementation-retry-budget.md
 - Acceptance: Implementation retry-budget guardrail filed this from repeated implementation failures in HAO-192. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-30-hao-231-hao-192-implementation-retry-budget.md to fix the setup, runtime, or timeout blocker, then mark this repair task completed so the supervisor can release HAO-192 from strategy blocked_tasks.
+
+## HAO-232 Resolve code annotation in scripts/hallucinate_multimodal_control_todo_supervisor.py:304
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_supervisor.py
+- Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_supervisor.py
+- Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_supervisor.py:304. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-30-hao-232-codebase-scan-817d59137a83.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-233 Resolve code annotation in scripts/virtual_ai_os_todo_supervisor.py:17
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
+- Validation: python3 -m py_compile scripts/virtual_ai_os_todo_supervisor.py
+- Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_supervisor.py:17. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-30-hao-233-codebase-scan-199c9802cce0.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-234 Resolve code annotation in scripts/virtual_ai_os_todo_supervisor.py:19
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
+- Validation: python3 -m py_compile scripts/virtual_ai_os_todo_supervisor.py
+- Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_supervisor.py:19. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-30-hao-234-codebase-scan-94c3b95fdec8.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-235 Resolve code annotation in scripts/virtual_ai_os_todo_supervisor.py:159
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
+- Validation: python3 -m py_compile scripts/virtual_ai_os_todo_supervisor.py
+- Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_supervisor.py:159. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-30-hao-235-codebase-scan-ed54ac82ae36.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-236 Review swallowed exception path in hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_model_manager.py:463
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_model_manager.py
+- Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_model_manager.py
+- Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_model_manager.py:463. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-30-hao-236-codebase-scan-7d70e6a388f4.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-237 Resolve implementation retry-budget failure for HAO-231
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/meta_glasses_display_todo_supervisor.py
+- Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-30-hao-237-hao-231-implementation-retry-budget.md
+- Acceptance: Implementation retry-budget guardrail filed this from repeated implementation failures in HAO-231. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-30-hao-237-hao-231-implementation-retry-budget.md to fix the setup, runtime, or timeout blocker, then mark this repair task completed so the supervisor can release HAO-231 from strategy blocked_tasks.
