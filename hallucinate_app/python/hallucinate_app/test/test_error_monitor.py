@@ -371,6 +371,27 @@ class TestMessagesSimilar(unittest.TestCase):
         """
         self.assertTrue(self._similar("0xdeadbeef", "0xdeadbeef"))
 
+    def test_sentinel_is_single_null_byte_not_xxx(self):
+        """_SIMILAR_SENTINEL must be a null byte, not the three-character token 'XXX' (HAO-227).
+
+        A previous version of error_monitor.py used ``'XXX'`` as the normalisation
+        sentinel.  The comment at line 1121 read
+        "normalising to the three-character token XXX are not conflated", which
+        was stale after VAI-144 changed the sentinel to ``'\\x00'``.  This test
+        pins the sentinel identity so that any accidental revert is caught
+        immediately, and confirms that two distinct volatile-only messages are not
+        conflated regardless of which sentinel value they normalise to.
+        """
+        from hallucinate_app.error_monitor import ErrorMonitor
+        sentinel = ErrorMonitor._SIMILAR_SENTINEL
+        self.assertEqual(len(sentinel), 1, "Sentinel must be exactly one character")
+        self.assertEqual(sentinel, '\x00', "Sentinel must be the null byte (\\x00), not 'XXX'")
+        self.assertNotEqual(sentinel, 'XXX', "Sentinel must not be the three-character token 'XXX'")
+        # Two messages consisting entirely of distinct hex addresses both normalise
+        # to the single-character sentinel.  Because the sentinel is shorter than
+        # _SIMILAR_MIN_LEN they must NOT be conflated (the original annotation risk).
+        self.assertFalse(self._similar("0xdeadbeef", "0xcafebabe"))
+
     def test_message_containing_sentinel_not_falsely_similar(self):
         """A message containing the null-byte sentinel must not trigger false similarity (VAI-144).
 
