@@ -255,7 +255,7 @@ class IPFSModelManager:
                             if result and 'cid' in result:
                                 file_cids[rel_path] = result['cid']
                         except Exception as e:
-                            logger.error(f"Failed to add {rel_path} to IPFS: {e}")
+                            logger.exception(f"Failed to add {rel_path} to IPFS: {e}")
             
             # Create model metadata
             model_metadata = ModelMetadata(
