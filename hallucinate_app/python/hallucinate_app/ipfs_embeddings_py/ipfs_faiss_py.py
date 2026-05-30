@@ -622,8 +622,8 @@ class IPFSFaissPy:
                 # Clean up temporary files
                 try:
                     os.unlink(index_file)
-                except:
-                    pass
+                except OSError as e:
+                    logger.debug(f"Could not remove temporary index file {index_file}: {e}")
                 
         except Exception as e:
             logger.error(f"Error loading index from IPFS: {e}")
@@ -730,7 +730,8 @@ class IPFSFaissPy:
                             # Try loading with pickle first
                             with open(index_path, 'rb') as f:
                                 index = pickle.load(f)
-                        except:
+                        except Exception as e:
+                            logger.debug(f"Pickle load failed for {index_path}, falling back to faiss reader: {e}")
                             # Fall back to faiss reader
                             index = faiss.read_index(index_path)
                         
