@@ -404,4 +404,21 @@ class TestMessagesSimilar(unittest.TestCase):
         msg_hex_long = "Error in handler: data corrupted at 0xdeadbeef"
         self.assertTrue(self._similar(msg_static, msg_hex_long))
 
+    def test_non_string_type_guard_at_line_1115(self):
+        """Non-string inputs use equality comparison rather than raising TypeError (VAI-145).
+
+        Line 1115 of error_monitor.py contains an isinstance guard that prevents
+        re.sub from receiving a non-string argument (which would raise TypeError).
+        When at least one argument is not a str, the method falls back to direct
+        equality comparison so duplicate detection still works for the common case
+        where both sides carry the same non-string sentinel value.
+        """
+        # Two identical non-string values are similar (e.g. both None, both same int).
+        self.assertTrue(self._similar(None, None))  # type: ignore[arg-type]
+        self.assertTrue(self._similar(42, 42))  # type: ignore[arg-type]
+        # A non-string paired with a string (or a different non-string) is not similar.
+        self.assertFalse(self._similar(None, "error text"))  # type: ignore[arg-type]
+        self.assertFalse(self._similar("error text", None))  # type: ignore[arg-type]
+        self.assertFalse(self._similar(42, 99))  # type: ignore[arg-type]
+
 
