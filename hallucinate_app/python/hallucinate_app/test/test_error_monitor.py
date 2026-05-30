@@ -469,4 +469,31 @@ class TestMessagesSimilar(unittest.TestCase):
         # And an empty string (edge case: both sides are the same non-string sentinel).
         self.assertTrue(self._similar("", ""))
 
+    def test_equality_branch_requires_min_len(self):
+        """Equality branch is blocked when normalised string is shorter than _SIMILAR_MIN_LEN (HAO-216).
+
+        Two messages that consist entirely of a volatile token (e.g. a bare date
+        like "2024-01-15") both normalise to the single-character sentinel after
+        _SIMILAR_PATTERN substitution.  Because the sentinel is shorter than
+        _SIMILAR_MIN_LEN (10), the equality branch must return False so that
+        unrelated errors carrying different dates are not wrongly deduplicated.
+        """
+        # Both dates normalise to the single null-byte sentinel (length 1 < 10).
+        self.assertFalse(self._similar("2024-01-15", "2024-01-16"))
+
+    def test_equality_branch_passes_with_long_normalised_string(self):
+        """Equality branch fires when normalised string meets _SIMILAR_MIN_LEN (HAO-216).
+
+        Two messages that differ only in a hex address normalise to the same long
+        static string after _SIMILAR_PATTERN substitution.  Because the normalised
+        string is longer than _SIMILAR_MIN_LEN (10), the equality branch must return
+        True so that duplicate errors that differ only in a volatile address are
+        correctly deduplicated.
+        """
+        # Both messages normalise to "Connection failed at \x00: timeout" (length > 10).
+        self.assertTrue(self._similar(
+            "Connection failed at 0xdeadbeef: timeout",
+            "Connection failed at 0xcafebabe: timeout",
+        ))
+
 
