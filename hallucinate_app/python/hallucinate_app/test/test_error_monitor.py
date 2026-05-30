@@ -496,4 +496,40 @@ class TestMessagesSimilar(unittest.TestCase):
             "Connection failed at 0xcafebabe: timeout",
         ))
 
+    def test_uppercase_hex_different_addresses_not_conflated(self):
+        """IGNORECASE normalisation must not conflate two distinct uppercase hex addresses (VAI-147).
+
+        _SIMILAR_PATTERN uses re.IGNORECASE so that "0xDEADBEEF" and "0xdeadbeef"
+        normalise to the same sentinel token (preventing missed duplicates when the
+        same address appears in different cases).  However, two *different* uppercase
+        addresses must still NOT be treated as similar when the normalised static
+        context is insufficient to meet _SIMILAR_MIN_LEN (10).
+
+        This regression test locks in the IGNORECASE + distinct-address = not-conflated
+        invariant so that the codebase scanner does not re-file this finding.
+        """
+        # Two distinct uppercase-only hex addresses must NOT be similar:
+        # both normalise to the one-character null-byte sentinel (len 1 < min_len).
+        self.assertFalse(self._similar("0xDEADBEEF", "0xCAFEBABE"))
+        # Identical uppercase hex addresses must be similar (early raw-equality path).
+        self.assertTrue(self._similar("0xDEADBEEF", "0xDEADBEEF"))
+        # Mixed-case variants of the same address within a longer message ARE similar
+        # (IGNORECASE normalises both to the same static+sentinel string, len > min_len).
+        self.assertTrue(self._similar(
+            "Segfault at 0xDEADBEEF in module foo",
+            "Segfault at 0xdeadbeef in module foo",
+        ))
+        # Two distinct addresses in longer messages that share only the volatile token
+        # ARE similar when surrounding static text is identical and long enough.
+        self.assertTrue(self._similar(
+            "Segfault at 0xDEADBEEF in module foo",
+            "Segfault at 0xCAFEBABE in module foo",
+        ))
+        # Two distinct addresses in messages with different surrounding text must
+        # NOT be conflated (the static portions differ after normalisation).
+        self.assertFalse(self._similar(
+            "Fault at 0xDEADBEEF in module alpha",
+            "Fault at 0xCAFEBABE in module beta",
+        ))
+
 
