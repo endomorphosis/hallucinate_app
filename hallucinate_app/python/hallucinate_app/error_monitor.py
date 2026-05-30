@@ -1105,21 +1105,22 @@ class ErrorMonitor:
         # for the common case where both sides are the same non-string value.
         if not isinstance(msg1, str) or not isinstance(msg2, str):
             return msg1 == msg2
+        # Identical raw messages are always similar, regardless of length.
+        if msg1 == msg2:
+            return True
         # Remove volatile details (addresses, line numbers, timestamps, IDs).
         # _SIMILAR_PATTERN uses re.IGNORECASE so uppercase hex (0xDEADBEEF) is
         # also normalised, preventing missed duplicates.
         clean_msg1 = self._SIMILAR_PATTERN.sub('XXX', msg1)
         clean_msg2 = self._SIMILAR_PATTERN.sub('XXX', msg2)
-        
-        # Exact match is authoritative only when the normalised string is long
-        # enough to be a meaningful discriminator, OR when the original messages
-        # are identical.  Two different messages that both reduce to a very short
-        # normalised form (e.g. "0xDEADBEEF" and "0x12345678" both becoming
-        # "XXX") must not be declared similar — the shared short token is an
-        # artefact of normalisation, not evidence of a common root cause.
-        if clean_msg1 == clean_msg2 and (
-            len(clean_msg1) >= self._SIMILAR_MIN_LEN or msg1 == msg2
-        ):
+        # Require minimum length for both exact and substring matches.  A very
+        # short cleaned string (e.g. a message that was entirely a hex address
+        # and became "XXX") must not cause unrelated errors to be treated as
+        # duplicates — the guard applies to the exact-match path as well as the
+        # substring path so that e.g. "0xdeadbeef" and "0xcafebabe" (both
+        # normalising to the three-character token "XXX") are not conflated.
+        # (Identical raw messages are handled by the early-return above.)
+        if clean_msg1 == clean_msg2 and len(clean_msg1) >= self._SIMILAR_MIN_LEN:
             return True
         return (
             (len(clean_msg1) >= self._SIMILAR_MIN_LEN and clean_msg1 in clean_msg2)
