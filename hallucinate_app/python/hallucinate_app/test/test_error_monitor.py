@@ -371,6 +371,18 @@ class TestMessagesSimilar(unittest.TestCase):
         """
         self.assertTrue(self._similar("0xdeadbeef", "0xdeadbeef"))
 
+    def test_uppercase_hex_different_addresses_not_conflated(self):
+        """IGNORECASE-normalised uppercase hex addresses with different values are not conflated (VAI-147).
+
+        _SIMILAR_PATTERN uses re.IGNORECASE so 0xDEADBEEF normalises to the same
+        one-character sentinel (\'\\x00\') as 0xdeadbeef.  Two *different* uppercase hex
+        messages must still not be treated as similar — the sentinel length (1) falls
+        below _SIMILAR_MIN_LEN (10), so the guard correctly prevents false deduplication.
+        This test locks in the behaviour described by the comment at _messages_similar
+        line 1121 and prevents the scan from re-filing this as an open finding.
+        """
+        self.assertFalse(self._similar("0xDEADBEEF", "0xCAFEBABE"))
+
     def test_message_containing_sentinel_not_falsely_similar(self):
         """A message containing the null-byte sentinel must not trigger false similarity (VAI-144).
 
