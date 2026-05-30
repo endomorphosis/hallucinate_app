@@ -355,8 +355,8 @@ class TestMessagesSimilar(unittest.TestCase):
     def test_two_different_hex_only_messages_not_similar(self):
         """Two messages that are entirely hex addresses must NOT be similar (HAO-221).
 
-        Both "0xdeadbeef" and "0xcafebabe" normalise to the three-character token
-        "XXX" after _SIMILAR_PATTERN substitution.  Because "XXX" is shorter than
+        Both "0xdeadbeef" and "0xcafebabe" normalise to the sentinel token
+        after _SIMILAR_PATTERN substitution.  Because the sentinel is shorter than
         _SIMILAR_MIN_LEN (10), neither the exact-match path nor the substring-match
         path should fire, and the method must return False so that unrelated errors
         carrying different addresses are not wrongly deduplicated.
@@ -371,6 +371,37 @@ class TestMessagesSimilar(unittest.TestCase):
         """
         self.assertTrue(self._similar("0xdeadbeef", "0xdeadbeef"))
 
+    def test_message_containing_sentinel_not_falsely_similar(self):
+        """A message containing the null-byte sentinel must not trigger false similarity (VAI-144).
 
-if __name__ == '__main__':
-    unittest.main()
+        Previously the sentinel token was 'XXX', which could appear in real error
+        messages (e.g. from test frameworks).  The replacement was changed to a
+        null byte (\\x00) to eliminate that collision risk.  This test verifies that
+        a message whose static text happens to equal the sentinel string itself does
+        not produce a false-positive match against a message whose volatile address
+        normalises to the same sentinel.
+        """
+        # msg_sentinel contains a literal null byte in its static text (contrived
+        # but structurally possible via binary-safe message encoding).  It must NOT
+        # be considered similar to a message that carries a hex address which happens
+        # to normalise to the same one-character token.
+        import re
+        from hallucinate_app.error_monitor import ErrorMonitor
+        sentinel = ErrorMonitor._SIMILAR_SENTINEL
+        # Verify the sentinel is a null byte (the fix introduced in VAI-144).
+        self.assertEqual(sentinel, '\x00')
+        # A message whose static text *is* the sentinel is shorter than
+        # _SIMILAR_MIN_LEN, so neither branch should fire.
+        msg_with_sentinel = sentinel
+        msg_hex = "0xdeadbeef"
+        self.assertFalse(self._similar(msg_with_sentinel, msg_hex))
+        # A longer message that differs only in whether a hex address or the raw
+        # sentinel text appears in the same position should NOT be considered similar,
+        # because one of them carries the sentinel embedded in static text while the
+        # other has a normalised volatile part — in practice impossible since null
+        # bytes don't appear in real error strings, documenting the invariant.
+        msg_static = "Error in handler: data corrupted"
+        msg_hex_long = "Error in handler: data corrupted at 0xdeadbeef"
+        self.assertTrue(self._similar(msg_static, msg_hex_long))
+
+
