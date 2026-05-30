@@ -731,8 +731,8 @@ class IPFSFaissPy:
                             with open(index_path, 'rb') as f:
                                 index = pickle.load(f)
                         except Exception as e:
-                            # Fall back to faiss reader
                             logger.debug(f"Pickle load failed for {index_path}, falling back to faiss reader: {e}")
+                            # Fall back to faiss reader
                             index = faiss.read_index(index_path)
                         
                         if index:
