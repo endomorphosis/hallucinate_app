@@ -302,13 +302,14 @@ class IPFSModelManager:
             logger.error("Cannot import from IPFS: IPFS Kit not available")
             return None
             
+        model_dir = os.path.join(self.models_path, model_id)
+        pre_existing_dir = os.path.exists(model_dir)
         try:
             # Check if model already exists
             if model_id in self.model_registry:
                 logger.info(f"Model {model_id} already in registry, updating")
                 
             # Create model directory
-            model_dir = os.path.join(self.models_path, model_id)
             os.makedirs(model_dir, exist_ok=True)
             
             # Download from IPFS
@@ -335,8 +336,16 @@ class IPFSModelManager:
             
             return model_metadata
             
-        except Exception as e:
-            logger.exception(f"Failed to import model {model_id} from IPFS: {e}")
+        except Exception:
+            logger.exception(f"Failed to import model {model_id} from IPFS")
+            # Clean up any partially-created model directory to avoid leaving
+            # corrupted state on disk when the directory was created by this call.
+            if not pre_existing_dir and os.path.isdir(model_dir):
+                try:
+                    shutil.rmtree(model_dir)
+                    logger.debug(f"Cleaned up partial model directory: {model_dir}")
+                except OSError:
+                    logger.warning(f"Could not clean up partial model directory: {model_dir}")
             return None
             
     async def remove_model(self, model_id: str) -> bool:
