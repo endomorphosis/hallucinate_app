@@ -2539,3 +2539,14 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_kit.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_kit.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_kit.py:336. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-30-hao-228-codebase-scan-bc14c3b9ed8c.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-229 Resolve implementation retry-budget failure for HAO-216
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py
+- Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-30-hao-229-hao-216-implementation-retry-budget.md
+- Acceptance: Implementation retry-budget guardrail filed this from repeated implementation failures in HAO-216. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-30-hao-229-hao-216-implementation-retry-budget.md to fix the setup, runtime, or timeout blocker, then mark this repair task completed so the supervisor can release HAO-216 from strategy blocked_tasks.
