@@ -447,4 +447,26 @@ class TestMessagesSimilar(unittest.TestCase):
         self.assertFalse(self._similar(None, 0))             # type: ignore[arg-type]
         self.assertFalse(self._similar([], ""))              # type: ignore[arg-type]
 
+    def test_identical_short_raw_message_returns_true_before_normalization(self):
+        """Identical raw messages return True immediately, bypassing _SIMILAR_MIN_LEN (VAI-146).
+
+        Line 1118 of error_monitor.py contains an early-return ``if msg1 == msg2: return True``
+        that fires before the volatile-token normalisation step.  The _SIMILAR_MIN_LEN guard
+        must not suppress this case: even a very short or entirely-volatile message must be
+        treated as similar to itself because it is the *exact same text*, not a collision
+        between two different messages that both normalised to the sentinel.
+
+        The scan finding was a comment in the vicinity of line 1118 that still referenced the
+        old sentinel string ``"XXX"``; that comment was updated to ``"the sentinel"`` as part
+        of the VAI-144 fix.  This test locks in the correct early-return behaviour so the
+        finding cannot silently regress.
+        """
+        # A hex-only message normalises to the one-character null-byte sentinel (len 1
+        # < _SIMILAR_MIN_LEN = 10), yet it must still be similar to *itself*.
+        self.assertTrue(self._similar("0xcafebabe", "0xcafebabe"))
+        # Same principle applies to an arbitrarily short static message.
+        self.assertTrue(self._similar("e", "e"))
+        # And an empty string (edge case: both sides are the same non-string sentinel).
+        self.assertTrue(self._similar("", ""))
+
 
