@@ -306,6 +306,28 @@ class TestMessagesSimilar(unittest.TestCase):
         # "XXX" is shorter than _SIMILAR_MIN_LEN (10), so no substring match.
         self.assertFalse(self._similar(msg1, msg2))
 
+    def test_id_field_normalised(self):
+        """Messages differing only in a hex ID field should be considered similar (HAO-219).
+
+        The _SIMILAR_PATTERN contains ``ID: [a-f0-9-]+`` which normalises UUID-
+        style and short hex identifiers so that otherwise identical messages that
+        carry different request or resource IDs are correctly deduplicated.
+        """
+        msg1 = "Request failed ID: abc123-def456"
+        msg2 = "Request failed ID: 000000-ffffff"
+        self.assertTrue(self._similar(msg1, msg2))
+
+    def test_stack_trace_file_lineno_normalised(self):
+        """Messages differing only in a ``file:lineno`` stack location are similar (HAO-219).
+
+        The ``at [^:]+:<digits>`` branch of _SIMILAR_PATTERN normalises stack-trace
+        entries so that the same error raised at different call sites after
+        refactoring is not treated as a new distinct error.
+        """
+        msg1 = "Unhandled exception at src/server.py:512 while handling request"
+        msg2 = "Unhandled exception at src/server.py:789 while handling request"
+        self.assertTrue(self._similar(msg1, msg2))
+
 
 if __name__ == '__main__':
     unittest.main()
