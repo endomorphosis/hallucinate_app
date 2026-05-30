@@ -287,10 +287,10 @@ class TestMessagesSimilar(unittest.TestCase):
         the remaining string may be too short to be meaningful. The
         _SIMILAR_MIN_LEN guard must block such false matches.
         """
-        # msg2 is entirely an address — after normalisation it becomes "XXX" (len 3).
+        # msg2 is entirely an address — after normalisation it becomes '\x00' (len 1).
         msg1 = "Connection refused by remote host at port 8080"
         msg2 = "0xdeadbeef"
-        # "XXX" is shorter than _SIMILAR_MIN_LEN (10), so no substring match.
+        # '\x00' is shorter than _SIMILAR_MIN_LEN (10), so no substring match.
         self.assertFalse(self._similar(msg1, msg2))
 
     def test_short_msg1_not_falsely_matched(self):
@@ -300,10 +300,10 @@ class TestMessagesSimilar(unittest.TestCase):
         normalises to a short token the _SIMILAR_MIN_LEN guard must block the
         first branch of the substring-match OR expression as well.
         """
-        # msg1 is entirely an address — after normalisation it becomes "XXX" (len 3).
+        # msg1 is entirely an address — after normalisation it becomes '\x00' (len 1).
         msg1 = "0xdeadbeef"
         msg2 = "Connection refused by remote host at port 8080"
-        # "XXX" is shorter than _SIMILAR_MIN_LEN (10), so no substring match.
+        # '\x00' is shorter than _SIMILAR_MIN_LEN (10), so no substring match.
         self.assertFalse(self._similar(msg1, msg2))
 
     def test_id_field_normalised(self):
@@ -370,6 +370,27 @@ class TestMessagesSimilar(unittest.TestCase):
         messages are equal; the _SIMILAR_MIN_LEN guard must not suppress this.
         """
         self.assertTrue(self._similar("0xdeadbeef", "0xdeadbeef"))
+
+    def test_sentinel_is_single_null_byte_not_xxx(self):
+        """_SIMILAR_SENTINEL must be a null byte, not the three-character token 'XXX' (HAO-227).
+
+        A previous version of error_monitor.py used ``'XXX'`` as the normalisation
+        sentinel.  The comment at line 1121 read
+        "normalising to the three-character token XXX are not conflated", which
+        was stale after VAI-144 changed the sentinel to ``'\\x00'``.  This test
+        pins the sentinel identity so that any accidental revert is caught
+        immediately, and confirms that two distinct volatile-only messages are not
+        conflated regardless of which sentinel value they normalise to.
+        """
+        from hallucinate_app.error_monitor import ErrorMonitor
+        sentinel = ErrorMonitor._SIMILAR_SENTINEL
+        self.assertEqual(len(sentinel), 1, "Sentinel must be exactly one character")
+        self.assertEqual(sentinel, '\x00', "Sentinel must be the null byte (\\x00), not 'XXX'")
+        self.assertNotEqual(sentinel, 'XXX', "Sentinel must not be the three-character token 'XXX'")
+        # Two messages consisting entirely of distinct hex addresses both normalise
+        # to the single-character sentinel.  Because the sentinel is shorter than
+        # _SIMILAR_MIN_LEN they must NOT be conflated (the original annotation risk).
+        self.assertFalse(self._similar("0xdeadbeef", "0xcafebabe"))
 
     def test_message_containing_sentinel_not_falsely_similar(self):
         """A message containing the null-byte sentinel must not trigger false similarity (VAI-144).
