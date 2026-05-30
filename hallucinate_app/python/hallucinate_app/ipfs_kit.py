@@ -333,7 +333,7 @@ class IPFSKit:
                             # Clean up temp file
                             try:
                                 os.unlink(tmp_path)
-                            except:
+                            except OSError:
                                 pass
                         except Exception as e:
                             logger.error(f"Get test failed: {e}")
