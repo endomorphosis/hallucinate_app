@@ -265,9 +265,11 @@ class TestMessagesSimilar(unittest.TestCase):
         pattern = ErrorMonitor._SIMILAR_PATTERN
         # Verify lowercase ranges are NOT duplicated with explicit uppercase ranges
         self.assertNotIn('A-F', pattern.pattern)
-        # Confirm the pattern still normalises uppercase hex correctly
-        self.assertEqual(pattern.sub('XXX', '0xDEADBEEF'), 'XXX')
-        self.assertEqual(pattern.sub('XXX', '0xdeadbeef'), 'XXX')
+        # Confirm the pattern still normalises uppercase hex correctly.
+        # Use the actual sentinel ('\x00') as the replacement to stay consistent
+        # with _SIMILAR_SENTINEL and avoid the stale 'XXX' token (HAO-274).
+        self.assertEqual(pattern.sub('\x00', '0xDEADBEEF'), '\x00')
+        self.assertEqual(pattern.sub('\x00', '0xdeadbeef'), '\x00')
 
     def test_msg2_substring_of_msg1_is_similar(self):
         """Normalised msg2 that is a substring of normalised msg1 is reported as similar (HAO-215).
