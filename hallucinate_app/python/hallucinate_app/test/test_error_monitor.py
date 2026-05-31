@@ -459,9 +459,9 @@ class TestMessagesSimilar(unittest.TestCase):
         between two different messages that both normalised to the sentinel.
 
         The scan finding was a comment in the vicinity of line 1118 that still referenced the
-        old sentinel string ``"XXX"``; that comment was updated to ``"the sentinel"`` as part
-        of the VAI-144 fix.  This test locks in the correct early-return behaviour so the
-        finding cannot silently regress.
+        old three-character placeholder sentinel (``chr(88)*3``); that comment was updated to
+        ``"the sentinel"`` as part of the VAI-144 fix.  This test locks in the correct
+        early-return behaviour so the finding cannot silently regress.
         """
         # A hex-only message normalises to the one-character null-byte sentinel (len 1
         # < _SIMILAR_MIN_LEN = 10), yet it must still be similar to *itself*.
