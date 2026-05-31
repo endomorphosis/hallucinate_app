@@ -9,6 +9,7 @@ Implements proper error handling and access control
 import os
 import json
 import asyncio
+import traceback
 from datetime import datetime
 from typing import Dict, List, Set, Any, Optional, Union, Tuple
 
@@ -1247,7 +1248,7 @@ class SecureDuckDBIPLDManager:
                 return None
         
         except Exception as e:
-            print(f"Error extracting table name: {e}")
+            print(f"Error extracting table name: {e}\n{traceback.format_exc()}")
             return None
     
     def _update_resource_usage(self, operation, table_name, options=None):
