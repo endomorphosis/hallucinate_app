@@ -217,6 +217,8 @@ class IPFSModelManager:
             logger.error("Cannot import from HuggingFace: huggingface_hub not installed")
             return None
             
+        model_dir = os.path.join(self.models_path, model_id)
+        pre_existing_dir = os.path.exists(model_dir)
         try:
             # Check if model already exists
             if model_id in self.model_registry:
@@ -225,7 +227,6 @@ class IPFSModelManager:
             # Download model
             logger.info(f"Downloading model {model_id} from HuggingFace Hub")
             
-            model_dir = os.path.join(self.models_path, model_id)
             os.makedirs(model_dir, exist_ok=True)
             
             local_path = snapshot_download(
@@ -280,8 +281,16 @@ class IPFSModelManager:
             
             return model_metadata
             
-        except Exception:
-            logger.exception(f"Failed to import model {model_id}")
+        except Exception as e:  # noqa: BLE001 – intentionally returns None so callers can handle gracefully
+            logger.exception(f"Failed to import model {model_id}: {e}")
+            # Clean up any partially-created model directory to avoid leaving
+            # corrupted state on disk when the directory was created by this call.
+            if not pre_existing_dir and os.path.isdir(model_dir):
+                try:
+                    shutil.rmtree(model_dir)
+                    logger.debug(f"Cleaned up partial model directory: {model_dir}")
+                except OSError:
+                    logger.warning(f"Could not clean up partial model directory: {model_dir}")
             return None
             
     async def import_model_from_ipfs(self, model_id: str, cid: str) -> Optional[ModelMetadata]:
