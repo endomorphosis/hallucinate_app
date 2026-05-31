@@ -845,6 +845,7 @@ class PyArrowContentIndex:
                 return None
         except Exception as e:
             logger.error(f"Error looking up CID {cid}: {e}")
+            logger.error(traceback.format_exc())
             return None
     
     def _convert_table_to_dict(self, table):
@@ -924,6 +925,7 @@ class PyArrowContentIndex:
                 return None
         except Exception as e:
             logger.error(f"Error looking up path {path}: {e}")
+            logger.error(traceback.format_exc())
             return None
             
     def _normalize_path(self, path):
