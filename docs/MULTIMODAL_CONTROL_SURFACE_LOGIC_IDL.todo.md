@@ -2597,7 +2597,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-234 Resolve code annotation in scripts/virtual_ai_os_todo_supervisor.py:19
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: runtime
