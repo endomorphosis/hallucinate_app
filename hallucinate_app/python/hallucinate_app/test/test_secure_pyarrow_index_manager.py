@@ -522,7 +522,7 @@ class TestSecurePyArrowIndexManager(unittest.TestCase):
                 self.manager.lookup_by_cid(test_entry["cid"], self.admin_token)
             )
             self.assertIsNone(lookup_result)
-        except:
+        except Exception:
             # An exception is also acceptable as the entry should be gone
             pass
     
