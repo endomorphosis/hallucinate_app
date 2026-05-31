@@ -121,13 +121,13 @@ class TestSecurePyArrowIndexManagerIntegration(unittest.TestCase):
         if os.path.exists(self.test_export_path):
             try:
                 os.remove(self.test_export_path)
-            except:
-                pass
+            except OSError as e:
+                logger.warning("Failed to remove test export file %s: %s", self.test_export_path, e)
         
         try:
             os.rmdir(self.temp_dir)
-        except:
-            pass
+        except OSError as e:
+            logger.warning("Failed to remove temp directory %s: %s", self.temp_dir, e)
         
         # Close the event loop
         self.loop.close()
