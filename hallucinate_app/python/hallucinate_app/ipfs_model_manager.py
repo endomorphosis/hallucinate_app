@@ -336,8 +336,8 @@ class IPFSModelManager:
             
             return model_metadata
             
-        except Exception:
-            logger.exception(f"Failed to import model {model_id} from IPFS")
+        except Exception as e:  # noqa: BLE001 – intentionally returns None so callers can handle gracefully
+            logger.exception(f"Failed to import model {model_id} from IPFS: {e}")
             # Clean up any partially-created model directory to avoid leaving
             # corrupted state on disk when the directory was created by this call.
             if not pre_existing_dir and os.path.isdir(model_dir):
