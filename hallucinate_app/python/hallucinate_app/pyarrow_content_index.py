@@ -2569,7 +2569,7 @@ class PyArrowContentIndex:
                         os.unlink(test_export_path)
                     if os.path.exists(test_export_path.replace('.parquet', '.json')):
                         os.unlink(test_export_path.replace('.parquet', '.json'))
-                except:
+                except OSError:
                     pass
             
             # Overall success
