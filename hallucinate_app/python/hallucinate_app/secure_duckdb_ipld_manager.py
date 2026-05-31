@@ -1253,10 +1253,26 @@ class SecureDuckDBIPLDManager:
                 return None
         
         except re.error as e:
-            logger.warning("Regex error while extracting table name from SQL: %s", e)
+            # Graceful degradation: a malformed regex pattern must not crash the
+            # auth path.  Returning None causes the caller to fall back to the
+            # wildcard capability check, which is still enforced — it is just
+            # less specific than a per-table check.  Include enough context for
+            # operators to diagnose unusual SQL that triggers this branch.
+            logger.warning(
+                "Regex error while extracting table name from SQL "
+                "(sql_type=%r, sql_snippet=%r): %s",
+                sql_type,
+                sql[:120] if sql else "",
+                e,
+            )
             return None
         except Exception as e:
-            logger.error("Unexpected error extracting table name: %s", e, exc_info=True)
+            logger.error(
+                "Unexpected error extracting table name (sql_type=%r): %s",
+                sql_type,
+                e,
+                exc_info=True,
+            )
             raise
     
     def _update_resource_usage(self, operation, table_name, options=None):
