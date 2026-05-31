@@ -397,9 +397,9 @@ class TestMessagesSimilar(unittest.TestCase):
     def test_message_containing_sentinel_not_falsely_similar(self):
         """A message containing the null-byte sentinel must not trigger false similarity (VAI-144).
 
-        Previously the sentinel token was 'XXX', which could appear in real error
-        messages (e.g. from test frameworks).  The replacement was changed to a
-        null byte (\\x00) to eliminate that collision risk.  This test verifies that
+        Previously the sentinel token was the old three-character placeholder (chr(88)*3),
+        which could appear in real error messages (e.g. from test frameworks).  The
+        replacement was changed to a null byte (\\x00) to eliminate that collision risk.  This test verifies that
         a message whose static text happens to equal the sentinel string itself does
         not produce a false-positive match against a message whose volatile address
         normalises to the same sentinel.
