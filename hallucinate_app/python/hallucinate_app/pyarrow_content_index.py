@@ -2569,8 +2569,10 @@ class PyArrowContentIndex:
                         os.unlink(test_export_path)
                     if os.path.exists(test_export_path.replace('.parquet', '.json')):
                         os.unlink(test_export_path.replace('.parquet', '.json'))
-                except OSError:
-                    pass
+                except OSError as e:
+                    # Cleanup of temporary test files is best-effort; a failure
+                    # here must not be counted as a test failure.
+                    logger.debug("Could not remove temporary test export file %s: %s", test_export_path, e)
             
             # Overall success
             results['success'] = (
