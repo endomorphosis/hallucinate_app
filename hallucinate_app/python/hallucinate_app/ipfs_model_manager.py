@@ -460,7 +460,7 @@ class IPFSModelManager:
                     # Clean up test file
                     try:
                         os.unlink(test_file)
-                    except:
+                    except OSError:
                         pass
                         
                 except Exception as e:
