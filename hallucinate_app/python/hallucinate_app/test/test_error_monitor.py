@@ -265,9 +265,8 @@ class TestMessagesSimilar(unittest.TestCase):
         pattern = ErrorMonitor._SIMILAR_PATTERN
         # Verify lowercase ranges are NOT duplicated with explicit uppercase ranges
         self.assertNotIn('A-F', pattern.pattern)
-        # Confirm the pattern still normalises uppercase hex correctly.
-        # Use the actual sentinel ('\x00') as the replacement to stay consistent
-        # with _SIMILAR_SENTINEL and avoid the stale 'XXX' token (HAO-274).
+        # Confirm the pattern still normalises hex addresses correctly (both
+        # upper- and lowercase) using the null-byte sentinel (HAO-275).
         self.assertEqual(pattern.sub('\x00', '0xDEADBEEF'), '\x00')
         self.assertEqual(pattern.sub('\x00', '0xdeadbeef'), '\x00')
 
