@@ -522,8 +522,8 @@ class TestSecurePyArrowIndexManager(unittest.TestCase):
                 self.manager.lookup_by_cid(test_entry["cid"], self.admin_token)
             )
             self.assertIsNone(lookup_result)
-        except Exception:
-            # An exception is also acceptable as the entry should be gone
+        except RuntimeError:
+            # A RuntimeError is acceptable when the implementation raises on missing entry
             pass
     
     def test_13_access_denied(self):
