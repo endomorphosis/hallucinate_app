@@ -136,8 +136,8 @@ class IPFSModelManager:
             self.initialized = True
             logger.info("IPFSModelManager initialized successfully")
             return True
-        except Exception as e:
-            logger.exception(f"IPFSModelManager initialization failed: {e}")
+        except Exception:
+            logger.exception("IPFSModelManager initialization failed")
             return False
         
     async def load_registry(self):
@@ -156,8 +156,8 @@ class IPFSModelManager:
                 self.registry_loaded = True
                 logger.info(f"Loaded {len(self.model_registry)} models from registry")
                 return True
-            except Exception as e:
-                logger.exception(f"Failed to load model registry: {e}")
+            except Exception:
+                logger.exception("Failed to load model registry")
                 self.model_registry = {}
                 return False
         else:
@@ -182,8 +182,8 @@ class IPFSModelManager:
                 
             logger.info(f"Saved {len(self.model_registry)} models to registry")
             return True
-        except Exception as e:
-            logger.exception(f"Failed to save model registry: {e}")
+        except Exception:
+            logger.exception("Failed to save model registry")
             return False
             
     async def list_models(self) -> Dict[str, ModelMetadata]:
@@ -254,8 +254,8 @@ class IPFSModelManager:
                             result = await self.ipfs_kit.add_to_ipfs(open(file_path, 'rb').read())
                             if result and 'cid' in result:
                                 file_cids[rel_path] = result['cid']
-                        except Exception as e:
-                            logger.exception(f"Failed to add {rel_path} to IPFS: {e}")
+                        except Exception:
+                            logger.exception(f"Failed to add {rel_path} to IPFS")
             
             # Create model metadata
             model_metadata = ModelMetadata(
@@ -280,8 +280,8 @@ class IPFSModelManager:
             
             return model_metadata
             
-        except Exception as e:
-            logger.exception(f"Failed to import model {model_id}: {e}")
+        except Exception:
+            logger.exception(f"Failed to import model {model_id}")
             return None
             
     async def import_model_from_ipfs(self, model_id: str, cid: str) -> Optional[ModelMetadata]:
@@ -384,8 +384,8 @@ class IPFSModelManager:
                     os.remove(local_path)
                     
             return True
-        except Exception as e:
-            logger.exception(f"Failed to remove model {model_id}: {e}")
+        except Exception:
+            logger.exception(f"Failed to remove model {model_id}")
             return False
     
     def test(self):
@@ -428,8 +428,8 @@ class IPFSModelManager:
                     # Clean up test model
                     if hf_import_test:
                         loop.run_until_complete(self.remove_model(test_model))
-                except Exception as e:
-                    logger.exception(f"HuggingFace import test failed: {e}")
+                except Exception:
+                    logger.exception("HuggingFace import test failed")
             
             # Test IPFS import if available
             ipfs_import_test = False
@@ -463,8 +463,8 @@ class IPFSModelManager:
                     except:
                         pass
                         
-                except Exception as e:
-                    logger.exception(f"IPFS import test failed: {e}")
+                except Exception:
+                    logger.exception("IPFS import test failed")
             
             # Compile results
             results = {
@@ -486,7 +486,7 @@ class IPFSModelManager:
             
             return results
         except Exception as e:
-            logger.exception(f"IPFS Model Manager test failed: {e}")
+            logger.exception("IPFS Model Manager test failed")
             return {
                 "success": False,
                 "module": "model_manager",
