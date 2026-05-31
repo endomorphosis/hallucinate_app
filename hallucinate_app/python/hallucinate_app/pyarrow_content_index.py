@@ -926,7 +926,7 @@ class PyArrowContentIndex:
         except Exception as e:
             logger.error(f"Error looking up path {path}: {e}")
             logger.error(traceback.format_exc())
-            return None
+            raise
             
     def _normalize_path(self, path):
         """Normalize filesystem path for consistent lookups"""
