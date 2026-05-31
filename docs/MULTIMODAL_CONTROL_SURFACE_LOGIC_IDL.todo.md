@@ -3004,7 +3004,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-271 Review swallowed exception path in hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_database_sync_manager_integration.py:229
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: quality
