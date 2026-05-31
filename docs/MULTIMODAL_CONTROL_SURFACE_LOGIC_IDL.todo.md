@@ -2795,7 +2795,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-252 Resolve code annotation in scripts/hallucinate_multimodal_control_todo_daemon.py:47
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: runtime
