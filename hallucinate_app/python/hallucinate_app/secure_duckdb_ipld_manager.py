@@ -9,9 +9,13 @@ Implements proper error handling and access control
 import os
 import json
 import asyncio
+import logging
+import re
 import traceback
 from datetime import datetime
 from typing import Dict, List, Set, Any, Optional, Union, Tuple
+
+logger = logging.getLogger(__name__)
 
 # Import auth manager
 from .auth import AuthManager
@@ -1194,8 +1198,9 @@ class SecureDuckDBIPLDManager:
         """
         # This is a simplified extraction that works for basic cases
         # A real implementation would use a proper SQL parser
+        if not sql:
+            return None
         try:
-            import re
             normalized_sql = sql.strip()
             
             if sql_type == "SELECT":
@@ -1247,9 +1252,12 @@ class SecureDuckDBIPLDManager:
             else:
                 return None
         
-        except Exception as e:
-            print(f"Error extracting table name: {e}\n{traceback.format_exc()}")
+        except re.error as e:
+            logger.warning("Regex error while extracting table name from SQL: %s", e)
             return None
+        except Exception as e:
+            logger.error("Unexpected error extracting table name: %s", e, exc_info=True)
+            raise
     
     def _update_resource_usage(self, operation, table_name, options=None):
         """
