@@ -2957,3 +2957,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/virtual_ai_os_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_supervisor.py:169. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-266-codebase-scan-bdaa854064ba.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-267 Review swallowed exception path in hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_model_manager.py:283
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_model_manager.py
+- Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_model_manager.py
+- Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_model_manager.py:283. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-267-codebase-scan-c14f51d2c277.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-268 Review swallowed exception path in hallucinate_app/hallucinate_app/python/hallucinate_app/js_bridge/pyarrow_content_index_bridge.py:752
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/js_bridge/pyarrow_content_index_bridge.py
+- Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/js_bridge/pyarrow_content_index_bridge.py
+- Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/js_bridge/pyarrow_content_index_bridge.py:752. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-268-codebase-scan-e481dd8596ca.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-269 Review swallowed exception path in hallucinate_app/hallucinate_app/python/hallucinate_app/secure_duckdb_ipld_manager.py:1249
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/secure_duckdb_ipld_manager.py
+- Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/secure_duckdb_ipld_manager.py
+- Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/secure_duckdb_ipld_manager.py:1249. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-269-codebase-scan-cdfcf34f4b38.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-270 Review swallowed exception path in hallucinate_app/hallucinate_app/python/hallucinate_app/test/test.py:374
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: quality
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/test/test.py
+- Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/test/test.py
+- Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/test/test.py:374. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-270-codebase-scan-0a7038674197.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-271 Review swallowed exception path in hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_database_sync_manager_integration.py:229
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: quality
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_database_sync_manager_integration.py
+- Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_database_sync_manager_integration.py
+- Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_database_sync_manager_integration.py:229. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-271-codebase-scan-355e82beb5ad.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
