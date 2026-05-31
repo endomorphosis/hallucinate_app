@@ -226,8 +226,8 @@ class TestDatabaseSyncManagerIntegration(unittest.TestCase):
         # Close the database sync manager
         try:
             self.loop.run_until_complete(self.db_sync_manager.close())
-        except:
-            pass
+        except Exception as e:
+            logger.warning("Error closing db_sync_manager during tearDown: %s", e)
         
         # Clean up temporary directory
         import shutil
