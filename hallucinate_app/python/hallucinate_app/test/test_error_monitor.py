@@ -265,9 +265,16 @@ class TestMessagesSimilar(unittest.TestCase):
         pattern = ErrorMonitor._SIMILAR_PATTERN
         # Verify lowercase ranges are NOT duplicated with explicit uppercase ranges
         self.assertNotIn('A-F', pattern.pattern)
-        # Confirm the pattern still normalises uppercase hex correctly
+        # re.IGNORECASE is what makes uppercase matching work without explicit [A-F] ranges
+        self.assertTrue(
+            pattern.flags & re.IGNORECASE,
+            "_SIMILAR_PATTERN must have re.IGNORECASE so uppercase hex is matched "
+            "without redundant [A-F] character-class ranges",
+        )
+        # Confirm the pattern still normalises uppercase, lowercase, and mixed-case hex correctly
         self.assertEqual(pattern.sub('XXX', '0xDEADBEEF'), 'XXX')
         self.assertEqual(pattern.sub('XXX', '0xdeadbeef'), 'XXX')
+        self.assertEqual(pattern.sub('XXX', '0xDeAdBeEf'), 'XXX')
 
     def test_msg2_substring_of_msg1_is_similar(self):
         """Normalised msg2 that is a substring of normalised msg1 is reported as similar (HAO-215).
