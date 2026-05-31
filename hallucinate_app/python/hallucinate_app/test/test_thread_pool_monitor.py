@@ -321,7 +321,8 @@ class ThreadPoolMonitorTests(unittest.TestCase):
         for future in futures + many_tasks:
             try:
                 future.result(timeout=2.0)
-            except:
+            except Exception:
+                # Ignore task exceptions and timeouts during cleanup
                 pass
 
 
