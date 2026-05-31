@@ -2902,3 +2902,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/virtual_ai_os_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_supervisor.py:168. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-261-codebase-scan-7b3d8a1bbd72.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-262 Resolve code annotation in scripts/hallucinate_multimodal_control_todo_supervisor.py:304
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_supervisor.py
+- Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_supervisor.py
+- Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_supervisor.py:304. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-262-codebase-scan-c6a047779577.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-263 Resolve code annotation in scripts/hallucinate_multimodal_control_todo_supervisor.py:307
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_supervisor.py
+- Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_supervisor.py
+- Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_supervisor.py:307. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-263-codebase-scan-776efef6a92f.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-264 Resolve code annotation in scripts/virtual_ai_os_todo_supervisor.py:19
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
+- Validation: python3 -m py_compile scripts/virtual_ai_os_todo_supervisor.py
+- Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_supervisor.py:19. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-264-codebase-scan-c22071473443.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-265 Resolve code annotation in scripts/virtual_ai_os_todo_supervisor.py:168
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
+- Validation: python3 -m py_compile scripts/virtual_ai_os_todo_supervisor.py
+- Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_supervisor.py:168. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-265-codebase-scan-07de3bf977f1.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-266 Resolve code annotation in scripts/virtual_ai_os_todo_supervisor.py:169
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
+- Validation: python3 -m py_compile scripts/virtual_ai_os_todo_supervisor.py
+- Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_supervisor.py:169. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-266-codebase-scan-bdaa854064ba.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
