@@ -46,7 +46,7 @@ class TestGraphRAG(unittest.TestCase):
         import shutil
         try:
             shutil.rmtree(self.test_dir)
-        except:
+        except OSError:
             pass
     
     def test_initialization(self):
