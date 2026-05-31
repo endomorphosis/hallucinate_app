@@ -385,7 +385,7 @@ class TestMessagesSimilar(unittest.TestCase):
         from hallucinate_app.error_monitor import ErrorMonitor
         sentinel = ErrorMonitor._SIMILAR_SENTINEL
         self.assertEqual(len(sentinel), 1, "Sentinel must be exactly one character")
-        self.assertEqual(sentinel, '\x00', "Sentinel must be the null byte (\\x00)")
+        self.assertEqual(sentinel, '\x00', "Sentinel must be the null byte (\\x00), not 'XXX'")
         _old_placeholder = chr(88) * 3  # the three-character placeholder replaced by VAI-144
         self.assertNotEqual(sentinel, _old_placeholder,
                             "Sentinel must not be the old three-character placeholder")
