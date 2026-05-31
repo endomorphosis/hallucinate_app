@@ -371,5 +371,5 @@ if __name__ == '__main__':
             results_path = Path(__file__).parent / "test_results.json"
             with open(results_path, 'w') as f:
                 json.dump(test_results, f, indent=2)
-        except:
-            pass
+        except Exception as save_e:
+            print(f"Warning: could not save partial test results: {save_e}")
