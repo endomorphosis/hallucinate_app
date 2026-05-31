@@ -108,7 +108,7 @@ class TestSecureModelManager(unittest.TestCase):
         import shutil
         try:
             shutil.rmtree(os.path.join(os.path.dirname(__file__), "test_auth_storage"))
-        except:
+        except OSError:
             pass
     
     def test_initialization(self):
