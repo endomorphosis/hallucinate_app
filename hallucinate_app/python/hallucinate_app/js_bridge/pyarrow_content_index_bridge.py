@@ -727,8 +727,8 @@ class PyArrowContentIndexBridge:
                     if HAS_OBSERVABILITY and self.metrics and 'cache_hits' in self.metrics:
                         try:
                             self.metrics['cache_hits'].labels(cache_type=cache_type).inc()
-                        except Exception as e:
-                            logger.error(f"Error updating cache hit metrics: {e}")
+                        except Exception:
+                            logger.exception("Error updating cache hit metrics")
                     
                     return cache[key]
                 else:
@@ -749,8 +749,8 @@ class PyArrowContentIndexBridge:
             if HAS_OBSERVABILITY and self.metrics and 'cache_misses' in self.metrics:
                 try:
                     self.metrics['cache_misses'].labels(cache_type=cache_type).inc()
-                except Exception as e:
-                    logger.error(f"Error updating cache miss metrics: {e}")
+                except Exception:
+                    logger.exception("Error updating cache miss metrics")
                     
             return None
     
@@ -1995,7 +1995,7 @@ class PyArrowContentIndexBridge:
                 add_result = await self.js_add_entry(test_entry)
                 result["steps"]["add_entry"] = {
                     "success": "error" not in add_result if isinstance(add_result, dict) else True,
-                    "message": "Successfully added test entry" if "error" not in add_result if isinstance(add_result, dict) else True else f"Failed to add entry: {add_result['error']}"
+                    "message": "Successfully added test entry" if ("error" not in add_result if isinstance(add_result, dict) else True) else f"Failed to add entry: {add_result['error']}"
                 }
             except Exception as e:
                 result["steps"]["add_entry"] = {
@@ -2010,7 +2010,7 @@ class PyArrowContentIndexBridge:
                 lookup_result = await self.js_lookup_by_cid(test_entry["cid"])
                 result["steps"]["lookup_by_cid"] = {
                     "success": "error" not in lookup_result if isinstance(lookup_result, dict) else True,
-                    "message": "Successfully looked up entry by CID" if "error" not in lookup_result if isinstance(lookup_result, dict) else True else f"Failed to lookup by CID: {lookup_result['error']}"
+                    "message": "Successfully looked up entry by CID" if ("error" not in lookup_result if isinstance(lookup_result, dict) else True) else f"Failed to lookup by CID: {lookup_result['error']}"
                 }
             except Exception as e:
                 result["steps"]["lookup_by_cid"] = {
