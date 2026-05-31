@@ -26,6 +26,10 @@ docs-update.md
 summary.md
 changelog-entry.md
 
+# Runtime-generated metrics and test artifacts
+metrics_archive.json
+test_results.json
+
 # Capacitor mobile builds
 ios/
 android/
