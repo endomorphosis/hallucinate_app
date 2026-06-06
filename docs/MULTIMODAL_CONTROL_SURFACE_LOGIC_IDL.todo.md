@@ -3213,7 +3213,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-290 Review swallowed exception path in hallucinate_app/python/hallucinate_app/control_surface_policy.py:473
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: runtime
