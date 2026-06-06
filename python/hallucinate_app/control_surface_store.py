@@ -493,6 +493,30 @@ def _safe_ref(value: str) -> str:
 
 
 def _json_safe(value: Any) -> Any:
+    """Recursively convert *value* to a JSON-serialisable form.
+
+    The conversion tries a cascade of strategies:
+
+    1. Primitives (``None``, ``str``, ``int``, ``float``, ``bool``) are
+       returned as-is.
+    2. ``Enum`` values are unwrapped to their ``.value``.
+    3. ``pathlib.Path`` objects become strings.
+    4. Mappings are converted key-by-key (keys coerced to ``str``).
+    5. Lists, tuples, and sets are converted element-by-element.
+    6. Objects that expose ``as_dict()`` are tried first; failures are logged
+       at DEBUG level and the next strategy is attempted (not re-raised).
+    7. Objects that expose ``to_dict()`` are tried next with the same
+       logged-fallthrough semantics.
+    8. Dataclasses are converted via ``dataclasses.asdict``.
+    9. Objects with a ``__dict__`` have their public, non-callable attributes
+       extracted.
+    10. Anything else is coerced to ``str``.
+
+    The ``except Exception`` blocks in steps 6 and 7 are intentional
+    fallbacks — they allow graceful degradation when a helper method raises
+    unexpectedly, rather than propagating an error from an unrelated
+    serialisation path.
+    """
     if value is None or isinstance(value, (str, int, float, bool)):
         return value
     if isinstance(value, Enum):
