@@ -1024,22 +1024,22 @@ def _serialize_ipfs_value(value: Any) -> Any:
         # errors propagate so they are not silently swallowed by this fallback chain.
         try:
             raw = value.as_dict()
-        except Exception:
-            _logger.debug("as_dict() failed for %r; trying next strategy", type(value), exc_info=True)
+        except Exception as exc:
+            _logger.debug("as_dict() failed for %r; trying next strategy", type(value), exc_info=exc)
         else:
             return _serialize_ipfs_value(raw)
     if hasattr(value, "to_dict"):
         try:
             raw = value.to_dict()
-        except Exception:
-            _logger.debug("to_dict() failed for %r; trying next strategy", type(value), exc_info=True)
+        except Exception as exc:
+            _logger.debug("to_dict() failed for %r; trying next strategy", type(value), exc_info=exc)
         else:
             return _serialize_ipfs_value(raw)
     if is_dataclass(value):
         try:
             raw = asdict(value)
-        except Exception:
-            _logger.debug("asdict() failed for %r; trying next strategy", type(value), exc_info=True)
+        except Exception as exc:
+            _logger.debug("asdict() failed for %r; trying next strategy", type(value), exc_info=exc)
         else:
             return _serialize_ipfs_value(raw)
     if hasattr(value, "__dict__"):
