@@ -3,7 +3,10 @@ DID (Decentralized Identifier) utilities for UCAN
 """
 
 import base64
+import logging
 from typing import Dict, Optional, Tuple, Any, Union
+
+logger = logging.getLogger(__name__)
 
 
 def create_did_from_public_key(public_key: bytes) -> str:
@@ -31,23 +34,23 @@ def resolve_did_key(did: str) -> Optional[bytes]:
         
     Returns:
         public_key: Extracted public key or None if invalid
+        
+    Raises:
+        TypeError: If did is not a string
     """
+    if not isinstance(did, str):
+        raise TypeError(f"Expected str for did, got {type(did).__name__}")
+
+    if not did.startswith("did:key:"):
+        logger.debug("DID does not start with 'did:key:': %s", did)
+        return None
+
+    # Extract the encoded part (we're using hex in our simplified format)
+    hex_key = did[8:]  # After 'did:key:'
+
+    # Convert hex to bytes; ValueError means the key portion is not valid hex
     try:
-        if not did.startswith("did:key:"):
-            print(f"DID does not start with 'did:key:': {did}")
-            return None
-        
-        # Extract the encoded part (we're using hex in our simplified format)
-        hex_key = did[8:]  # After 'did:key:'
-        
-        # Convert hex to bytes
-        try:
-            public_key = bytes.fromhex(hex_key)
-            print(f"Extracted public key of length: {len(public_key)} bytes")
-            return public_key
-        except Exception as e:
-            print(f"Error decoding hex key: {e}")
-            return None
-    except Exception as e:
-        print(f"Error resolving DID: {e}")
+        return bytes.fromhex(hex_key)
+    except ValueError:
+        logger.debug("Error decoding hex key from DID: %s", did)
         return None
