@@ -12,6 +12,7 @@ from dataclasses import asdict, dataclass, field, is_dataclass
 from datetime import datetime, timezone
 import inspect
 import re
+import warnings
 from collections.abc import Mapping
 from typing import Any
 
@@ -765,8 +766,11 @@ def _ipfs_explanations(logic_api: Any, source_text: str, compile_result: Any) ->
     if callable(explain_iter):
         try:
             explanations.extend(_string_list(explain_iter([source_text.strip()])))
-        except Exception:
-            pass
+        except Exception as exc:
+            warnings.warn(
+                f"compile_explain_iter raised an unexpected error: {exc}",
+                stacklevel=2,
+            )
 
     if not explanations:
         compiler_cls = getattr(logic_api, "NLUCANPolicyCompiler", None)
@@ -776,8 +780,11 @@ def _ipfs_explanations(logic_api: Any, source_text: str, compile_result: Any) ->
                 compile_explain = getattr(compiler, "compile_explain", None)
                 if callable(compile_explain):
                     explanations.extend(_string_list(compile_explain([source_text.strip()])))
-            except Exception:
-                pass
+            except Exception as exc:
+                warnings.warn(
+                    f"NLUCANPolicyCompiler.compile_explain raised an unexpected error: {exc}",
+                    stacklevel=2,
+                )
 
     metadata = _as_plain_mapping(_ipfs_field(compile_result, "metadata"))
     for value in (
