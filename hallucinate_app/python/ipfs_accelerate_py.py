@@ -621,8 +621,8 @@ class IPFSAccelerateMultiProcess:
                             "status": "error",
                             "error": str(e)
                         })
-                    except:
-                        pass
+                    except Exception as queue_err:
+                        logger.warning(f"Failed to send error to result queue for {model_id}: {queue_err}")
             
             # Clean up
             logger.info(f"Model process for {model_id} shutting down")
