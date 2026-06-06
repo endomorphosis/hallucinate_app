@@ -470,7 +470,7 @@ def _resolve_ipfs_logic_api(logic_api: Any = None) -> tuple[Any | None, tuple[st
     if api is None:
         try:
             from ipfs_datasets_py.logic import api as loaded_api  # type: ignore
-        except Exception:
+        except ImportError:
             return None, _REQUIRED_IPFS_LOGIC_SYMBOLS
         api = loaded_api
 
