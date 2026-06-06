@@ -11,10 +11,13 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field, is_dataclass
 from datetime import datetime, timezone
 import inspect
+import logging
 import re
 import warnings
 from collections.abc import Mapping
 from typing import Any
+
+_logger = logging.getLogger(__name__)
 
 from hallucinate_app.control_surface_logic_ir import (
     ControlSurfaceNorm,
@@ -1020,17 +1023,17 @@ def _serialize_ipfs_value(value: Any) -> Any:
         try:
             return _serialize_ipfs_value(value.as_dict())
         except Exception:
-            pass
+            _logger.debug("as_dict() failed for %r; trying next strategy", type(value), exc_info=True)
     if hasattr(value, "to_dict"):
         try:
             return _serialize_ipfs_value(value.to_dict())
         except Exception:
-            pass
+            _logger.debug("to_dict() failed for %r; trying next strategy", type(value), exc_info=True)
     if is_dataclass(value):
         try:
             return _serialize_ipfs_value(asdict(value))
         except Exception:
-            pass
+            _logger.debug("asdict() failed for %r; trying next strategy", type(value), exc_info=True)
     if hasattr(value, "__dict__"):
         public_attrs = {
             key: item
