@@ -998,8 +998,9 @@ class IPFSAccelerateMultiProcess:
                     "cpu_percent": process.cpu_percent(),
                     "thread_count": process.num_threads()
                 }
-            except:
-                pass
+            except Exception as e:
+                logger.debug(f"Resource info unavailable (psutil may not be installed): {e}")
+                test_results["resources"] = {"available": False, "error": str(e)}
             
             # Determine overall status
             all_success = all(result.get("success", False) for result in test_results.values())
