@@ -12,9 +12,12 @@ from datetime import datetime, timezone
 from enum import Enum
 import json
 import hashlib
+import logging
 import re
 from pathlib import Path
 from typing import Any, Mapping
+
+_log = logging.getLogger(__name__)
 
 from hallucinate_app.control_surface_mediator import (
     DEFAULT_CONFLICT_RESOLUTION,
@@ -564,7 +567,11 @@ def _json_safe(value: Any) -> Any:
         try:
             return _json_safe(value.as_dict())
         except Exception:
-            pass
+            _log.debug(
+                "_json_safe: as_dict() failed for %r, falling back to str()",
+                type(value).__name__,
+                exc_info=True,
+            )
     if is_dataclass(value):
         return _json_safe(asdict(value))
     return str(value)
