@@ -1026,8 +1026,10 @@ class ThreadPoolManager:
             for future in scale_futures:
                 try:
                     future.result(timeout=2.0)
-                except Exception:
-                    pass
+                except (TimeoutError, concurrent.futures.TimeoutError):
+                    logger.debug("Scale test task timed out during cleanup")
+                except Exception as e:
+                    logger.debug("Scale test task raised unexpected exception during cleanup: %s", e)
             
             # Overall success
             test_results["success"] = all(step["success"] for step in test_results["steps"].values())
