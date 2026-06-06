@@ -12,11 +12,14 @@ from dataclasses import asdict, dataclass, is_dataclass
 from enum import Enum
 import hashlib
 import json
+import logging
 import re
 from pathlib import Path
 from typing import Any, Mapping
 
 from hallucinate_app.control_surface_logic_ir import ControlSurfacePolicy
+
+_log = logging.getLogger(__name__)
 
 
 POLICY_BUNDLE_STORE_VERSION = "0.1.0"
@@ -505,13 +508,13 @@ def _json_safe(value: Any) -> Any:
     if hasattr(value, "as_dict"):
         try:
             return _json_safe(value.as_dict())
-        except Exception:
-            pass
+        except Exception as exc:  # noqa: BLE001
+            _log.debug("_json_safe: as_dict() failed for %r: %s", type(value).__name__, exc)
     if hasattr(value, "to_dict"):
         try:
             return _json_safe(value.to_dict())
-        except Exception:
-            pass
+        except Exception as exc:  # noqa: BLE001
+            _log.debug("_json_safe: to_dict() failed for %r: %s", type(value).__name__, exc)
     if is_dataclass(value):
         return _json_safe(asdict(value))
     if hasattr(value, "__dict__"):
