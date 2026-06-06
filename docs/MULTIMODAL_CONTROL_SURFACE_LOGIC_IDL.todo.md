@@ -3298,3 +3298,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/python/hallucinate_app/control_surface_policy.py
 - Validation: python3 -m py_compile hallucinate_app/python/hallucinate_app/control_surface_policy.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/python/hallucinate_app/control_surface_policy.py:1025. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-06-hao-297-codebase-scan-702ac0beaa18.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-298 Review swallowed exception path in hallucinate_app/python/hallucinate_app/control_surface_receipts.py:566
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/python/hallucinate_app/control_surface_receipts.py
+- Validation: python3 -m py_compile hallucinate_app/python/hallucinate_app/control_surface_receipts.py
+- Acceptance: Codebase scan filed this finding from hallucinate_app/python/hallucinate_app/control_surface_receipts.py:566. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-06-hao-298-codebase-scan-4186d777ba98.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-299 Review swallowed exception path in hallucinate_app/python/hallucinate_app/control_surface_store.py:508
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/python/hallucinate_app/control_surface_store.py
+- Validation: python3 -m py_compile hallucinate_app/python/hallucinate_app/control_surface_store.py
+- Acceptance: Codebase scan filed this finding from hallucinate_app/python/hallucinate_app/control_surface_store.py:508. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-06-hao-299-codebase-scan-546c38fc798a.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-300 Review swallowed exception path in hallucinate_app/python/hallucinate_app/control_surface_store.py:513
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/python/hallucinate_app/control_surface_store.py
+- Validation: python3 -m py_compile hallucinate_app/python/hallucinate_app/control_surface_store.py
+- Acceptance: Codebase scan filed this finding from hallucinate_app/python/hallucinate_app/control_surface_store.py:513. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-06-hao-300-codebase-scan-565bd308c1dc.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-301 Resolve code annotation in hallucinate_app/python/hallucinate_app/ipfs_kit_bridge.py:793
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/python/hallucinate_app/ipfs_kit_bridge.py
+- Validation: python3 -m py_compile hallucinate_app/python/hallucinate_app/ipfs_kit_bridge.py
+- Acceptance: Codebase scan filed this finding from hallucinate_app/python/hallucinate_app/ipfs_kit_bridge.py:793. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-06-hao-301-codebase-scan-35009422e1fa.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-302 Review swallowed exception path in hallucinate_app/test/python/test_graphrag.py:118
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: quality
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/test/python/test_graphrag.py
+- Validation: python3 -m py_compile hallucinate_app/test/python/test_graphrag.py
+- Acceptance: Codebase scan filed this finding from hallucinate_app/test/python/test_graphrag.py:118. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-06-hao-302-codebase-scan-94bc2b69153d.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
