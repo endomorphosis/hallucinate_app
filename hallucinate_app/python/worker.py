@@ -1,4 +1,6 @@
 import os
+import sys
+import traceback
 # from cloudkit_worker import run
 # import config from .config
 import ipfs_accelerate_py
@@ -17,7 +19,7 @@ class libp2pWorker:
         metadata = {}
         self.resources = resources
         self.metadata = metadata
-        self.metadata["role"] == "master"
+        self.metadata["role"] = "master"
         self.imports = ['ipfs_kit', 'libp2p_kit', 'orbitdb_kit', 'ipfs_faiss', 'ipfs_model_manager', 'ipfs_datasets', 'ipfs_transformers', 'ipfs_agents', 'ipfs_accelerate', 'ipfs_embeddings']
         if "ipfs_kit_py" in globals():
             self.ipfs_kit = ipfs_kit_py.ipfs_kit(self.resources, self.metadata)
@@ -87,5 +89,5 @@ if __name__ == '__main__':
         worker.run()
         # worker.run(skillset=os.path.join(os.path.dirname(__file__), 'skillset'))
     except Exception as e:
-        print(e)
-    pass
+        traceback.print_exc()
+        sys.exit(1)
