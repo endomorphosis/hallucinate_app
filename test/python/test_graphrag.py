@@ -115,7 +115,7 @@ class TestGraphRAGIntegration(unittest.TestCase):
         import shutil
         try:
             shutil.rmtree(cls.test_dir)
-        except:
+        except OSError:
             pass
     
     def test_01_initialization(self):
