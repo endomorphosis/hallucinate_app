@@ -2,6 +2,7 @@
 Token implementation for UCAN
 """
 
+import logging
 import time
 import json
 import base64
@@ -12,6 +13,8 @@ import jwt
 
 from .principal import Principal
 from .capability import Capability
+
+logger = logging.getLogger(__name__)
 
 
 class Token:
@@ -152,7 +155,7 @@ class Token:
             # Split token
             parts = token_str.split('.')
             if len(parts) != 3:
-                print(f"Invalid token format. Expected 3 parts, got {len(parts)}")
+                logger.warning("Invalid token format. Expected 3 parts, got %d", len(parts))
                 return None
                 
             header_b64, payload_b64, signature_b64 = parts
@@ -173,7 +176,7 @@ class Token:
             
             # Verify algorithm
             if header.get("alg") != "Ed25519" or header.get("typ") != "JWT":
-                print(f"Invalid token algorithm or type: {header}")
+                logger.warning("Invalid token algorithm or type: %s", header)
                 return None
                 
             # Extract fields
@@ -187,18 +190,18 @@ class Token:
             nonce = payload.get("nnc")
             
             # Create principals
-            print(f"Importing token with issuer DID: {issuer_did}")
+            logger.debug("Importing token with issuer DID: %s", issuer_did)
             issuer = Principal.from_did(issuer_did)
             
-            print(f"Importing token with audience DID: {audience_did}")
+            logger.debug("Importing token with audience DID: %s", audience_did)
             audience = Principal.from_did(audience_did)
             
             if not issuer:
-                print(f"Failed to create issuer principal from DID: {issuer_did}")
+                logger.warning("Failed to create issuer principal from DID: %s", issuer_did)
                 return None
                 
             if not audience:
-                print(f"Failed to create audience principal from DID: {audience_did}")
+                logger.warning("Failed to create audience principal from DID: %s", audience_did)
                 return None
                 
             # Create capabilities
@@ -221,7 +224,7 @@ class Token:
             
             return token
         except Exception as e:
-            print(f"Error importing token: {e}")
+            logger.exception("Error importing token: %s", e)
             return None
     
     async def verify(self, time_check: bool = True) -> bool:
@@ -237,17 +240,17 @@ class Token:
         try:
             # Check expiration
             if time_check and time.time() > self.expiration:
-                print(f"Token expired: {self.expiration} < {time.time()}")
+                logger.warning("Token expired: expiration=%s current=%s", self.expiration, time.time())
                 return False
                 
             # Check not_before
             if time_check and self.not_before is not None and time.time() < self.not_before:
-                print(f"Token not yet valid: {self.not_before} > {time.time()}")
+                logger.warning("Token not yet valid: not_before=%s current=%s", self.not_before, time.time())
                 return False
                 
             # In our simplified implementation for testing purposes,
             # let's assume the signature is valid
-            print("Signature verified in mock mode")
+            logger.debug("Signature verified in mock mode")
             return True
                 
             # In a real implementation, we would rebuild the payload and verify
@@ -259,7 +262,7 @@ class Token:
             # Verify signature
             # return self.issuer.verify(payload_json, self.signature)
         except Exception as e:
-            print(f"Error verifying token: {e}")
+            logger.exception("Error verifying token: %s", e)
             return False
     
     async def has_capability(self, required: Capability) -> bool:
