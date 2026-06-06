@@ -406,7 +406,7 @@ def _install_ipfs_at_time_evaluator_adapter(logic_api: Any) -> Any:
         return None
     try:
         from ipfs_datasets_py.mcp_server.temporal_policy import PolicyEvaluator  # type: ignore
-    except Exception:
+    except ImportError:
         return None
 
     original_evaluate = getattr(PolicyEvaluator, "evaluate", None)
