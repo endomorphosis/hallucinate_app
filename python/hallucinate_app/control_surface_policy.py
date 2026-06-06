@@ -1020,20 +1020,28 @@ def _serialize_ipfs_value(value: Any) -> Any:
     if isinstance(value, (list, tuple, set)):
         return [_serialize_ipfs_value(item) for item in value]
     if hasattr(value, "as_dict"):
+        # Only catch exceptions from as_dict() itself; let recursive serialization
+        # errors propagate so they are not silently swallowed by this fallback chain.
         try:
-            return _serialize_ipfs_value(value.as_dict())
+            raw = value.as_dict()
         except Exception:
             _logger.debug("as_dict() failed for %r; trying next strategy", type(value), exc_info=True)
+        else:
+            return _serialize_ipfs_value(raw)
     if hasattr(value, "to_dict"):
         try:
-            return _serialize_ipfs_value(value.to_dict())
+            raw = value.to_dict()
         except Exception:
             _logger.debug("to_dict() failed for %r; trying next strategy", type(value), exc_info=True)
+        else:
+            return _serialize_ipfs_value(raw)
     if is_dataclass(value):
         try:
-            return _serialize_ipfs_value(asdict(value))
+            raw = asdict(value)
         except Exception:
             _logger.debug("asdict() failed for %r; trying next strategy", type(value), exc_info=True)
+        else:
+            return _serialize_ipfs_value(raw)
     if hasattr(value, "__dict__"):
         public_attrs = {
             key: item
