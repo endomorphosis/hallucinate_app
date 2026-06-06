@@ -3353,3 +3353,14 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/test/python/test_graphrag.py
 - Validation: python3 -m py_compile hallucinate_app/test/python/test_graphrag.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/test/python/test_graphrag.py:118. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-06-hao-302-codebase-scan-94bc2b69153d.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-303 Resolve implementation retry-budget failure for HAO-300
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/python/hallucinate_app/control_surface_store.py
+- Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-06-hao-303-hao-300-implementation-retry-budget.md
+- Acceptance: Implementation retry-budget guardrail filed this from repeated implementation failures in HAO-300. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-06-hao-303-hao-300-implementation-retry-budget.md to fix the setup, runtime, or timeout blocker, then mark this repair task completed so the supervisor can release HAO-300 from strategy blocked_tasks.
