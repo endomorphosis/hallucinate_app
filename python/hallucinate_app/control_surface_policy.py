@@ -1034,14 +1034,18 @@ def _serialize_ipfs_value(value: Any) -> Any:
         try:
             raw = value.to_dict()
         except Exception as exc:
-            _logger.debug("to_dict() failed for %r; trying next strategy", type(value), exc_info=exc)
+            # Log at WARNING so failures are visible in production logs rather than
+            # silently swallowed.  The fallback chain continues to the next strategy.
+            _logger.warning("to_dict() failed for %r; trying next strategy", type(value), exc_info=exc)
         else:
             return _serialize_ipfs_value(raw)
     if is_dataclass(value):
         try:
             raw = asdict(value)
         except Exception as exc:
-            _logger.debug("asdict() failed for %r; trying next strategy", type(value), exc_info=exc)
+            # Log at WARNING so failures are visible in production logs rather than
+            # silently swallowed.  The fallback chain continues to the next strategy.
+            _logger.warning("asdict() failed for %r; trying next strategy", type(value), exc_info=exc)
         else:
             return _serialize_ipfs_value(raw)
     if hasattr(value, "__dict__"):
