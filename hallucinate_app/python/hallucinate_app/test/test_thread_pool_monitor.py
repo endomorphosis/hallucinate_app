@@ -14,7 +14,7 @@ import logging
 import unittest
 import threading
 import concurrent.futures
-from concurrent.futures import Future
+from concurrent.futures import Future, CancelledError
 
 # Add parent directory to path for imports
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -323,10 +323,14 @@ class ThreadPoolMonitorTests(unittest.TestCase):
         for future in futures + many_tasks:
             try:
                 future.result(timeout=2.0)
-            except concurrent.futures.TimeoutError:
-                pass  # Timeout waiting for task during cleanup is expected
-            except Exception as exc:
-                logging.debug("Ignoring task exception during cleanup: %s", exc)
+            except (concurrent.futures.TimeoutError, CancelledError):
+                # Expected: tasks may still be running or were cancelled during cleanup
+                pass
+            except Exception:
+                # Log unexpected task exceptions so they aren't silently lost
+                logging.getLogger(__name__).debug(
+                    "Unexpected exception during cleanup future.result()", exc_info=True
+                )
 
 
 # Helper to run async tests
