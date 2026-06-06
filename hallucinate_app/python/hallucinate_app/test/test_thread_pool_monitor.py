@@ -10,8 +10,10 @@ import sys
 import time
 import json
 import asyncio
+import logging
 import unittest
 import threading
+import concurrent.futures
 from concurrent.futures import Future
 
 # Add parent directory to path for imports
@@ -321,9 +323,10 @@ class ThreadPoolMonitorTests(unittest.TestCase):
         for future in futures + many_tasks:
             try:
                 future.result(timeout=2.0)
-            except Exception:
-                # Ignore task exceptions and timeouts during cleanup
-                pass
+            except concurrent.futures.TimeoutError:
+                pass  # Timeout waiting for task during cleanup is expected
+            except Exception as exc:
+                logging.debug("Ignoring task exception during cleanup: %s", exc)
 
 
 # Helper to run async tests
