@@ -760,6 +760,61 @@ class IPFSKitBridge:
                 "error": str(e),
                 "error_type": type(e).__name__
             }
+
+    def _resolve_cleanup_result(self, result: Any) -> Any:
+        """Run coroutine cleanup results from this synchronous shutdown path."""
+        if not asyncio.iscoroutine(result):
+            return result
+
+        try:
+            asyncio.get_running_loop()
+        except RuntimeError:
+            return asyncio.run(result)
+
+        outcome = {"result": None, "error": None}
+
+        def run_cleanup():
+            try:
+                outcome["result"] = asyncio.run(result)
+            except Exception as cleanup_error:
+                outcome["error"] = cleanup_error
+
+        cleanup_thread = threading.Thread(target=run_cleanup, name="ipfs-kit-cleanup")
+        cleanup_thread.start()
+        cleanup_thread.join()
+
+        if outcome["error"]:
+            raise outcome["error"]
+
+        return outcome["result"]
+
+    def _call_first_cleanup_method(
+        self,
+        resource: Any,
+        method_names: List[str],
+        resource_name: str,
+    ) -> Any:
+        """Call the first supported cleanup method on a resource."""
+        for method_name in method_names:
+            cleanup = getattr(resource, method_name, None)
+            if not callable(cleanup):
+                continue
+
+            result = self._resolve_cleanup_result(cleanup())
+            info(
+                "Cleanup method completed",
+                resource=resource_name,
+                method=method_name,
+                result=result,
+            )
+            return result
+
+        warning(
+            "No cleanup method available",
+            resource=resource_name,
+            methods=method_names,
+        )
+        return None
     
     @timed("shutdown")
     def shutdown(self):
@@ -775,26 +830,60 @@ class IPFSKitBridge:
                 info("Thread pool shut down")
             
             # Cleanup ipfs_kit resources
-            if self.ipfs_kit_instance and self.initialized:
-                try:
-                    # Save metadata index if available
-                    if self.metadata_index:
+            if self.ipfs_kit_instance:
+                cleanup_errors = []
+
+                # Save and close metadata index resources if available.
+                if self.metadata_index:
+                    try:
                         with timer("save_metadata_index"):
-                            info("Saving metadata index")
-                            self.metadata_index.save()
+                            save_metadata_index = getattr(self.metadata_index, "save", None)
+                            if callable(save_metadata_index):
+                                info("Saving metadata index")
+                                self._resolve_cleanup_result(save_metadata_index())
+                            else:
+                                debug("Metadata index has no save method; skipping save")
                         
                         # Log index statistics
-                        try:
-                            index_stats = self.metadata_index.get_statistics()
-                            info("Metadata index saved", stats=index_stats)
-                        except Exception as stats_err:
-                            warning("Failed to get metadata index statistics", error=str(stats_err))
-                    
-                    # TODO: Add proper cleanup for ipfs_kit_instance
-                    info("IPFS Kit resources cleaned up")
+                        get_statistics = getattr(self.metadata_index, "get_statistics", None)
+                        if callable(get_statistics):
+                            try:
+                                index_stats = get_statistics()
+                                info("Metadata index saved", stats=index_stats)
+                            except Exception as stats_err:
+                                warning("Failed to get metadata index statistics", error=str(stats_err))
+
+                        close_metadata_index = getattr(self.metadata_index, "close", None)
+                        if callable(close_metadata_index):
+                            with timer("close_metadata_index"):
+                                self._resolve_cleanup_result(close_metadata_index())
+                            info("Metadata index closed")
+                    except Exception as e:
+                        cleanup_errors.append(f"metadata_index: {e}")
+                        error("Error during metadata index cleanup", error=str(e))
+                        track_error("metadata_index_cleanup", error_type=type(e).__name__)
+
+                try:
+                    with timer("ipfs_kit_instance_cleanup"):
+                        self._call_first_cleanup_method(
+                            self.ipfs_kit_instance,
+                            ["stop_daemons", "shutdown", "close", "stop", "stop_daemon", "cleanup"],
+                            "ipfs_kit_instance",
+                        )
                 except Exception as e:
+                    cleanup_errors.append(f"ipfs_kit_instance: {e}")
                     error("Error during IPFS Kit cleanup", error=str(e))
                     track_error("ipfs_kit_cleanup", error_type=type(e).__name__)
+                finally:
+                    self.metadata_index = None
+                    self.ipfs_kit_instance = None
+                    self.ipfs_simple_api = None
+                    self.initialized = False
+
+                if cleanup_errors:
+                    warning("IPFS Kit cleanup completed with errors", errors=cleanup_errors)
+                else:
+                    info("IPFS Kit resources cleaned up")
             
             # Clean up observability resources
             try:
