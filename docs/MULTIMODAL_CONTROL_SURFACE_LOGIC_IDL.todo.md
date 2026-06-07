@@ -3426,7 +3426,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Fingerprint: 759fd2993921d147f93154db56a0bd36cce218a3
+- Fingerprint: e6e2d7e889cc9be3d914b6208720270084eba2f6
 - Dedupe key: reconciliation_guardrail:main_checkout_dirty
 - Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
@@ -3458,3 +3458,14 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-311-reconciliation-534cc45af3d6.md
 - Acceptance: Reconciliation guardrail filed this because 20 branch or worktree cleanup candidates are blocked by preflight_merge_conflict. Use evidence and the machine-readable reconciliation plan in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-311-reconciliation-534cc45af3d6.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
+
+## HAO-312 Resolve validation retry-budget failure for HAO-306
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/.github/workflows/auto-doc-maintenance.yml
+- Validation: python3 -c 'import pathlib, sys
+- Acceptance: Retry-budget guardrail filed this from repeated validation failures in HAO-306. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-312-hao-306-retry-budget.md to fix the validation blocker, then mark this repair task completed so the supervisor can release HAO-306 from strategy blocked_tasks.
