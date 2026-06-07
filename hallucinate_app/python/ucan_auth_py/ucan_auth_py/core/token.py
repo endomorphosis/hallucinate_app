@@ -6,6 +6,8 @@ import logging
 import time
 import json
 import base64
+import binascii
+import math
 from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Optional, Any, Union, Set
 
@@ -139,6 +141,46 @@ class Token:
         
         # Assemble JWT
         return f"{header_b64}.{payload_b64}.{signature_b64}"
+
+    @staticmethod
+    def _decode_base64url_part(part: str, label: str) -> Optional[bytes]:
+        if not part:
+            logger.warning("Invalid token %s: empty segment", label)
+            return None
+
+        try:
+            part_bytes = part.encode("ascii")
+            padding = b"=" * (-len(part_bytes) % 4)
+            return base64.b64decode(part_bytes + padding, altchars=b"-_", validate=True)
+        except (binascii.Error, UnicodeEncodeError) as e:
+            logger.warning("Invalid token %s: base64url decode failed: %s", label, e)
+            return None
+
+    @staticmethod
+    def _decode_json_object(data: bytes, label: str) -> Optional[Dict[str, Any]]:
+        try:
+            value = json.loads(data)
+        except (json.JSONDecodeError, UnicodeDecodeError) as e:
+            logger.warning("Invalid token %s JSON: %s", label, e)
+            return None
+
+        if not isinstance(value, dict):
+            logger.warning(
+                "Invalid token %s JSON: expected object, got %s",
+                label,
+                type(value).__name__
+            )
+            return None
+
+        return value
+
+    @staticmethod
+    def _is_valid_timestamp(value: Any) -> bool:
+        if isinstance(value, bool):
+            return False
+        if isinstance(value, int):
+            return True
+        return isinstance(value, float) and math.isfinite(value)
     
     @classmethod
     async def import_token(cls, token_str: str) -> Optional['Token']:
@@ -151,81 +193,153 @@ class Token:
         Returns:
             Token: Imported token or None if invalid
         """
-        try:
-            # Split token
-            parts = token_str.split('.')
-            if len(parts) != 3:
-                logger.warning("Invalid token format. Expected 3 parts, got %d", len(parts))
-                return None
-                
-            header_b64, payload_b64, signature_b64 = parts
-            
-            # Decode header and payload
-            # Add padding if needed
-            header_padding = '=' * (4 - len(header_b64) % 4) if len(header_b64) % 4 != 0 else ''
-            payload_padding = '=' * (4 - len(payload_b64) % 4) if len(payload_b64) % 4 != 0 else ''
-            signature_padding = '=' * (4 - len(signature_b64) % 4) if len(signature_b64) % 4 != 0 else ''
-            
-            header_json = base64.urlsafe_b64decode(header_b64 + header_padding)
-            payload_json = base64.urlsafe_b64decode(payload_b64 + payload_padding)
-            signature = base64.urlsafe_b64decode(signature_b64 + signature_padding)
-            
-            # Parse JSON
-            header = json.loads(header_json)
-            payload = json.loads(payload_json)
-            
-            # Verify algorithm
-            if header.get("alg") != "Ed25519" or header.get("typ") != "JWT":
-                logger.warning("Invalid token algorithm or type: %s", header)
-                return None
-                
-            # Extract fields
-            issuer_did = payload.get("iss")
-            audience_did = payload.get("aud")
-            expiration = payload.get("exp")
-            capabilities_data = payload.get("cap", [])
-            not_before = payload.get("nbf")
-            facts = payload.get("fct")
-            proofs = payload.get("prf")
-            nonce = payload.get("nnc")
-            
-            # Create principals
-            logger.debug("Importing token with issuer DID: %s", issuer_did)
-            issuer = Principal.from_did(issuer_did)
-            
-            logger.debug("Importing token with audience DID: %s", audience_did)
-            audience = Principal.from_did(audience_did)
-            
-            if not issuer:
-                logger.warning("Failed to create issuer principal from DID: %s", issuer_did)
-                return None
-                
-            if not audience:
-                logger.warning("Failed to create audience principal from DID: %s", audience_did)
-                return None
-                
-            # Create capabilities
-            capabilities = [Capability.from_dict(cap_data) for cap_data in capabilities_data]
-            
-            # Create token
-            token = cls(
-                issuer=issuer,
-                audience=audience,
-                capabilities=capabilities,
-                expiration=expiration,
-                not_before=not_before,
-                facts=facts,
-                proofs=proofs,
-                nonce=nonce
-            )
-            
-            # Store signature
-            token.signature = signature
-            
-            return token
-        except Exception as e:
-            logger.exception("Error importing token: %s", e)
+        if not isinstance(token_str, str):
+            logger.warning("Invalid token type. Expected str, got %s", type(token_str).__name__)
             return None
+
+        # Split token
+        parts = token_str.split('.')
+        if len(parts) != 3:
+            logger.warning("Invalid token format. Expected 3 parts, got %d", len(parts))
+            return None
+
+        header_b64, payload_b64, signature_b64 = parts
+
+        header_json = cls._decode_base64url_part(header_b64, "header")
+        payload_json = cls._decode_base64url_part(payload_b64, "payload")
+        signature = cls._decode_base64url_part(signature_b64, "signature")
+        if header_json is None or payload_json is None or signature is None:
+            return None
+
+        # Parse JSON
+        header = cls._decode_json_object(header_json, "header")
+        payload = cls._decode_json_object(payload_json, "payload")
+        if header is None or payload is None:
+            return None
+
+        # Verify algorithm
+        if header.get("alg") != "Ed25519" or header.get("typ") != "JWT":
+            logger.warning("Invalid token algorithm or type: %s", header)
+            return None
+
+        # Extract fields
+        issuer_did = payload.get("iss")
+        audience_did = payload.get("aud")
+        expiration = payload.get("exp")
+        capabilities_data = payload.get("cap", [])
+        not_before = payload.get("nbf")
+        facts = payload.get("fct")
+        proofs = payload.get("prf")
+        nonce = payload.get("nnc")
+
+        if not isinstance(issuer_did, str):
+            logger.warning(
+                "Invalid token issuer DID: expected str, got %s",
+                type(issuer_did).__name__
+            )
+            return None
+
+        if not isinstance(audience_did, str):
+            logger.warning(
+                "Invalid token audience DID: expected str, got %s",
+                type(audience_did).__name__
+            )
+            return None
+
+        if not cls._is_valid_timestamp(expiration):
+            logger.warning(
+                "Invalid token expiration: expected number, got %s",
+                type(expiration).__name__
+            )
+            return None
+
+        if not_before is not None and not cls._is_valid_timestamp(not_before):
+            logger.warning(
+                "Invalid token not-before: expected number, got %s",
+                type(not_before).__name__
+            )
+            return None
+
+        if not isinstance(capabilities_data, list):
+            logger.warning(
+                "Invalid token capabilities: expected list, got %s",
+                type(capabilities_data).__name__
+            )
+            return None
+
+        if facts is not None and not isinstance(facts, dict):
+            logger.warning("Invalid token facts: expected object, got %s", type(facts).__name__)
+            return None
+
+        if proofs is not None and (
+            not isinstance(proofs, list) or not all(isinstance(proof, str) for proof in proofs)
+        ):
+            logger.warning("Invalid token proofs: expected list of strings")
+            return None
+
+        if nonce is not None and not isinstance(nonce, str):
+            logger.warning("Invalid token nonce: expected str, got %s", type(nonce).__name__)
+            return None
+
+        # Create principals
+        logger.debug("Importing token with issuer DID: %s", issuer_did)
+        issuer = Principal.from_did(issuer_did)
+
+        logger.debug("Importing token with audience DID: %s", audience_did)
+        audience = Principal.from_did(audience_did)
+
+        if not issuer:
+            logger.warning("Failed to create issuer principal from DID: %s", issuer_did)
+            return None
+
+        if not audience:
+            logger.warning("Failed to create audience principal from DID: %s", audience_did)
+            return None
+
+        # Create capabilities
+        capabilities = []
+        for index, cap_data in enumerate(capabilities_data):
+            if not isinstance(cap_data, dict):
+                logger.warning(
+                    "Invalid token capability at index %d: expected object, got %s",
+                    index,
+                    type(cap_data).__name__
+                )
+                return None
+
+            action = cap_data.get("can")
+            resource = cap_data.get("with")
+            limitations = cap_data.get("limits", {})
+            if (
+                not isinstance(action, str) or
+                not isinstance(resource, str) or
+                not isinstance(limitations, dict)
+            ):
+                logger.warning(
+                    "Invalid token capability at index %d: "
+                    "expected can/with strings and limits object",
+                    index
+                )
+                return None
+
+            capabilities.append(Capability.from_dict(cap_data))
+
+        # Create token
+        token = cls(
+            issuer=issuer,
+            audience=audience,
+            capabilities=capabilities,
+            expiration=expiration,
+            not_before=not_before,
+            facts=facts,
+            proofs=proofs,
+            nonce=nonce
+        )
+
+        # Store signature
+        token.signature = signature
+
+        return token
     
     async def verify(self, time_check: bool = True) -> bool:
         """
