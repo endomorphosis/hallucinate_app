@@ -241,6 +241,12 @@ class TestMessagesSimilar(unittest.TestCase):
         msg2 = "Backup failed on 2025-12-31"
         self.assertTrue(self._similar(msg1, msg2))
 
+    def test_iso_timestamp_normalised(self):
+        """Messages differing only in ISO-8601 timestamp should be considered similar."""
+        msg1 = "Task failed at 2024-01-15T10:30:00.123Z with code 1"
+        msg2 = "Task failed at 2025-12-31T23:59:59.999-07:00 with code 1"
+        self.assertTrue(self._similar(msg1, msg2))
+
     def test_distinct_messages_differ(self):
         """Truly distinct messages must not be reported as similar."""
         msg1 = "Connection refused by remote host"
@@ -533,5 +539,4 @@ class TestMessagesSimilar(unittest.TestCase):
             "Fault at 0xDEADBEEF in module alpha",
             "Fault at 0xCAFEBABE in module beta",
         ))
-
 

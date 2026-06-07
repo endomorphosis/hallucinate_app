@@ -333,8 +333,8 @@ class IPFSKit:
                             # Clean up temp file
                             try:
                                 os.unlink(tmp_path)
-                            except OSError:
-                                pass
+                            except OSError as e:
+                                logger.debug(f"Failed to remove temp file {tmp_path}: {e}")
                         except Exception as e:
                             logger.error(f"Get test failed: {e}")
                 except Exception as e:

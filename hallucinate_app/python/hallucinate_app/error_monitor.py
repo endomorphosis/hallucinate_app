@@ -784,8 +784,14 @@ class ErrorMonitor:
     # Compiled once; re.IGNORECASE ensures both 0xDEADBEEF and 0xdeadbeef are normalised.
     # Character classes use only lowercase ranges — re.IGNORECASE covers the uppercase
     # variants, so explicit [A-F] / [A-Fa-f] ranges are redundant and removed.
+    # Keep timestamps before stack traces so "at 2026-05-28" is not consumed
+    # as a partial "at file:line" token.
     _SIMILAR_PATTERN = re.compile(
-        r'line \d+|at [^:]+:\d+|0x[0-9a-f]+|\d{4}-\d{2}-\d{2}|ID: [a-f0-9-]+',
+        r'line \d+'
+        r'|\d{4}-\d{2}-\d{2}(?:[t ]\d{2}:\d{2}:\d{2}(?:[.,]\d+)?(?:z|[+-]\d{2}:?\d{2})?)?'
+        r'|at (?!\d{4}-\d{2}-\d{2})[^:]+:\d+'
+        r'|0x[0-9a-f]+'
+        r'|ID: [a-f0-9-]+',
         re.IGNORECASE,
     )
     _SIMILAR_MIN_LEN = 10

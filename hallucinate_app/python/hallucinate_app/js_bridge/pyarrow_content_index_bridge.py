@@ -1995,9 +1995,14 @@ class PyArrowContentIndexBridge:
                 if verbose:
                     result["logs"].append(f"[INFO] Testing add_entry")
                 add_result = await self.js_add_entry(test_entry)
+                add_failed = isinstance(add_result, dict) and "error" in add_result
                 result["steps"]["add_entry"] = {
-                    "success": "error" not in add_result if isinstance(add_result, dict) else True,
-                    "message": "Successfully added test entry" if ("error" not in add_result if isinstance(add_result, dict) else True) else f"Failed to add entry: {add_result['error']}"
+                    "success": not add_failed,
+                    "message": (
+                        "Successfully added test entry"
+                        if not add_failed
+                        else f"Failed to add entry: {add_result.get('error', str(add_result))}"
+                    )
                 }
             except Exception as e:
                 result["steps"]["add_entry"] = {
@@ -2010,9 +2015,14 @@ class PyArrowContentIndexBridge:
                 if verbose:
                     result["logs"].append(f"[INFO] Testing lookup_by_cid")
                 lookup_result = await self.js_lookup_by_cid(test_entry["cid"])
+                lookup_failed = isinstance(lookup_result, dict) and "error" in lookup_result
                 result["steps"]["lookup_by_cid"] = {
-                    "success": "error" not in lookup_result if isinstance(lookup_result, dict) else True,
-                    "message": "Successfully looked up entry by CID" if ("error" not in lookup_result if isinstance(lookup_result, dict) else True) else f"Failed to lookup by CID: {lookup_result['error']}"
+                    "success": not lookup_failed,
+                    "message": (
+                        "Successfully looked up entry by CID"
+                        if not lookup_failed
+                        else f"Failed to lookup by CID: {lookup_result.get('error', str(lookup_result))}"
+                    )
                 }
             except Exception as e:
                 result["steps"]["lookup_by_cid"] = {
