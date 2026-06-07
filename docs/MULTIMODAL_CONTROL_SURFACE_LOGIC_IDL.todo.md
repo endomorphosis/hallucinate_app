@@ -3467,5 +3467,5 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Track: ops
 - Depends on: HAO-013
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/.github/workflows/auto-doc-maintenance.yml
-- Validation: python3 -c 'import pathlib, sys
+- Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-312-hao-306-retry-budget.md
 - Acceptance: Retry-budget guardrail filed this from repeated validation failures in HAO-306. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-312-hao-306-retry-budget.md to fix the validation blocker, then mark this repair task completed so the supervisor can release HAO-306 from strategy blocked_tasks.
