@@ -3389,7 +3389,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-306 Review swallowed exception path in external/ipfs_kit/.github/workflows/auto-doc-maintenance.yml:120
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
