@@ -3367,7 +3367,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-304 Review swallowed exception path in hallucinate_app/hallucinate_app/python/ucan_auth_py/ucan_auth_py/core/token.py:226
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: runtime
