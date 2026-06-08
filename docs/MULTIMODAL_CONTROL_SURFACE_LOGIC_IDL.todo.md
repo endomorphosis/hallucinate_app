@@ -3824,7 +3824,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-345 Resolve code annotation in external/ipfs_kit/archive/archive_clutter/documentation_drafts/CONTRIBUTING.md:213
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P2
 - Track: docs
