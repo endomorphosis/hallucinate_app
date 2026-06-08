@@ -3426,7 +3426,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Fingerprint: d466a93b186331dcda65976f261dd976dc55d585
+- Fingerprint: 21d19ccc466c4fad0d954b725a5cdce2e69ae17e
 - Dedupe key: reconciliation_guardrail:main_checkout_dirty
 - Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
@@ -3590,3 +3590,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_all_code_issues.sh
 - Validation: test -f external/ipfs_kit/archive/applied_patches/fix_all_code_issues.sh
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_all_code_issues.sh:236. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-323-codebase-scan-50b0117535ab.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-324 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/fix_all_remaining_issues.sh:204
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_all_remaining_issues.sh
+- Validation: test -f external/ipfs_kit/archive/applied_patches/fix_all_remaining_issues.sh
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_all_remaining_issues.sh:204. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-324-codebase-scan-1e9236e8f40d.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-325 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/fix_all_remaining_issues.sh:228
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_all_remaining_issues.sh
+- Validation: test -f external/ipfs_kit/archive/applied_patches/fix_all_remaining_issues.sh
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_all_remaining_issues.sh:228. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-325-codebase-scan-3224f703d80e.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-326 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/fix_all_storacha.py:55
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_all_storacha.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_all_storacha.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_all_storacha.py:55. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-326-codebase-scan-42900ccea863.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-327 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/fix_all_storacha.py:292
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_all_storacha.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_all_storacha.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_all_storacha.py:292. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-327-codebase-scan-3108d5b69a22.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-328 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/fix_code_issues.sh:229
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_code_issues.sh
+- Validation: test -f external/ipfs_kit/archive/applied_patches/fix_code_issues.sh
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_code_issues.sh:229. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-328-codebase-scan-0ba993b31c87.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
