@@ -3802,7 +3802,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-343 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/ipfs_ipns_operations.py:1501
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: runtime
