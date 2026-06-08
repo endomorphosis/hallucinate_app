@@ -3426,7 +3426,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Fingerprint: 41946d560c2889a1f36afcefbf1498bac7158d39
+- Fingerprint: c09858cd66e4369f8805c05d2984a5f714cb1148
 - Dedupe key: reconciliation_guardrail:main_checkout_dirty
 - Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
@@ -3700,3 +3700,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_lassie_integration.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_lassie_integration.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_lassie_integration.py:273. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-333-codebase-scan-9451e9cbd0ad.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-334 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/fix_s3_backend.py:236
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_s3_backend.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_s3_backend.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_s3_backend.py:236. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-334-codebase-scan-5e21764d35b6.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-335 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/fix_s3_backend.py:698
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_s3_backend.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_s3_backend.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_s3_backend.py:698. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-335-codebase-scan-7b425b8a660e.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-336 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/fix_s3_backend_complete.py:232
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_s3_backend_complete.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_s3_backend_complete.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_s3_backend_complete.py:232. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-336-codebase-scan-8088ea61f67f.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-337 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/fix_s3_backend_complete.py:845
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_s3_backend_complete.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_s3_backend_complete.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_s3_backend_complete.py:845. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-337-codebase-scan-e13172ffcfa8.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-338 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/fix_storacha_backend.py:472
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_storacha_backend.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_storacha_backend.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_storacha_backend.py:472. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-338-codebase-scan-bdb55de0fb60.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
