@@ -3736,7 +3736,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-337 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/fix_s3_backend_complete.py:845
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: runtime
