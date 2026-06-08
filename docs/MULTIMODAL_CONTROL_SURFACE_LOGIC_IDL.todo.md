@@ -3769,7 +3769,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-340 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/fix_storacha_backend.py:1549
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: runtime
