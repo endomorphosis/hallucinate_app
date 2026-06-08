@@ -3645,3 +3645,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_code_issues.sh
 - Validation: test -f external/ipfs_kit/archive/applied_patches/fix_code_issues.sh
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_code_issues.sh:229. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-328-codebase-scan-0ba993b31c87.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-329 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/fix_huggingface_integration.py:58
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_huggingface_integration.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_huggingface_integration.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_huggingface_integration.py:58. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-329-codebase-scan-24cc769c050b.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-330 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/fix_huggingface_integration.py:318
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_huggingface_integration.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_huggingface_integration.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_huggingface_integration.py:318. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-330-codebase-scan-483ae5ddf6cd.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-331 Replace placeholder runtime path in external/ipfs_kit/archive/applied_patches/fix_ipfs_model.py:210
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_ipfs_model.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_ipfs_model.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_ipfs_model.py:210. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-331-codebase-scan-8835ea6867fd.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-332 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/fix_lassie_integration.py:59
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_lassie_integration.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_lassie_integration.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_lassie_integration.py:59. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-332-codebase-scan-bfaeda2fbacc.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-333 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/fix_lassie_integration.py:273
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_lassie_integration.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_lassie_integration.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_lassie_integration.py:273. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-333-codebase-scan-9451e9cbd0ad.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
