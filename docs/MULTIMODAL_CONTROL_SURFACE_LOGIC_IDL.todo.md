@@ -3923,7 +3923,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-354 Review swallowed exception path in external/ipfs_kit/archive/archive_clutter/fix_scripts/patch_direct_mcp.py:31
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: runtime
