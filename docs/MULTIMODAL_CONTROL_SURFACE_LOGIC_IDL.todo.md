@@ -3813,7 +3813,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-344 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/lassie_mock_server.py:59
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: runtime
