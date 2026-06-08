@@ -3810,3 +3810,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/ipfs_ipns_operations.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/ipfs_ipns_operations.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/ipfs_ipns_operations.py:1501. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-343-codebase-scan-d768e8bb62e5.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-344 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/lassie_mock_server.py:59
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/lassie_mock_server.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/lassie_mock_server.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/lassie_mock_server.py:59. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-344-codebase-scan-3ea0f0198aff.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-345 Resolve code annotation in external/ipfs_kit/archive/archive_clutter/documentation_drafts/CONTRIBUTING.md:213
+
+- Status: todo
+- Completion: manual
+- Priority: P2
+- Track: docs
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/archive_clutter/documentation_drafts/CONTRIBUTING.md
+- Validation: test -f external/ipfs_kit/archive/archive_clutter/documentation_drafts/CONTRIBUTING.md
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/archive_clutter/documentation_drafts/CONTRIBUTING.md:213. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-345-codebase-scan-dcf58d1b0ac8.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-346 Resolve code annotation in external/ipfs_kit/archive/archive_clutter/documentation_drafts/CONTRIBUTING.md:214
+
+- Status: todo
+- Completion: manual
+- Priority: P2
+- Track: docs
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/archive_clutter/documentation_drafts/CONTRIBUTING.md
+- Validation: test -f external/ipfs_kit/archive/archive_clutter/documentation_drafts/CONTRIBUTING.md
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/archive_clutter/documentation_drafts/CONTRIBUTING.md:214. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-346-codebase-scan-584bb5fe6ed1.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-347 Review swallowed exception path in external/ipfs_kit/archive/archive_clutter/fix_scripts/direct_fix_resource_handlers.py:249
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/archive_clutter/fix_scripts/direct_fix_resource_handlers.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/archive_clutter/fix_scripts/direct_fix_resource_handlers.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/archive_clutter/fix_scripts/direct_fix_resource_handlers.py:249. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-347-codebase-scan-84c70ed539d3.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-348 Review swallowed exception path in external/ipfs_kit/archive/archive_clutter/fix_scripts/direct_mcp_server.py:251
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/archive_clutter/fix_scripts/direct_mcp_server.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/archive_clutter/fix_scripts/direct_mcp_server.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/archive_clutter/fix_scripts/direct_mcp_server.py:251. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-348-codebase-scan-0991e13de35f.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
