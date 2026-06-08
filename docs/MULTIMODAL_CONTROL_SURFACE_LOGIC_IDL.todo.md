@@ -3420,18 +3420,18 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/advanced_filecoin.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/advanced_filecoin.py:984. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-308-codebase-scan-f223d9e5d048.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
 
-## HAO-309 Resolve dirty main checkout blocking 22 worktree merges
+## HAO-309 Resolve dirty main checkout blocking 21 worktree merges
 
 - Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Fingerprint: 5bd951f52d176d3584eba71e60e35a60aebd9440
+- Fingerprint: d466a93b186331dcda65976f261dd976dc55d585
 - Dedupe key: reconciliation_guardrail:main_checkout_dirty
 - Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-309-reconciliation-c05f71151a70.md
-- Acceptance: Reconciliation guardrail filed this because 22 branch or worktree cleanup candidates are blocked by main_checkout_dirty. Use evidence and the machine-readable reconciliation plan in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-309-reconciliation-c05f71151a70.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
+- Acceptance: Reconciliation guardrail filed this because 21 branch or worktree cleanup candidates are blocked by main_checkout_dirty. Use evidence and the machine-readable reconciliation plan in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-309-reconciliation-c05f71151a70.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
 
 ## HAO-310 Resolve 1 dirty backlogged worktrees blocked by unsupported_status
 
@@ -3535,3 +3535,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-318-hao-235-merge-retry-budget.md
 - Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-235. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-318-hao-235-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-235 from strategy blocked_tasks.
+
+## HAO-319 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/direct_mcp_server.py:255
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/direct_mcp_server.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/direct_mcp_server.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/direct_mcp_server.py:255. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-319-codebase-scan-a66dbc016ac0.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-320 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/enhanced_storacha_storage.py:919
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/enhanced_storacha_storage.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/enhanced_storacha_storage.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/enhanced_storacha_storage.py:919. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-320-codebase-scan-372c9f0bf55f.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-321 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/enhanced_storacha_storage.py:981
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/enhanced_storacha_storage.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/enhanced_storacha_storage.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/enhanced_storacha_storage.py:981. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-321-codebase-scan-e125d70761f9.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-322 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/enhanced_storacha_storage.py:1037
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/enhanced_storacha_storage.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/enhanced_storacha_storage.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/enhanced_storacha_storage.py:1037. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-322-codebase-scan-065a828223f1.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-323 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/fix_all_code_issues.sh:236
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_all_code_issues.sh
+- Validation: test -f external/ipfs_kit/archive/applied_patches/fix_all_code_issues.sh
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_all_code_issues.sh:236. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-323-codebase-scan-50b0117535ab.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
