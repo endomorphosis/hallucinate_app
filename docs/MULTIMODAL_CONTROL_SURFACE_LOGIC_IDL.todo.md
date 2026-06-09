@@ -4077,7 +4077,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-368 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/auth/service.py:286
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: runtime
