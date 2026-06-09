@@ -775,6 +775,7 @@ class DuckDBIPLDKit:
             results["success"] = False
         
         # Test Parquet export
+        temp_dir = None
         try:
             temp_dir = tempfile.mkdtemp()
             parquet_path = os.path.join(temp_dir, "test_table.parquet")
@@ -784,16 +785,23 @@ class DuckDBIPLDKit:
                 "success": parquet_result["success"],
                 "path": parquet_path if os.path.exists(parquet_path) else None
             }
-            
-            # Clean up
-            import shutil
-            shutil.rmtree(temp_dir)
         except Exception as e:
             results["tests"]["parquet_export"] = {
                 "success": False,
                 "error": str(e)
             }
             results["success"] = False
+        finally:
+            if temp_dir and os.path.exists(temp_dir):
+                try:
+                    import shutil
+                    shutil.rmtree(temp_dir)
+                except Exception as e:
+                    logger.warning("Failed to remove Parquet export temp directory %s: %s", temp_dir, e)
+                    parquet_test = results["tests"].setdefault("parquet_export", {})
+                    parquet_test["success"] = False
+                    parquet_test["cleanup_error"] = str(e)
+                    results["success"] = False
         
         # Test Arrow export
         try:
