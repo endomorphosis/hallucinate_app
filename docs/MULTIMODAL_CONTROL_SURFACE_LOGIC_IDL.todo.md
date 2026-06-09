@@ -4407,7 +4407,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-398 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage/lassie_model.py:400
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: runtime
