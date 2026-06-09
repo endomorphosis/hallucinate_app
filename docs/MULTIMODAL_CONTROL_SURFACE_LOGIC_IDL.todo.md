@@ -4195,3 +4195,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller.py:561. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-378-codebase-scan-4d5ad4cf18b5.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-379 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller_anyio.py:401
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller_anyio.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller_anyio.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller_anyio.py:401. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-379-codebase-scan-46f92917525c.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-380 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller_anyio.py:568
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller_anyio.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller_anyio.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller_anyio.py:568. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-380-codebase-scan-c16254bb0bc9.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-381 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/storage_manager_controller.py:1051
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/storage_manager_controller.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/storage_manager_controller.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/storage_manager_controller.py:1051. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-381-codebase-scan-ed70de87de16.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-382 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/enhanced_filecoin.py:204
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/enhanced_filecoin.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/enhanced_filecoin.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/enhanced_filecoin.py:204. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-382-codebase-scan-a5df1a1f3952.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-383 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/enhanced_lassie.py:49
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/enhanced_lassie.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/enhanced_lassie.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/enhanced_lassie.py:49. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-383-codebase-scan-3e502eb1a4e2.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
