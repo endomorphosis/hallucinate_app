@@ -139,6 +139,12 @@ class PlasmaManager:
         if self.store_process:
             self.store_process.terminate()
             logger.info("Terminated plasma store process")
+
+    def _require_client(self):
+        """Return the active plasma client or raise a clear runtime error."""
+        if self.client is None:
+            raise RuntimeError("Plasma store client is not available")
+        return self.client
     
     def put(self, obj: Any) -> bytes:
         """
@@ -151,8 +157,8 @@ class PlasmaManager:
             bytes: Object ID that can be used to retrieve the object
             
         Raises:
-            Exception: Re-raises any exception from the plasma store so callers
-                receive the error rather than a confusing None return value.
+            RuntimeError: If the plasma client is not available.
+            Exception: Propagates any serialization or plasma store write error.
         """
         if not self.has_arrow:
             # File-based fallback
@@ -165,20 +171,18 @@ class PlasmaManager:
             
             return file_path.encode()
         
-        try:
-            # Generate a random object ID
-            object_id = plasma.ObjectID.from_random()
-            
-            # Serialize the object to Arrow
-            serialized = pa.serialize(obj)
-            
-            # Put the serialized object in the plasma store
-            self.client.put(serialized, object_id)
-            
-            return object_id.binary()
-        except Exception:
-            logger.exception("Failed to put object in plasma store")
-            raise
+        client = self._require_client()
+
+        # Generate a random object ID
+        object_id = plasma.ObjectID.from_random()
+        
+        # Serialize the object to Arrow
+        serialized = pa.serialize(obj)
+        
+        # Put the serialized object in the plasma store
+        client.put(serialized, object_id)
+        
+        return object_id.binary()
     
     def get(self, object_id: bytes) -> Any:
         """
