@@ -2465,7 +2465,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-222 Review swallowed exception path in hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_embeddings_py/ipfs_embeddings_py.py:611
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: runtime
@@ -3426,7 +3426,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Fingerprint: 99a9936a5d298173b27113804cbad41df5f03fac
+- Fingerprint: 4f17098261396492f7ba76da532a159c527c17e5
 - Dedupe key: reconciliation_guardrail:main_checkout_dirty
 - Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
