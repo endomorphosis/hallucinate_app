@@ -442,7 +442,9 @@ class IPFSModelManager:
             
             # Test IPFS import if available
             ipfs_import_test = False
+            ipfs_import_error = None
             if self.ipfs_kit:
+                test_file = None
                 try:
                     # Create a test file to add to IPFS
                     with tempfile.NamedTemporaryFile(delete=False) as f:
@@ -465,17 +467,22 @@ class IPFSModelManager:
                         # Clean up
                         if ipfs_import_test:
                             loop.run_until_complete(self.remove_model(test_model_id))
-                    
-                    # Clean up test file
-                    try:
-                        os.unlink(test_file)
-                    except OSError as exc:
-                        logger.debug("Could not remove temporary test file %s: %s", test_file, exc)
                         
-                except Exception:
+                except Exception as exc:
+                    ipfs_import_error = str(exc)
                     logger.exception("IPFS import test failed")
+                finally:
+                    # Always clean up the temp file, even on exception
+                    if test_file is not None:
+                        try:
+                            os.unlink(test_file)
+                        except OSError as exc:
+                            logger.debug("Could not remove temporary test file %s: %s", test_file, exc)
             
             # Compile results
+            ipfs_import_result = {"success": ipfs_import_test}
+            if ipfs_import_error is not None:
+                ipfs_import_result["error"] = ipfs_import_error
             results = {
                 "success": init_result and registry_test and list_models_test,
                 "module": "model_manager",
@@ -484,7 +491,8 @@ class IPFSModelManager:
                 "list_models": list_models_test,
                 "imports": {
                     "huggingface": hf_import_test,
-                    "ipfs": ipfs_import_test
+                    "ipfs": ipfs_import_test,
+                    "ipfs_details": ipfs_import_result,
                 },
                 "capabilities": {
                     "huggingface": has_huggingface_hub,
