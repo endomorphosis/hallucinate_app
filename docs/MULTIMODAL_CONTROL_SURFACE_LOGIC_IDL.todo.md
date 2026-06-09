@@ -4396,7 +4396,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-397 Resolve code annotation in external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py:129
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: runtime
