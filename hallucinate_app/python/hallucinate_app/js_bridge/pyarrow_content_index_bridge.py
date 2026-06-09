@@ -16,7 +16,7 @@ import psutil
 import multiprocessing
 from typing import Dict, List, Any, Optional, Tuple
 from concurrent.futures import ThreadPoolExecutor
-from queue import Queue, PriorityQueue
+from queue import Queue, PriorityQueue, Empty
 from collections import deque
 from datetime import datetime, timedelta
 
@@ -501,7 +501,7 @@ class PyArrowContentIndexBridge:
                             priority_val, timestamp, task_data = self.request_queue.get(timeout=1.0)
                             task = task_data
                             priority = ["high", "normal", "low"][priority_val]
-                        except Exception:
+                        except Empty:
                             # Just a timeout, continue
                             self._update_metrics()  # Update metrics during idle time
                             time.sleep(0.1)  # Small sleep to prevent busy-waiting
