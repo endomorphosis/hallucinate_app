@@ -28,7 +28,7 @@ except ImportError:
 # Try to import HuggingFace Hub
 try:
     import huggingface_hub
-    from huggingface_hub import HfApi, ModelFilter, snapshot_download
+    from huggingface_hub import HfApi, snapshot_download
     has_huggingface_hub = True
 except ImportError:
     logger.warning("Could not import huggingface_hub, some functionality will be limited")
