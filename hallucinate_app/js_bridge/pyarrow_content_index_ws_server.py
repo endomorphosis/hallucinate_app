@@ -82,18 +82,20 @@ class PyArrowContentIndexWSServer:
         if message_type in self.messages_by_type:
             self.messages_by_type[message_type] += 1
         
-        # Send to all clients
-        websockets_tasks = []
-        for client in self.clients:
-            try:
-                task = asyncio.create_task(client.send(json_message))
-                websockets_tasks.append(task)
-            except Exception as e:
-                logger.error(f"Error preparing to send message to client: {e}")
-        
-        # Wait for all messages to be sent
-        if websockets_tasks:
-            await asyncio.gather(*websockets_tasks, return_exceptions=True)
+        # Snapshot clients to avoid mutation during iteration
+        client_list = list(self.clients)
+        send_tasks = [client.send(json_message) for client in client_list]
+
+        # Wait for all sends; capture exceptions rather than raising so one
+        # slow/dead client does not block others.
+        if send_tasks:
+            results = await asyncio.gather(*send_tasks, return_exceptions=True)
+            for client, result in zip(client_list, results):
+                if isinstance(result, Exception):
+                    logger.warning(
+                        f"Failed to send message to client (removing): {result}"
+                    )
+                    self.clients.discard(client)
     
     async def notify_content_added(self, cid: str, path: Optional[str] = None, 
                                    mimetype: Optional[str] = None, size: Optional[int] = None,
