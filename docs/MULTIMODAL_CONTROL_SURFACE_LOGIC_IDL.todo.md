@@ -4121,7 +4121,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-372 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/ipfs_controller_anyio.py:681
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: runtime
