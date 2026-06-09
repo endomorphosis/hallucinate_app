@@ -169,7 +169,14 @@ class AuthKeystoreIntegration:
             options: Additional options
         
         Returns:
-            bool: True if key was stored successfully
+            bool: True if key was stored successfully, False if the caller is not
+                authorized for the requested provider.
+
+        Raises:
+            ValueError: If the integration module is not initialized.
+            Exception: Re-raises any unexpected runtime error after logging it, so
+                callers can distinguish a genuine authorization denial (``False``)
+                from an unexpected backend failure.
         """
         if not self.initialized:
             raise ValueError("Integration module not initialized. Call init() first")
@@ -192,7 +199,7 @@ class AuthKeystoreIntegration:
                 return await self.keystore.set_key(provider, key, options)
         except Exception as e:
             logger.exception(f"Failed to set authorized key for {provider}: {e}")
-            return False
+            raise
     
     async def delete_authorized_key(self, provider: str, auth_token: str) -> bool:
         """
@@ -203,7 +210,14 @@ class AuthKeystoreIntegration:
             auth_token: UCAN capability token
         
         Returns:
-            bool: True if key was deleted successfully
+            bool: True if key was deleted successfully, False if the caller is not
+                authorized for the requested provider.
+
+        Raises:
+            ValueError: If the integration module is not initialized.
+            Exception: Re-raises any unexpected runtime error after logging it, so
+                callers can distinguish a genuine authorization denial (``False``)
+                from an unexpected backend failure.
         """
         if not self.initialized:
             raise ValueError("Integration module not initialized. Call init() first")
@@ -226,7 +240,7 @@ class AuthKeystoreIntegration:
                 return await self.keystore.delete_key(provider)
         except Exception as e:
             logger.exception(f"Failed to delete authorized key for {provider}: {e}")
-            return False
+            raise
     
     async def list_authorized_providers(self, auth_token: str) -> Optional[List[str]]:
         """
@@ -317,7 +331,14 @@ class AuthKeystoreIntegration:
             options: Additional options
         
         Returns:
-            bool: True if key was rotated successfully
+            bool: True if key was rotated successfully, False if the caller is not
+                authorized for the requested provider.
+
+        Raises:
+            ValueError: If the integration module is not initialized.
+            Exception: Re-raises any unexpected runtime error after logging it, so
+                callers can distinguish a genuine authorization denial (``False``)
+                from an unexpected backend failure.
         """
         if not self.initialized:
             raise ValueError("Integration module not initialized. Call init() first")
@@ -340,7 +361,7 @@ class AuthKeystoreIntegration:
                 return await self.keystore.rotate_key(provider, new_key, options)
         except Exception as e:
             logger.exception(f"Failed to rotate authorized key for {provider}: {e}")
-            return False
+            raise
     
     async def issue_key_access_capability(self, provider_id: str, principal_id: str, 
                                         admin_auth_token: str) -> Optional[Dict[str, Any]]:
