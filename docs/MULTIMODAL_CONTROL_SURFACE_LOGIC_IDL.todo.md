@@ -4187,7 +4187,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-378 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller.py:561
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: runtime
