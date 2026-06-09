@@ -495,7 +495,7 @@ def _safe_ref(value: str) -> str:
 def _json_safe(value: Any) -> Any:
     """Convert supported policy values to JSON-safe structures.
 
-    The ``to_dict`` fallback catches hook failures but lets recursive
+    Object-hook fallbacks catch hook failures but let recursive
     serialization errors from a successful hook propagate.
     """
 
@@ -513,9 +513,11 @@ def _json_safe(value: Any) -> Any:
         return [_json_safe(item) for item in sorted(value, key=str)]
     if hasattr(value, "as_dict"):
         try:
-            return _json_safe(value.as_dict())
+            raw = value.as_dict()
         except Exception as exc:  # noqa: BLE001
             _log.debug("_json_safe: as_dict() failed for %r: %s", type(value).__name__, exc)
+        else:
+            return _json_safe(raw)
     if hasattr(value, "to_dict"):
         try:
             raw = value.to_dict()
