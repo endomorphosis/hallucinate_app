@@ -26,6 +26,7 @@ from hallucinate_app.control_surface_mediator import (  # noqa: E402
 from hallucinate_app.control_surface_policy import compile_strict_template_rule  # noqa: E402
 from hallucinate_app.control_surface_receipts import (  # noqa: E402
     MediationReceiptStore,
+    _json_safe,
     build_mediation_receipt,
     emit_mediation_receipt,
     mediate_and_emit_receipt,
@@ -176,6 +177,18 @@ class TestControlSurfaceReceipts(unittest.TestCase):
         self.assertIn("policy:observed-but-unmatched", policy_ids)
         self.assertEqual(receipt["metadata"]["policy_ref_count"], 2)
         self.assertEqual(receipt["metadata"]["test_case"], "all_policy_refs")
+
+    def test_json_safe_does_not_swallow_recursive_as_dict_payload_errors(self) -> None:
+        class BrokenPayload(dict):
+            def items(self):
+                raise RuntimeError("payload traversal failed")
+
+        class WrappedPayload:
+            def as_dict(self):
+                return BrokenPayload()
+
+        with self.assertRaisesRegex(RuntimeError, "payload traversal failed"):
+            _json_safe(WrappedPayload())
 
 
 def _gesture_envelope():

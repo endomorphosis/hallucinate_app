@@ -565,13 +565,15 @@ def _json_safe(value: Any) -> Any:
         return [_json_safe(item) for item in sorted(value, key=str)]
     if hasattr(value, "as_dict"):
         try:
-            return _json_safe(value.as_dict())
-        except Exception:
-            _log.debug(
-                "_json_safe: as_dict() failed for %r, falling back to str()",
+            raw = value.as_dict()
+        except Exception as exc:  # noqa: BLE001
+            _log.warning(
+                "_json_safe: as_dict() failed for %r; falling back to str()",
                 type(value).__name__,
-                exc_info=True,
+                exc_info=exc,
             )
+        else:
+            return _json_safe(raw)
     if is_dataclass(value):
         return _json_safe(asdict(value))
     return str(value)
