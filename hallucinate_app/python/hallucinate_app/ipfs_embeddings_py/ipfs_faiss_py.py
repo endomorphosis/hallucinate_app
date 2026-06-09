@@ -555,6 +555,7 @@ class IPFSFaissPy:
                 # Load metadata if available
                 metadata_cid = options.get("metadata_cid")
                 if metadata_cid:
+                    meta_file_path = None
                     try:
                         with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as meta_file:
                             meta_file_path = meta_file.name
@@ -583,7 +584,7 @@ class IPFSFaissPy:
                         logger.warning(f"Error loading metadata: {e}")
                     finally:
                         # Clean up metadata file
-                        if metadata_cid:
+                        if meta_file_path:
                             try:
                                 os.unlink(meta_file_path)
                             except OSError as e:
