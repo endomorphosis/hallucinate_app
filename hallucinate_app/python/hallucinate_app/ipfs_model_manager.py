@@ -469,8 +469,12 @@ class IPFSModelManager:
                     # Clean up test file
                     try:
                         os.unlink(test_file)
-                    except OSError as exc:
-                        logger.debug("Could not remove temporary test file %s: %s", test_file, exc)
+                    except OSError:
+                        logger.debug(
+                            "Could not remove temporary test file %s",
+                            test_file,
+                            exc_info=True,
+                        )
                         
                 except Exception:
                     logger.exception("IPFS import test failed")
