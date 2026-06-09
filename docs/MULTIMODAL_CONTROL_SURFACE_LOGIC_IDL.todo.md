@@ -3978,7 +3978,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-359 Review swallowed exception path in external/ipfs_kit/archive/legacy_servers/enhanced_mcp_server_phase2.py:1667
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: runtime
@@ -3989,7 +3989,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-360 Review swallowed exception path in external/ipfs_kit/archive/legacy_servers/vscode_mcp_server.py:304
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: runtime
