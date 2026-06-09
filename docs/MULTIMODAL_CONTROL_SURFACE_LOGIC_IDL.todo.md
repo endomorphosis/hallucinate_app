@@ -4470,3 +4470,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage/lassie_model_anyio.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage/lassie_model_anyio.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage/lassie_model_anyio.py:746. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-403-codebase-scan-f866808d8afc.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-404 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage_bridge.py:1438
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage_bridge.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage_bridge.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage_bridge.py:1438. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-404-codebase-scan-d2d82d3993e9.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-405 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage_bridge.py:1530
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage_bridge.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage_bridge.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage_bridge.py:1530. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-405-codebase-scan-bae83db6902d.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-406 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/cache_manager.py:1032
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/cache_manager.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/cache_manager.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/cache_manager.py:1032. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-406-codebase-scan-ce622549c01c.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-407 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/migration_store.py:117
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/migration_store.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/migration_store.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/migration_store.py:117. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-407-codebase-scan-30f5218c74cb.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-408 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/policy_store.py:110
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/policy_store.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/policy_store.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/policy_store.py:110. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-408-codebase-scan-e95edb6ba858.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
