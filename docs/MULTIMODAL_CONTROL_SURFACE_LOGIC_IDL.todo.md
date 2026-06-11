@@ -1651,7 +1651,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-148 Review swallowed exception path in src/handsfree/transport/libp2p_bluetooth.py:1244
 
-- Status: completed
+- Status: todo
 - Completion: manual
 - Priority: P1
 - Track: runtime
@@ -2216,7 +2216,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P3
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_supervisor.py:301. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-199-codebase-scan-6a08fa66da0b.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2227,7 +2227,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P2
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/advanced_thread_pool_manager.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/advanced_thread_pool_manager.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/advanced_thread_pool_manager.py:1171. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-200-codebase-scan-74c66b0a97e9.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2238,7 +2238,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/auth_keystore_integration.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/auth_keystore_integration.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/auth_keystore_integration.py:150. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-201-codebase-scan-befeb053e24b.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2249,7 +2249,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/auth_keystore_integration.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/auth_keystore_integration.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/auth_keystore_integration.py:254. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-202-codebase-scan-12771f5b880f.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2260,7 +2260,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/auth_keystore_integration.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/auth_keystore_integration.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/auth_keystore_integration.py:288. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-203-codebase-scan-6c366e445285.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2271,29 +2271,29 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/auth_keystore_integration.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/auth_keystore_integration.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/auth_keystore_integration.py:376. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-204-codebase-scan-90f09626ab01.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
 
 ## HAO-205 Review swallowed exception path in hallucinate_app/hallucinate_app/python/hallucinate_app/duckdb_ipld_kit.py:704
 
-- Status: completed
+- Status: todo
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/duckdb_ipld_kit.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/duckdb_ipld_kit.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/duckdb_ipld_kit.py:704. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-205-codebase-scan-64f0b11ab70e.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
 
 ## HAO-206 Review swallowed exception path in hallucinate_app/hallucinate_app/python/hallucinate_app/duckdb_ipld_kit.py:796
 
-- Status: completed
+- Status: todo
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/duckdb_ipld_kit.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/duckdb_ipld_kit.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/duckdb_ipld_kit.py:796. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-206-codebase-scan-98082188a185.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2304,7 +2304,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P2
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py:1095. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-207-codebase-scan-a5c282416212.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2315,7 +2315,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P2
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py:1096. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-208-codebase-scan-9d8857a282a3.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2326,7 +2326,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/duckdb_ipld_kit.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/duckdb_ipld_kit.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/duckdb_ipld_kit.py:810. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-209-codebase-scan-82006c12019b.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2337,7 +2337,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P2
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py:1102. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-210-codebase-scan-d54c9e83a2ed.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2348,7 +2348,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P2
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py:1103. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-211-codebase-scan-d5b71515219e.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2359,7 +2359,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/github_issue_reporter.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/github_issue_reporter.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/github_issue_reporter.py:369. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-212-codebase-scan-b701b80bf41c.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2370,7 +2370,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_accelerate_server_mp.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_accelerate_server_mp.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_accelerate_server_mp.py:102. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-213-codebase-scan-adf00600c6b3.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2381,7 +2381,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P2
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py:1110. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-214-codebase-scan-e115a28cef8a.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2392,29 +2392,29 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P2
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py:1111. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-215-codebase-scan-a2d26a7117fd.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
 
 ## HAO-216 Resolve code annotation in hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py:1118
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P2
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py:1118. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-216-codebase-scan-32cf556b56c9.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
 
 ## HAO-217 Review swallowed exception path in hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_accelerate_server_mp.py:175
 
-- Status: completed
+- Status: todo
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_accelerate_server_mp.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_accelerate_server_mp.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_accelerate_server_mp.py:175. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-217-codebase-scan-8a2d973b6b52.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2425,7 +2425,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_accelerate_server_mp.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_accelerate_server_mp.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_accelerate_server_mp.py:198. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-218-codebase-scan-bd5d75fcd4e5.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2436,7 +2436,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P2
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py:1111. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-219-codebase-scan-17515b2de8e9.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2447,7 +2447,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P2
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py:1112. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-220-codebase-scan-4de5dd15d666.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2458,18 +2458,18 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P2
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py:1119. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-221-codebase-scan-1cb37fc590f2.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
 
 ## HAO-222 Review swallowed exception path in hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_embeddings_py/ipfs_embeddings_py.py:611
 
-- Status: completed
+- Status: todo
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_embeddings_py/ipfs_embeddings_py.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_embeddings_py/ipfs_embeddings_py.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_embeddings_py/ipfs_embeddings_py.py:611. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-222-codebase-scan-cbf158a57c00.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2480,7 +2480,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_embeddings_py/ipfs_faiss_py.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_embeddings_py/ipfs_faiss_py.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_embeddings_py/ipfs_faiss_py.py:589. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-28-hao-223-codebase-scan-0c17756fc821.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2546,7 +2546,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-30-hao-229-hao-216-implementation-retry-budget.md
 - Acceptance: Implementation retry-budget guardrail filed this from repeated implementation failures in HAO-216. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-30-hao-229-hao-216-implementation-retry-budget.md to fix the setup, runtime, or timeout blocker, then mark this repair task completed so the supervisor can release HAO-216 from strategy blocked_tasks.
@@ -2564,7 +2564,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-231 Resolve implementation retry-budget failure for HAO-192
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -2579,7 +2579,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P3
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_supervisor.py:304. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-30-hao-232-codebase-scan-817d59137a83.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2590,7 +2590,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P3
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/virtual_ai_os_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_supervisor.py:17. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-30-hao-233-codebase-scan-199c9802cce0.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2601,7 +2601,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P3
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/virtual_ai_os_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_supervisor.py:19. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-30-hao-234-codebase-scan-94c3b95fdec8.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2612,7 +2612,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P3
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/virtual_ai_os_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_supervisor.py:159. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-30-hao-235-codebase-scan-ed54ac82ae36.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2623,14 +2623,14 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_model_manager.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_model_manager.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_model_manager.py:463. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-30-hao-236-codebase-scan-7d70e6a388f4.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
 
 ## HAO-237 Resolve implementation retry-budget failure for HAO-231
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -2641,7 +2641,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-238 Resolve implementation retry-budget failure for HAO-237
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -2652,7 +2652,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-239 Resolve implementation retry-budget failure for HAO-238
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -2663,7 +2663,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-240 Resolve implementation retry-budget failure for HAO-239
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -2674,7 +2674,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-241 Resolve implementation retry-budget failure for HAO-240
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -2744,7 +2744,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P3
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_supervisor.py:304. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-247-codebase-scan-9b295a13298f.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2755,7 +2755,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P3
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_supervisor.py:307. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-248-codebase-scan-5473dc5ddeb3.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2766,7 +2766,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P3
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_supervisor.py:308. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-249-codebase-scan-c0b8d370e688.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2777,7 +2777,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P3
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/virtual_ai_os_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_supervisor.py:44. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-250-codebase-scan-8164d3ed24f1.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2788,7 +2788,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P3
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/virtual_ai_os_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_supervisor.py:167. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-251-codebase-scan-35bd5e6b300e.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2799,7 +2799,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P3
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_daemon.py
 - Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_daemon.py
 - Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_daemon.py:47. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-252-codebase-scan-c4894982f031.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2810,7 +2810,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P3
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_supervisor.py:304. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-253-codebase-scan-5c4a0f935809.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2821,7 +2821,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P3
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_supervisor.py:307. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-254-codebase-scan-b4a281bbedf2.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2832,7 +2832,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P3
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/virtual_ai_os_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_supervisor.py:168. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-255-codebase-scan-dd842b42da6e.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2843,7 +2843,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P3
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/virtual_ai_os_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_supervisor.py:170. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-256-codebase-scan-cef5165bc6bd.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2854,7 +2854,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P3
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_supervisor.py:304. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-257-codebase-scan-587479ca3454.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2865,7 +2865,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P3
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_supervisor.py:307. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-258-codebase-scan-5a514d5efa1f.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2876,7 +2876,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P3
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/virtual_ai_os_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_supervisor.py:19. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-259-codebase-scan-c264d0ec0538.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2887,7 +2887,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P3
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/virtual_ai_os_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_supervisor.py:20. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-260-codebase-scan-153d93e5a828.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2898,7 +2898,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P3
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/virtual_ai_os_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_supervisor.py:168. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-261-codebase-scan-7b3d8a1bbd72.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2909,18 +2909,18 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P3
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_supervisor.py:304. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-262-codebase-scan-c6a047779577.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
 
 ## HAO-263 Resolve code annotation in scripts/hallucinate_multimodal_control_todo_supervisor.py:307
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/hallucinate_multimodal_control_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/hallucinate_multimodal_control_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/hallucinate_multimodal_control_todo_supervisor.py:307. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-263-codebase-scan-776efef6a92f.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2931,7 +2931,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P3
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/virtual_ai_os_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_supervisor.py:19. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-264-codebase-scan-c22071473443.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2942,7 +2942,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P3
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/virtual_ai_os_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_supervisor.py:168. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-265-codebase-scan-07de3bf977f1.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2953,7 +2953,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P3
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
 - Validation: python3 -m py_compile scripts/virtual_ai_os_todo_supervisor.py
 - Acceptance: Codebase scan filed this finding from scripts/virtual_ai_os_todo_supervisor.py:169. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-266-codebase-scan-bdaa854064ba.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2964,18 +2964,18 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_model_manager.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_model_manager.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_model_manager.py:283. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-267-codebase-scan-c14f51d2c277.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
 
 ## HAO-268 Review swallowed exception path in hallucinate_app/hallucinate_app/python/hallucinate_app/js_bridge/pyarrow_content_index_bridge.py:752
 
-- Status: completed
+- Status: todo
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/js_bridge/pyarrow_content_index_bridge.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/js_bridge/pyarrow_content_index_bridge.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/js_bridge/pyarrow_content_index_bridge.py:752. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-268-codebase-scan-e481dd8596ca.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2986,7 +2986,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/secure_duckdb_ipld_manager.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/secure_duckdb_ipld_manager.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/secure_duckdb_ipld_manager.py:1249. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-269-codebase-scan-cdfcf34f4b38.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -2997,7 +2997,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: quality
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/test/test.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/test/test.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/test/test.py:374. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-270-codebase-scan-0a7038674197.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3008,7 +3008,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: quality
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_database_sync_manager_integration.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_database_sync_manager_integration.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_database_sync_manager_integration.py:229. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-271-codebase-scan-355e82beb5ad.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3019,7 +3019,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/pyarrow_content_index.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/pyarrow_content_index.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/pyarrow_content_index.py:2572. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-272-codebase-scan-5b83ca7aecf0.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3030,7 +3030,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/secure_duckdb_ipld_manager.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/secure_duckdb_ipld_manager.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/secure_duckdb_ipld_manager.py:1250. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-273-codebase-scan-6211ceb94042.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3041,7 +3041,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P2
 - Track: quality
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_error_monitor.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_error_monitor.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_error_monitor.py:269. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-274-codebase-scan-44221032650b.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3052,7 +3052,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P2
 - Track: quality
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_error_monitor.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_error_monitor.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_error_monitor.py:270. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-275-codebase-scan-e5642628d285.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3063,7 +3063,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P2
 - Track: quality
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_error_monitor.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_error_monitor.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_error_monitor.py:375. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-276-codebase-scan-786ae5f09257.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3074,7 +3074,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P2
 - Track: quality
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_error_monitor.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_error_monitor.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_error_monitor.py:400. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-277-codebase-scan-3ab525dee4a4.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3085,7 +3085,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P2
 - Track: quality
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_error_monitor.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_error_monitor.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_error_monitor.py:462. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-278-codebase-scan-851ad878de18.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3096,7 +3096,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: quality
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_graphrag.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_graphrag.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_graphrag.py:49. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-279-codebase-scan-1a4201168690.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3107,7 +3107,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: quality
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_secure_model_manager.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_secure_model_manager.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_secure_model_manager.py:111. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-280-codebase-scan-d1896c885a98.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3118,7 +3118,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: quality
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_secure_pyarrow_index_manager.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_secure_pyarrow_index_manager.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_secure_pyarrow_index_manager.py:525. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-281-codebase-scan-98e8b6840819.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3129,7 +3129,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P2
 - Track: quality
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_error_monitor.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_error_monitor.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_error_monitor.py:388. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-282-codebase-scan-5bfe62da24dd.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3140,7 +3140,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: quality
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_secure_pyarrow_index_manager.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_secure_pyarrow_index_manager.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_secure_pyarrow_index_manager.py:525. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-283-codebase-scan-fa4d6e61690f.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3151,7 +3151,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: quality
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_secure_pyarrow_index_manager_integration.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_secure_pyarrow_index_manager_integration.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_secure_pyarrow_index_manager_integration.py:124. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-284-codebase-scan-682619f97604.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3162,7 +3162,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: quality
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_secure_pyarrow_index_manager_integration.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_secure_pyarrow_index_manager_integration.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_secure_pyarrow_index_manager_integration.py:129. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-285-codebase-scan-5c3bc9335211.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3173,7 +3173,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: quality
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_thread_pool_monitor.py
 - Validation: python3 -m py_compile hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_thread_pool_monitor.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_thread_pool_monitor.py:324. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-05-31-hao-286-codebase-scan-ccb16b8cf977.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3239,7 +3239,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/test/test_thread_pool_monitor.py
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-06-hao-292-hao-286-merge-retry-budget.md
 - Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-286. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-06-hao-292-hao-286-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-286 from strategy blocked_tasks.
@@ -3305,7 +3305,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/python/hallucinate_app/control_surface_receipts.py
 - Validation: python3 -m py_compile hallucinate_app/python/hallucinate_app/control_surface_receipts.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/python/hallucinate_app/control_surface_receipts.py:566. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-06-hao-298-codebase-scan-4186d777ba98.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3316,7 +3316,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/python/hallucinate_app/control_surface_store.py
 - Validation: python3 -m py_compile hallucinate_app/python/hallucinate_app/control_surface_store.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/python/hallucinate_app/control_surface_store.py:508. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-06-hao-299-codebase-scan-546c38fc798a.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3327,7 +3327,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/python/hallucinate_app/control_surface_store.py
 - Validation: python3 -m py_compile hallucinate_app/python/hallucinate_app/control_surface_store.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/python/hallucinate_app/control_surface_store.py:513. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-06-hao-300-codebase-scan-565bd308c1dc.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3338,7 +3338,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P3
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/python/hallucinate_app/ipfs_kit_bridge.py
 - Validation: python3 -m py_compile hallucinate_app/python/hallucinate_app/ipfs_kit_bridge.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/python/hallucinate_app/ipfs_kit_bridge.py:793. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-06-hao-301-codebase-scan-35009422e1fa.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3349,7 +3349,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: quality
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/test/python/test_graphrag.py
 - Validation: python3 -m py_compile hallucinate_app/test/python/test_graphrag.py
 - Acceptance: Codebase scan filed this finding from hallucinate_app/test/python/test_graphrag.py:118. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-06-hao-302-codebase-scan-94bc2b69153d.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3360,7 +3360,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/python/hallucinate_app/control_surface_store.py
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-06-hao-303-hao-300-implementation-retry-budget.md
 - Acceptance: Implementation retry-budget guardrail filed this from repeated implementation failures in HAO-300. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-06-hao-303-hao-300-implementation-retry-budget.md to fix the setup, runtime, or timeout blocker, then mark this repair task completed so the supervisor can release HAO-300 from strategy blocked_tasks.
@@ -3420,18 +3420,18 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/advanced_filecoin.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/advanced_filecoin.py:984. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-308-codebase-scan-f223d9e5d048.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
 
-## HAO-309 Resolve dirty main checkout blocking 17 worktree merges
+## HAO-309 Resolve dirty main checkout blocking 20 worktree merges
 
 - Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Fingerprint: d2bbc6641dee46ded776e58adbbb86919f4e44e5
+- Fingerprint: 1889cc576183f8274a6fde29879eab304e06b88e
 - Dedupe key: reconciliation_guardrail:main_checkout_dirty
 - Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-309-reconciliation-c05f71151a70.md
-- Acceptance: Reconciliation guardrail filed this because 17 branch or worktree cleanup candidates are blocked by main_checkout_dirty. Use evidence and the machine-readable reconciliation plan in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-309-reconciliation-c05f71151a70.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
+- Acceptance: Reconciliation guardrail filed this because 20 branch or worktree cleanup candidates are blocked by main_checkout_dirty. Use evidence and the machine-readable reconciliation plan in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-309-reconciliation-c05f71151a70.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
 
 ## HAO-310 Resolve 1 dirty backlogged worktrees blocked by unsupported_status
 
@@ -3446,18 +3446,18 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-310-reconciliation-ab689090ed4d.md
 - Acceptance: Reconciliation guardrail filed this because 1 branch or worktree cleanup candidates are blocked by unsupported_status. Use evidence and the machine-readable reconciliation plan in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-310-reconciliation-ab689090ed4d.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
 
-## HAO-311 Resolve 4 preflight-conflicting backlogged worktree merges
+## HAO-311 Resolve 20 preflight-conflicting backlogged worktree merges
 
 - Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Fingerprint: 2b56a8f9a68148ffdf5d0e30c37108b5ad1ef9c5
+- Fingerprint: fd1b527134319746e4d639332f2916bbce8ab480
 - Dedupe key: reconciliation_guardrail:preflight_merge_conflict
 - Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-311-reconciliation-534cc45af3d6.md
-- Acceptance: Reconciliation guardrail filed this because 4 branch or worktree cleanup candidates are blocked by preflight_merge_conflict. Use evidence and the machine-readable reconciliation plan in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-311-reconciliation-534cc45af3d6.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
+- Acceptance: Reconciliation guardrail filed this because 20 branch or worktree cleanup candidates are blocked by preflight_merge_conflict. Use evidence and the machine-readable reconciliation plan in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-311-reconciliation-534cc45af3d6.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
 
 ## HAO-312 Resolve validation retry-budget failure for HAO-306
 
@@ -3476,7 +3476,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/advanced_filecoin.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/advanced_filecoin.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/advanced_filecoin.py:1245. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-313-codebase-scan-d700867b5fc4.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3487,7 +3487,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/direct_mcp_server.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/direct_mcp_server.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/direct_mcp_server.py:159. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-314-codebase-scan-e0e818ca7fce.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3498,7 +3498,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/direct_mcp_server.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/direct_mcp_server.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/direct_mcp_server.py:217. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-315-codebase-scan-95256901e972.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3509,7 +3509,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/enhanced_mcp_server_with_ai_ml.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/enhanced_mcp_server_with_ai_ml.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/enhanced_mcp_server_with_ai_ml.py:44. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-316-codebase-scan-00aa8a4f9593.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3520,7 +3520,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/enhanced_storacha_storage.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/enhanced_storacha_storage.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/enhanced_storacha_storage.py:430. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-317-codebase-scan-e52c17f7507d.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3531,7 +3531,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, scripts/virtual_ai_os_todo_supervisor.py
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-318-hao-235-merge-retry-budget.md
 - Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-235. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-318-hao-235-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-235 from strategy blocked_tasks.
@@ -3542,7 +3542,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/direct_mcp_server.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/direct_mcp_server.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/direct_mcp_server.py:255. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-319-codebase-scan-a66dbc016ac0.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3553,7 +3553,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/enhanced_storacha_storage.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/enhanced_storacha_storage.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/enhanced_storacha_storage.py:919. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-320-codebase-scan-372c9f0bf55f.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3564,7 +3564,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/enhanced_storacha_storage.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/enhanced_storacha_storage.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/enhanced_storacha_storage.py:981. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-321-codebase-scan-e125d70761f9.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3575,7 +3575,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/enhanced_storacha_storage.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/enhanced_storacha_storage.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/enhanced_storacha_storage.py:1037. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-322-codebase-scan-065a828223f1.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3586,7 +3586,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_all_code_issues.sh
 - Validation: test -f external/ipfs_kit/archive/applied_patches/fix_all_code_issues.sh
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_all_code_issues.sh:236. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-323-codebase-scan-50b0117535ab.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3597,7 +3597,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_all_remaining_issues.sh
 - Validation: test -f external/ipfs_kit/archive/applied_patches/fix_all_remaining_issues.sh
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_all_remaining_issues.sh:204. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-324-codebase-scan-1e9236e8f40d.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3608,7 +3608,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_all_remaining_issues.sh
 - Validation: test -f external/ipfs_kit/archive/applied_patches/fix_all_remaining_issues.sh
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_all_remaining_issues.sh:228. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-325-codebase-scan-3224f703d80e.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3619,7 +3619,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_all_storacha.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_all_storacha.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_all_storacha.py:55. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-326-codebase-scan-42900ccea863.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3630,7 +3630,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_all_storacha.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_all_storacha.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_all_storacha.py:292. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-327-codebase-scan-3108d5b69a22.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3641,7 +3641,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_code_issues.sh
 - Validation: test -f external/ipfs_kit/archive/applied_patches/fix_code_issues.sh
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_code_issues.sh:229. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-328-codebase-scan-0ba993b31c87.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3652,7 +3652,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_huggingface_integration.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_huggingface_integration.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_huggingface_integration.py:58. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-329-codebase-scan-24cc769c050b.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3663,7 +3663,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_huggingface_integration.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_huggingface_integration.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_huggingface_integration.py:318. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-330-codebase-scan-483ae5ddf6cd.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3674,7 +3674,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_ipfs_model.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_ipfs_model.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_ipfs_model.py:210. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-331-codebase-scan-8835ea6867fd.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3685,7 +3685,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_lassie_integration.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_lassie_integration.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_lassie_integration.py:59. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-332-codebase-scan-bfaeda2fbacc.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3696,7 +3696,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_lassie_integration.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_lassie_integration.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_lassie_integration.py:273. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-333-codebase-scan-9451e9cbd0ad.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3707,7 +3707,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_s3_backend.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_s3_backend.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_s3_backend.py:236. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-334-codebase-scan-5e21764d35b6.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3718,7 +3718,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_s3_backend.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_s3_backend.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_s3_backend.py:698. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-335-codebase-scan-7b425b8a660e.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3729,7 +3729,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_s3_backend_complete.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_s3_backend_complete.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_s3_backend_complete.py:232. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-336-codebase-scan-8088ea61f67f.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3740,7 +3740,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_s3_backend_complete.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_s3_backend_complete.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_s3_backend_complete.py:845. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-337-codebase-scan-e13172ffcfa8.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3751,7 +3751,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_storacha_backend.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_storacha_backend.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_storacha_backend.py:472. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-338-codebase-scan-bdb55de0fb60.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3762,7 +3762,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_storacha_backend.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_storacha_backend.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_storacha_backend.py:1070. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-339-codebase-scan-e733dbf57b07.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3773,7 +3773,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_storacha_backend.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/fix_storacha_backend.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/fix_storacha_backend.py:1549. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-340-codebase-scan-070deff5a913.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3784,7 +3784,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/huggingface_real_init.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/huggingface_real_init.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/huggingface_real_init.py:44. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-341-codebase-scan-0f06020302cc.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3795,7 +3795,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/ipfs_dht_operations.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/ipfs_dht_operations.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/ipfs_dht_operations.py:279. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-342-codebase-scan-7621188cf0a5.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3806,7 +3806,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/ipfs_ipns_operations.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/ipfs_ipns_operations.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/ipfs_ipns_operations.py:1501. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-343-codebase-scan-d768e8bb62e5.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3817,7 +3817,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/lassie_mock_server.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/lassie_mock_server.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/lassie_mock_server.py:59. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-344-codebase-scan-3ea0f0198aff.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3828,18 +3828,18 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P2
 - Track: docs
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/archive_clutter/documentation_drafts/CONTRIBUTING.md
 - Validation: test -f external/ipfs_kit/archive/archive_clutter/documentation_drafts/CONTRIBUTING.md
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/archive_clutter/documentation_drafts/CONTRIBUTING.md:213. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-345-codebase-scan-dcf58d1b0ac8.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
 
 ## HAO-346 Resolve code annotation in external/ipfs_kit/archive/archive_clutter/documentation_drafts/CONTRIBUTING.md:214
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P2
 - Track: docs
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/archive_clutter/documentation_drafts/CONTRIBUTING.md
 - Validation: test -f external/ipfs_kit/archive/archive_clutter/documentation_drafts/CONTRIBUTING.md
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/archive_clutter/documentation_drafts/CONTRIBUTING.md:214. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-346-codebase-scan-584bb5fe6ed1.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3850,7 +3850,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/archive_clutter/fix_scripts/direct_fix_resource_handlers.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/archive_clutter/fix_scripts/direct_fix_resource_handlers.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/archive_clutter/fix_scripts/direct_fix_resource_handlers.py:249. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-347-codebase-scan-84c70ed539d3.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3861,7 +3861,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/archive_clutter/fix_scripts/direct_mcp_server.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/archive_clutter/fix_scripts/direct_mcp_server.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/archive_clutter/fix_scripts/direct_mcp_server.py:251. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-348-codebase-scan-0991e13de35f.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3872,7 +3872,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/archive_clutter/fix_scripts/direct_mcp_server.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/archive_clutter/fix_scripts/direct_mcp_server.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/archive_clutter/fix_scripts/direct_mcp_server.py:322. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-349-codebase-scan-47af7af5473e.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3883,7 +3883,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/archive_clutter/fix_scripts/direct_mcp_server_with_tools.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/archive_clutter/fix_scripts/direct_mcp_server_with_tools.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/archive_clutter/fix_scripts/direct_mcp_server_with_tools.py:185. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-350-codebase-scan-79b6d699fa77.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3894,7 +3894,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/archive_clutter/fix_scripts/direct_mcp_server_with_tools.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/archive_clutter/fix_scripts/direct_mcp_server_with_tools.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/archive_clutter/fix_scripts/direct_mcp_server_with_tools.py:243. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-351-codebase-scan-a285fb9a681e.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3905,7 +3905,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: quality
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/archive_clutter/fix_scripts/fixed_mcp_test_runner.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/archive_clutter/fix_scripts/fixed_mcp_test_runner.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/archive_clutter/fix_scripts/fixed_mcp_test_runner.py:587. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-352-codebase-scan-dccb28691ff3.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3916,7 +3916,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/archive_clutter/fix_scripts/fixed_runner.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/archive_clutter/fix_scripts/fixed_runner.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/archive_clutter/fix_scripts/fixed_runner.py:58. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-353-codebase-scan-ec600ae38de4.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3927,7 +3927,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/archive_clutter/fix_scripts/patch_direct_mcp.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/archive_clutter/fix_scripts/patch_direct_mcp.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/archive_clutter/fix_scripts/patch_direct_mcp.py:31. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-354-codebase-scan-061d436e7a3b.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3938,7 +3938,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/archive_clutter/temp_files/working_example.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/archive_clutter/temp_files/working_example.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/archive_clutter/temp_files/working_example.py:83. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-355-codebase-scan-6c7e8402d6c4.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3949,7 +3949,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/backup_patches/fix_storage_backends.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/backup_patches/fix_storage_backends.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/backup_patches/fix_storage_backends.py:288. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-356-codebase-scan-3874608ea0cf.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3960,7 +3960,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/cli_drafts/ipfs_kit_cli_jit_optimized.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/cli_drafts/ipfs_kit_cli_jit_optimized.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/cli_drafts/ipfs_kit_cli_jit_optimized.py:112. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-357-codebase-scan-a6288d2e61a8.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -3971,29 +3971,29 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/cli_drafts/ipfs_kit_cli_ultra_fast.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/cli_drafts/ipfs_kit_cli_ultra_fast.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/cli_drafts/ipfs_kit_cli_ultra_fast.py:78. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-358-codebase-scan-331fb598d446.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
 
 ## HAO-359 Review swallowed exception path in external/ipfs_kit/archive/legacy_servers/enhanced_mcp_server_phase2.py:1667
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/legacy_servers/enhanced_mcp_server_phase2.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/legacy_servers/enhanced_mcp_server_phase2.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/legacy_servers/enhanced_mcp_server_phase2.py:1667. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-359-codebase-scan-8b2e8ed6b503.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
 
 ## HAO-360 Review swallowed exception path in external/ipfs_kit/archive/legacy_servers/vscode_mcp_server.py:304
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: runtime
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/legacy_servers/vscode_mcp_server.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/legacy_servers/vscode_mcp_server.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/legacy_servers/vscode_mcp_server.py:304. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-360-codebase-scan-c7842a8943c2.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -4004,7 +4004,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: quality
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_development/mcp_test_suite.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_development/mcp_test_suite.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_development/mcp_test_suite.py:91. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-361-codebase-scan-ec33a1f25fe8.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -4015,117 +4015,524 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: quality
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_development/mcp_test_suite.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_development/mcp_test_suite.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_development/mcp_test_suite.py:109. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-362-codebase-scan-72ef7c0c07dd.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
 
 ## HAO-363 Review swallowed exception path in external/ipfs_kit/archive/mcp_development/mcp_test_suite.py:111
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: quality
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_development/mcp_test_suite.py
 - Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_development/mcp_test_suite.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_development/mcp_test_suite.py:111. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-08-hao-363-codebase-scan-823d164df44f.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
 
-## HAO-364 Resolve merge retry-budget failure for HAO-203
+## HAO-364 Review swallowed exception path in external/ipfs_kit/archive/mcp_development/mcp_test_suite.py:109
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_development/mcp_test_suite.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_development/mcp_test_suite.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_development/mcp_test_suite.py:109. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-364-codebase-scan-86f65578d49e.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-365 Review swallowed exception path in external/ipfs_kit/archive/mcp_development/mcp_test_suite.py:220
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_development/mcp_test_suite.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_development/mcp_test_suite.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_development/mcp_test_suite.py:220. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-365-codebase-scan-cd4db5b37677.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-366 Review swallowed exception path in external/ipfs_kit/archive/mcp_development/mcp_test_suite.py:262
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_development/mcp_test_suite.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_development/mcp_test_suite.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_development/mcp_test_suite.py:262. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-366-codebase-scan-4eb43647c4ff.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-367 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/auth/persistence.py:126
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/auth/persistence.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/auth/persistence.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/auth/persistence.py:126. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-367-codebase-scan-f28d43945488.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-368 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/auth/service.py:286
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/auth/service.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/auth/service.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/auth/service.py:286. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-368-codebase-scan-8bafd25fe8ff.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-369 Review swallowed exception path in external/ipfs_kit/archive/mcp_development/mcp_test_suite.py:265
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: quality
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_development/mcp_test_suite.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_development/mcp_test_suite.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_development/mcp_test_suite.py:265. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-369-codebase-scan-5af927a5fecd.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-370 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/auth/service.py:289
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/auth/service.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/auth/service.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/auth/service.py:289. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-370-codebase-scan-8b7aafab2c2d.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-371 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/ipfs_controller.py:1119
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/ipfs_controller.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/ipfs_controller.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/ipfs_controller.py:1119. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-371-codebase-scan-952d342d4f0e.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-372 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/ipfs_controller_anyio.py:681
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/ipfs_controller_anyio.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/ipfs_controller_anyio.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/ipfs_controller_anyio.py:681. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-372-codebase-scan-0ed0d7eade4b.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-373 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/ipfs_controller_anyio.py:1465
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/ipfs_controller_anyio.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/ipfs_controller_anyio.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/ipfs_controller_anyio.py:1465. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-373-codebase-scan-b01739de8f19.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-374 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/ipfs_controller_anyio.py:1649
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/ipfs_controller_anyio.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/ipfs_controller_anyio.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/ipfs_controller_anyio.py:1649. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-374-codebase-scan-03be576c95cb.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-375 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/ipfs_controller_anyio.py:1676
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/ipfs_controller_anyio.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/ipfs_controller_anyio.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/ipfs_controller_anyio.py:1676. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-375-codebase-scan-264755974332.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-376 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/ipfs_controller_anyio.py:2187
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/ipfs_controller_anyio.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/ipfs_controller_anyio.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/ipfs_controller_anyio.py:2187. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-376-codebase-scan-00f9e978ed6a.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-377 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller.py:394
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller.py:394. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-377-codebase-scan-b6d16e6f3851.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-378 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller.py:561
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller.py:561. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-378-codebase-scan-4d5ad4cf18b5.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-379 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller_anyio.py:401
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller_anyio.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller_anyio.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller_anyio.py:401. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-379-codebase-scan-46f92917525c.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-380 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller_anyio.py:568
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller_anyio.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller_anyio.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/peer_websocket_controller_anyio.py:568. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-380-codebase-scan-c16254bb0bc9.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-381 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/storage_manager_controller.py:1051
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/storage_manager_controller.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/storage_manager_controller.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/controllers/storage_manager_controller.py:1051. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-381-codebase-scan-ed70de87de16.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-382 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/enhanced_filecoin.py:204
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/enhanced_filecoin.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/enhanced_filecoin.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/enhanced_filecoin.py:204. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-382-codebase-scan-a5df1a1f3952.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-383 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/enhanced_lassie.py:49
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/enhanced_lassie.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/enhanced_lassie.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/enhanced_lassie.py:49. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-383-codebase-scan-3e502eb1a4e2.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-384 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/migration.py:120
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/migration.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/migration.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/migration.py:120. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-384-codebase-scan-f437c08cb7e1.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-385 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/perf.py:276
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/perf.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/perf.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/perf.py:276. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-385-codebase-scan-bb605eb71146.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-386 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/perf.py:791
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/perf.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/perf.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/perf.py:791. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-386-codebase-scan-709bad14f733.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-387 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/udm.py:553
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/udm.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/udm.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/udm.py:553. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-387-codebase-scan-c85207f2e629.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-388 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/webrtc.py:49
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/webrtc.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/webrtc.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/webrtc.py:49. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-388-codebase-scan-a2b070dabc4e.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-389 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/perf.py:280
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/perf.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/perf.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/perf.py:280. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-389-codebase-scan-47fb33225c25.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-390 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/webrtc.py:74
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/webrtc.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/webrtc.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/webrtc.py:74. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-390-codebase-scan-29cc410eddef.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-391 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py:52
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py:52. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-391-codebase-scan-2c8f2cb04964.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-392 Resolve code annotation in external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py:123
+
+- Status: completed
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py:123. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-392-codebase-scan-71a5c20a5edf.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-393 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/ha/service.py:761
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/ha/service.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/ha/service.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/ha/service.py:761. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-393-codebase-scan-0d841fabde4d.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-394 Review swallowed exception path in external/ipfs_kit/archive/mcp_development/mcp_test_suite.py:268
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: quality
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_development/mcp_test_suite.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_development/mcp_test_suite.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_development/mcp_test_suite.py:268. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-394-codebase-scan-eeca8fd901f9.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-395 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/webrtc.py:77
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/webrtc.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/webrtc.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/webrtc.py:77. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-395-codebase-scan-ac5f39924fc4.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-396 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py:55
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py:55. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-396-codebase-scan-85ae23d02724.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-397 Resolve code annotation in external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py:129
+
+- Status: completed
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py:129. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-397-codebase-scan-b88536c3c7e3.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-398 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage/lassie_model.py:400
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage/lassie_model.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage/lassie_model.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage/lassie_model.py:400. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-398-codebase-scan-0dcd6aaf2b7c.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-399 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/webrtc.py:77
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/webrtc.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/webrtc.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/webrtc.py:77. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-399-codebase-scan-696f68c49414.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-400 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py:55
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py:55. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-400-codebase-scan-b53557c5705e.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-401 Resolve code annotation in external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py:131
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py:131. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-401-codebase-scan-2497cccaa5ad.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-402 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage/lassie_model_anyio.py:623
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage/lassie_model_anyio.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage/lassie_model_anyio.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage/lassie_model_anyio.py:623. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-402-codebase-scan-8145bc93a0ac.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-403 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage/lassie_model_anyio.py:746
+
+- Status: completed
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage/lassie_model_anyio.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage/lassie_model_anyio.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage/lassie_model_anyio.py:746. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-403-codebase-scan-f866808d8afc.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-404 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage_bridge.py:1438
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage_bridge.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage_bridge.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage_bridge.py:1438. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-404-codebase-scan-d2d82d3993e9.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-405 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage_bridge.py:1530
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage_bridge.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage_bridge.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage_bridge.py:1530. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-405-codebase-scan-bae83db6902d.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-406 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/cache_manager.py:1032
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/cache_manager.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/cache_manager.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/cache_manager.py:1032. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-406-codebase-scan-ce622549c01c.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-407 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/migration_store.py:117
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/migration_store.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/migration_store.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/migration_store.py:117. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-407-codebase-scan-30f5218c74cb.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-408 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/policy_store.py:110
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/policy_store.py
+- Validation: python3 -m py_compile external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/policy_store.py
+- Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/policy_store.py:110. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-408-codebase-scan-e95edb6ba858.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-409 Resolve implementation retry-budget failure for HAO-404
 
 - Status: todo
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Depends on: 
-- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/auth_keystore_integration.py
-- Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-364-hao-203-merge-retry-budget.md
-- Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-203. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-364-hao-203-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-203 from strategy blocked_tasks.
-
-## HAO-365 Resolve merge retry-budget failure for HAO-223
-
-- Status: todo
-- Completion: manual
-- Priority: P1
-- Track: ops
-- Depends on: 
-- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_embeddings_py/ipfs_faiss_py.py
-- Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-365-hao-223-merge-retry-budget.md
-- Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-223. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-365-hao-223-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-223 from strategy blocked_tasks.
-
-## HAO-366 Resolve merge retry-budget failure for HAO-300
-
-- Status: todo
-- Completion: manual
-- Priority: P1
-- Track: ops
-- Depends on: 
-- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/python/hallucinate_app/control_surface_store.py
-- Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-366-hao-300-merge-retry-budget.md
-- Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-300. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-366-hao-300-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-300 from strategy blocked_tasks.
-
-## HAO-367 Resolve merge retry-budget failure for HAO-314
-
-- Status: todo
-- Completion: manual
-- Priority: P1
-- Track: ops
-- Depends on: 
-- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/direct_mcp_server.py
-- Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-367-hao-314-merge-retry-budget.md
-- Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-314. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-367-hao-314-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-314 from strategy blocked_tasks.
-
-## HAO-368 Resolve merge retry-budget failure for HAO-273
-
-- Status: todo
-- Completion: manual
-- Priority: P1
-- Track: ops
-- Depends on: 
-- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/secure_duckdb_ipld_manager.py
-- Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-368-hao-273-merge-retry-budget.md
-- Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-273. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-368-hao-273-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-273 from strategy blocked_tasks.
-
-## HAO-369 Resolve merge retry-budget failure for HAO-298
-
-- Status: todo
-- Completion: manual
-- Priority: P1
-- Track: ops
-- Depends on: 
-- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/python/hallucinate_app/control_surface_receipts.py
-- Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-369-hao-298-merge-retry-budget.md
-- Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-298. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-369-hao-298-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-298 from strategy blocked_tasks.
-
-## HAO-370 Resolve merge retry-budget failure for HAO-299
-
-- Status: todo
-- Completion: manual
-- Priority: P1
-- Track: ops
-- Depends on: 
-- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/python/hallucinate_app/control_surface_store.py
-- Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-370-hao-299-merge-retry-budget.md
-- Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-299. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-370-hao-299-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-299 from strategy blocked_tasks.
-
-## HAO-371 Resolve merge retry-budget failure for HAO-313
-
-- Status: todo
-- Completion: manual
-- Priority: P1
-- Track: ops
-- Depends on: 
-- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/advanced_filecoin.py
-- Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-371-hao-313-merge-retry-budget.md
-- Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-313. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-371-hao-313-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-313 from strategy blocked_tasks.
-
-## HAO-372 Resolve merge retry-budget failure for HAO-315
-
-- Status: todo
-- Completion: manual
-- Priority: P1
-- Track: ops
-- Depends on: 
-- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/direct_mcp_server.py
-- Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-372-hao-315-merge-retry-budget.md
-- Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-315. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-372-hao-315-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-315 from strategy blocked_tasks.
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/models/storage_bridge.py
+- Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-409-hao-404-implementation-retry-budget.md
+- Acceptance: Implementation retry-budget guardrail filed this from repeated implementation failures in HAO-404. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-09-hao-409-hao-404-implementation-retry-budget.md to fix the setup, runtime, or timeout blocker, then mark this repair task completed so the supervisor can release HAO-404 from strategy blocked_tasks.
