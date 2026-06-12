@@ -469,6 +469,8 @@ class IPFSModelManager:
                             loop.run_until_complete(self.remove_model(test_model_id))
                         
                 except Exception as exc:
+                    # Self-tests return partial failures to callers, but keep the
+                    # original traceback in logs for debugging.
                     ipfs_import_error = str(exc)
                     logger.exception("IPFS import test failed")
                 finally:
