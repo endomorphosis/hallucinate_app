@@ -3452,7 +3452,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Fingerprint: 904768513139c9db33044bab0316361b6e3eed02
+- Fingerprint: 87c47b782e6cb98539ff9ad665623d9d4110e15b
 - Dedupe key: reconciliation_guardrail:preflight_merge_conflict
 - Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
