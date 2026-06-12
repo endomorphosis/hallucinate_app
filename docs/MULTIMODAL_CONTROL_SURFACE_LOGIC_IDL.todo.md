@@ -4659,3 +4659,14 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/js_bridge/pyarrow_content_index_bridge.py, data/hallucinate_multimodal_control/state/discovery
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/state/discovery/2026-06-12-hao-420-hao-268-merge-retry-budget.md
 - Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-268. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/state/discovery/2026-06-12-hao-420-hao-268-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-268 from strategy blocked_tasks.
+
+## HAO-421 Resolve merge retry-budget failure for HAO-358
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/cli_drafts/ipfs_kit_cli_ultra_fast.py
+- Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-421-hao-358-merge-retry-budget.md
+- Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-358. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-421-hao-358-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-358 from strategy blocked_tasks.
