@@ -17,6 +17,7 @@ from hallucinate_app.control_surface_policy import (  # noqa: E402
 from hallucinate_app.control_surface_store import (  # noqa: E402
     POLICY_BUNDLE_KIND,
     PolicyBundleStore,
+    _json_safe,
     stable_cid,
 )
 
@@ -131,6 +132,23 @@ class TestControlSurfacePolicyStore(unittest.TestCase):
             self.assertEqual(first.compiled_policy_cid, second.compiled_policy_cid)
             attachment = store.load_profile_attachment(user_id="operator-7")
             self.assertEqual(len(attachment["attachment"]["policy_refs"]), 1)
+
+    def test_json_safe_logs_as_dict_failure_and_uses_fallback(self) -> None:
+        class BrokenAsDict:
+            def __init__(self) -> None:
+                self.fallback = "preserved"
+
+            def as_dict(self) -> dict[str, str]:
+                raise RuntimeError("as_dict unavailable")
+
+        with self.assertLogs("hallucinate_app.control_surface_store", level="WARNING") as logs:
+            payload = _json_safe(BrokenAsDict())
+
+        self.assertEqual(payload, {"fallback": "preserved"})
+        self.assertTrue(
+            any("as_dict() failed" in message for message in logs.output),
+            logs.output,
+        )
 
 
 if __name__ == "__main__":
