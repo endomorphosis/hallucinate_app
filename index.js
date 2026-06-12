@@ -2194,11 +2194,11 @@ app.on('ready', async () => {
     // Start the SwissKnife web server
     await startSwissKnifeServer();
     
-    logInfo('APP_READY', 'Creating menu...');
-    createAppMenu();
-    
     logInfo('APP_READY', 'Creating window...');
     createWindow();
+
+    logInfo('APP_READY', 'Creating menu...');
+    createAppMenu();
     
     // Auto-start MCP daemons after a short delay
     setTimeout(async () => {

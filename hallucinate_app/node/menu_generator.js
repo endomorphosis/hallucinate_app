@@ -428,7 +428,8 @@ export class MenuGenerator {
 
       case 'openSwissKnifeApp':
         if (this.createSwissKnifeWindow) {
-          this.createSwissKnifeWindow(item?.app);
+          const appName = typeof item?.app === 'string' ? item.app : undefined;
+          this.createSwissKnifeWindow(appName);
         }
         break;
 
