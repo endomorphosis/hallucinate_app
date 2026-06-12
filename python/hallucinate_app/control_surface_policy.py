@@ -774,6 +774,7 @@ def _ipfs_explanations(logic_api: Any, source_text: str, compile_result: Any) ->
                 f"compile_explain_iter raised an unexpected error: {exc}",
                 stacklevel=2,
             )
+            _logger.warning("compile_explain_iter failed while building IPFS explanations", exc_info=exc)
 
     if not explanations:
         compiler_cls = getattr(logic_api, "NLUCANPolicyCompiler", None)
@@ -787,6 +788,10 @@ def _ipfs_explanations(logic_api: Any, source_text: str, compile_result: Any) ->
                 warnings.warn(
                     f"NLUCANPolicyCompiler.compile_explain raised an unexpected error: {exc}",
                     stacklevel=2,
+                )
+                _logger.warning(
+                    "NLUCANPolicyCompiler.compile_explain failed while building IPFS explanations",
+                    exc_info=exc,
                 )
 
     metadata = _as_plain_mapping(_ipfs_field(compile_result, "metadata"))
