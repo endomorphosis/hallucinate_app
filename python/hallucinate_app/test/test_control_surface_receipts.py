@@ -26,6 +26,7 @@ from hallucinate_app.control_surface_mediator import (  # noqa: E402
 from hallucinate_app.control_surface_policy import compile_strict_template_rule  # noqa: E402
 from hallucinate_app.control_surface_receipts import (  # noqa: E402
     MediationReceiptStore,
+    _json_safe,
     build_mediation_receipt,
     emit_mediation_receipt,
     mediate_and_emit_receipt,
@@ -200,6 +201,30 @@ def _gesture_envelope():
             "device_context": {"timezone": "America/Los_Angeles"},
         },
     )
+
+
+class TestControlSurfaceReceiptJsonSafe(unittest.TestCase):
+    def test_json_safe_logs_as_dict_hook_failure_without_masking_nested_errors(self) -> None:
+        class BrokenAsDict:
+            def as_dict(self) -> dict[str, str]:
+                raise ValueError("hook failed")
+
+        class BrokenString:
+            def __str__(self) -> str:
+                raise RuntimeError("nested serialization failed")
+
+        class NestedFailure:
+            def as_dict(self) -> dict[str, object]:
+                return {"nested": BrokenString()}
+
+        with self.assertLogs("hallucinate_app.control_surface_receipts", level="WARNING") as logs:
+            self.assertIn("BrokenAsDict", _json_safe(BrokenAsDict()))
+
+        self.assertTrue(
+            any("as_dict() failed for 'BrokenAsDict'" in message for message in logs.output)
+        )
+        with self.assertRaisesRegex(RuntimeError, "nested serialization failed"):
+            _json_safe(NestedFailure())
 
 
 def _message_envelope():
