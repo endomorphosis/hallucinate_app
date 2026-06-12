@@ -222,6 +222,27 @@ let unetCompileProgress = 0;
 let vaeDecoderCompileProgress = 0;
 let scCompileProgress = 0;
 
+const progressWeights = {
+  withSafetyChecker: {
+    textEncoderFetch: 7,
+    unetFetch: 48,
+    vaeDecoderFetch: 3,
+    safetyCheckerFetch: 12,
+    textEncoderCompile: 3,
+    unetCompile: 20,
+    vaeDecoderCompile: 2,
+    safetyCheckerCompile: 5,
+  },
+  withoutSafetyChecker: {
+    textEncoderFetch: 7,
+    unetFetch: 60,
+    vaeDecoderFetch: 3,
+    textEncoderCompile: 3,
+    unetCompile: 25,
+    vaeDecoderCompile: 2,
+  },
+};
+
 const updateProgress = () => {
   progress =
   textEncoderFetchProgress +
@@ -260,22 +281,24 @@ async function getModelOPFS(name, url, updateModel) {
     if (buffer) {
 
       if(Utils.getSafetyChecker()) {
+        const weights = progressWeights.withSafetyChecker;
         if (name == "sd_1.5_text-encoder") {
-          textEncoderFetchProgress = 7;
+          textEncoderFetchProgress = weights.textEncoderFetch;
         } else if (name == "sd_1.5_unet") {
-          unetFetchProgress = 48;
+          unetFetchProgress = weights.unetFetch;
         } else if (name == "sd_1.5_vae-decoder") {
-          vaeDecoderFetchProgress = 3;
+          vaeDecoderFetchProgress = weights.vaeDecoderFetch;
         } else if (name == "sd_1.5_safety-checker") {
-          scFetchProgress = 12;
+          scFetchProgress = weights.safetyCheckerFetch;
         }
       } else {
+        const weights = progressWeights.withoutSafetyChecker;
         if (name == "sd_1.5_text-encoder") {
-          textEncoderFetchProgress = 7;
+          textEncoderFetchProgress = weights.textEncoderFetch;
         } else if (name == "sd_1.5_unet") {
-          unetFetchProgress = 60;
+          unetFetchProgress = weights.unetFetch;
         } else if (name == "sd_1.5_vae-decoder") {
-          vaeDecoderFetchProgress = 3;
+          vaeDecoderFetchProgress = weights.vaeDecoderFetch;
         } 
       }
 
@@ -317,22 +340,24 @@ async function readResponse(name, response) {
     fetchProgress = (newLoaded / contentLength) * 100;
 
     if(Utils.getSafetyChecker()) {
+      const weights = progressWeights.withSafetyChecker;
       if (name == "sd_1.5_text-encoder") {
-        textEncoderFetchProgress = 0.07 * fetchProgress;
+        textEncoderFetchProgress = weights.textEncoderFetch / 100 * fetchProgress;
       } else if (name == "sd_1.5_unet") {
-        unetFetchProgress = 0.48 * fetchProgress;
+        unetFetchProgress = weights.unetFetch / 100 * fetchProgress;
       } else if (name == "sd_1.5_vae-decoder") {
-        vaeDecoderFetchProgress = 0.03 * fetchProgress;
+        vaeDecoderFetchProgress = weights.vaeDecoderFetch / 100 * fetchProgress;
       } else if (name == "sd_1.5_safety-checker") {
-        scFetchProgress = 0.12 * fetchProgress;
+        scFetchProgress = weights.safetyCheckerFetch / 100 * fetchProgress;
       } 
     } else {
+      const weights = progressWeights.withoutSafetyChecker;
       if (name == "sd_1.5_text-encoder") {
-        textEncoderFetchProgress = 0.07 * fetchProgress;
+        textEncoderFetchProgress = weights.textEncoderFetch / 100 * fetchProgress;
       } else if (name == "sd_1.5_unet") {
-        unetFetchProgress = 0.60 * fetchProgress;
+        unetFetchProgress = weights.unetFetch / 100 * fetchProgress;
       } else if (name == "sd_1.5_vae-decoder") {
-        vaeDecoderFetchProgress = 0.03 * fetchProgress;
+        vaeDecoderFetchProgress = weights.vaeDecoderFetch / 100 * fetchProgress;
       }
     }
 
@@ -831,7 +856,7 @@ async function loadModel(modelName /*:String*/, executionProvider /*:String*/) {
       2
     );
     performanceData.sessioncreate.textencoder = textencoderCreateTime;
-    textEncoderCompileProgress = 3;
+    textEncoderCompileProgress = progressWeights.withSafetyChecker.textEncoderCompile;
     updateProgress();
     if(Utils.getMode()) {
       progressBarLabel.textContent = `Text Encoder session created · ${textencoderCreateTime}ms · ${progress}%`;
@@ -844,9 +869,9 @@ async function loadModel(modelName /*:String*/, executionProvider /*:String*/) {
     let unetCreateTime = (performance.now() - createStartTime).toFixed(2);
     performanceData.sessioncreate.unet = unetCreateTime;
     if(Utils.getSafetyChecker()) {
-      unetCompileProgress = 20;
+      unetCompileProgress = progressWeights.withSafetyChecker.unetCompile;
     } else {
-      unetCompileProgress = 25;
+      unetCompileProgress = progressWeights.withoutSafetyChecker.unetCompile;
     }
     updateProgress();
     if(Utils.getMode()) {  
@@ -859,7 +884,7 @@ async function loadModel(modelName /*:String*/, executionProvider /*:String*/) {
   } else if (modelName == "vae-decoder") {
     let vaedecoderCreateTime = (performance.now() - createStartTime).toFixed(2);
     performanceData.sessioncreate.vaedecoder = vaedecoderCreateTime;
-    vaeDecoderCompileProgress = 2;
+    vaeDecoderCompileProgress = progressWeights.withSafetyChecker.vaeDecoderCompile;
     updateProgress();
     if(Utils.getMode()) {  
       progressBarLabel.textContent = `VAE Decoder session created · ${vaedecoderCreateTime}ms · ${progress}%`;
@@ -871,7 +896,7 @@ async function loadModel(modelName /*:String*/, executionProvider /*:String*/) {
   } else if (modelName == "safety-checker") {
     let scCreateTime = (performance.now() - createStartTime).toFixed(2);
     performanceData.sessioncreate.sc = scCreateTime;
-    scCompileProgress = 5;
+    scCompileProgress = progressWeights.withSafetyChecker.safetyCheckerCompile;
     updateProgress();
     if(Utils.getMode()) {  
       progressBarLabel.textContent = `Safety Checker session created · ${scCreateTime}ms · ${progress}%`;
