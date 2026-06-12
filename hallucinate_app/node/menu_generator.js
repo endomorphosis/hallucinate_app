@@ -439,13 +439,15 @@ export class MenuGenerator {
         break;
       }
 
-      case 'openServerConfig':
-        if (item?.serverId) {
-          this.navigateToView(resolveViewPath(`views/settings.html?server=${encodeURIComponent(item.serverId)}`));
+      case 'openServerConfig': {
+        const serverId = typeof item?.serverId === 'string' ? item.serverId.trim() : '';
+        if (serverId) {
+          this.navigateToView(resolveViewPath(`views/settings.html?server=${encodeURIComponent(serverId)}`));
         } else {
           this.navigateToView(resolveViewPath('views/settings.html'));
         }
         break;
+      }
 
       case 'resetConfig':
         dialog.showMessageBox({
