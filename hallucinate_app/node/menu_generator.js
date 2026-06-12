@@ -441,7 +441,9 @@ export class MenuGenerator {
 
       case 'openServerConfig':
         if (item?.serverId) {
-          this.navigateToView(resolveViewPath(`views/settings.html?server=${encodeURIComponent(item.serverId)}`));
+          this.navigateToView(resolveViewPath('views/settings.html'), {
+            query: { server: String(item.serverId) }
+          });
         } else {
           this.navigateToView(resolveViewPath('views/settings.html'));
         }
