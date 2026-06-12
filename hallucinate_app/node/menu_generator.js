@@ -440,6 +440,7 @@ export class MenuGenerator {
       }
 
       case 'openServerConfig':
+        // Server-specific configuration is handled by the shared settings view.
         if (item?.serverId) {
           this.navigateToView(resolveViewPath(`views/settings.html?server=${encodeURIComponent(item.serverId)}`));
         } else {
