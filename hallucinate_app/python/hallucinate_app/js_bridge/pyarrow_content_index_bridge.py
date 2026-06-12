@@ -728,7 +728,7 @@ class PyArrowContentIndexBridge:
                         try:
                             self.metrics['cache_hits'].labels(cache_type=cache_type).inc()
                         except Exception as e:
-                            # Metrics are best-effort; keep cache reads working while logging the traceback.
+                            # Metrics are best-effort; keep cache reads working while preserving the traceback.
                             logger.exception("Error updating cache hit metrics for %s: %s", cache_type, e)
                     
                     return cache[key]
@@ -751,7 +751,7 @@ class PyArrowContentIndexBridge:
                 try:
                     self.metrics['cache_misses'].labels(cache_type=cache_type).inc()
                 except Exception as e:
-                    # Metrics are best-effort; keep cache reads working while logging the traceback.
+                    # Metrics are best-effort; keep cache reads working while preserving the traceback.
                     logger.exception("Error updating cache miss metrics for %s: %s", cache_type, e)
                     
             return None
