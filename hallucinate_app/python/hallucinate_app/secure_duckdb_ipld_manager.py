@@ -1264,6 +1264,7 @@ class SecureDuckDBIPLDManager:
                 sql_type,
                 sql[:120] if sql else "",
                 e,
+                exc_info=True,
             )
             return None
     
