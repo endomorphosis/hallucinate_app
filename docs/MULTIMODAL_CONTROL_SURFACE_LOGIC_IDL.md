@@ -1,6 +1,6 @@
 # Multimodal Control Surface Logic IDL Plan
 
-Daemon backlog file:
+The daemon backlog for this plan lives at:
 
 ```text
 hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
