@@ -3420,18 +3420,18 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/advanced_filecoin.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/advanced_filecoin.py:984. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-308-codebase-scan-f223d9e5d048.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
 
-## HAO-309 Resolve dirty main checkout blocking 34 worktree merges
+## HAO-309 Resolve dirty main checkout blocking 28 worktree merges
 
 - Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Fingerprint: a6cdec3b5e9f727d90ba4cc442f40455806d1acd
+- Fingerprint: 1c44d090c39dbf9c5e78387bff0b146e2d70f018
 - Dedupe key: reconciliation_guardrail:main_checkout_dirty
 - Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-309-reconciliation-c05f71151a70.md
-- Acceptance: Reconciliation guardrail filed this because 34 branch or worktree cleanup candidates are blocked by main_checkout_dirty. Use evidence and the machine-readable reconciliation plan in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-309-reconciliation-c05f71151a70.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
+- Acceptance: Reconciliation guardrail filed this because 28 branch or worktree cleanup candidates are blocked by main_checkout_dirty. Use evidence and the machine-readable reconciliation plan in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-309-reconciliation-c05f71151a70.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
 
 ## HAO-310 Resolve 1 dirty backlogged worktrees blocked by unsupported_status
 
@@ -4635,3 +4635,16 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/direct_mcp_server.py
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-418-hao-315-merge-retry-budget.md
 - Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-315. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-418-hao-315-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-315 from strategy blocked_tasks.
+
+## HAO-419 Resolve 1 dirty backlogged worktrees blocked by content_not_in_target
+
+- Status: todo
+- Completion: manual
+- Priority: P2
+- Track: ops
+- Fingerprint: 3f71a37d7ccc446dae6c7b44c3452ce88e2fe4c5
+- Dedupe key: reconciliation_guardrail:dirty_backlogged_worktree:content_not_in_target
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/state/discovery, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
+- Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/state/discovery/2026-06-12-hao-419-reconciliation-3f71a37d7ccc.md
+- Acceptance: Reconciliation guardrail filed this because 1 branch or worktree cleanup candidates are blocked by content_not_in_target. Use evidence and the machine-readable reconciliation plan in /home/barberb/lift_coding/data/hallucinate_multimodal_control/state/discovery/2026-06-12-hao-419-reconciliation-3f71a37d7ccc.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
