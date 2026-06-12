@@ -1132,7 +1132,7 @@ class ErrorMonitor:
         clean_msg2 = self._SIMILAR_PATTERN.sub(self._SIMILAR_SENTINEL, msg2)
         # Require minimum length for both exact and substring matches.  A very
         # short cleaned string (e.g. a message that was entirely a hex address
-        # and became the sentinel) must not cause unrelated errors to be treated
+        # and normalised to the one-character null-byte sentinel) must not cause
         # as duplicates — the guard applies to the exact-match path as well as
         # the substring path so that e.g. "0xdeadbeef" and "0xcafebabe" (both
         # normalising to the one-character sentinel) are not conflated.
