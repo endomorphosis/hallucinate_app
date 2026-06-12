@@ -4662,7 +4662,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-421 Resolve merge retry-budget failure for HAO-358
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
