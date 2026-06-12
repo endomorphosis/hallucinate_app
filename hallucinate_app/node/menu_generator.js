@@ -426,11 +426,18 @@ export class MenuGenerator {
         }
         break;
 
-      case 'openSwissKnifeApp':
+      case 'openSwissKnifeApp': {
+        const appName = item?.app;
+        if (typeof appName !== 'string' || appName.length === 0) {
+          console.warn('SwissKnife app menu item is missing an app id.');
+          break;
+        }
+
         if (this.createSwissKnifeWindow) {
-          this.createSwissKnifeWindow(item?.app);
+          this.createSwissKnifeWindow(appName);
         }
         break;
+      }
 
       case 'openServerConfig':
         if (item?.serverId) {
