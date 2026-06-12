@@ -812,7 +812,7 @@ class DuckDBIPLDKit:
                 "record_count": arrow_result.get("record_count", 0)
             }
         except Exception as e:
-            logger.warning("DuckDB-IPLD self-test arrow export failed: %s", e, exc_info=True)
+            logger.exception("DuckDB-IPLD self-test arrow export failed")
             results["tests"]["arrow_export"] = {
                 "success": False,
                 "error": str(e)
