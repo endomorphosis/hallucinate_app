@@ -428,7 +428,7 @@ export class MenuGenerator {
 
       case 'openSwissKnifeApp':
         if (this.createSwissKnifeWindow) {
-          this.createSwissKnifeWindow(item?.app);
+          this.openSwissKnifeApp(item);
         }
         break;
 
@@ -503,6 +503,17 @@ Includes:
       default:
         console.warn(`Unknown action: ${action}`);
     }
+  }
+
+  /**
+   * Open SwissKnife directly to a configured app when one is supplied.
+   */
+  openSwissKnifeApp(item) {
+    const appName = typeof item?.app === 'string' && item.app.length > 0
+      ? item.app
+      : undefined;
+
+    this.createSwissKnifeWindow(appName);
   }
 
   /**
