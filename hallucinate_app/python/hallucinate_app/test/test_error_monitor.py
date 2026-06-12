@@ -229,6 +229,19 @@ class TestMessagesSimilar(unittest.TestCase):
         msg_upper = "Segfault at address 0xDEADBEEF in module foo"
         self.assertTrue(self._similar(msg_lower, msg_upper))
 
+    def test_msg1_hex_normalises_to_configured_sentinel(self):
+        """VAI-131: the first message is normalised with the configured sentinel."""
+        pattern = ErrorMonitor._SIMILAR_PATTERN
+        sentinel = ErrorMonitor._SIMILAR_SENTINEL
+        self.assertEqual(
+            pattern.sub(sentinel, "Segfault at address 0xDEADBEEF in module foo"),
+            f"Segfault at address {sentinel} in module foo",
+        )
+        self.assertNotIn(
+            "XXX",
+            pattern.sub(sentinel, "Segfault at address 0xDEADBEEF in module foo"),
+        )
+
     def test_line_number_normalised(self):
         """Messages differing only in line number should be considered similar."""
         msg1 = "TypeError at src/foo.py line 42"
