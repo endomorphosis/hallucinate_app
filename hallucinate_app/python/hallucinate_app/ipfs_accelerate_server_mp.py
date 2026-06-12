@@ -143,7 +143,7 @@ class PlasmaManager:
     def _require_client(self):
         """Return the active plasma client or raise a clear runtime error."""
         if self.client is None:
-            raise RuntimeError("Plasma store client is not available")
+            raise RuntimeError(f"Plasma store client is not available at {self.socket_path}")
         return self.client
     
     def put(self, obj: Any) -> bytes:
