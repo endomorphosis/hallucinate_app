@@ -26,7 +26,6 @@ import heapq
 import copy
 import json
 import math
-from queue import Queue, PriorityQueue, Empty
 from dataclasses import dataclass, field
 from typing import Dict, List, Any, Optional, Union, Tuple, Callable, TypeVar, Generic, Set
 from enum import Enum, auto
@@ -357,6 +356,54 @@ class EnhancedManagedThreadPool(ManagedThreadPool):
             Optional[TaskMetadata]: The task metadata or None if not found
         """
         return self.task_metadata.get(task_id)
+
+    def reprioritize_pending_task(
+        self,
+        task_id: str,
+        boosted_priority: int
+    ) -> Optional[PrioritizedTask]:
+        """
+        Replace a queued pending task with an equivalent task at a higher priority.
+
+        PriorityQueue has no public update operation. Keep the mutex-protected
+        heap replacement in one pool method so callers do not depend on queue
+        internals and so the active task map stays consistent with the queue.
+        """
+        task = self.active_tasks.get(task_id)
+        if not task or task.state != TaskState.PENDING or boosted_priority >= task.priority:
+            return None
+
+        with self.task_queue.mutex:
+            task = self.active_tasks.get(task_id)
+            if not task or task.state != TaskState.PENDING or boosted_priority >= task.priority:
+                return None
+
+            queued_index = None
+            for index, queued_task in enumerate(self.task_queue.queue):
+                if queued_task is task:
+                    queued_index = index
+                    break
+
+            if queued_index is None:
+                return None
+
+            boosted_task = PrioritizedTask(
+                priority=boosted_priority,
+                task_id=task.task_id,
+                task_type=task.task_type,
+                function=task.function,
+                args=task.args,
+                kwargs=task.kwargs,
+                created_at=task.created_at,
+                timeout=task.timeout,
+                state=TaskState.PENDING,
+                future=task.future
+            )
+
+            self.task_queue.queue[queued_index] = boosted_task
+            heapq.heapify(self.task_queue.queue)
+            self.active_tasks[task_id] = boosted_task
+            return boosted_task
     
     def can_handle_task(self, metadata: TaskMetadata) -> bool:
         """
@@ -1146,51 +1193,14 @@ class AdvancedThreadPoolManager(ThreadPoolManager):
                                 # Check if we need to boost task priority.
                                 # Compute boosted_priority using the same formula used when
                                 # constructing PrioritizedTask so that the guard condition and
-                                # the actual new value are always consistent.  Previously the
-                                # condition used int(priority - boost) while the constructor
-                                # used max(0, priority - int(boost)); for boost < 1.0 the
-                                # condition evaluated True but the new priority was unchanged,
-                                # causing the task to be re-enqueued with an identical priority
-                                # every aging tick.
-                                # PriorityQueue does not support in-place re-prioritization,
-                                # so we add a new copy with the higher priority and mark
-                                # the old entry as CANCELLED so the worker skips it.
-                                # We only requeue when the integer priority level actually
-                                # improves to avoid churning the queue with no-op requeues.
+                                # the actual new value are always consistent.
                                 boosted_priority = max(0, task.priority - int(starvation_boost))
                                 if boosted_priority < task.priority:
-                                    # New priority is higher (lower numeric value); resubmit.
-                                    # PriorityQueue ordering is stable by insertion for equal
-                                    # priorities, so cancelling the old entry and inserting a
-                                    # new one is the only way to move a task forward.
-                                    
-                                    # Create a new prioritized task with boosted priority
-                                    current_queue = getattr(pool, "task_queue", None)
-                                    if isinstance(current_queue, PriorityQueue):
-                                        # Create a new task wrapper with the same ID
-                                        boosted_task = PrioritizedTask(
-                                            priority=boosted_priority,
-                                            task_id=task.task_id,
-                                            task_type=task.task_type,
-                                            function=task.function,
-                                            args=task.args,
-                                            kwargs=task.kwargs,
-                                            created_at=task.created_at,
-                                            timeout=task.timeout,
-                                            state=TaskState.PENDING,
-                                            future=task.future
-                                        )
-                                        
-                                        # Invalidate the original task so the worker skips it when
-                                        # dequeued.  The worker checks for CANCELLED state and
-                                        # calls task_done() without executing the function, which
-                                        # prevents the same logical task from running twice.
-                                        task.state = TaskState.CANCELLED
-                                        current_queue.put(boosted_task)
-                                        
-                                        # Update the active tasks record
-                                        pool.active_tasks[task_id] = boosted_task
-                                        
+                                    boosted_task = pool.reprioritize_pending_task(
+                                        task_id,
+                                        boosted_priority
+                                    )
+                                    if boosted_task:
                                         logger.debug(f"Boosted priority of waiting task {task_id} in pool {pool.pool_id} "
                                                    f"from {task.priority} to {boosted_task.priority} due to waiting {waiting_time:.1f}s")
     
