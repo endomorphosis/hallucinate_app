@@ -150,6 +150,23 @@ class TestControlSurfacePolicyStore(unittest.TestCase):
             logs.output,
         )
 
+    def test_json_safe_logs_to_dict_failure_and_uses_fallback(self) -> None:
+        class BrokenToDict:
+            def __init__(self) -> None:
+                self.fallback = "preserved"
+
+            def to_dict(self) -> dict[str, str]:
+                raise RuntimeError("to_dict unavailable")
+
+        with self.assertLogs("hallucinate_app.control_surface_store", level="WARNING") as logs:
+            payload = _json_safe(BrokenToDict())
+
+        self.assertEqual(payload, {"fallback": "preserved"})
+        self.assertTrue(
+            any("to_dict() failed" in message for message in logs.output),
+            logs.output,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

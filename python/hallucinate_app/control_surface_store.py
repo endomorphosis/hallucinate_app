@@ -529,7 +529,7 @@ def _json_safe(value: Any) -> Any:
             _log.warning(
                 "_json_safe: to_dict() failed for %r; trying fallback serialization",
                 type(value).__name__,
-                exc_info=exc,
+                exc_info=True,
             )
         else:
             return _json_safe(raw)
