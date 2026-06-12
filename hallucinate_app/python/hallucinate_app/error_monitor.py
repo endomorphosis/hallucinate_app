@@ -803,6 +803,10 @@ class ErrorMonitor:
     # string whose length falls below the minimum and is not falsely treated as
     # similar to another fully-volatile message.
     _SIMILAR_SENTINEL = '\x00'
+
+    def _normalize_similar_message(self, message: str) -> str:
+        """Normalize volatile details before comparing error messages."""
+        return self._SIMILAR_PATTERN.sub(self._SIMILAR_SENTINEL, message)
     
     def __init__(self, resources=None, config=None):
         self.resources = resources or {}
@@ -1128,8 +1132,8 @@ class ErrorMonitor:
         # _SIMILAR_SENTINEL uses a null byte which cannot appear in real error
         # messages, preventing false-positive matches when message text contains
         # the literal sentinel string (VAI-144).
-        clean_msg1 = self._SIMILAR_PATTERN.sub(self._SIMILAR_SENTINEL, msg1)
-        clean_msg2 = self._SIMILAR_PATTERN.sub(self._SIMILAR_SENTINEL, msg2)
+        clean_msg1 = self._normalize_similar_message(msg1)
+        clean_msg2 = self._normalize_similar_message(msg2)
         # Require minimum length for both exact and substring matches.  A very
         # short cleaned string (e.g. a message that was entirely a hex address
         # and became the sentinel) must not cause unrelated errors to be treated
