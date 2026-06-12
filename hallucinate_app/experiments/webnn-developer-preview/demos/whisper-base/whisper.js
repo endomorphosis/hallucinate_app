@@ -43,13 +43,30 @@ if (
   processerPath = `${path}/processor/`;
 }
 
-// Whisper-base special token IDs (see tokenizer vocab for whisper-base)
-const WHISPER_TOKEN_START_OF_TRANSCRIPT = 50258; // <|startoftranscript|>
-const WHISPER_TOKEN_ENGLISH            = 50259; // <|en|>
-const WHISPER_TOKEN_TRANSCRIBE         = 50359; // <|transcribe|>
-const WHISPER_TOKEN_NO_TIMESTAMPS      = 50363; // <|notimestamps|>
-const WHISPER_TOKEN_TIMESTAMPS_START   = 50364; // <|0.00|> (first timestamp token)
-const WHISPER_TOKEN_END_OF_TEXT        = 50257; // <|endoftext|>
+const WHISPER_SPECIAL_TOKENS = Object.freeze({
+  startOfTranscript: "<|startoftranscript|>",
+  english: "<|en|>",
+  transcribe: "<|transcribe|>",
+  noTimestamps: "<|notimestamps|>",
+  endOfText: "<|endoftext|>",
+});
+
+function getTokenizerTokenId(tokenizer, token) {
+  let tokenId;
+  if (typeof tokenizer.convert_tokens_to_ids === "function") {
+    const tokenIds = tokenizer.convert_tokens_to_ids([token]);
+    tokenId = Array.isArray(tokenIds) ? tokenIds[0] : tokenIds;
+  } else if (typeof tokenizer.model?.convert_tokens_to_ids === "function") {
+    const tokenIds = tokenizer.model.convert_tokens_to_ids([token]);
+    tokenId = Array.isArray(tokenIds) ? tokenIds[0] : tokenIds;
+  } else {
+    tokenId = tokenizer.model?.tokens_to_ids?.get(token);
+  }
+  if (typeof tokenId !== "number" || !Number.isInteger(tokenId) || tokenId < 0) {
+    throw new Error(`Tokenizer did not resolve ${token} to a valid token id`);
+  }
+  return tokenId;
+}
 
 // wrapper around onnxruntime and model
 export class Whisper {
@@ -92,6 +109,7 @@ export class Whisper {
     this.sampling_rate = 16000;
     this.processor = null;
     this.tokenizer = null;
+    this.whisperTokenIds = null;
   }
 
   async create_whisper_processor() {
@@ -104,6 +122,22 @@ export class Whisper {
     this.tokenizer = await AutoTokenizer.from_pretrained(tokenizerPath, {
       config: { do_normalize: true },
     });
+    this.whisperTokenIds = {
+      startOfTranscript: getTokenizerTokenId(
+        this.tokenizer,
+        WHISPER_SPECIAL_TOKENS.startOfTranscript
+      ),
+      english: getTokenizerTokenId(this.tokenizer, WHISPER_SPECIAL_TOKENS.english),
+      transcribe: getTokenizerTokenId(
+        this.tokenizer,
+        WHISPER_SPECIAL_TOKENS.transcribe
+      ),
+      noTimestamps: getTokenizerTokenId(
+        this.tokenizer,
+        WHISPER_SPECIAL_TOKENS.noTimestamps
+      ),
+      endOfText: getTokenizerTokenId(this.tokenizer, WHISPER_SPECIAL_TOKENS.endOfText),
+    };
   }
 
   async create_ort_sessions() {
@@ -237,13 +271,15 @@ export class Whisper {
     // start = performance.now();
     // -----------------------------------DECODER 1ST INFERENCE-----------------------------------------
     // create list of tokens for english language and transcribe task, no need of time stamps
+    if (!this.whisperTokenIds) {
+      throw new Error("Whisper tokenizer must be created before running transcription");
+    }
     let tokens = [
-      WHISPER_TOKEN_START_OF_TRANSCRIPT,
-      WHISPER_TOKEN_ENGLISH,
-      WHISPER_TOKEN_TRANSCRIBE,
-      WHISPER_TOKEN_NO_TIMESTAMPS,
+      this.whisperTokenIds.startOfTranscript,
+      this.whisperTokenIds.english,
+      this.whisperTokenIds.transcribe,
+      this.whisperTokenIds.noTimestamps,
     ];
-    // let tokens = [WHISPER_TOKEN_START_OF_TRANSCRIPT, WHISPER_TOKEN_ENGLISH, WHISPER_TOKEN_TRANSCRIBE, WHISPER_TOKEN_TIMESTAMPS_START]; // keep timestep token
     let attention_mask;
     if (this.mask_4d) {
       const min_val = toHalf(-65500);
@@ -379,7 +415,7 @@ export class Whisper {
       // add token to final buffer
       tokens = tokens.concat(new_token);
       // break if the new token is eos_token_id (end of sequence)
-      if (new_token == WHISPER_TOKEN_END_OF_TEXT) {
+      if (new_token == this.whisperTokenIds.endOfText) {
         break;
       }
       // ----------------------------------POST PROCESSING---------------------------------------
