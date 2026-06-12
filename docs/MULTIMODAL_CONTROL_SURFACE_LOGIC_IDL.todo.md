@@ -2322,7 +2322,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-209 Review swallowed exception path in hallucinate_app/hallucinate_app/python/hallucinate_app/duckdb_ipld_kit.py:810
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: runtime
