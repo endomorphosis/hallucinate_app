@@ -62,7 +62,7 @@ class PyArrowContentIndexWSServer:
     
     async def unregister(self, websocket: websockets.WebSocketServerProtocol):
         """Unregister a client"""
-        self.clients.remove(websocket)
+        self.clients.discard(websocket)
         logger.info(f"Client disconnected. Total clients: {len(self.clients)}")
     
     async def notify_clients(self, message: Dict[str, Any]):
@@ -210,8 +210,8 @@ class PyArrowContentIndexWSServer:
                         "stats": stats,
                         "timestamp": time.time()
                     }))
-        except websockets.exceptions.ConnectionClosed:
-            pass
+        except websockets.exceptions.ConnectionClosed as e:
+            logger.debug(f"WebSocket connection closed: {e}")
         finally:
             await self.unregister(websocket)
     
