@@ -8,7 +8,7 @@ The application menu is organized into six main sections for easy navigation:
 
 ### 1. File Menu
 - **Home** (Ctrl/Cmd+H) - Return to main dashboard
-- **Settings** (Ctrl/Cmd+,) - Application settings entry point
+- **Settings** (Ctrl/Cmd+,) - Open the application settings view
 - **Quit** - Exit the application
 
 ### 2. Dashboards Menu
