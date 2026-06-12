@@ -1256,8 +1256,9 @@ class SecureDuckDBIPLDManager:
             # Graceful degradation: a malformed regex pattern must not crash the
             # auth path.  Returning None causes the caller to fall back to the
             # wildcard capability check, which is still enforced; it is just
-            # less specific than a per-table check.  Include enough context for
-            # operators to diagnose unusual SQL that triggers this branch.
+            # less specific than a per-table check.  Only regex-engine failures
+            # are downgraded here; unexpected parser errors should still fail
+            # closed instead of being treated as "no table found".
             logger.warning(
                 "Regex error while extracting table name from SQL "
                 "(sql_type=%r, sql_snippet=%r): %s",
