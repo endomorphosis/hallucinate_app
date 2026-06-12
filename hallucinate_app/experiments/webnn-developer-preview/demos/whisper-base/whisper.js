@@ -43,13 +43,77 @@ if (
   processerPath = `${path}/processor/`;
 }
 
-// Whisper-base special token IDs (see tokenizer vocab for whisper-base)
-const WHISPER_TOKEN_START_OF_TRANSCRIPT = 50258; // <|startoftranscript|>
-const WHISPER_TOKEN_ENGLISH            = 50259; // <|en|>
-const WHISPER_TOKEN_TRANSCRIBE         = 50359; // <|transcribe|>
-const WHISPER_TOKEN_NO_TIMESTAMPS      = 50363; // <|notimestamps|>
-const WHISPER_TOKEN_TIMESTAMPS_START   = 50364; // <|0.00|> (first timestamp token)
-const WHISPER_TOKEN_END_OF_TEXT        = 50257; // <|endoftext|>
+const WHISPER_SPECIAL_TOKEN_FALLBACKS = {
+  "<|endoftext|>": 50257,
+  "<|startoftranscript|>": 50258,
+  "<|en|>": 50259,
+  "<|transcribe|>": 50359,
+  "<|notimestamps|>": 50363,
+};
+const WHISPER_INITIAL_PROMPT = [
+  "<|startoftranscript|>",
+  "<|en|>",
+  "<|transcribe|>",
+  "<|notimestamps|>",
+];
+
+function getWhisperTokenId(tokenizer, token) {
+  const fallback = WHISPER_SPECIAL_TOKEN_FALLBACKS[token];
+  const tokenizers = [
+    tokenizer,
+    tokenizer?.tokenizer,
+    tokenizer?._tokenizer,
+    tokenizer?.model,
+    tokenizer?.tokenizer?.model,
+    tokenizer?._tokenizer?.model,
+  ];
+
+  for (const candidate of tokenizers) {
+    if (typeof candidate?.token_to_id === "function") {
+      const id = candidate.token_to_id(token);
+      if (Number.isInteger(id)) {
+        return id;
+      }
+    }
+    if (typeof candidate?.convert_tokens_to_ids === "function") {
+      const id = candidate.convert_tokens_to_ids(token);
+      if (Number.isInteger(id)) {
+        return id;
+      }
+    }
+  }
+
+  const addedTokensDecoder =
+    tokenizer?.added_tokens_decoder ?? tokenizer?.config?.added_tokens_decoder;
+  if (addedTokensDecoder) {
+    for (const [id, tokenConfig] of Object.entries(addedTokensDecoder)) {
+      if (tokenConfig?.content === token) {
+        return Number(id);
+      }
+    }
+  }
+
+  return fallback;
+}
+
+function createInitialAttentionMask(promptLength, use4d) {
+  if (use4d) {
+    const minVal = toHalf(-65500);
+    const maskData = new Uint16Array(promptLength * promptLength);
+    for (let row = 0; row < promptLength; row++) {
+      for (let column = row + 1; column < promptLength; column++) {
+        maskData[row * promptLength + column] = minVal;
+      }
+    }
+    return new ort.Tensor("float16", maskData, [1, 1, promptLength, promptLength]);
+  }
+
+  return new ort.Tensor(
+    "int32",
+    new Int32Array(promptLength).fill(1),
+    [1, promptLength]
+  );
+}
 
 // wrapper around onnxruntime and model
 export class Whisper {
@@ -87,7 +151,7 @@ export class Whisper {
 
     this.max_sequence_length = 128;
     // No. of tokens to be used for decoder 1st inference
-    this.num_init_tokens = 4;
+    this.num_init_tokens = WHISPER_INITIAL_PROMPT.length;
     // Whisper was trained using 16000 Hz as sampling rate, fixing this value for dataset preparation
     this.sampling_rate = 16000;
     this.processor = null;
@@ -237,49 +301,20 @@ export class Whisper {
     // start = performance.now();
     // -----------------------------------DECODER 1ST INFERENCE-----------------------------------------
     // create list of tokens for english language and transcribe task, no need of time stamps
-    let tokens = [
-      WHISPER_TOKEN_START_OF_TRANSCRIPT,
-      WHISPER_TOKEN_ENGLISH,
-      WHISPER_TOKEN_TRANSCRIBE,
-      WHISPER_TOKEN_NO_TIMESTAMPS,
-    ];
-    // let tokens = [WHISPER_TOKEN_START_OF_TRANSCRIPT, WHISPER_TOKEN_ENGLISH, WHISPER_TOKEN_TRANSCRIBE, WHISPER_TOKEN_TIMESTAMPS_START]; // keep timestep token
-    let attention_mask;
-    if (this.mask_4d) {
-      const min_val = toHalf(-65500);
-      const mask_data = [
-        0,
-        min_val,
-        min_val,
-        min_val,
-        0,
-        0,
-        min_val,
-        min_val,
-        0,
-        0,
-        0,
-        min_val,
-        0,
-        0,
-        0,
-        0,
-      ];
-      attention_mask = new ort.Tensor(
-        "float16",
-        new Uint16Array(mask_data),
-        [1, 1, 4, 4]
-      );
-    } else {
-      attention_mask = new ort.Tensor(
-        "int32",
-        new Int32Array(4).fill([1, 1, 1, 1]),
-        [1, 4]
-      );
-    }
+    let tokens = WHISPER_INITIAL_PROMPT.map((token) =>
+      getWhisperTokenId(this.tokenizer, token)
+    );
+    this.num_init_tokens = tokens.length;
+    let attention_mask = createInitialAttentionMask(
+      this.num_init_tokens,
+      this.mask_4d
+    );
     // create decoder input for the first inference
     const decoder_input = {
-      "input_ids": new ort.Tensor("int32", new Int32Array(tokens), [1, 4]),
+      "input_ids": new ort.Tensor("int32", new Int32Array(tokens), [
+        1,
+        this.num_init_tokens,
+      ]),
       "attention_mask": attention_mask,
       "encoder_hidden_states": last_hidden_state,
     };
@@ -297,7 +332,7 @@ export class Whisper {
       logits = convertToFloat32Array(logits);
     }
     // find out the token with highest probability, cast INT64 to INT32
-    const new_token = get_new_tokens(logits, [1, 4, 51865]);
+    const new_token = get_new_tokens(logits, decoder_output["logits"].dims);
 
     // add token to final buffer
     tokens = tokens.concat(new_token);
@@ -360,7 +395,7 @@ export class Whisper {
       decoder_input["position_ids"].cpuData.buffer
     );
     // run complete inference for every item in dataset
-    for (let i = 4; i < this.max_sequence_length; i++) {
+    for (let i = this.num_init_tokens; i < this.max_sequence_length; i++) {
       // console.log(`Decoder input preparation time · iteration ${i-3}: ${(performance.now() - start).toFixed(2)}ms`);
       // start = performance.now();
       const decoder_cached_output = await this.models["decoder_cached"][
@@ -374,12 +409,15 @@ export class Whisper {
       if (this.dataType == "float16") {
         logits = convertToFloat32Array(logits);
       }
-      const new_token = get_new_tokens(logits, [1, 1, 51865]);
+      const new_token = get_new_tokens(
+        logits,
+        decoder_cached_output["logits"].dims
+      );
 
       // add token to final buffer
       tokens = tokens.concat(new_token);
       // break if the new token is eos_token_id (end of sequence)
-      if (new_token == WHISPER_TOKEN_END_OF_TEXT) {
+      if (new_token == getWhisperTokenId(this.tokenizer, "<|endoftext|>")) {
         break;
       }
       // ----------------------------------POST PROCESSING---------------------------------------
@@ -419,7 +457,7 @@ export class Whisper {
       skip_special_tokens: true,
     });
 
-    const num_tokens = tokens.length - 4;
+    const num_tokens = tokens.length - this.num_init_tokens;
     // log(`Post-processing time: ${(performance.now() - start).toFixed(2)}ms`);
     return { sentence, time_to_first_token, num_tokens };
   }
