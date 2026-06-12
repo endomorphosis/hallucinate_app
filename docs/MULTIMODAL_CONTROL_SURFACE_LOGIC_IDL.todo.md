@@ -3426,7 +3426,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Fingerprint: 17cf16a9824cd84a82b4f258cca56edf6310bb0c
+- Fingerprint: 55c42fa4673b9cb9508ea91c2e449e5b864f4f27
 - Dedupe key: reconciliation_guardrail:main_checkout_dirty
 - Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
@@ -4648,3 +4648,14 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/state/discovery, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/state/discovery/2026-06-12-hao-419-reconciliation-3f71a37d7ccc.md
 - Acceptance: Reconciliation guardrail filed this because 1 branch or worktree cleanup candidates are blocked by content_not_in_target. Use evidence and the machine-readable reconciliation plan in /home/barberb/lift_coding/data/hallucinate_multimodal_control/state/discovery/2026-06-12-hao-419-reconciliation-3f71a37d7ccc.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
+
+## HAO-420 Resolve merge retry-budget failure for HAO-268
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/js_bridge/pyarrow_content_index_bridge.py, data/hallucinate_multimodal_control/state/discovery
+- Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/state/discovery/2026-06-12-hao-420-hao-268-merge-retry-budget.md
+- Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-268. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/state/discovery/2026-06-12-hao-420-hao-268-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-268 from strategy blocked_tasks.
