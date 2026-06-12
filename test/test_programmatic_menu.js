@@ -11,6 +11,7 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { runMenuStructureTests, getAllTestableItems } from './menu_test_framework.js';
+import { mcpServers } from '../hallucinate_app/node/menu_config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -138,6 +139,22 @@ describe('Menu Configuration Tests', () => {
     const labels = navItems.map(item => item.label);
     assert.ok(labels.includes('Back'), 'Should have Back navigation');
     assert.ok(labels.includes('Forward'), 'Should have Forward navigation');
+  });
+
+  it('should define app ids for SwissKnife app launch items', () => {
+    const swissKnifeServer = mcpServers.find(server => server.id === 'swissknife');
+    assert.ok(swissKnifeServer, 'Should define SwissKnife server');
+
+    const appLaunchItems = swissKnifeServer.tools.filter(
+      item => item.action === 'openSwissKnifeApp'
+    );
+    assert.ok(appLaunchItems.length > 0, 'Should define SwissKnife app launch items');
+
+    appLaunchItems.forEach(item => {
+      assert.equal(typeof item.app, 'string', `${item.label} should define an app id`);
+      assert.ok(item.app.trim().length > 0, `${item.label} app id should not be empty`);
+      assert.equal(item.app, item.app.trim(), `${item.label} app id should not have padding`);
+    });
   });
 
   it('should have valid paths for navigation items', () => {
