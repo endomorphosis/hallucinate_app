@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import builtins
 import sys
 import unittest
 from pathlib import Path
@@ -16,6 +17,7 @@ from hallucinate_app.control_surface_policy import (  # noqa: E402
     STRICT_TEMPLATE_COMPILER_LANE,
     NLPolicyClarificationRequired,
     StrictTemplatePolicyError,
+    _install_ipfs_at_time_evaluator_adapter,
     compile_control_surface_policy_rule,
     compile_control_surface_policy_rule_result,
     evaluate_ipfs_nl_policy,
@@ -246,6 +248,34 @@ class TestControlSurfacePolicyIpfsLogic(unittest.TestCase):
         self.assertEqual(result.get("compiler_lane"), IPFS_LOGIC_COMPILER_LANE)
         self.assertNotIn("unexpected keyword argument", str(result.get("reason", "")))
         self.assertIs(policy_evaluator.evaluate, original_evaluate)
+
+    def test_real_ipfs_logic_evaluator_adapter_logs_import_skip(self) -> None:
+        logic_api = SimpleNamespace(__name__="ipfs_datasets_py.logic.api")
+        original_import = builtins.__import__
+
+        def fail_temporal_policy_import(
+            name: str,
+            globals: dict[str, object] | None = None,
+            locals: dict[str, object] | None = None,
+            fromlist: tuple[str, ...] = (),
+            level: int = 0,
+        ) -> object:
+            if name == "ipfs_datasets_py.mcp_server.temporal_policy":
+                raise ImportError("temporal policy unavailable")
+            return original_import(name, globals, locals, fromlist, level)
+
+        builtins.__import__ = fail_temporal_policy_import
+        try:
+            with self.assertLogs("hallucinate_app.control_surface_policy", level="DEBUG") as logs:
+                restore_evaluator = _install_ipfs_at_time_evaluator_adapter(logic_api)
+        finally:
+            builtins.__import__ = original_import
+
+        self.assertIsNone(restore_evaluator)
+        self.assertTrue(
+            any("temporal policy import failed" in message for message in logs.output),
+            logs.output,
+        )
 
 
 def _load_real_ipfs_logic_api() -> tuple[object, object]:
