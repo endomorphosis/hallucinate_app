@@ -13,7 +13,6 @@ from datetime import datetime, timezone
 import inspect
 import logging
 import re
-import warnings
 from collections.abc import Mapping
 from typing import Any
 
@@ -770,9 +769,9 @@ def _ipfs_explanations(logic_api: Any, source_text: str, compile_result: Any) ->
         try:
             explanations.extend(_string_list(explain_iter([source_text.strip()])))
         except Exception as exc:
-            warnings.warn(
-                f"compile_explain_iter raised an unexpected error: {exc}",
-                stacklevel=2,
+            _logger.warning(
+                "compile_explain_iter failed; trying next explanation source",
+                exc_info=exc,
             )
 
     if not explanations:
@@ -784,9 +783,9 @@ def _ipfs_explanations(logic_api: Any, source_text: str, compile_result: Any) ->
                 if callable(compile_explain):
                     explanations.extend(_string_list(compile_explain([source_text.strip()])))
             except Exception as exc:
-                warnings.warn(
-                    f"NLUCANPolicyCompiler.compile_explain raised an unexpected error: {exc}",
-                    stacklevel=2,
+                _logger.warning(
+                    "NLUCANPolicyCompiler.compile_explain failed; falling back to result metadata",
+                    exc_info=exc,
                 )
 
     metadata = _as_plain_mapping(_ipfs_field(compile_result, "metadata"))
