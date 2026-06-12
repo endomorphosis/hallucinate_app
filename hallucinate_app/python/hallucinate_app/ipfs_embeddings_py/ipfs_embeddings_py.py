@@ -577,21 +577,16 @@ class IPFSEmbeddingsPy:
             with tempfile.NamedTemporaryFile(mode="w+", suffix=".json", delete=False) as temp_file:
                 temp_path = temp_file.name
             
-            # Get file from IPFS
             try:
+                # Get file from IPFS
                 result = await self.ipfs_kit.get_file(cid, temp_path)
                 
                 if "error" in result:
-                    # Clean up temp file
-                    os.unlink(temp_path)
                     return result
                 
                 # Read the data
                 with open(temp_path, "r") as f:
                     data = json.load(f)
-                
-                # Clean up temp file
-                os.unlink(temp_path)
                 
                 # Extract embeddings and metadata
                 embeddings = data.get("embeddings", [])
@@ -603,14 +598,13 @@ class IPFSEmbeddingsPy:
                     "metadata": metadata,
                     "count": len(embeddings)
                 }
-                
-            except Exception:
-                # Clean up temp file
+            finally:
                 try:
                     os.unlink(temp_path)
+                except FileNotFoundError:
+                    pass
                 except OSError as cleanup_error:
                     logger.warning(f"Failed to remove temporary embedding file {temp_path}: {cleanup_error}")
-                raise
                 
         except Exception as e:
             logger.error(f"Error loading embeddings from IPFS: {e}")
