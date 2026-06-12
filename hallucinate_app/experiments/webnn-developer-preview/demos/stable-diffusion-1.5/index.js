@@ -887,15 +887,16 @@ async function loadModel(modelName /*:String*/, executionProvider /*:String*/) {
 function displayEmptyCanvasPlaceholder() {
   const canvas = document.getElementById("canvas");
   const context = canvas.getContext("2d");
+  context.clearRect(0, 0, canvas.width, canvas.height);
   context.fillStyle = "rgba(255, 255, 255, 0.5)";
   context.strokeStyle = "rgba(255, 255, 255, 0.0)";
   context.lineWidth = 0;
-  //context.fillRect(0, 0, pixelWidth, pixelHeight);
+  context.fillRect(0, 0, canvas.width, canvas.height);
   context.textAlign = "center";
   context.textBaseline = "middle";
   context.font = "300px sans-serif";
   context.fillText("🖼️", canvas.width / 2, canvas.height / 2);
-  context.strokeRect(0, 0, pixelWidth, pixelHeight);
+  context.strokeRect(0, 0, canvas.width, canvas.height);
 }
 
 function displayPlanarRGB(
