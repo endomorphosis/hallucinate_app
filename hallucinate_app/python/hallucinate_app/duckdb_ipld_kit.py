@@ -717,6 +717,10 @@ class DuckDBIPLDKit:
                 except Exception as e:
                     # information_schema may not be available in all DuckDB versions;
                     # fall back to 0 rather than propagating the error.
+                    logger.debug(
+                        "Unable to read DuckDB table count from information_schema; returning 0",
+                        exc_info=True,
+                    )
                     table_count = 0
                     table_count_error = str(e)
 
