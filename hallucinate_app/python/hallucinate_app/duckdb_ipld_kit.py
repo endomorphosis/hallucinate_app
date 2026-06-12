@@ -85,6 +85,23 @@ class DuckDBIPLDKit:
             # Mock storage
             self.tables = set()
             self.statements = {}
+
+    @staticmethod
+    def _expects_result_rows(sql):
+        """Return whether a SQL statement is expected to materialize result rows."""
+        normalized = sql.lstrip().upper()
+        row_returning_prefixes = (
+            "SELECT",
+            "WITH",
+            "SHOW",
+            "DESCRIBE",
+            "DESC",
+            "PRAGMA",
+            "EXPLAIN",
+            "SUMMARIZE",
+            "VALUES",
+        )
+        return normalized.startswith(row_returning_prefixes)
     
     async def init(self):
         """Initialize the DuckDB connection and IPLD configuration"""
@@ -189,22 +206,46 @@ class DuckDBIPLDKit:
                         "execution_time_ms": (time.time() - start_time) * 1000
                     }
                 except Exception as df_exc:
-                    # For non-SELECT queries (INSERT/UPDATE/DELETE), .df() is unavailable.
-                    # Use .rowcount; fall back to -1 if attribute is missing or DuckDB returns None.
-                    logger.debug("result_cursor.df() unavailable (expected for non-SELECT): %s", df_exc)
-                    try:
-                        rows_affected = result_cursor.rowcount if hasattr(result_cursor, 'rowcount') else -1
-                        if rows_affected is None:
+                    if self._expects_result_rows(sql):
+                        logger.exception(
+                            "Failed to materialize DuckDB query result for SQL: %s",
+                            sql,
+                        )
+                        result = {
+                            "success": False,
+                            "error": f"Failed to materialize query result: {df_exc}",
+                            "sql": sql,
+                            "execution_time_ms": (time.time() - start_time) * 1000
+                        }
+                    else:
+                        # For non-SELECT queries (INSERT/UPDATE/DELETE), .df() may be unavailable.
+                        # Use .rowcount; fall back to -1 when unavailable.
+                        logger.debug(
+                            "result_cursor.df() unavailable for non-row SQL, using rowcount: %s",
+                            df_exc,
+                            exc_info=True,
+                        )
+                        try:
+                            rows_affected = (
+                                result_cursor.rowcount
+                                if hasattr(result_cursor, 'rowcount')
+                                else -1
+                            )
+                            if rows_affected is None:
+                                rows_affected = -1
+                        except Exception as rc_exc:
+                            logger.debug(
+                                "result_cursor.rowcount unavailable, defaulting to -1: %s",
+                                rc_exc,
+                                exc_info=True,
+                            )
                             rows_affected = -1
-                    except Exception as rc_exc:
-                        logger.debug("result_cursor.rowcount unavailable, defaulting to -1: %s", rc_exc)
-                        rows_affected = -1
-                    result = {
-                        "success": True,
-                        "rows_affected": rows_affected,
-                        "sql": sql,
-                        "execution_time_ms": (time.time() - start_time) * 1000
-                    }
+                        result = {
+                            "success": True,
+                            "rows_affected": rows_affected,
+                            "sql": sql,
+                            "execution_time_ms": (time.time() - start_time) * 1000
+                        }
             except Exception as e:
                 result = {
                     "success": False,
