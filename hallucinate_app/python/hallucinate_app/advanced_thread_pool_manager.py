@@ -1123,7 +1123,7 @@ class AdvancedThreadPoolManager(ThreadPoolManager):
         with self.lock:
             for pool in self.pools_by_id.values():
                 # Check for tasks that are waiting and apply aging
-                for task_id, task in pool.active_tasks.items():
+                for task_id, task in list(pool.active_tasks.items()):
                     if task.state == TaskState.PENDING:
                         # Calculate waiting time
                         waiting_time = current_time - task.created_at
@@ -1160,39 +1160,51 @@ class AdvancedThreadPoolManager(ThreadPoolManager):
                                 boosted_priority = max(0, task.priority - int(starvation_boost))
                                 if boosted_priority < task.priority:
                                     # New priority is higher (lower numeric value); resubmit.
-                                    # PriorityQueue ordering is stable by insertion for equal
-                                    # priorities, so cancelling the old entry and inserting a
-                                    # new one is the only way to move a task forward.
-                                    
-                                    # Create a new prioritized task with boosted priority
-                                    current_queue = getattr(pool, "task_queue", None)
-                                    if isinstance(current_queue, PriorityQueue):
-                                        # Create a new task wrapper with the same ID
-                                        boosted_task = PrioritizedTask(
-                                            priority=boosted_priority,
-                                            task_id=task.task_id,
-                                            task_type=task.task_type,
-                                            function=task.function,
-                                            args=task.args,
-                                            kwargs=task.kwargs,
-                                            created_at=task.created_at,
-                                            timeout=task.timeout,
-                                            state=TaskState.PENDING,
-                                            future=task.future
-                                        )
-                                        
-                                        # Invalidate the original task so the worker skips it when
-                                        # dequeued.  The worker checks for CANCELLED state and
-                                        # calls task_done() without executing the function, which
-                                        # prevents the same logical task from running twice.
-                                        task.state = TaskState.CANCELLED
-                                        current_queue.put(boosted_task)
-                                        
-                                        # Update the active tasks record
-                                        pool.active_tasks[task_id] = boosted_task
-                                        
+                                    # PriorityQueue cannot reorder an entry that is already
+                                    # in the heap, so replace the pending entry with a boosted
+                                    # copy and leave the stale entry marked as cancelled.
+                                    boosted_task = self._requeue_with_boosted_priority(
+                                        pool,
+                                        task_id,
+                                        task,
+                                        boosted_priority
+                                    )
+                                    if boosted_task:
                                         logger.debug(f"Boosted priority of waiting task {task_id} in pool {pool.pool_id} "
                                                    f"from {task.priority} to {boosted_task.priority} due to waiting {waiting_time:.1f}s")
+    
+    def _requeue_with_boosted_priority(
+        self,
+        pool: ManagedThreadPool,
+        task_id: str,
+        task: PrioritizedTask,
+        boosted_priority: int
+    ) -> Optional[PrioritizedTask]:
+        """Replace a pending queue entry with a higher-priority copy."""
+        current_queue = getattr(pool, "task_queue", None)
+        if not isinstance(current_queue, PriorityQueue):
+            return None
+        
+        if pool.active_tasks.get(task_id) is not task or task.state != TaskState.PENDING:
+            return None
+        
+        boosted_task = PrioritizedTask(
+            priority=boosted_priority,
+            task_id=task.task_id,
+            task_type=task.task_type,
+            function=task.function,
+            args=task.args,
+            kwargs=task.kwargs,
+            created_at=task.created_at,
+            timeout=task.timeout,
+            state=TaskState.PENDING,
+            future=task.future
+        )
+        
+        task.state = TaskState.CANCELLED
+        pool.active_tasks[task_id] = boosted_task
+        current_queue.put(boosted_task)
+        return boosted_task
     
     def get_stats(self) -> Dict[str, Any]:
         """Get comprehensive statistics for all pools"""

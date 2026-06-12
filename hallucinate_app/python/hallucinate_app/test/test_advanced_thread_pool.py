@@ -22,6 +22,7 @@ import threading
 import unittest
 import json
 import logging
+from queue import PriorityQueue
 from typing import Dict, List, Any, Optional, Union, Tuple
 from concurrent.futures import Future
 
@@ -34,7 +35,8 @@ from hallucinate_app.thread_pool_manager import (
     ThreadPoolManager,
     TaskPriority,
     TaskType,
-    TaskState
+    TaskState,
+    PrioritizedTask
 )
 
 from hallucinate_app.thread_pool_monitor import ThreadPoolMonitor
@@ -364,7 +366,6 @@ class TestAdvancedThreadPoolManager(unittest.TestCase):
         self.assertIn("enhanced_pools", stats)
         self.assertIn("routing", stats)
         self.assertIn("capabilities", stats)
-    
     async def test_advanced_async(self):
         """Test advanced async functionality"""
         # Run the test method
@@ -373,6 +374,69 @@ class TestAdvancedThreadPoolManager(unittest.TestCase):
         self.assertTrue(test_results["success"])
         self.assertEqual(test_results["module"], "advanced_thread_pool_manager")
         self.assertTrue(all(step["success"] for step in test_results["steps"].values()))
+
+
+@unittest.skipIf(not ADVANCED_AVAILABLE, "Advanced thread pool components not available")
+class TestAdvancedThreadPoolAging(unittest.TestCase):
+    """Focused tests for task aging behavior."""
+    
+    def test_task_aging_requeues_pending_task_with_boosted_priority(self):
+        """Test aging replaces the active pending task with a boosted queue entry."""
+        manager = AdvancedThreadPoolManager(
+            metadata={
+                "auto_create_pools": False,
+                "enable_adaptive_routing": False,
+                "enable_task_migration": False,
+                "enable_aging": False,
+                "aging_factor": 1.0,
+                "starvation_threshold": 0,
+                "use_enhanced_pools": True
+            }
+        )
+        
+        class FakePool:
+            pool_id = "fake"
+            
+            def __init__(self):
+                self.task_queue = PriorityQueue()
+                self.active_tasks = {}
+                self.metadata = {}
+            
+            def get_task_metadata(self, task_id):
+                return self.metadata.get(task_id)
+            
+            def shutdown(self, wait=True):
+                pass
+        
+        try:
+            task_id = "waiting-task"
+            original_task = PrioritizedTask(
+                priority=5,
+                task_id=task_id,
+                task_type=TaskType.GENERAL,
+                function=lambda: "ok",
+                created_at=time.time() - 10,
+                future=Future()
+            )
+            metadata = TaskMetadata()
+            pool = FakePool()
+            pool.active_tasks[task_id] = original_task
+            pool.metadata[task_id] = metadata
+            manager.pools_by_id = {pool.pool_id: pool}
+            
+            manager._apply_task_aging()
+            
+            boosted_task = pool.active_tasks[task_id]
+            self.assertIsNot(boosted_task, original_task)
+            self.assertEqual(original_task.state, TaskState.CANCELLED)
+            self.assertEqual(boosted_task.state, TaskState.PENDING)
+            self.assertEqual(boosted_task.task_id, task_id)
+            self.assertEqual(boosted_task.priority, 2)
+            self.assertIs(boosted_task.future, original_task.future)
+            self.assertEqual(pool.task_queue.get_nowait(), boosted_task)
+            self.assertEqual(metadata.starvation_factor, 3.0)
+        finally:
+            manager.shutdown()
 
 
 class TestThreadPoolMonitor(unittest.TestCase):
