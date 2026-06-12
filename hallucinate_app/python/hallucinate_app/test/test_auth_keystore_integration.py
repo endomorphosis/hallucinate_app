@@ -188,6 +188,23 @@ class TestAuthKeystoreIntegration(unittest.TestCase):
             test_provider, access_token["token"]
         ))
         self.assertEqual(rotated_key, new_key)
+
+    def test_issue_key_access_capability_propagates_auth_errors(self):
+        """Unexpected auth backend errors should not look like authorization denial."""
+        test_provider = "test_provider_issue_failure"
+        original_verify_capability = self.integration.auth.verify_capability
+
+        async def failing_verify_capability(_auth_token, _capability):
+            raise RuntimeError("auth backend unavailable")
+
+        self.integration.auth.verify_capability = failing_verify_capability
+        try:
+            with self.assertRaises(RuntimeError):
+                asyncio.run(self.integration.issue_key_access_capability(
+                    test_provider, "user", "admin-token"
+                ))
+        finally:
+            self.integration.auth.verify_capability = original_verify_capability
     
     def test_integration_module_test_method(self):
         """Test the integration module's test method"""
