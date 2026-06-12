@@ -16,6 +16,7 @@ from hallucinate_app.control_surface_policy import (  # noqa: E402
     STRICT_TEMPLATE_COMPILER_LANE,
     NLPolicyClarificationRequired,
     StrictTemplatePolicyError,
+    _serialize_ipfs_value,
     compile_control_surface_policy_rule,
     compile_control_surface_policy_rule_result,
     evaluate_ipfs_nl_policy,
@@ -227,6 +228,23 @@ class TestControlSurfacePolicyIpfsLogic(unittest.TestCase):
         )
         self.assertEqual(recovered["decision"], "deny")
         self.assertNotIn("policy evaluator exploded", recovered.get("reason", ""))
+
+    def test_ipfs_serializer_logs_as_dict_failure_and_uses_public_attrs(self) -> None:
+        class BrokenAsDict:
+            def __init__(self) -> None:
+                self.fallback = "preserved"
+
+            def as_dict(self) -> dict[str, str]:
+                raise RuntimeError("as_dict unavailable")
+
+        with self.assertLogs("hallucinate_app.control_surface_policy", level="WARNING") as logs:
+            payload = _serialize_ipfs_value(BrokenAsDict())
+
+        self.assertEqual(payload, {"fallback": "preserved"})
+        self.assertTrue(
+            any("_serialize_ipfs_value: as_dict() failed" in message for message in logs.output),
+            logs.output,
+        )
 
     def test_real_ipfs_logic_evaluator_adapts_at_time_now_mismatch(self) -> None:
         logic_api, policy_evaluator = _load_real_ipfs_logic_api()

@@ -1012,6 +1012,15 @@ def _first_text(*values: Any) -> str:
     return ""
 
 
+def _warn_ipfs_serializer_fallback(converter_name: str, value: Any, exc: Exception) -> None:
+    _logger.warning(
+        "_serialize_ipfs_value: %s failed for %r; trying next strategy",
+        converter_name,
+        type(value),
+        exc_info=exc,
+    )
+
+
 def _serialize_ipfs_value(value: Any) -> Any:
     if value is None or isinstance(value, (str, int, float, bool)):
         return value
@@ -1027,7 +1036,7 @@ def _serialize_ipfs_value(value: Any) -> Any:
         except Exception as exc:
             # Log at WARNING so failures are visible in production logs rather than
             # silently swallowed.  The fallback chain continues to the next strategy.
-            _logger.warning("as_dict() failed for %r; trying next strategy", type(value), exc_info=exc)
+            _warn_ipfs_serializer_fallback("as_dict()", value, exc)
         else:
             return _serialize_ipfs_value(raw)
     if hasattr(value, "to_dict"):
@@ -1036,7 +1045,7 @@ def _serialize_ipfs_value(value: Any) -> Any:
         except Exception as exc:
             # Log at WARNING so failures are visible in production logs rather than
             # silently swallowed.  The fallback chain continues to the next strategy.
-            _logger.warning("to_dict() failed for %r; trying next strategy", type(value), exc_info=exc)
+            _warn_ipfs_serializer_fallback("to_dict()", value, exc)
         else:
             return _serialize_ipfs_value(raw)
     if is_dataclass(value):
@@ -1045,7 +1054,7 @@ def _serialize_ipfs_value(value: Any) -> Any:
         except Exception as exc:
             # Log at WARNING so failures are visible in production logs rather than
             # silently swallowed.  The fallback chain continues to the next strategy.
-            _logger.warning("asdict() failed for %r; trying next strategy", type(value), exc_info=exc)
+            _warn_ipfs_serializer_fallback("asdict()", value, exc)
         else:
             return _serialize_ipfs_value(raw)
     if hasattr(value, "__dict__"):
