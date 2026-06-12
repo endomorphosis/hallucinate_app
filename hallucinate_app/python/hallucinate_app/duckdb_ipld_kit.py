@@ -798,7 +798,12 @@ class DuckDBIPLDKit:
                     import shutil
                     shutil.rmtree(temp_dir)
                 except Exception as e:
-                    logger.warning("Failed to remove Parquet export temp directory %s: %s", temp_dir, e, exc_info=True)
+                    logger.warning(
+                        "Failed to remove Parquet export temp directory %s: %s",
+                        temp_dir,
+                        e,
+                        exc_info=True,
+                    )
                     parquet_test = results["tests"].setdefault("parquet_export", {})
                     parquet_test["success"] = False
                     parquet_test["cleanup_error"] = str(e)
