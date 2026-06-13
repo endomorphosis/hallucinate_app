@@ -21,7 +21,7 @@ if parent_dir not in sys.path:
     sys.path.insert(0, parent_dir)
 
 # Import required modules
-from hallucinate_app.error_monitor import error_monitor, ErrorMonitor, ErrorLevel, ErrorSource, RecoveryStrategy
+from hallucinate_app.error_monitor import error_monitor, ErrorData, ErrorMonitor, ErrorLevel, ErrorSource, RecoveryStrategy
 from hallucinate_app.pyarrow_content_index import PyArrowContentIndex, ContentIndexError, ContentNotFoundError
 
 class TestErrorMonitor(unittest.TestCase):
@@ -540,3 +540,33 @@ class TestMessagesSimilar(unittest.TestCase):
             "Fault at 0xCAFEBABE in module beta",
         ))
 
+
+class TestDuplicateDetection(unittest.TestCase):
+    """Focused tests for ErrorMonitor._find_duplicate_error."""
+
+    def setUp(self):
+        self.monitor = ErrorMonitor()
+
+    def _error(self, error_id, operation):
+        return ErrorData(
+            id=error_id,
+            timestamp=datetime.now().isoformat(),
+            level=ErrorLevel.ERROR,
+            source=ErrorSource.PYTHON,
+            component="Worker",
+            operation=operation,
+            message="Timeout while processing job ID: abc123",
+        )
+
+    def test_duplicate_detection_requires_same_operation(self):
+        """Same component/source/message on different operations must stay distinct (VAI-139)."""
+        existing = self._error("existing", "download")
+        self.monitor.errors[existing.id] = existing
+
+        same_operation = self._error("same-operation", "download")
+        same_operation.message = "Timeout while processing job ID: def456"
+        self.assertEqual(self.monitor._find_duplicate_error(same_operation), "existing")
+
+        different_operation = self._error("different-operation", "upload")
+        different_operation.message = "Timeout while processing job ID: def456"
+        self.assertIsNone(self.monitor._find_duplicate_error(different_operation))
