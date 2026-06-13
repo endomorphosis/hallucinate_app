@@ -208,7 +208,7 @@ class PlasmaManager:
             try:
                 os.unlink(file_path)
             except OSError as e:
-                logger.warning("Failed to clean up temporary file %s: %s", file_path, e)
+                logger.warning("Failed to clean up temporary file %s: %s", file_path, e, exc_info=True)
             
             return obj
         
