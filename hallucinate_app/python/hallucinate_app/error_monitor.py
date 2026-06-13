@@ -1103,6 +1103,8 @@ class ErrorMonitor:
     def _find_duplicate_error(self, error: ErrorData) -> Optional[str]:
         """Find if this error is a duplicate of an existing one"""
         for existing_id, existing in self.errors.items():
+            if existing_id == error.id:
+                continue
             # Check if it's the same component and similar message
             if (existing.component == error.component and 
                 existing.source == error.source and
