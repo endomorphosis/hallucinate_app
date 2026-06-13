@@ -14,6 +14,7 @@ import asyncio
 import unittest
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 # Add parent directory to path for imports
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -220,7 +221,7 @@ class TestMessagesSimilar(unittest.TestCase):
     def setUp(self):
         self.monitor = ErrorMonitor()
 
-    def _similar(self, a, b):
+    def _similar(self, a: Any, b: Any) -> bool:
         return self.monitor._messages_similar(a, b)
 
     def test_hex_case_insensitive(self):
@@ -260,9 +261,9 @@ class TestMessagesSimilar(unittest.TestCase):
 
     def test_none_inputs_do_not_raise(self):
         """None inputs must not raise; two Nones are considered equal (VAI-132)."""
-        self.assertTrue(self._similar(None, None))  # type: ignore[arg-type]
-        self.assertFalse(self._similar(None, "some error"))  # type: ignore[arg-type]
-        self.assertFalse(self._similar("some error", None))  # type: ignore[arg-type]
+        self.assertTrue(self._similar(None, None))
+        self.assertFalse(self._similar(None, "some error"))
+        self.assertFalse(self._similar("some error", None))
 
     def test_redundant_uppercase_ranges_removed(self):
         """_SIMILAR_PATTERN still matches uppercase hex after removing redundant ranges (VAI-132)."""
@@ -437,23 +438,23 @@ class TestMessagesSimilar(unittest.TestCase):
         """isinstance guard at line 1115 prevents TypeError from re.sub (VAI-145).
 
         When msg1 or msg2 is not a str (e.g. None, int, or any other non-string
-        runtime value), the guard introduced at line 1115 must short-circuit before
+        runtime value), the guard must short-circuit before
         reaching the re.sub call, returning simple equality instead of raising
-        TypeError.  This covers every non-string combination that could arrive at
-        _messages_similar despite the str type annotation.
+        TypeError.  This covers non-string combinations that can arrive at
+        _messages_similar from persisted or external error data.
         """
         # None vs None — equal, so similar
-        self.assertTrue(self._similar(None, None))           # type: ignore[arg-type]
+        self.assertTrue(self._similar(None, None))
         # None vs str — not equal, not similar
-        self.assertFalse(self._similar(None, "err"))         # type: ignore[arg-type]
-        self.assertFalse(self._similar("err", None))         # type: ignore[arg-type]
+        self.assertFalse(self._similar(None, "err"))
+        self.assertFalse(self._similar("err", None))
         # Non-string numeric values
-        self.assertTrue(self._similar(42, 42))               # type: ignore[arg-type]
-        self.assertFalse(self._similar(42, 43))              # type: ignore[arg-type]
-        self.assertFalse(self._similar(42, "42"))            # type: ignore[arg-type]
+        self.assertTrue(self._similar(42, 42))
+        self.assertFalse(self._similar(42, 43))
+        self.assertFalse(self._similar(42, "42"))
         # Mixed non-string types
-        self.assertFalse(self._similar(None, 0))             # type: ignore[arg-type]
-        self.assertFalse(self._similar([], ""))              # type: ignore[arg-type]
+        self.assertFalse(self._similar(None, 0))
+        self.assertFalse(self._similar([], ""))
 
     def test_identical_short_raw_message_returns_true_before_normalization(self):
         """Identical raw messages return True immediately, bypassing _SIMILAR_MIN_LEN (VAI-146).
@@ -539,4 +540,3 @@ class TestMessagesSimilar(unittest.TestCase):
             "Fault at 0xDEADBEEF in module alpha",
             "Fault at 0xCAFEBABE in module beta",
         ))
-
