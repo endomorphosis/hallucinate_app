@@ -108,6 +108,7 @@ class GitHubIssueReporter:
             "rate_limited": 0,
             "errors": 0
         }
+        self.last_issue_error: Optional[Dict[str, Any]] = None
     
     def _init_github_client(self):
         """Initialize the GitHub API client"""
@@ -368,7 +369,14 @@ class GitHubIssueReporter:
             
         except Exception as e:
             self.stats["errors"] += 1
+            self.last_issue_error = {
+                "timestamp": datetime.now().isoformat(),
+                "error_id": error.id,
+                "error_type": type(e).__name__,
+                "message": str(e),
+            }
             if GITHUB_AVAILABLE and isinstance(e, GithubException):
+                self.last_issue_error["github_status"] = e.status
                 logger.error(
                     "Failed to create GitHub issue (API error %s): %s",
                     e.status,
@@ -396,7 +404,8 @@ class GitHubIssueReporter:
                 "dry_run": self.config.dry_run
             },
             "current_rate": len(self.issue_count_per_hour),
-            "tracked_fingerprints": len(self.reported_fingerprints)
+            "tracked_fingerprints": len(self.reported_fingerprints),
+            "last_issue_error": self.last_issue_error
         }
 
 
