@@ -1111,12 +1111,8 @@ class ErrorMonitor:
         
         return None
     
-    def _messages_similar(self, msg1: str, msg2: str) -> bool:
+    def _messages_similar(self, msg1: Any, msg2: Any) -> bool:
         """Check if two error messages are similar"""
-        # Guard: if either value is not a string (e.g. None came through at
-        # runtime despite the type annotation), fall back to equality so that
-        # re.sub does not raise TypeError and duplicate detection still works
-        # for the common case where both sides are the same non-string value.
         if not isinstance(msg1, str) or not isinstance(msg2, str):
             return msg1 == msg2
         # Identical raw messages are always similar, regardless of length.
