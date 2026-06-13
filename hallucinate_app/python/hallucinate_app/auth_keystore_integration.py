@@ -374,11 +374,13 @@ class AuthKeystoreIntegration:
             admin_auth_token: Admin capability token
         
         Returns:
-            dict: The issued capability token, None if not authorized
+            dict: The issued capability token, None only when authorization is denied.
 
         Raises:
             ValueError: If the module has not been initialized.
-            Exception: Propagates any unexpected error from the auth backend after logging it.
+            Exception: Re-raises any unexpected runtime error after logging it, so
+                callers can distinguish a genuine authorization denial (``None``)
+                from an unexpected backend failure.
         """
         if not self.initialized:
             raise ValueError("Integration module not initialized. Call init() first")
