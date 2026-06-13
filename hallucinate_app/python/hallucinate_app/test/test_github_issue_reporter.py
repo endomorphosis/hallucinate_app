@@ -8,6 +8,7 @@ import os
 import sys
 import asyncio
 import unittest
+from unittest.mock import Mock
 from datetime import datetime
 
 # Add parent directory to path
@@ -215,11 +216,11 @@ class TestGitHubIssueReporter(unittest.TestCase):
             message='Warning'
         )
         
-        # Note: should_report_error will return False because github_client is not initialized
-        # but we can test the level filtering logic by checking the config
-        self.assertTrue(ErrorLevel.FATAL >= self.config.min_error_level)
-        self.assertTrue(ErrorLevel.ERROR >= self.config.min_error_level)
-        self.assertFalse(ErrorLevel.WARNING >= self.config.min_error_level)
+        self.reporter.repo = Mock()
+
+        self.assertTrue(self.reporter.should_report_error(fatal_error))
+        self.assertTrue(self.reporter.should_report_error(error))
+        self.assertFalse(self.reporter.should_report_error(warning))
     
     def test_create_issue_dry_run(self):
         """Test issue creation in dry run mode"""
@@ -240,6 +241,31 @@ class TestGitHubIssueReporter(unittest.TestCase):
         
         # Check that stats were updated
         self.assertEqual(self.reporter.stats['total_errors_processed'], 1)
+
+    def test_create_issue_failure_logs_traceback(self):
+        """Test issue creation failures are logged with traceback details"""
+        self.reporter.config.dry_run = False
+        self.reporter.repo = Mock()
+        self.reporter.repo.create_issue.side_effect = RuntimeError('GitHub API unavailable')
+
+        error = ErrorData(
+            id='test-1',
+            timestamp=datetime.now().isoformat(),
+            level=ErrorLevel.ERROR,
+            source=ErrorSource.PYTHON,
+            component='TestComponent',
+            operation='test_operation',
+            message='Test error'
+        )
+
+        with self.assertLogs('github_issue_reporter', level='ERROR') as captured:
+            result = self.reporter.create_issue(error)
+
+        self.assertIsNone(result)
+        self.assertEqual(self.reporter.stats['total_errors_processed'], 1)
+        self.assertEqual(self.reporter.stats['errors'], 1)
+        self.assertIn('Failed to create GitHub issue', captured.output[0])
+        self.assertIsNotNone(captured.records[0].exc_info)
     
     def test_get_stats(self):
         """Test statistics retrieval"""
