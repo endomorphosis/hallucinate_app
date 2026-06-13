@@ -276,6 +276,22 @@ class TestMessagesSimilar(unittest.TestCase):
         self.assertEqual(pattern.sub('\x00', '0xDEADBEEF'), '\x00')
         self.assertEqual(pattern.sub('\x00', '0xdeadbeef'), '\x00')
 
+    def test_msg1_normalisation_uses_configured_sentinel(self):
+        """msg1 normalisation must use _SIMILAR_SENTINEL, not a stale placeholder (VAI-139)."""
+        from hallucinate_app.error_monitor import ErrorMonitor
+
+        pattern = ErrorMonitor._SIMILAR_PATTERN
+        sentinel = ErrorMonitor._SIMILAR_SENTINEL
+        msg1 = "Cache worker failed at 0xDEADBEEF while refreshing shard"
+        msg2 = "Cache worker failed at 0xcafebabe while refreshing shard"
+
+        self.assertEqual(
+            pattern.sub(sentinel, msg1),
+            f"Cache worker failed at {sentinel} while refreshing shard",
+        )
+        self.assertNotIn("XXX", pattern.sub(sentinel, msg1))
+        self.assertTrue(self._similar(msg1, msg2))
+
     def test_msg2_substring_of_msg1_is_similar(self):
         """Normalised msg2 that is a substring of normalised msg1 is reported as similar (HAO-215).
 
