@@ -229,6 +229,19 @@ class TestMessagesSimilar(unittest.TestCase):
         msg_upper = "Segfault at address 0xDEADBEEF in module foo"
         self.assertTrue(self._similar(msg_lower, msg_upper))
 
+    def test_normalisation_uses_private_sentinel_not_legacy_placeholder(self):
+        """VAI-131 scan finding must stay fixed: do not restore the old token."""
+        from hallucinate_app.error_monitor import ErrorMonitor
+
+        normalized = ErrorMonitor._SIMILAR_PATTERN.sub(
+            ErrorMonitor._SIMILAR_SENTINEL,
+            "Segfault at address 0xdeadbeef in module foo",
+        )
+        legacy_placeholder = chr(88) * 3
+
+        self.assertIn(ErrorMonitor._SIMILAR_SENTINEL, normalized)
+        self.assertNotIn(legacy_placeholder, normalized)
+
     def test_line_number_normalised(self):
         """Messages differing only in line number should be considered similar."""
         msg1 = "TypeError at src/foo.py line 42"
@@ -539,4 +552,3 @@ class TestMessagesSimilar(unittest.TestCase):
             "Fault at 0xDEADBEEF in module alpha",
             "Fault at 0xCAFEBABE in module beta",
         ))
-
