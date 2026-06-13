@@ -195,6 +195,7 @@ class PlasmaManager:
             Any: The retrieved object
             
         Raises:
+            RuntimeError: If the plasma client is not available.
             Exception: Re-raises any plasma/Arrow exception so callers receive the
                 error rather than a confusing None return value.
         """
@@ -213,11 +214,13 @@ class PlasmaManager:
             return obj
         
         try:
+            client = self._require_client()
+
             # Convert the binary ID to a plasma ObjectID
             plasma_id = plasma.ObjectID(object_id)
             
             # Get the object from the plasma store
-            serialized = self.client.get(plasma_id)
+            serialized = client.get(plasma_id)
             
             # Deserialize the object
             obj = pa.deserialize(serialized)
