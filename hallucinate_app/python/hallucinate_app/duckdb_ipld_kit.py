@@ -189,6 +189,22 @@ class DuckDBIPLDKit:
                         "execution_time_ms": (time.time() - start_time) * 1000
                     }
                 except Exception as df_exc:
+                    if sql.lstrip().upper().startswith(("SELECT", "WITH")):
+                        logger.warning(
+                            "Failed to materialize DuckDB query result for SQL %r: %s",
+                            sql,
+                            df_exc,
+                            exc_info=True,
+                        )
+                        result = {
+                            "success": False,
+                            "error": str(df_exc),
+                            "sql": sql,
+                            "execution_time_ms": (time.time() - start_time) * 1000
+                        }
+                        self.stats["last_operation_time"] = (time.time() - start_time) * 1000
+                        return result
+
                     # For non-SELECT queries (INSERT/UPDATE/DELETE), .df() is unavailable.
                     # Use .rowcount; fall back to -1 if attribute is missing or DuckDB returns None.
                     logger.debug("result_cursor.df() unavailable (expected for non-SELECT): %s", df_exc)
