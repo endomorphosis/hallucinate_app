@@ -326,8 +326,12 @@ class IPFSKitServer:
                 with open(path, "rb") as f:
                     content = f.read()
                 self.mock_storage[mock_cid] = content
-        except Exception as e:
-            logger.warning("Failed to read file %s into mock storage: %s", path, e)
+        except OSError:
+            logger.warning(
+                "Failed to read file %s into mock storage; returning mock CID without cached content",
+                path,
+                exc_info=True,
+            )
         
         return {"Name": path, "Hash": mock_cid, "Size": "1234"}
     
