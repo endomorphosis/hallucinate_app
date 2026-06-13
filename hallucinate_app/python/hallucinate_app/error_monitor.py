@@ -794,7 +794,7 @@ class ErrorMonitor:
         r'|ID: [a-f0-9-]+',
         re.IGNORECASE,
     )
-    _SIMILAR_MIN_LEN = 10
+    _SIMILAR_MIN_LEN: int = 10
     # Sentinel used to replace volatile details during normalisation.  A null
     # byte cannot appear in ordinary error-message strings, so it will never
     # collide with real message content and cause a false-positive similarity

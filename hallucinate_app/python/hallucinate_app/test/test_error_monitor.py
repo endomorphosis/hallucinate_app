@@ -313,6 +313,14 @@ class TestMessagesSimilar(unittest.TestCase):
         # The sentinel is shorter than _SIMILAR_MIN_LEN (10), so no substring match.
         self.assertFalse(self._similar(msg1, msg2))
 
+    def test_similar_min_len_is_class_level_configuration(self):
+        """_SIMILAR_MIN_LEN remains a named class-level guard (VAI-135)."""
+        from hallucinate_app.error_monitor import ErrorMonitor
+
+        self.assertEqual(ErrorMonitor._SIMILAR_MIN_LEN, 10)
+        self.assertNotIn("_SIMILAR_MIN_LEN", self.monitor.__dict__)
+        self.assertFalse(self._similar("0xdeadbeef", "0xcafebabe"))
+
     def test_id_field_normalised(self):
         """Messages differing only in a hex ID field should be considered similar (HAO-219).
 
@@ -539,4 +547,3 @@ class TestMessagesSimilar(unittest.TestCase):
             "Fault at 0xDEADBEEF in module alpha",
             "Fault at 0xCAFEBABE in module beta",
         ))
-
