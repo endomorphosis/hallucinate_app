@@ -21,7 +21,7 @@ if parent_dir not in sys.path:
     sys.path.insert(0, parent_dir)
 
 # Import required modules
-from hallucinate_app.error_monitor import error_monitor, ErrorMonitor, ErrorLevel, ErrorSource, RecoveryStrategy
+from hallucinate_app.error_monitor import error_monitor, ErrorMonitor, ErrorData, ErrorLevel, ErrorSource, RecoveryStrategy
 from hallucinate_app.pyarrow_content_index import PyArrowContentIndex, ContentIndexError, ContentNotFoundError
 
 class TestErrorMonitor(unittest.TestCase):
@@ -222,6 +222,26 @@ class TestMessagesSimilar(unittest.TestCase):
 
     def _similar(self, a, b):
         return self.monitor._messages_similar(a, b)
+
+    def _error(self, error_id, component="content_index", source=ErrorSource.CONTENT_INDEX, message="Disk full"):
+        return ErrorData(
+            id=error_id,
+            timestamp="2026-06-13T00:00:00",
+            level=ErrorLevel.ERROR,
+            source=source,
+            component=component,
+            operation="write",
+            message=message,
+        )
+
+    def test_find_duplicate_error_returns_none_without_component_source_message_match(self):
+        """_find_duplicate_error returns None when no stored error matches all duplicate keys (VAI-140)."""
+        candidate = self._error("candidate")
+
+        self.assertIsNone(self.monitor._find_duplicate_error(candidate))
+
+        self.monitor.errors["existing"] = self._error("existing", component="other_component")
+        self.assertIsNone(self.monitor._find_duplicate_error(candidate))
 
     def test_hex_case_insensitive(self):
         """Upper- and lower-case hex addresses must normalise to the same token."""
@@ -539,4 +559,3 @@ class TestMessagesSimilar(unittest.TestCase):
             "Fault at 0xDEADBEEF in module alpha",
             "Fault at 0xCAFEBABE in module beta",
         ))
-
