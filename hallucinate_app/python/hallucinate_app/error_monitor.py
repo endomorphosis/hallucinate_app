@@ -1110,33 +1110,19 @@ class ErrorMonitor:
                 return existing_id
         
         return None
+
+    def _normalise_similar_message(self, message: str) -> str:
+        """Return the comparable form used by duplicate-message detection."""
+        return self._SIMILAR_PATTERN.sub(self._SIMILAR_SENTINEL, message)
     
     def _messages_similar(self, msg1: str, msg2: str) -> bool:
         """Check if two error messages are similar"""
-        # Guard: if either value is not a string (e.g. None came through at
-        # runtime despite the type annotation), fall back to equality so that
-        # re.sub does not raise TypeError and duplicate detection still works
-        # for the common case where both sides are the same non-string value.
         if not isinstance(msg1, str) or not isinstance(msg2, str):
             return msg1 == msg2
-        # Identical raw messages are always similar, regardless of length.
         if msg1 == msg2:
             return True
-        # Remove volatile details (addresses, line numbers, timestamps, IDs).
-        # _SIMILAR_PATTERN uses re.IGNORECASE so uppercase hex (0xDEADBEEF) is
-        # also normalised, preventing missed duplicates.
-        # _SIMILAR_SENTINEL uses a null byte which cannot appear in real error
-        # messages, preventing false-positive matches when message text contains
-        # the literal sentinel string (VAI-144).
-        clean_msg1 = self._SIMILAR_PATTERN.sub(self._SIMILAR_SENTINEL, msg1)
-        clean_msg2 = self._SIMILAR_PATTERN.sub(self._SIMILAR_SENTINEL, msg2)
-        # Require minimum length for both exact and substring matches.  A very
-        # short cleaned string (e.g. a message that was entirely a hex address
-        # and became the sentinel) must not cause unrelated errors to be treated
-        # as duplicates — the guard applies to the exact-match path as well as
-        # the substring path so that e.g. "0xdeadbeef" and "0xcafebabe" (both
-        # normalising to the one-character sentinel) are not conflated.
-        # (Identical raw messages are handled by the early-return above.)
+        clean_msg1 = self._normalise_similar_message(msg1)
+        clean_msg2 = self._normalise_similar_message(msg2)
         if clean_msg1 == clean_msg2 and len(clean_msg1) >= self._SIMILAR_MIN_LEN:
             return True
         return (
