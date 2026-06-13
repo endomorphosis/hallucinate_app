@@ -1102,14 +1102,21 @@ class ErrorMonitor:
     
     def _find_duplicate_error(self, error: ErrorData) -> Optional[str]:
         """Find if this error is a duplicate of an existing one"""
+        matching_errors = []
         for existing_id, existing in self.errors.items():
             # Check if it's the same component and similar message
             if (existing.component == error.component and 
                 existing.source == error.source and
                 self._messages_similar(existing.message, error.message)):
-                return existing_id
+                matching_errors.append((existing_id, existing))
         
-        return None
+        if not matching_errors:
+            return None
+
+        return max(
+            matching_errors,
+            key=lambda item: item[1].last_seen or item[1].timestamp or item[1].first_seen or "",
+        )[0]
     
     def _messages_similar(self, msg1: str, msg2: str) -> bool:
         """Check if two error messages are similar"""
