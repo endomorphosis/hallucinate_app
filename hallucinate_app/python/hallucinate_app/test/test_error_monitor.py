@@ -439,8 +439,8 @@ class TestMessagesSimilar(unittest.TestCase):
         When msg1 or msg2 is not a str (e.g. None, int, or any other non-string
         runtime value), the guard introduced at line 1115 must short-circuit before
         reaching the re.sub call, returning simple equality instead of raising
-        TypeError.  This covers every non-string combination that could arrive at
-        _messages_similar despite the str type annotation.
+        TypeError.  This covers every non-string combination that could arrive from
+        persisted or external error data.
         """
         # None vs None — equal, so similar
         self.assertTrue(self._similar(None, None))           # type: ignore[arg-type]
@@ -539,4 +539,3 @@ class TestMessagesSimilar(unittest.TestCase):
             "Fault at 0xDEADBEEF in module alpha",
             "Fault at 0xCAFEBABE in module beta",
         ))
-
