@@ -287,6 +287,13 @@ class TestMessagesSimilar(unittest.TestCase):
         msg2 = "disk quota exceeded on /var/log"
         self.assertTrue(self._similar(msg1, msg2))
 
+    def test_vai_135_clean_msg2_branch_requires_meaningful_length(self):
+        """VAI-135 pins the clean_msg2-in-clean_msg1 branch and its min-length guard."""
+        msg1 = "Runtime failure: connection reset by peer during upload"
+        msg2 = "connection reset by peer"
+        self.assertTrue(self._similar(msg1, msg2))
+        self.assertFalse(self._similar("Runtime failure at 0xdeadbeef", "0xcafebabe"))
+
     def test_short_msg2_not_falsely_matched(self):
         """A very short normalised msg2 must not produce a false-positive similarity (HAO-215).
 
@@ -539,4 +546,3 @@ class TestMessagesSimilar(unittest.TestCase):
             "Fault at 0xDEADBEEF in module alpha",
             "Fault at 0xCAFEBABE in module beta",
         ))
-

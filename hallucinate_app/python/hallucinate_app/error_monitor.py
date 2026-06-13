@@ -1139,10 +1139,13 @@ class ErrorMonitor:
         # (Identical raw messages are handled by the early-return above.)
         if clean_msg1 == clean_msg2 and len(clean_msg1) >= self._SIMILAR_MIN_LEN:
             return True
-        return (
-            (len(clean_msg1) >= self._SIMILAR_MIN_LEN and clean_msg1 in clean_msg2)
-            or (len(clean_msg2) >= self._SIMILAR_MIN_LEN and clean_msg2 in clean_msg1)
+        clean_msg1_contained_in_msg2 = (
+            len(clean_msg1) >= self._SIMILAR_MIN_LEN and clean_msg1 in clean_msg2
         )
+        clean_msg2_contained_in_msg1 = (
+            len(clean_msg2) >= self._SIMILAR_MIN_LEN and clean_msg2 in clean_msg1
+        )
+        return clean_msg1_contained_in_msg2 or clean_msg2_contained_in_msg1
     
     async def _check_alerts(self, error: ErrorData):
         """Check if any alert rules are triggered by this error"""
