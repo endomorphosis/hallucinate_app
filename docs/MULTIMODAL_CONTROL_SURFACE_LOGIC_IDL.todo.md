@@ -5668,3 +5668,47 @@ UI-plane participants and runtime-plane targets.
 - Outputs: data/hallucinate_multimodal_control/discovery, tests/test_supervisor_objective_task_janitor.py
 - Validation: python3 -m py_compile tests/test_supervisor_objective_task_janitor.py
 - Acceptance: Codebase scan filed this finding from tests/test_supervisor_objective_task_janitor.py:279. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-487-codebase-scan-e91ae869af8e.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-488 Resolve code annotation in src/handsfree/agents/runner.py:113
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/agents/runner.py
+- Validation: python3 -m py_compile src/handsfree/agents/runner.py
+- Acceptance: Codebase scan filed this finding from src/handsfree/agents/runner.py:113. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-488-codebase-scan-dc304b98262d.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-489 Resolve code annotation in src/handsfree/agents/runner.py:122
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/agents/runner.py
+- Validation: python3 -m py_compile src/handsfree/agents/runner.py
+- Acceptance: Codebase scan filed this finding from src/handsfree/agents/runner.py:122. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-489-codebase-scan-24a8dfd921a5.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-490 Resolve code annotation in src/handsfree/agents/runner.py:147
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/agents/runner.py
+- Validation: python3 -m py_compile src/handsfree/agents/runner.py
+- Acceptance: Codebase scan filed this finding from src/handsfree/agents/runner.py:147. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-490-codebase-scan-d503a3e145f0.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-491 Resolve code annotation in tests/test_agent_runner.py:417
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, tests/test_agent_runner.py
+- Validation: python3 -m py_compile tests/test_agent_runner.py
+- Acceptance: Codebase scan filed this finding from tests/test_agent_runner.py:417. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-491-codebase-scan-d23bab9bfb8a.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
