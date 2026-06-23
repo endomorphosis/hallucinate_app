@@ -1474,8 +1474,11 @@ def _serialize_ipfs_value(value: Any) -> Any:
     if is_dataclass(value):
         try:
             return _serialize_ipfs_value(asdict(value))
-        except Exception:
-            pass
+        except Exception as exc:
+            _logger.warning(
+                "Failed to serialize IPFS value via dataclasses.asdict(); trying fallback serializers",
+                exc_info=exc,
+            )
     if hasattr(value, "__dict__"):
         public_attrs = {
             key: item
