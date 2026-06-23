@@ -327,11 +327,11 @@ class ThreadPoolMonitorTests(unittest.TestCase):
                 # Expected: tasks may still be running or were cancelled during cleanup
                 pass
             except Exception as exc:
-                unexpected_exceptions.append(repr(exc))
+                unexpected_exceptions.append(f"{type(exc).__name__}: {exc}")
 
         if unexpected_exceptions:
             self.fail(
-                "Unexpected exception during cleanup future.result(): "
+                "Unexpected task exceptions during cleanup: "
                 + "; ".join(unexpected_exceptions)
             )
 
