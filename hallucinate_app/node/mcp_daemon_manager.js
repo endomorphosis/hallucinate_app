@@ -349,7 +349,7 @@ class MCPDaemonManager extends EventEmitter {
     const orderedIds = Array.from(this.daemons.keys()).sort((a, b) => {
       return this._requireDaemonConfig(b).launchOrder - this._requireDaemonConfig(a).launchOrder;
     });
-    const promises = orderedIds.map(id => 
+    const promises = orderedIds.map(id =>
       this.stopDaemon(id).catch(err => {
         console.error(`Failed to stop ${id}:`, err);
         return null;
