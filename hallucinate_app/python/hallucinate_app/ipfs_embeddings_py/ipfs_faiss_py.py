@@ -592,8 +592,11 @@ class IPFSFaissPy:
                         logger.warning(f"Error loading metadata: {e}")
                     finally:
                         # Clean up metadata file
-                        if meta_file_path:
-                            _unlink_temp_file(meta_file_path, "metadata")
+                        if meta_file_path and os.path.exists(meta_file_path):
+                            try:
+                                os.unlink(meta_file_path)
+                            except OSError as e:
+                                logger.warning(f"Could not remove temporary metadata file {meta_file_path}: {e}")
                 
                 # Infer type if not in metadata
                 if "type" not in index_info:
