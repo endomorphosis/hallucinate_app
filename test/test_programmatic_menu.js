@@ -18,12 +18,14 @@ const __dirname = dirname(__filename);
 
 describe('Programmatic Menu Structure Tests', () => {
   let indexContent;
+  let menuGeneratorContent;
 
   // Read the index.js file
   try {
     indexContent = readFileSync(join(__dirname, '..', 'index.js'), 'utf-8');
+    menuGeneratorContent = readFileSync(join(__dirname, '..', 'hallucinate_app', 'node', 'menu_generator.js'), 'utf-8');
   } catch (err) {
-    throw new Error(`Failed to read index.js: ${err.message}`);
+    throw new Error(`Failed to read menu source files: ${err.message}`);
   }
 
   it('should import MenuGenerator', () => {
@@ -64,6 +66,17 @@ describe('Programmatic Menu Structure Tests', () => {
   it('should set mainWindow in createWindow function', () => {
     assert.ok(indexContent.includes('mainWindow = createSwissKnifeWindow()'), 
       'createWindow should set global mainWindow');
+  });
+
+  it('should pass SwissKnife app IDs through menu actions', () => {
+    assert.ok(menuGeneratorContent.includes("case 'openSwissKnifeApp':"),
+      'openSwissKnifeApp action should exist');
+    assert.ok(menuGeneratorContent.includes("const appName = typeof item?.app === 'string' ? item.app : undefined"),
+      'openSwissKnifeApp should validate the configured app ID');
+    assert.ok(menuGeneratorContent.includes('this.createSwissKnifeWindow(appName)'),
+      'openSwissKnifeApp should forward the configured app ID');
+    assert.ok(!menuGeneratorContent.includes('TODO: Launch specific app within SwissKnife'),
+      'SwissKnife app launch TODO should be resolved');
   });
 
   it('should have IPC handlers for navigation', () => {

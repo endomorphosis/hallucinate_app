@@ -462,6 +462,7 @@ export class MenuGenerator {
         }
 
         if (this.createSwissKnifeWindow) {
+          const appName = typeof item?.app === 'string' ? item.app : undefined;
           this.createSwissKnifeWindow(appName);
         }
         break;
