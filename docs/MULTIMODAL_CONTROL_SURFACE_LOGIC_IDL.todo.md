@@ -3469,7 +3469,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-307 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/add_pins_monkey_patch.py:39
 
-- Status: blocked
+- Status: completed
 - Blocked reason: archival codebase scan out of product scope for the VAI/MGW/HAO integration run
 - Completion: manual
 - Priority: P1
