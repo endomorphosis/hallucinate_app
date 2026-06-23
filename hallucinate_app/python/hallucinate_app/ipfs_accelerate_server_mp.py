@@ -140,7 +140,7 @@ class PlasmaManager:
             self.store_process.terminate()
             logger.info("Terminated plasma store process")
 
-    def _require_client(self):
+    def _require_client(self) -> Any:
         """Return the active plasma client or raise a clear runtime error."""
         if self.client is None:
             raise RuntimeError(f"Plasma store client is not available at {self.socket_path}")
@@ -171,6 +171,8 @@ class PlasmaManager:
             
             return file_path.encode()
         
+        # Do not wrap this path in a broad exception handler. Callers need the
+        # concrete Arrow/plasma error instead of a stored None object reference.
         client = self._require_client()
 
         # Generate a random object ID
