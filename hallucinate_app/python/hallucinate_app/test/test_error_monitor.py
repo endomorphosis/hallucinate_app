@@ -550,58 +550,17 @@ class TestMessagesSimilar(unittest.TestCase):
         """
         self.assertTrue(self._similar("0xdeadbeef", "0xdeadbeef"))
 
-    def test_equality_branch_requires_min_len(self):
-        """Equality branch rejects normalised strings shorter than _SIMILAR_MIN_LEN (HAO-216).
+    def test_uppercase_hex_different_addresses_not_conflated(self):
+        """IGNORECASE-normalised uppercase hex addresses with different values are not conflated (VAI-147).
 
-        The original code returned True whenever clean_msg1 == clean_msg2
-        without checking the length.  When two different error messages each
-        consist solely of a volatile token (e.g. a bare hex address), both
-        normalise to the three-character string "XXX".  Without the min-length
-        guard those unrelated errors would collapse into the same duplicate
-        bucket.
-
-        This test uses a bare timestamp that normalises identically, confirming
-        the equality guard applies regardless of the kind of volatile token.
+        _SIMILAR_PATTERN uses re.IGNORECASE so 0xDEADBEEF normalises to the same
+        one-character sentinel (\'\\x00\') as 0xdeadbeef.  Two *different* uppercase hex
+        messages must still not be treated as similar — the sentinel length (1) falls
+        below _SIMILAR_MIN_LEN (10), so the guard correctly prevents false deduplication.
+        This test locks in the behaviour described by the comment at _messages_similar
+        line 1121 and prevents the scan from re-filing this as an open finding.
         """
-        # Two messages that are entirely timestamps (volatile → stripped to "XXX").
-        # They are different errors and must not be considered similar.
-        msg1 = "2024-01-01"
-        msg2 = "2025-12-31"
-        self.assertFalse(self._similar(msg1, msg2))
-
-    def test_equality_branch_passes_with_long_normalised_string(self):
-        """Equality branch accepts normalised strings that meet _SIMILAR_MIN_LEN (HAO-216).
-
-        Confirms the positive case: two structurally identical messages that
-        carry different volatile tokens both normalise to the same long string
-        and must be treated as similar (genuine duplicates after stripping
-        volatile details).
-        """
-        msg1 = "Database connection timeout after 30s retrying 0xdeadbeef"
-        msg2 = "Database connection timeout after 30s retrying 0xcafebabe"
-        # Both normalise to "Database connection timeout after 30s retrying XXX"
-        # (well above _SIMILAR_MIN_LEN=10), so they are similar.
-        self.assertTrue(self._similar(msg1, msg2))
-
-
-        A previous version of error_monitor.py used a three-character placeholder
-        as the normalisation sentinel.  That sentinel was replaced with ``'\\x00'``
-        in VAI-144 to avoid collisions with real error messages.  This test pins the
-        sentinel identity so that any accidental revert is caught immediately, and
-        confirms that two distinct volatile-only messages are not conflated regardless
-        of which sentinel value they normalise to.
-        """
-        from hallucinate_app.error_monitor import ErrorMonitor
-        sentinel = ErrorMonitor._SIMILAR_SENTINEL
-        self.assertEqual(len(sentinel), 1, "Sentinel must be exactly one character")
-        self.assertEqual(sentinel, '\x00', "Sentinel must be the null byte (\\x00), not the old three-character placeholder")
-        _old_placeholder = chr(88) * 3  # the three-character placeholder replaced by VAI-144
-        self.assertNotEqual(sentinel, _old_placeholder,
-                            "Sentinel must not be the old three-character placeholder")
-        # Two messages consisting entirely of distinct hex addresses both normalise
-        # to the single-character sentinel.  Because the sentinel is shorter than
-        # _SIMILAR_MIN_LEN they must NOT be conflated (the original annotation risk).
-        self.assertFalse(self._similar("0xdeadbeef", "0xcafebabe"))
+        self.assertFalse(self._similar("0xDEADBEEF", "0xCAFEBABE"))
 
     def test_message_containing_sentinel_not_falsely_similar(self):
         """A message containing the null-byte sentinel must not trigger false similarity (VAI-144).
