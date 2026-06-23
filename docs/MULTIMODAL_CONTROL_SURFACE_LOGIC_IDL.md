@@ -844,6 +844,73 @@ Receipt IDs are opaque stable strings or CIDs. Downstream payloads may include
 preserve the `receipt_id` chain so all participants can render the same
 command status and audit trail.
 
+### Offload-session mobile and glasses mediation path
+
+`HAO-428` routes every phone-controller and Meta-glasses terminal event through
+the Hallucinate App mediator before a local runtime, Swissknife UI, desktop
+peer, or peer-offload transport can execute it. Offload-session ingress is a
+transport boundary only; it is not allowed to dispatch normalized intents
+directly to a runtime.
+
+The required offload-session path is:
+
+1. `mobile_orb`, display bridge, DAT display, or simulator ingress receives a
+   voice, gesture, display action, or phone UI event.
+2. The ingress adapter creates one `interaction_envelope` with
+   `context.platform`, `context.device_context.remote_surface`,
+   `session.session_id`, `session.participant_id`, transport correlation ID,
+   and the raw event evidence preserved in `raw_payload`.
+3. The adapter submits the envelope to the shared Hallucinate App mediation
+   entrypoint for `control_surface_contract` validation and policy evaluation.
+4. The mediator emits a `policy_decision` and `mediation_receipt` before any
+   command intent is issued.
+5. Only an allowed, rewritten, confirmed, deferred, or rerouted mediated result
+   may create `virtual_desktop_command_intent`; denied results stop at the
+   receipt and render denial status to the phone UI, Swissknife UI, and glasses
+   terminal.
+6. The mediated command intent is dispatched to `swissknife:ui`,
+   `desktop:peer`, `phone:operator`, or `meta_glasses:terminal` according to the
+   policy result and placement hint.
+
+The event-to-mediator mapping is fixed for offload sessions:
+
+| Source event class | Canonical envelope | Pre-dispatch requirement |
+| --- | --- | --- |
+| Voice command from phone or glasses | `surface: "voice"`, `surface_event: "utterance"`, `confirm`, or `cancel` | Evaluate voice confidence, wake/quiet-hours policy, delegation, and session participant policy before command intent creation. |
+| Gesture from phone, captouch, Neural Band, or glasses | `surface: "gesture"`, `surface_event: "tap"`, `swipe`, `hold`, or mapped wrist event | Evaluate gesture allow/deny rules, sleep/quiet-hours policy, display focus, and target participant policy before execution. |
+| Display action from glasses terminal or DAT display | `surface: "gesture"` or `surface: "mouse"` with `raw_payload.display_action` and terminal card/action IDs | Evaluate terminal action policy and rewrite or deny before `terminal.activate_action`, `terminal.focus_card`, `desktop.request_handoff`, or desktop peer routing. |
+| Phone UI event from mobile shell | `surface: "mouse"` or `surface: "gesture"` with `raw_payload.phone_ui_event` and mobile view/action IDs | Evaluate mobile session policy and placement policy before `desktop.open_widget`, `desktop.focus_window`, `desktop.move_window`, confirmation, cancellation, or local fallback. |
+
+Offload-session adapters MUST NOT call desktop peer RPC, Swissknife local ORB,
+local desktop execution, or Meta-glasses rendering directly from `normalized_intent`.
+They must call the mediator first and dispatch only from the resulting
+`virtual_desktop_command_intent` plus `policy_receipt_id`. The peer runtime may
+validate transport authentication and resource availability, but it must treat
+policy outcome, command target, fallback, and confirmation state as the
+mediator-owned decision.
+
+The minimal command-dispatch envelope after mediation is:
+
+```json
+{
+  "offload_dispatch": {
+    "session_id": "vdsk_2026_06_23_example",
+    "interaction_id": "evt_01J_session_input",
+    "policy_receipt_id": "rcpt_policy_01J_open_model_monitor",
+    "command_intent_id": "cmd_01J_open_model_monitor",
+    "policy_outcome": "allow",
+    "dispatch_target": "desktop:peer",
+    "fallback_targets": ["swissknife:ui", "phone:operator"],
+    "source_participant_id": "phone:operator",
+    "source_event_class": "phone_ui_event"
+  }
+}
+```
+
+This makes voice commands, gestures, display actions, and phone UI events
+observably policy-gated before they can reach a local runtime or desktop peer
+runtime.
+
 ## Meta-Glasses Relationship
 The Meta-glasses path should be treated as:
 - a remote interaction surface,
