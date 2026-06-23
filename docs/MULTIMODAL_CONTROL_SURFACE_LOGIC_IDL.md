@@ -1,6 +1,6 @@
 # Multimodal Control Surface Logic IDL Plan
 
-Daemon task-board path:
+HAO board file:
 
 ```text
 hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
