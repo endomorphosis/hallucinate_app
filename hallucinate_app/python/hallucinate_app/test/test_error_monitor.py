@@ -523,6 +523,46 @@ class TestMessagesSimilar(unittest.TestCase):
         self.assertFalse(self._similar(None, 0))
         self.assertFalse(self._similar([], ""))
 
+    def test_uppercase_hex_different_addresses_not_conflated(self):
+        """IGNORECASE normalisation + distinct addresses = not similar (VAI-147).
+
+        _SIMILAR_PATTERN uses re.IGNORECASE so that "0xDEADBEEF" and "0xdeadbeef"
+        are treated as the same volatile token (both normalised to the null-byte
+        sentinel).  This is intentional for deduplication purposes.
+
+        However, two *different* hex addresses — even when one is uppercase and one
+        is lowercase — must NOT be conflated.  For example:
+        - "Crash at 0xDEADBEEF" and "Crash at 0xcafebabe" both normalise to
+          "Crash at <sentinel>", which are identical cleaned strings of length > 1.
+          They *should* be considered similar because the volatile part (the address)
+          differs but the surrounding context is the same.
+        - "0xDEADBEEF" and "0xcafebabe" both normalise to the one-character sentinel,
+          which is below _SIMILAR_MIN_LEN, so they must NOT be considered similar
+          (distinct errors that happen to be entirely an address should not be merged).
+
+        The comment at line 1120-1121 correctly documents the IGNORECASE behaviour.
+        This test locks in the invariant so the codebase scan does not re-file
+        the finding.
+        """
+        # Entirely-uppercase-address messages: different addresses must not be conflated
+        # even though re.IGNORECASE causes them to normalise the same way as lowercase.
+        self.assertFalse(self._similar("0xDEADBEEF", "0xCAFEBABE"))
+        self.assertFalse(self._similar("0xDEADBEEF", "0xcafebabe"))  # mixed case
+        # Same uppercase address → same raw text → True via early-return.
+        self.assertTrue(self._similar("0xDEADBEEF", "0xDEADBEEF"))
+        # With context: two *different* uppercase addresses in identical surrounding text
+        # → similar because the surrounding context (cleaned) matches and exceeds
+        # _SIMILAR_MIN_LEN.  This is the intended deduplication behaviour.
+        self.assertTrue(self._similar(
+            "Crash in module foo at address 0xDEADBEEF during startup",
+            "Crash in module foo at address 0xCAFEBABE during startup",
+        ))
+        # Cross-case: uppercase vs lowercase of the *same* address with context → similar.
+        self.assertTrue(self._similar(
+            "Crash in module foo at address 0xDEADBEEF during startup",
+            "Crash in module foo at address 0xdeadbeef during startup",
+        ))
+
     def test_identical_short_raw_message_returns_true_before_normalization(self):
         """Identical raw messages bypass _SIMILAR_MIN_LEN (VAI-146)."""
         # A hex-only message normalises to the one-character null-byte sentinel (len 1
