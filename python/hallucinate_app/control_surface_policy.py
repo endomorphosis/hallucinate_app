@@ -1047,6 +1047,10 @@ def _warn_ipfs_serializer_fallback(converter: str, value: Any, exc: Exception) -
 
 
 def _serialize_ipfs_value(value: Any) -> Any:
+    # This is a best-effort serialization boundary for optional upstream
+    # compiler objects.  Broad catches below are intentionally limited to the
+    # conversion call being attempted, and every failure is logged before the
+    # fallback chain continues.
     if value is None or isinstance(value, (str, int, float, bool)):
         return value
     if isinstance(value, Mapping):
