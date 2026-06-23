@@ -891,42 +891,37 @@ class PyArrowContentIndex:
         if not self.initialized:
             await self.init()
         
-        try:
-            # Normalize path for consistent lookups
-            normalized_path = self._normalize_path(path)
-            
-            if self.mock_mode:
-                # Use index for faster lookup
-                if normalized_path in self.path_index:
-                    index = self.path_index[normalized_path]
+        # Normalize path for consistent lookups
+        normalized_path = self._normalize_path(path)
+        
+        if self.mock_mode:
+            # Use index for faster lookup
+            if normalized_path in self.path_index:
+                index = self.path_index[normalized_path]
+                return self.mock_store[index]
+                
+            # Try prefix matching if exact match not found
+            for entry_path, index in self.path_index.items():
+                if entry_path.startswith(normalized_path):
                     return self.mock_store[index]
                     
-                # Try prefix matching if exact match not found
-                for entry_path, index in self.path_index.items():
-                    if entry_path.startswith(normalized_path):
-                        return self.mock_store[index]
-                        
-                return None
-            else:
-                # Use index for faster lookup if available
-                if normalized_path in self.path_index:
-                    index = self.path_index[normalized_path]
-                    # Convert the row to a dictionary
-                    row = self.table.slice(index, 1)
-                    return self._convert_table_to_dict(row)
-                
-                # Try prefix matching with PyArrow compute
-                path_match = pc.starts_with(self.table['path'], normalized_path)
-                result = self.table.filter(path_match)
-                
-                if len(result) > 0:
-                    return self._convert_table_to_dict(result.slice(0, 1))
-                
-                return None
-        except Exception as e:
-            logger.error(f"Error looking up path {path}: {e}")
-            logger.error(traceback.format_exc())
-            raise
+            return None
+        else:
+            # Use index for faster lookup if available
+            if normalized_path in self.path_index:
+                index = self.path_index[normalized_path]
+                # Convert the row to a dictionary
+                row = self.table.slice(index, 1)
+                return self._convert_table_to_dict(row)
+            
+            # Try prefix matching with PyArrow compute
+            path_match = pc.starts_with(self.table['path'], normalized_path)
+            result = self.table.filter(path_match)
+            
+            if len(result) > 0:
+                return self._convert_table_to_dict(result.slice(0, 1))
+            
+            return None
             
     def _normalize_path(self, path):
         """Normalize filesystem path for consistent lookups"""
