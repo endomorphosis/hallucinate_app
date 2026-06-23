@@ -469,11 +469,10 @@ export class MenuGenerator {
         break;
       }
 
-      case 'openServerConfig':
-        if (item?.serverId) {
-          this.navigateToView(resolveViewPath('views/settings.html'), {
-            query: { server: String(item.serverId) }
-          });
+      case 'openServerConfig': {
+        const serverId = typeof item?.serverId === 'string' ? item.serverId.trim() : '';
+        if (serverId) {
+          this.navigateToView(resolveViewPath(`views/settings.html?server=${encodeURIComponent(serverId)}`));
         } else {
           if (serverId) {
             console.warn(`Unknown MCP server configuration requested: ${serverId}`);
