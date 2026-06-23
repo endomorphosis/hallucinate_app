@@ -445,7 +445,9 @@ export class MenuGenerator {
         break;
 
       case 'openSettings':
-        this.openSettings();
+        if (this.navigateToView) {
+          this.navigateToView(resolveViewPath('views/settings.html'));
+        }
         break;
 
       case 'openSwissKnifeWindow':
