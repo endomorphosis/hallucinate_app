@@ -467,6 +467,16 @@ class IPFSModelManager:
                         # Clean up
                         if ipfs_import_test:
                             loop.run_until_complete(self.remove_model(test_model_id))
+                    
+                    # Clean up test file
+                    try:
+                        os.unlink(test_file)
+                    except OSError:
+                        logger.debug(
+                            "Could not remove temporary test file %s",
+                            test_file,
+                            exc_info=True,
+                        )
                         
                 except Exception as exc:
                     # Self-tests return partial failures to callers, but keep the
