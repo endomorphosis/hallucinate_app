@@ -337,7 +337,36 @@
       }
     }
 
-    loadSettings();
+    function resetSettings() {
+      try {
+        localStorage.removeItem('appSettings');
+      } catch (e) {
+        console.warn('Failed to clear settings:', e);
+      }
+      // Reload default UI values
+      document.getElementById('theme').value = 'system';
+      document.getElementById('autoStart').checked = true;
+      document.getElementById('notifications').checked = true;
+      document.getElementById('ipfsKitPort').value = '3001';
+      document.getElementById('ipfsDatasetsPort').value = '3002';
+      document.getElementById('ipfsAcceleratePort').value = '3006';
+      document.getElementById('devtools').checked = false;
+      document.getElementById('logLevel').value = 'info';
+      const msg = document.getElementById('statusMsg');
+      msg.textContent = 'Settings reset to defaults.';
+      msg.style.background = '#fff3e0';
+      msg.style.color = '#e65100';
+      msg.style.borderColor = '#ffcc02';
+      msg.style.display = 'block';
+      setTimeout(() => { msg.style.display = 'none'; msg.textContent = 'Settings saved successfully.'; msg.style.background = ''; msg.style.color = ''; msg.style.borderColor = ''; }, 4000);
+    }
+
+    const _params = new URLSearchParams(window.location.search);
+    if (_params.get('reset') === 'true') {
+      resetSettings();
+    } else {
+      loadSettings();
+    }
   </script>
 </body>
 </html>
