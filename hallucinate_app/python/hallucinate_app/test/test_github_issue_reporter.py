@@ -182,6 +182,8 @@ class TestGitHubIssueReporter(unittest.TestCase):
     
     def test_should_report_error(self):
         """Test error reporting criteria"""
+        self.reporter.repo = object()
+
         # Fatal error should be reported
         fatal_error = ErrorData(
             id='test-1',
@@ -215,11 +217,9 @@ class TestGitHubIssueReporter(unittest.TestCase):
             message='Warning'
         )
         
-        # Note: should_report_error will return False because github_client is not initialized
-        # but we can test the level filtering logic by checking the config
-        self.assertTrue(ErrorLevel.FATAL >= self.config.min_error_level)
-        self.assertTrue(ErrorLevel.ERROR >= self.config.min_error_level)
-        self.assertFalse(ErrorLevel.WARNING >= self.config.min_error_level)
+        self.assertTrue(self.reporter.should_report_error(fatal_error))
+        self.assertTrue(self.reporter.should_report_error(error))
+        self.assertFalse(self.reporter.should_report_error(warning))
     
     def test_create_issue_dry_run(self):
         """Test issue creation in dry run mode"""
@@ -240,6 +240,45 @@ class TestGitHubIssueReporter(unittest.TestCase):
         
         # Check that stats were updated
         self.assertEqual(self.reporter.stats['total_errors_processed'], 1)
+
+    def test_create_issue_records_failure_details(self):
+        """Test issue creation failures are observable without raising"""
+        config = IssueReportConfig(
+            enabled=False,
+            github_token='test_token',
+            repository='test_owner/test_repo',
+            min_error_level=ErrorLevel.ERROR,
+            dry_run=False
+        )
+        reporter = GitHubIssueReporter(config)
+        reporter.config.enabled = True
+
+        class FailingRepo:
+            def create_issue(self, **kwargs):
+                raise RuntimeError("issue API unavailable")
+
+        reporter.repo = FailingRepo()
+        error = ErrorData(
+            id='test-failure',
+            timestamp=datetime.now().isoformat(),
+            level=ErrorLevel.ERROR,
+            source=ErrorSource.PYTHON,
+            component='TestComponent',
+            operation='test_operation',
+            message='Test error'
+        )
+
+        with self.assertLogs("github_issue_reporter", level="ERROR") as logs:
+            result = reporter.create_issue(error)
+
+        self.assertIsNone(result)
+        self.assertEqual(reporter.stats['errors'], 1)
+        self.assertIsNotNone(reporter.last_issue_error)
+        self.assertEqual(reporter.last_issue_error['error_id'], 'test-failure')
+        self.assertEqual(reporter.last_issue_error['error_type'], 'RuntimeError')
+        self.assertIn('issue API unavailable', reporter.last_issue_error['message'])
+        self.assertIn('Traceback', "\n".join(logs.output))
+        self.assertEqual(reporter.get_stats()['last_issue_error'], reporter.last_issue_error)
     
     def test_get_stats(self):
         """Test statistics retrieval"""
@@ -252,6 +291,7 @@ class TestGitHubIssueReporter(unittest.TestCase):
         self.assertIn('config', stats)
         self.assertIn('current_rate', stats)
         self.assertIn('tracked_fingerprints', stats)
+        self.assertIn('last_issue_error', stats)
 
 
 if __name__ == '__main__':
