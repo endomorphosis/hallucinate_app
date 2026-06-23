@@ -1707,7 +1707,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-151 Resolve code annotation in tests/test_hallucinate_multimodal_control_todo_queue.py:148
 
-- Status: blocked
+- Status: completed
 - Completion: manual
 - Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
