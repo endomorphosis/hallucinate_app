@@ -468,7 +468,13 @@ export class MenuGenerator {
       }
 
       case 'openServerConfig':
-        this.openServerConfig(item);
+        if (item?.serverId && this.mainWindow && !this.mainWindow.isDestroyed()) {
+          this.mainWindow.loadFile(resolveViewPath('views/settings.html'), {
+            query: { server: String(item.serverId) }
+          });
+        } else {
+          this.navigateToView(resolveViewPath('views/settings.html'));
+        }
         break;
 
       case 'resetConfig':
