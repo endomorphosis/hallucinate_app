@@ -4877,7 +4877,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-433 Define physical-device operator handoff gates
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: launch
