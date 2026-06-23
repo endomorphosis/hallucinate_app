@@ -10,7 +10,6 @@ import sys
 import time
 import json
 import asyncio
-import logging
 import unittest
 import threading
 import concurrent.futures
@@ -320,17 +319,21 @@ class ThreadPoolMonitorTests(unittest.TestCase):
         )
         
         # Wait for all tasks to complete (don't want to interfere with later tests)
+        cleanup_errors = []
         for future in futures + many_tasks:
             try:
                 future.result(timeout=2.0)
             except (concurrent.futures.TimeoutError, CancelledError):
                 # Expected: tasks may still be running or were cancelled during cleanup
                 pass
-            except Exception:
-                # Log unexpected task exceptions so they aren't silently lost
-                logging.getLogger(__name__).debug(
-                    "Unexpected exception during cleanup future.result()", exc_info=True
-                )
+            except Exception as exc:
+                cleanup_errors.append(f"{type(exc).__name__}: {exc}")
+        
+        self.assertFalse(
+            cleanup_errors,
+            "Unexpected exceptions from high-load cleanup futures: "
+            + "; ".join(cleanup_errors)
+        )
 
 
 # Helper to run async tests
