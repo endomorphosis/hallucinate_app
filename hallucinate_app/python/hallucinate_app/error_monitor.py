@@ -795,15 +795,13 @@ class ErrorMonitor:
         re.IGNORECASE,
     )
     _SIMILAR_MIN_LEN = 10
-    # Sentinel used to replace volatile details during normalisation.  This must
-    # not regress to the old literal "XXX" placeholder: real error messages can
-    # contain that text, causing false-positive duplicate matches (HAO-210).  A
-    # null byte cannot appear in ordinary error-message strings, so it will never
-    # collide with real message content and cause a false-positive similarity
-    # match (VAI-144).  The sentinel is deliberately shorter than _SIMILAR_MIN_LEN
-    # so that a message consisting entirely of volatile tokens normalises to a
-    # string whose length falls below the minimum and is not falsely treated as
-    # similar to another fully-volatile message.
+    # Sentinel used to replace volatile details during normalisation.  Keep this
+    # non-printable so normal error text cannot accidentally contain the same
+    # placeholder and create a false-positive similarity match (VAI-144/HAO-210).
+    # The sentinel is deliberately shorter than _SIMILAR_MIN_LEN so that a
+    # message consisting entirely of volatile tokens normalises to a string whose
+    # length falls below the minimum and is not falsely treated as similar to
+    # another fully-volatile message.
     _SIMILAR_SENTINEL = '\x00'
 
     def _normalize_similar_message(self, message: str) -> str:
