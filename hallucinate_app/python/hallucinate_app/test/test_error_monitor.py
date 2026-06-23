@@ -514,8 +514,8 @@ class TestMessagesSimilar(unittest.TestCase):
         When msg1 or msg2 is not a str (e.g. None, int, or any other non-string
         runtime value), the guard must short-circuit before
         reaching the re.sub call, returning simple equality instead of raising
-        TypeError.  This covers non-string combinations that can arrive at
-        _messages_similar from persisted or external error data.
+        TypeError.  This covers every non-string combination that could arrive from
+        persisted or external error data.
         """
         annotations = ErrorMonitor._messages_similar.__annotations__
         self.assertIs(annotations["msg1"], Any)
