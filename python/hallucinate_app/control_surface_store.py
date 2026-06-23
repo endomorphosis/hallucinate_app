@@ -515,18 +515,14 @@ def _json_safe(value: Any) -> Any:
         try:
             raw = value.as_dict()
         except Exception as exc:  # noqa: BLE001
-            _log.debug("_json_safe: as_dict() failed for %r: %s", type(value).__name__, exc)
+            _log_json_hook_failure("as_dict", value, exc)
         else:
             return _json_safe(raw)
     if hasattr(value, "to_dict"):
         try:
             raw = value.to_dict()
         except Exception as exc:  # noqa: BLE001
-            _log.warning(
-                "_json_safe: to_dict() failed for %r; trying fallback serialization",
-                type(value).__name__,
-                exc_info=True,
-            )
+            _log_json_hook_failure("to_dict", value, exc)
         else:
             return _json_safe(raw)
     if is_dataclass(value):
@@ -540,3 +536,12 @@ def _json_safe(value: Any) -> Any:
         if public_attrs:
             return _json_safe(public_attrs)
     return str(value)
+
+
+def _log_json_hook_failure(hook_name: str, value: Any, exc: Exception) -> None:
+    _log.warning(
+        "_json_safe: %s() failed for %r; trying fallback serialization",
+        hook_name,
+        type(value).__name__,
+        exc_info=(type(exc), exc, exc.__traceback__),
+    )
