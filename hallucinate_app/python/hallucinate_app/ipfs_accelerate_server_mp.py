@@ -86,6 +86,7 @@ class PlasmaManager:
         # Start the plasma store if it's not already running
         self.store_process = None
         self.client = None
+        self._startup_error = None
         self._start_store()
     
     def _start_store(self):
@@ -97,6 +98,7 @@ class PlasmaManager:
             # Try to connect to an existing store first
             try:
                 self.client = plasma.connect(self.socket_path)
+                self._startup_error = None
                 logger.info(f"Connected to existing plasma store at {self.socket_path}")
                 return
             except Exception as connect_err:
@@ -120,8 +122,10 @@ class PlasmaManager:
             # Connect to the store
             time.sleep(0.1)  # Give it a moment to start
             self.client = plasma.connect(self.socket_path)
+            self._startup_error = None
             logger.info("Connected to plasma store")
         except Exception as e:
+            self._startup_error = e
             logger.error(f"Failed to start plasma store: {e}")
             if self.store_process:
                 self.store_process.terminate()
@@ -143,7 +147,10 @@ class PlasmaManager:
     def _require_client(self) -> Any:
         """Return the active plasma client or raise a clear runtime error."""
         if self.client is None:
-            raise RuntimeError(f"Plasma store client is not available at {self.socket_path}")
+            message = "Plasma store client is not available"
+            if self._startup_error is not None:
+                message = f"{message}: plasma store failed to start"
+            raise RuntimeError(message) from self._startup_error
         return self.client
     
     def put(self, obj: Any) -> bytes:
