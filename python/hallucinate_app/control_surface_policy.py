@@ -1018,13 +1018,12 @@ def _first_text(*values: Any) -> str:
     return ""
 
 
-def _warn_ipfs_serializer_fallback(converter: str, value: Any, exc: Exception) -> None:
+def _warn_ipfs_serializer_fallback(converter_name: str, value: Any, exc: Exception) -> None:
     _logger.warning(
-        "%s failed with %s while serializing %r for IPFS policy payload; trying next strategy",
-        converter,
-        type(exc).__name__,
+        "_serialize_ipfs_value: %s failed for %r; trying next strategy",
+        converter_name,
         type(value),
-        exc_info=True,
+        exc_info=exc,
     )
 
 
@@ -1045,6 +1044,8 @@ def _serialize_ipfs_value(value: Any) -> Any:
         try:
             raw = value.as_dict()
         except Exception as exc:
+            # Log at WARNING so failures are visible in production logs rather than
+            # silently swallowed.  The fallback chain continues to the next strategy.
             _warn_ipfs_serializer_fallback("as_dict()", value, exc)
         else:
             return _serialize_ipfs_value(raw)
@@ -1052,6 +1053,8 @@ def _serialize_ipfs_value(value: Any) -> Any:
         try:
             raw = value.to_dict()
         except Exception as exc:
+            # Log at WARNING so failures are visible in production logs rather than
+            # silently swallowed.  The fallback chain continues to the next strategy.
             _warn_ipfs_serializer_fallback("to_dict()", value, exc)
         else:
             return _serialize_ipfs_value(raw)
@@ -1059,6 +1062,8 @@ def _serialize_ipfs_value(value: Any) -> Any:
         try:
             raw = asdict(value)
         except Exception as exc:
+            # Log at WARNING so failures are visible in production logs rather than
+            # silently swallowed.  The fallback chain continues to the next strategy.
             _warn_ipfs_serializer_fallback("asdict()", value, exc)
         else:
             return _serialize_ipfs_value(raw)
