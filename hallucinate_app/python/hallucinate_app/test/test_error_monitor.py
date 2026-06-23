@@ -482,8 +482,33 @@ class TestMessagesSimilar(unittest.TestCase):
         msg2 = "Unhandled exception at src/server.py:789 while handling request"
         self.assertTrue(self._similar(msg1, msg2))
 
-    def test_msg2_date_normalised_for_deduplication(self):
-        """Volatile date in msg2 is stripped so structurally identical messages deduplicate (HAO-220).
+    def test_similarity_is_symmetric(self):
+        """_messages_similar is symmetric: (a, b) == (b, a) for both clean_msg branches (VAI-140).
+
+        Line 1112 (``clean_msg2 = self._SIMILAR_PATTERN.sub('XXX', msg2)``) is
+        always reached after the type guard at lines 1106-1107, so msg2 is
+        guaranteed to be a str by that point.  This test confirms that swapping
+        msg1 and msg2 — which exercises the ``clean_msg2`` branch as the longer
+        or shorter operand — produces the same similarity result in both orders.
+        """
+        msg_short = "disk quota exceeded on /var/log"
+        msg_long = "Fatal error in module foo: disk quota exceeded on /var/log at 2024-01-15"
+        self.assertEqual(
+            self._similar(msg_short, msg_long),
+            self._similar(msg_long, msg_short),
+        )
+
+    def test_clean_msg2_type_guard_blocks_non_string(self):
+        """Non-string msg2 never reaches _SIMILAR_PATTERN.sub (VAI-140 false-positive proof).
+
+        The type guard introduced before line 1112 ensures that re.sub is only
+        called with a str argument.  Passing a non-string as msg2 must not raise
+        a TypeError and must return a sensible equality result.
+        """
+        self.assertFalse(self._similar("some error message text here", 42))  # type: ignore[arg-type]
+        self.assertFalse(self._similar("some error message text here", []))  # type: ignore[arg-type]
+        self.assertTrue(self._similar(42, 42))  # type: ignore[arg-type]
+
 
         clean_msg2 is produced by applying _SIMILAR_PATTERN to msg2.  This test
         verifies that the date-normalisation branch (``\\d{4}-\\d{2}-\\d{2}``) works
