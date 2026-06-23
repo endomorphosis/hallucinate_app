@@ -467,13 +467,6 @@ class IPFSModelManager:
                         # Clean up
                         if ipfs_import_test:
                             loop.run_until_complete(self.remove_model(test_model_id))
-                    
-                    # Clean up test file
-                    try:
-                        os.unlink(test_file)
-                    except OSError:
-                        pass
-                        
                 except Exception as exc:
                     # Self-tests return partial failures to callers, but keep the
                     # original traceback in logs for debugging.
