@@ -305,6 +305,21 @@ class TestMessagesSimilar(unittest.TestCase):
         self.assertFalse(self._similar(None, "some error"))
         self.assertFalse(self._similar("some error", None))
 
+    def test_short_normalised_message_not_substring_matched(self):
+        """A message that normalises to a very short token must not create
+        false positives via substring matching (VAI-134).
+
+        'line 42' normalises to 'XXX' (len=3, below _MIN_SUBSTRING_LEN=10).
+        The substring branch must be skipped so an unrelated message is not
+        incorrectly considered similar.  The equality branch still applies,
+        so two volatile-only messages that share the same normalised form are
+        correctly reported as similar.
+        """
+        # "line 42" -> "XXX" (3 chars); unrelated long message must NOT match.
+        self.assertFalse(self._similar("line 42", "Connection refused by remote host"))
+        # Both sides normalise identically ("XXX" == "XXX") -> equality match -> True.
+        self.assertTrue(self._similar("line 42", "line 99"))
+
     def test_redundant_uppercase_ranges_removed(self):
         """_SIMILAR_PATTERN still matches uppercase hex after removing redundant ranges (VAI-132)."""
         from hallucinate_app.error_monitor import ErrorMonitor
