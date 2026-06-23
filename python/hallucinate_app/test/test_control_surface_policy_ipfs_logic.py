@@ -257,6 +257,18 @@ def _load_real_ipfs_logic_api() -> tuple[object, object]:
     except Exception as exc:
         raise unittest.SkipTest(f"real ipfs_datasets_py logic API unavailable: {exc}") from exc
 
+    missing = [
+        name
+        for name in (
+            "compile_nl_to_policy",
+            "evaluate_nl_policy",
+            "NLUCANPolicyCompiler",
+            "evaluate_with_manager",
+        )
+        if not hasattr(logic_api, name)
+    ]
+    if missing:
+        raise unittest.SkipTest(f"real ipfs_datasets_py.logic.api missing: {', '.join(missing)}")
     if getattr(logic_api, "__name__", "") != "ipfs_datasets_py.logic.api":
         raise unittest.SkipTest("resolved logic API is not ipfs_datasets_py.logic.api")
     return logic_api, PolicyEvaluator
