@@ -4997,7 +4997,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-439 Capture Meta glasses terminal receipt and display-action bridge
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: launch
