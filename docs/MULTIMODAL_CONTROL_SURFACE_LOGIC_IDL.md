@@ -676,6 +676,174 @@ remote events, not a new policy authority. Its Meta-glasses, mobile, and
 simulator paths should forward normalized envelopes and receive Hallucinate App
 mediation results rather than evaluating separate local control policy.
 
+### Virtual desktop multimodal session contract
+
+`HAO-427` defines the Hallucinate App control-surface contract for one
+`virtual_desktop_session` that spans the phone controller, desktop peer,
+Swissknife UI, and Meta glasses terminal. The session contract is a profile of
+the canonical `control_surface_contract`; it does not introduce a separate
+policy authority. Every participant publishes normalized events into the same
+mediation path, receives command intents from the same decision point, and
+renders receipt-backed state with the same identifiers.
+
+The session descriptor extends a Swissknife-backed desktop descriptor with:
+
+```json
+{
+  "virtual_desktop_session": {
+    "version": "0.1.0",
+    "session_id": "vdsk_2026_06_23_example",
+    "desktop_ref": "swissknife:desktop:primary",
+    "participants": [
+      {
+        "participant_id": "phone:operator",
+        "role": "controller",
+        "platform": "mobile",
+        "surfaces": ["voice", "gesture", "mouse"],
+        "transport": "mobile_orb"
+      },
+      {
+        "participant_id": "desktop:peer",
+        "role": "executor",
+        "platform": "desktop_peer",
+        "surfaces": ["mouse", "agent"],
+        "transport": "peer_orb"
+      },
+      {
+        "participant_id": "swissknife:ui",
+        "role": "operator_surface",
+        "platform": "swissknife",
+        "surfaces": ["mouse", "agent"],
+        "transport": "local_orb"
+      },
+      {
+        "participant_id": "meta_glasses:terminal",
+        "role": "constrained_terminal",
+        "platform": "meta_glasses",
+        "surfaces": ["voice", "gesture"],
+        "transport": "mobile_orb"
+      }
+    ],
+    "event_contract_ref": "interaction_envelope@0.1.0",
+    "command_contract_ref": "virtual_desktop_command_intent@0.1.0",
+    "placement_contract_ref": "virtual_desktop_placement_hint@0.1.0",
+    "receipt_contract_ref": "mediation_receipt@0.1.0"
+  }
+}
+```
+
+Normalized session events keep the existing `interaction_envelope` fields and
+add a `session` object so phone, desktop peer, Swissknife UI, and Meta glasses
+terminal events can be correlated without changing the surface vocabulary:
+
+```json
+{
+  "interaction_id": "evt_01J_session_input",
+  "surface": "voice",
+  "surface_event": "utterance",
+  "raw_payload": {
+    "transcript": "open the model monitor on my desktop",
+    "transport_correlation_id": "mobile-orb-923"
+  },
+  "normalized_intent": {
+    "intent": "desktop.open_widget",
+    "method": "open_widget",
+    "target_ref": "widget:model-monitor",
+    "arguments": {"source": "phone"},
+    "confidence": 0.93
+  },
+  "actor": {
+    "type": "user",
+    "id": "operator",
+    "delegation_chain": []
+  },
+  "context": {
+    "platform": "mobile",
+    "device_context": {
+      "remote_surface": "mobile-shell"
+    }
+  },
+  "session": {
+    "session_id": "vdsk_2026_06_23_example",
+    "participant_id": "phone:operator",
+    "desktop_ref": "swissknife:desktop:primary",
+    "sequence": 42,
+    "parent_receipt_ids": ["rcpt_session_join_001"]
+  }
+}
+```
+
+The normalized event vocabulary for a virtual desktop session is:
+
+| Participant | Surface events | Normalized intents |
+| --- | --- | --- |
+| Phone controller | `voice/utterance`, `voice/confirm`, `voice/cancel`, `gesture/tap`, `gesture/swipe`, `mouse/click` | `desktop.open_widget`, `desktop.focus_window`, `desktop.move_window`, `desktop.confirm_command`, `desktop.cancel_command`, `terminal.render_summary` |
+| Desktop peer | `mouse/click`, `mouse/focus`, `agent/proposal`, `agent/autonomous_invoke` | `desktop.execute_command`, `desktop.share_window`, `desktop.stream_region`, `desktop.sync_state`, `desktop.fallback_local` |
+| Swissknife UI | `mouse/click`, `mouse/hover`, `mouse/focus`, `agent/proposal` | `desktop.open_widget`, `desktop.focus_window`, `desktop.activate_control`, `desktop.show_receipt`, `desktop.replay_session` |
+| Meta glasses terminal | `voice/utterance`, `voice/confirm`, `voice/cancel`, `gesture/tap`, `gesture/swipe`, `gesture/hold` | `terminal.render_summary`, `terminal.focus_card`, `terminal.activate_action`, `terminal.dismiss`, `desktop.request_handoff` |
+
+Command intents are the mediated output of the session contract. They are
+separate from raw events so policy can deny, rewrite, defer, or move work
+between surfaces before execution:
+
+```json
+{
+  "command_intent_id": "cmd_01J_open_model_monitor",
+  "interaction_id": "evt_01J_session_input",
+  "session_id": "vdsk_2026_06_23_example",
+  "intent": "desktop.open_widget",
+  "method": "open_widget",
+  "target_ref": "widget:model-monitor",
+  "arguments": {
+    "layout": "right_panel",
+    "restore_if_open": true
+  },
+  "issued_to": "swissknife:ui",
+  "requires_receipt": true,
+  "placement_hint": {
+    "placement_id": "place_01J_model_monitor",
+    "preferred_surface": "swissknife:ui",
+    "fallback_surfaces": ["desktop:peer", "meta_glasses:terminal", "phone:operator"],
+    "display_region": "right_panel",
+    "attention": "foreground",
+    "privacy": "operator_visible",
+    "constraints": ["avoid_glasses_full_text", "desktop_peer_if_available"]
+  },
+  "receipt_ids": {
+    "event_receipt_id": "rcpt_evt_01J_session_input",
+    "policy_receipt_id": "rcpt_policy_01J_open_model_monitor",
+    "command_receipt_id": "rcpt_cmd_01J_open_model_monitor"
+  }
+}
+```
+
+Placement hints are advisory instructions attached to mediated command intents.
+They never bypass policy and must be copied into receipts when they affect
+routing. The required fields are `placement_id`, `preferred_surface`,
+`fallback_surfaces`, `display_region`, `attention`, `privacy`, and
+`constraints`. Valid `preferred_surface` and `fallback_surfaces` values are
+session participant IDs, which lets the same command target the Swissknife UI
+when the desktop peer is present, render a condensed card on Meta glasses, or
+fall back to the phone controller if the desktop peer is unavailable.
+
+Every virtual desktop session action must carry stable receipt IDs:
+
+- `event_receipt_id` records the raw participant event, normalized envelope,
+  `session_id`, `participant_id`, transport correlation ID, and prior
+  `parent_receipt_ids`.
+- `policy_receipt_id` is the canonical `mediation_receipt.receipt_id` for the
+  policy decision that allowed, denied, confirmed, rewrote, deferred,
+  rate-limited, or rerouted the command.
+- `command_receipt_id` records the command intent emitted after mediation,
+  including the selected placement hint and final target participant.
+- `render_receipt_id` records what the Swissknife UI, phone controller, desktop
+  peer, or Meta glasses terminal actually displayed or executed.
+
+Receipt IDs are opaque stable strings or CIDs. Downstream payloads may include
+`receipt_cid` aliases for content-addressed storage, but UI and diagnostics must
+preserve the `receipt_id` chain so all participants can render the same
+command status and audit trail.
+
 ## Meta-Glasses Relationship
 The Meta-glasses path should be treated as:
 - a remote interaction surface,
