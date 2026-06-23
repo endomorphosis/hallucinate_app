@@ -4863,3 +4863,25 @@ UI-plane participants and runtime-plane targets.
 - Outputs: hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md, implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.todo.md
 - Validation: PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py tests/test_meta_glasses_display_todo_queue.py
 - Acceptance: Connect MGW display-widget actions and confirmations to Hallucinate App normalized intents so glasses can act as an interface to the phone-hosted virtual desktop without defining a second command contract.
+
+## HAO-432 Promote launch-slice receipts into deterministic replay artifacts
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: launch
+- Depends on: HAO-429, HAO-430, HAO-431
+- Outputs: hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md, data/hallucinate_multimodal_control/discovery, tests/test_hallucinate_multimodal_control_todo_queue.py
+- Validation: PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py::test_hao_429_peer_offload_policy_receipts_and_recovery_states tests/test_hallucinate_multimodal_control_todo_queue.py::test_hao_430_hardware_free_multimodal_offload_harness_documents_deterministic_replay -q
+- Acceptance: Record or extend deterministic launch-slice receipt artifacts that show phone-originated commands, desktop peer selection, policy decisions, fallback/retry/cancel outcomes, and Meta glasses status updates in one replayable sequence.
+
+## HAO-433 Define physical-device operator handoff gates
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: launch
+- Depends on: HAO-427, HAO-428, HAO-429, HAO-431
+- Outputs: hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md, data/hallucinate_multimodal_control/discovery
+- Validation: rg -n "HAO-433|physical-device|operator handoff|Meta glasses|desktop peer|phone-hosted" hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md data/hallucinate_multimodal_control/discovery
+- Acceptance: Define the handoff gates for a real phone, desktop peer, and Meta glasses operator session, including what the Hallucinate App command plane must verify before moving from hardware-free replay to physical-device validation.
