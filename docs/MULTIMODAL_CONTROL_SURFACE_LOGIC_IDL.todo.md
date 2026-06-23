@@ -4971,7 +4971,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-438 Capture desktop-peer offload smoke receipt and fallback
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: launch
