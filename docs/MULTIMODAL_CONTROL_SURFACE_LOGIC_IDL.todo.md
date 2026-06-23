@@ -4833,7 +4833,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-429 Add peer-offload policy receipts and recovery states
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: backend
