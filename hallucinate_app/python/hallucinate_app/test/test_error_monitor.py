@@ -14,6 +14,7 @@ import asyncio
 import unittest
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 # Add parent directory to path for imports
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -499,15 +500,17 @@ class TestMessagesSimilar(unittest.TestCase):
         msg_hex_long = "Error in handler: data corrupted at 0xdeadbeef"
         self.assertTrue(self._similar(msg_static, msg_hex_long))
 
-    def test_non_string_type_guard_at_line_1115(self):
-        """isinstance guard at line 1115 prevents TypeError from re.sub (VAI-145).
+    def test_non_string_type_guard_accepts_any_message_value(self):
+        """isinstance guard prevents TypeError from regex normalisation (VAI-145).
 
         When msg1 or msg2 is not a str (e.g. None, int, or any other non-string
-        runtime value), the guard introduced at line 1115 must short-circuit before
-        reaching the re.sub call, returning simple equality instead of raising
-        TypeError.  This covers every non-string combination that could arrive at
-        _messages_similar despite the str type annotation.
+        runtime value), the guard must short-circuit before reaching the regex
+        substitution, returning simple equality instead of raising TypeError.
         """
+        annotations = ErrorMonitor._messages_similar.__annotations__
+        self.assertIs(annotations["msg1"], Any)
+        self.assertIs(annotations["msg2"], Any)
+
         # None vs None — equal, so similar
         self.assertTrue(self._similar(None, None))           # type: ignore[arg-type]
         # None vs str — not equal, not similar
