@@ -42,8 +42,8 @@ IPFS_LOGIC_COMPILER_CLASS = "ipfs_datasets_py.logic.api.NLUCANPolicyCompiler"
 DEFAULT_IPFS_MIN_CONFIDENCE = 0.72
 DEFAULT_IPFS_CLARIFY_BELOW = 0.85
 _IPFS_LOGIC_SIGNATURE_MISMATCH_REASON = (
-    "ipfs_datasets_py.logic.api.evaluate_nl_policy failed closed after an "
-    "upstream evaluator signature mismatch"
+    "evaluate_nl_policy failed closed because the upstream policy evaluator "
+    "uses an incompatible temporal argument signature"
 )
 _REQUIRED_IPFS_LOGIC_SYMBOLS = (
     "compile_nl_to_policy",
@@ -950,7 +950,7 @@ def _call_evaluate_nl_policy(
 
 @contextmanager
 def _ipfs_policy_evaluator_at_time_compatibility(logic_api: Any):
-    """Temporarily adapt the upstream at_time/now evaluator mismatch."""
+    """Temporarily adapt the real upstream ``at_time``/``now`` mismatch."""
 
     if _ipfs_api_module_name(logic_api) != "ipfs_datasets_py.logic.api":
         yield
@@ -968,29 +968,21 @@ def _ipfs_policy_evaluator_at_time_compatibility(logic_api: Any):
         return
 
     try:
-        signature = inspect.signature(original_evaluate)
+        parameters = inspect.signature(original_evaluate).parameters
     except (TypeError, ValueError):
         yield
         return
 
-    if "at_time" in signature.parameters or "now" not in signature.parameters:
+    if "at_time" in parameters or "now" not in parameters:
         yield
         return
 
-    def evaluate_with_at_time(
-        self: Any,
-        intent: Any,
-        policy: Any,
-        *args: Any,
-        **policy_kwargs: Any,
-    ) -> Any:
-        if "at_time" in policy_kwargs and "now" not in policy_kwargs:
-            policy_kwargs["now"] = _coerce_ipfs_evaluation_time(
-                policy_kwargs.pop("at_time")
-            )
+    def evaluate_with_at_time(self: Any, intent: Any, policy: Any, *args: Any, **kwargs: Any) -> Any:
+        if "at_time" in kwargs and "now" not in kwargs:
+            kwargs["now"] = _coerce_ipfs_evaluation_time(kwargs.pop("at_time"))
         else:
-            policy_kwargs.pop("at_time", None)
-        return original_evaluate(self, intent, policy, *args, **policy_kwargs)
+            kwargs.pop("at_time", None)
+        return original_evaluate(self, intent, policy, *args, **kwargs)
 
     PolicyEvaluator.evaluate = evaluate_with_at_time
     try:
