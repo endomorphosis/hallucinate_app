@@ -1126,11 +1126,11 @@ class ErrorMonitor:
         # Remove volatile details (addresses, line numbers, timestamps, IDs).
         # _SIMILAR_PATTERN uses re.IGNORECASE so uppercase hex (0xDEADBEEF) is
         # also normalised, preventing missed duplicates.
-        # _SIMILAR_SENTINEL uses a null byte which cannot appear in real error
-        # messages, preventing false-positive matches when message text contains
-        # the literal sentinel string (VAI-144).
-        clean_msg1 = self._normalize_similar_message(msg1)
-        clean_msg2 = self._normalize_similar_message(msg2)
+        # _SIMILAR_SENTINEL uses a null byte instead of a printable placeholder
+        # such as "XXX", preventing false-positive matches when message text
+        # contains the literal placeholder string (HAO-220, VAI-144).
+        clean_msg1 = self._SIMILAR_PATTERN.sub(self._SIMILAR_SENTINEL, msg1)
+        clean_msg2 = self._SIMILAR_PATTERN.sub(self._SIMILAR_SENTINEL, msg2)
         # Require minimum length for both exact and substring matches.  A very
         # short cleaned string (e.g. a message that was entirely a hex address
         # and normalised to the one-character null-byte sentinel) must not cause
