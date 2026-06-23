@@ -11,7 +11,7 @@ import { existsSync, readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { runMenuStructureTests, getAllTestableItems } from './menu_test_framework.js';
-import { fileMenu, resolveViewPath } from '../hallucinate_app/node/menu_config.js';
+import { mcpServers } from '../hallucinate_app/node/menu_config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -23,9 +23,12 @@ describe('Programmatic Menu Structure Tests', () => {
   // Read the index.js file
   try {
     indexContent = readFileSync(join(__dirname, '..', 'index.js'), 'utf-8');
-    menuGeneratorContent = readFileSync(join(__dirname, '..', 'hallucinate_app', 'node', 'menu_generator.js'), 'utf-8');
+    menuGeneratorContent = readFileSync(
+      join(__dirname, '..', 'hallucinate_app', 'node', 'menu_generator.js'),
+      'utf-8'
+    );
   } catch (err) {
-    throw new Error(`Failed to read menu source files: ${err.message}`);
+    throw new Error(`Failed to read menu sources: ${err.message}`);
   }
 
   it('should import MenuGenerator', () => {
@@ -88,6 +91,44 @@ describe('Programmatic Menu Structure Tests', () => {
       'open-security-test-dashboard IPC handler should exist');
     assert.ok(indexContent.includes("ipcMain.on('open-database-backup-dashboard'"), 
       'open-database-backup-dashboard IPC handler should exist');
+  });
+
+  it('should not retain the SwissKnife app launch TODO annotation', () => {
+    assert.ok(
+      !menuGeneratorContent.includes('TODO: Launch specific app within SwissKnife'),
+      'SwissKnife app launch TODO should be resolved'
+    );
+  });
+});
+
+describe('SwissKnife App Menu Action Tests', () => {
+  it('should configure app ids for each SwissKnife app menu item', () => {
+    const swissKnifeServer = mcpServers.find(server => server.id === 'swissknife');
+    assert.ok(swissKnifeServer, 'SwissKnife MCP server should exist');
+
+    const appTools = swissKnifeServer.tools.filter(tool => tool.action === 'openSwissKnifeApp');
+    assert.deepStrictEqual(
+      appTools.map(tool => tool.app),
+      ['terminal', 'editor', 'files', 'chat', 'music', 'video'],
+      'SwissKnife app menu items should expose stable app ids'
+    );
+  });
+
+  it('should forward the selected SwissKnife app id to the window factory', () => {
+    const menuGeneratorContent = readFileSync(
+      join(__dirname, '..', 'hallucinate_app', 'node', 'menu_generator.js'),
+      'utf-8'
+    );
+
+    assert.ok(
+      menuGeneratorContent.includes("case 'openSwissKnifeApp':") &&
+        menuGeneratorContent.includes('this.openSwissKnifeApp(item);'),
+      'openSwissKnifeApp action should delegate through the app-aware launcher'
+    );
+    assert.ok(
+      /openSwissKnifeApp\(item\)[\s\S]*const appName[\s\S]*item\.app[\s\S]*this\.createSwissKnifeWindow\(appName\);/.test(menuGeneratorContent),
+      'app-aware launcher should pass the selected app id to createSwissKnifeWindow'
+    );
   });
 });
 

@@ -462,8 +462,7 @@ export class MenuGenerator {
         }
 
         if (this.createSwissKnifeWindow) {
-          const appName = typeof item?.app === 'string' ? item.app : undefined;
-          this.createSwissKnifeWindow(appName);
+          this.openSwissKnifeApp(item);
         }
         break;
       }
@@ -540,10 +539,14 @@ Includes:
   }
 
   /**
-   * Open the application settings view.
+   * Open SwissKnife directly to a configured app when one is supplied.
    */
-  openSettings() {
-    this.navigateToView(resolveViewPath('views/settings.html'));
+  openSwissKnifeApp(item) {
+    const appName = typeof item?.app === 'string' && item.app.length > 0
+      ? item.app
+      : undefined;
+
+    this.createSwissKnifeWindow(appName);
   }
 
   /**
