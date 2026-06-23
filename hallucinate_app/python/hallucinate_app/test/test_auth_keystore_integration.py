@@ -139,6 +139,20 @@ class TestAuthKeystoreIntegration(unittest.TestCase):
             test_provider, list_token["token"]  # Using list token, not access token
         ))
         self.assertIsNone(unauth_key)
+
+    def test_get_authorized_key_propagates_auth_backend_errors(self):
+        """Unexpected auth backend failures should not look like denials"""
+
+        class FailingAuth:
+            async def verify_capability(self, auth_token, capability_string):
+                raise RuntimeError("auth backend unavailable")
+
+        self.integration.auth = FailingAuth()
+
+        with self.assertRaisesRegex(RuntimeError, "auth backend unavailable"):
+            asyncio.run(self.integration.get_authorized_key(
+                "test_provider_auth_failure", "test_token"
+            ))
     
     def test_key_rotation_with_authorization(self):
         """Test key rotation with authorization"""
