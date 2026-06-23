@@ -793,6 +793,7 @@ class IPFSKitBridge:
         resource: Any,
         method_names: List[str],
         resource_name: str,
+        warn_if_missing: bool = True,
     ) -> Any:
         """Call the first supported cleanup method on a resource."""
         for method_name in method_names:
@@ -809,11 +810,12 @@ class IPFSKitBridge:
             )
             return result
 
-        warning(
-            "No cleanup method available",
-            resource=resource_name,
-            methods=method_names,
-        )
+        if warn_if_missing:
+            warning(
+                "No cleanup method available",
+                resource=resource_name,
+                methods=method_names,
+            )
         return None
     
     @timed("shutdown")
@@ -875,6 +877,21 @@ class IPFSKitBridge:
                         cleanup_errors.append(f"ipfs_simple_api: {e}")
                         error("Error during IPFS Simple API cleanup", error=str(e))
                         track_error("ipfs_simple_api_cleanup", error_type=type(e).__name__)
+
+                try:
+                    if self.ipfs_simple_api and self.ipfs_simple_api is not self.ipfs_kit_instance:
+                        with timer("ipfs_simple_api_cleanup"):
+                            self._call_first_cleanup_method(
+                                self.ipfs_simple_api,
+                                ["shutdown", "close", "stop", "cleanup"],
+                                "ipfs_simple_api",
+                                warn_if_missing=False,
+                            )
+
+                except Exception as e:
+                    cleanup_errors.append(f"ipfs_simple_api: {e}")
+                    error("Error during IPFS Simple API cleanup", error=str(e))
+                    track_error("ipfs_simple_api_cleanup", error_type=type(e).__name__)
 
                 try:
                     with timer("ipfs_kit_instance_cleanup"):
