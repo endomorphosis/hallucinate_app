@@ -590,7 +590,11 @@ def _ipfs_policy_evaluator_at_time_compatibility() -> Iterator[None]:
 
     try:
         from ipfs_datasets_py.mcp_server.temporal_policy import PolicyEvaluator  # type: ignore
-    except Exception:
+    except ImportError:
+        _logger.debug(
+            "PolicyEvaluator at_time compatibility shim is unavailable",
+            exc_info=True,
+        )
         yield
         return
 
@@ -961,7 +965,11 @@ def _ipfs_policy_evaluator_at_time_compatibility(logic_api: Any):
 
     try:
         from ipfs_datasets_py.mcp_server.temporal_policy import PolicyEvaluator  # type: ignore
-    except Exception:
+    except ImportError:
+        _logger.debug(
+            "PolicyEvaluator at_time compatibility shim is unavailable",
+            exc_info=True,
+        )
         yield
         return
 
