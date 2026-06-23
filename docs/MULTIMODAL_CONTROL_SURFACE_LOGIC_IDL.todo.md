@@ -5724,35 +5724,35 @@ UI-plane participants and runtime-plane targets.
 - Validation: python3 -m py_compile tests/test_agent_runner.py
 - Acceptance: Codebase scan filed this finding from tests/test_agent_runner.py:440. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-492-codebase-scan-0a54dc1bdf97.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
 
-## HAO-493 Resolve code annotation in swissknife/DESKTOP_VERIFICATION_REPORT.md:360
+## HAO-493 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:283
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, tests/test_supervisor_objective_task_janitor.py
+- Validation: python3 -m py_compile tests/test_supervisor_objective_task_janitor.py
+- Acceptance: Codebase scan filed this finding from tests/test_supervisor_objective_task_janitor.py:283. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-493-codebase-scan-e87ce9e14ab4.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-494 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:367
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, tests/test_supervisor_objective_task_janitor.py
+- Validation: python3 -m py_compile tests/test_supervisor_objective_task_janitor.py
+- Acceptance: Codebase scan filed this finding from tests/test_supervisor_objective_task_janitor.py:367. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-494-codebase-scan-a0c78431d604.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-495 Resolve code annotation in tracking/PR-079-agent-runner-minimal.md:56
 
 - Status: todo
 - Completion: manual
 - Priority: P3
 - Track: docs
 - Depends on: HAO-013
-- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/DESKTOP_VERIFICATION_REPORT.md
-- Validation: test -f swissknife/DESKTOP_VERIFICATION_REPORT.md
-- Acceptance: Codebase scan filed this finding from swissknife/DESKTOP_VERIFICATION_REPORT.md:360. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-493-codebase-scan-77ba3b1d763a.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
-
-## HAO-494 Resolve code annotation in swissknife/DESKTOP_VERIFICATION_REPORT.md:629
-
-- Status: todo
-- Completion: manual
-- Priority: P3
-- Track: docs
-- Depends on: HAO-013
-- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/DESKTOP_VERIFICATION_REPORT.md
-- Validation: test -f swissknife/DESKTOP_VERIFICATION_REPORT.md
-- Acceptance: Codebase scan filed this finding from swissknife/DESKTOP_VERIFICATION_REPORT.md:629. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-494-codebase-scan-d16e9efd5f5b.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
-
-## HAO-495 Resolve code annotation in swissknife/DESKTOP_VERIFICATION_REPORT.md:640
-
-- Status: todo
-- Completion: manual
-- Priority: P3
-- Track: docs
-- Depends on: HAO-013
-- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/DESKTOP_VERIFICATION_REPORT.md
-- Validation: test -f swissknife/DESKTOP_VERIFICATION_REPORT.md
-- Acceptance: Codebase scan filed this finding from swissknife/DESKTOP_VERIFICATION_REPORT.md:640. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-495-codebase-scan-a7b5b3e30efb.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+- Outputs: data/hallucinate_multimodal_control/discovery, tracking/PR-079-agent-runner-minimal.md
+- Validation: test -f tracking/PR-079-agent-runner-minimal.md
+- Acceptance: Codebase scan filed this finding from tracking/PR-079-agent-runner-minimal.md:56. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-495-codebase-scan-0a3992f37e3e.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
