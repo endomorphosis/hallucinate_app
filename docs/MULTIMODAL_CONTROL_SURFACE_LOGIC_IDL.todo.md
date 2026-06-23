@@ -4813,7 +4813,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-428 Route mobile and glasses events through mediation for offload sessions
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: mobile
