@@ -8,20 +8,13 @@ freeform user rules.
 
 from __future__ import annotations
 
-from contextlib import contextmanager
-from dataclasses import asdict, dataclass, field, is_dataclass
-from datetime import datetime, timezone
-import inspect
-import re
 from collections.abc import Mapping
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass, field, is_dataclass
 from datetime import datetime, timezone
 import inspect
 import re
-from typing import Any, Iterator
-
-_logger = logging.getLogger(__name__)
+from typing import Any
 
 from hallucinate_app.control_surface_logic_ir import (
     ControlSurfaceNorm,
@@ -43,6 +36,9 @@ IPFS_LOGIC_EVALUATE_API = "ipfs_datasets_py.logic.api.evaluate_nl_policy"
 IPFS_LOGIC_COMPILER_CLASS = "ipfs_datasets_py.logic.api.NLUCANPolicyCompiler"
 DEFAULT_IPFS_MIN_CONFIDENCE = 0.72
 DEFAULT_IPFS_CLARIFY_BELOW = 0.85
+_IPFS_LOGIC_SIGNATURE_MISMATCH_REASON = (
+    "Policy evaluation blocked by upstream PolicyEvaluator at_time/now compatibility mismatch"
+)
 _REQUIRED_IPFS_LOGIC_SYMBOLS = (
     "compile_nl_to_policy",
     "evaluate_nl_policy",
@@ -856,12 +852,18 @@ def _ipfs_policy_evaluator_at_time_compatibility(logic_api: Any):
         yield
         return
 
-    def evaluate_with_at_time(self: Any, intent: Any, policy: Any, *args: Any, **kwargs: Any) -> Any:
-        if "at_time" in kwargs and "now" not in kwargs:
-            kwargs["now"] = _coerce_ipfs_evaluation_time(kwargs.pop("at_time"))
+    def evaluate_with_at_time(
+        self: Any,
+        intent: Any,
+        policy: Any,
+        *args: Any,
+        **policy_kwargs: Any,
+    ) -> Any:
+        if "at_time" in policy_kwargs and "now" not in policy_kwargs:
+            policy_kwargs["now"] = _coerce_ipfs_evaluation_time(policy_kwargs.pop("at_time"))
         else:
-            kwargs.pop("at_time", None)
-        return original_evaluate(self, intent, policy, *args, **kwargs)
+            policy_kwargs.pop("at_time", None)
+        return original_evaluate(self, intent, policy, *args, **policy_kwargs)
 
     PolicyEvaluator.evaluate = evaluate_with_at_time
     try:
@@ -878,9 +880,34 @@ def _ipfs_api_module_name(logic_api: Any) -> str:
 
 
 def _coerce_ipfs_evaluation_time(value: Any) -> Any:
+    if isinstance(value, datetime):
+        return value if value.tzinfo is not None else value.replace(tzinfo=timezone.utc)
     if isinstance(value, (int, float)):
         return datetime.fromtimestamp(float(value), tz=timezone.utc)
+    if isinstance(value, str):
+        try:
+            return datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except ValueError:
+            return value
     return value
+
+
+def _normalize_ipfs_evaluation_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    reason = str(payload.get("reason", ""))
+    if "unexpected keyword argument" not in reason:
+        return payload
+    normalized = dict(payload)
+    normalized["decision"] = DeonticOutcome.DENY.value
+    normalized["reason"] = _IPFS_LOGIC_SIGNATURE_MISMATCH_REASON
+    normalized["upstream_signature_mismatch"] = True
+    return normalized
+
+
+def _ipfs_evaluation_failure_reason(exc: Exception) -> str:
+    reason = str(exc)
+    if "unexpected keyword argument" in reason:
+        return _IPFS_LOGIC_SIGNATURE_MISMATCH_REASON
+    return f"evaluate_nl_policy failed: {reason}"
 
 
 def _policy_from_ipfs_logic_result(
