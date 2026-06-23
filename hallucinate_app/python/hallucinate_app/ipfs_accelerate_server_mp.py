@@ -178,20 +178,22 @@ class PlasmaManager:
             
             return file_path.encode()
         
-        # Do not wrap this path in a broad exception handler. Callers need the
-        # concrete Arrow/plasma error instead of a stored None object reference.
-        client = self._require_client()
+        try:
+            client = self._require_client()
 
-        # Generate a random object ID
-        object_id = plasma.ObjectID.from_random()
-        
-        # Serialize the object to Arrow
-        serialized = pa.serialize(obj)
-        
-        # Put the serialized object in the plasma store
-        client.put(serialized, object_id)
-        
-        return object_id.binary()
+            # Generate a random object ID
+            object_id = plasma.ObjectID.from_random()
+            
+            # Serialize the object to Arrow
+            serialized = pa.serialize(obj)
+            
+            # Put the serialized object in the plasma store
+            client.put(serialized, object_id)
+            
+            return object_id.binary()
+        except Exception:
+            logger.exception("Failed to put object in plasma store")
+            raise
     
     def get(self, object_id: bytes) -> Any:
         """
