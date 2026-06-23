@@ -911,6 +911,84 @@ This makes voice commands, gestures, display actions, and phone UI events
 observably policy-gated before they can reach a local runtime or desktop peer
 runtime.
 
+### Peer-offload policy receipts and recovery states
+
+`HAO-429` extends the offload-session contract so every peer-offload routing
+decision and recovery outcome is rendered from receipts, not from
+surface-local status strings. The phone UI, Swissknife UI, and Meta glasses
+terminal must subscribe to the same receipt chain and display equivalent
+decision, selected peer, fallback, cancellation, timeout, and retry state.
+
+The canonical `peer_offload_policy_receipt` is emitted after the
+`mediation_receipt` and before peer dispatch. It records the policy decision,
+peer selection, fallback plan, execution lease, and display-safe summary that
+all participant surfaces may render:
+
+```json
+{
+  "peer_offload_policy_receipt": {
+    "receipt_id": "rcpt_offload_01J_open_model_monitor",
+    "receipt_contract_ref": "peer_offload_policy_receipt@0.1.0",
+    "session_id": "vdsk_2026_06_23_example",
+    "interaction_id": "evt_01J_session_input",
+    "policy_receipt_id": "rcpt_policy_01J_open_model_monitor",
+    "command_receipt_id": "rcpt_cmd_01J_open_model_monitor",
+    "policy_decision": "allow",
+    "policy_reason": "desktop_peer_if_available",
+    "selected_peer": {
+      "participant_id": "desktop:peer",
+      "runtime_ref": "peer_orb:desktop-primary",
+      "selection_reason": "preferred placement satisfied",
+      "capability_refs": ["desktop.execute_command", "desktop.stream_region"]
+    },
+    "fallback_plan": {
+      "fallback_targets": ["swissknife:ui", "phone:operator", "meta_glasses:terminal"],
+      "fallback_reason": null,
+      "requires_operator_confirmation": false
+    },
+    "recovery_state": "dispatching",
+    "retry_budget": {
+      "max_attempts": 2,
+      "attempt": 1,
+      "remaining_attempts": 1
+    },
+    "render_targets": ["phone:operator", "swissknife:ui", "meta_glasses:terminal"]
+  }
+}
+```
+
+Peer-offload recovery records are appended when dispatch does not complete as
+selected. They use `peer_offload_recovery_receipt` and carry the same
+`session_id`, `interaction_id`, `policy_receipt_id`, `command_receipt_id`, and
+`peer_offload_policy_receipt_id` so every surface can replace the in-flight
+status with the same recovery state.
+
+| Outcome | Required receipt fields | Required render state |
+| --- | --- | --- |
+| Policy allow or confirmation | `policy_decision`, `selected_peer.participant_id`, `selection_reason`, `command_receipt_id`, `render_targets` | Show the selected desktop peer or confirmation prompt on phone UI, Swissknife UI, and Meta glasses terminal. |
+| Peer selection fallback | `fallback_plan.fallback_targets`, `fallback_reason`, `selected_peer` set to the fallback participant, `parent_receipt_ids` | Show the fallback target and preserve the original peer selection receipt in the audit chain. |
+| User cancellation | `recovery_outcome: "cancelled"`, `cancel_source_participant_id`, `cancel_event_receipt_id`, `last_good_receipt_id` | Show cancelled state everywhere and prevent the peer runtime from continuing the command. |
+| Peer timeout | `recovery_outcome: "timeout"`, `timeout_ms`, `failed_peer_id`, `last_good_receipt_id`, `retry_budget` | Show timed-out state, then either retry, reroute, or fail closed according to the mediator-owned recovery decision. |
+| Retry scheduled or exhausted | `recovery_outcome: "retry_scheduled"` or `"retry_exhausted"`, `retry_attempt`, `remaining_attempts`, `next_target_participant_id` | Show retry attempt counts consistently and show fail-closed state when the retry budget is exhausted. |
+
+The recovery-state vocabulary is fixed: `dispatching`, `awaiting_confirmation`,
+`running_on_peer`, `fallback_selected`, `retry_scheduled`, `cancelled`,
+`timed_out`, `retry_exhausted`, `failed_closed`, and `recovered`. Runtime-plane
+targets may report transport availability and execution errors, but they must
+not choose a new recovery state. Hallucinate App owns recovery-state transitions
+and emits the receipt that authorizes each retry, fallback, cancellation, or
+fail-closed outcome.
+
+The peer-offload receipt chain is:
+`event_receipt_id -> policy_receipt_id -> command_receipt_id ->
+peer_offload_policy_receipt_id -> runtime_receipt_id ->
+peer_offload_recovery_receipt_id -> render_receipt_id`. A command that never
+reaches a peer still emits `peer_offload_policy_receipt_id` when peer selection
+was evaluated, then emits a recovery receipt for the fallback, cancellation,
+timeout, retry, or failed-closed outcome. All three UI surfaces render from the
+same receipt IDs and may only localize labels; they must not invent different
+status semantics for phone UI, Swissknife, or Meta glasses display.
+
 ### Meta glasses display-widget intent bridge
 
 `HAO-431` integrates Meta glasses display-widget actions with the Hallucinate App
