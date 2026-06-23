@@ -5231,7 +5231,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-448 Resolve code annotation in implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.md:184
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: docs
