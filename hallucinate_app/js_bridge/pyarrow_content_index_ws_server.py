@@ -210,8 +210,10 @@ class PyArrowContentIndexWSServer:
                         "stats": stats,
                         "timestamp": time.time()
                     }))
-        except websockets.exceptions.ConnectionClosed as e:
-            logger.debug(f"WebSocket connection closed: {e}")
+        except websockets.exceptions.ConnectionClosedOK:
+            logger.debug("Client connection closed normally")
+        except websockets.exceptions.ConnectionClosedError as e:
+            logger.warning("Client connection closed with error: %s", e)
         finally:
             await self.unregister(websocket)
     
