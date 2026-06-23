@@ -140,19 +140,25 @@ class TestAuthKeystoreIntegration(unittest.TestCase):
         ))
         self.assertIsNone(unauth_key)
 
-    def test_get_authorized_key_propagates_auth_backend_errors(self):
-        """Unexpected auth backend failures should not look like denials"""
+    def test_get_authorized_key_propagates_keystore_errors(self):
+        """Unexpected keystore failures must not be reported as authorization denial."""
+        test_provider = "test_provider_get_error"
 
-        class FailingAuth:
-            async def verify_capability(self, auth_token, capability_string):
-                raise RuntimeError("auth backend unavailable")
+        async def verify_capability(auth_token, capability_string):
+            return True
 
-        self.integration.auth = FailingAuth()
+        async def failing_get_key(provider):
+            raise RuntimeError("keystore backend unavailable")
 
-        with self.assertRaisesRegex(RuntimeError, "auth backend unavailable"):
-            asyncio.run(self.integration.get_authorized_key(
-                "test_provider_auth_failure", "test_token"
-            ))
+        self.integration.use_external_implementation = False
+        self.auth.verify_capability = verify_capability
+        self.keystore.get_key = failing_get_key
+
+        with self.assertLogs("hallucinate_app.auth_keystore_integration", level="ERROR") as logs:
+            with self.assertRaisesRegex(RuntimeError, "keystore backend unavailable"):
+                asyncio.run(self.integration.get_authorized_key(test_provider, "valid_token"))
+
+        self.assertTrue(any("Failed to get authorized key" in message for message in logs.output))
     
     def test_key_rotation_with_authorization(self):
         """Test key rotation with authorization"""
