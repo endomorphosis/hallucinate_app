@@ -388,8 +388,31 @@ class TestMessagesSimilar(unittest.TestCase):
         # The sentinel is shorter than _SIMILAR_MIN_LEN (10), so no substring match.
         self.assertFalse(self._similar(msg1, msg2))
 
-    def test_short_msg1_not_falsely_matched(self):
-        """A very short normalised msg1 must not produce a false-positive similarity (VAI-136).
+    def test_two_different_bare_addresses_not_similar(self):
+        """Two distinct bare hex addresses that both normalise to 'XXX' must NOT
+        be considered similar (HAO-216).
+
+        The equality branch must not short-circuit on the normalised string when
+        that string is too short to carry discriminating signal.  Two completely
+        different errors expressed only as hex values would otherwise collapse
+        into the same duplicate bucket.
+        """
+        msg1 = "0xDEAD"
+        msg2 = "0xBEEF"
+        # Both normalise to "XXX" (len 3, below _SIMILAR_MIN_LEN=10).
+        # The original messages are not identical, so they must not be similar.
+        self.assertFalse(self._similar(msg1, msg2))
+
+    def test_identical_bare_address_is_similar(self):
+        """Two identical bare hex addresses ARE a genuine duplicate (HAO-216).
+
+        When both messages are literally the same string they represent the
+        exact same event and should be deduplicated regardless of length after
+        normalisation.
+        """
+        msg = "0xDEAD"
+        self.assertTrue(self._similar(msg, msg))
+
 
         Symmetric companion to test_short_msg2_not_falsely_matched: when msg1
         normalises to a short token the _SIMILAR_MIN_LEN guard must block the
