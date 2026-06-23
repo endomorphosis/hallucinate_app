@@ -32,6 +32,14 @@ logging.basicConfig(
 )
 logger = logging.getLogger("ipfs_faiss_py")
 
+
+def _unlink_temp_file(path, label):
+    """Remove a temporary file without hiding non-filesystem exceptions."""
+    try:
+        os.unlink(path)
+    except OSError as e:
+        logger.debug(f"Could not remove temporary {label} file {path}: {e}")
+
 # Optional dependency imports with fallbacks
 try:
     import faiss
@@ -585,10 +593,7 @@ class IPFSFaissPy:
                     finally:
                         # Clean up metadata file
                         if meta_file_path:
-                            try:
-                                os.unlink(meta_file_path)
-                            except OSError as e:
-                                logger.debug(f"Could not remove temporary metadata file {meta_file_path}: {e}")
+                            _unlink_temp_file(meta_file_path, "metadata")
                 
                 # Infer type if not in metadata
                 if "type" not in index_info:
@@ -621,10 +626,7 @@ class IPFSFaissPy:
                 
             finally:
                 # Clean up temporary files
-                try:
-                    os.unlink(index_file)
-                except OSError as e:
-                    logger.debug(f"Could not remove temporary index file {index_file}: {e}")
+                _unlink_temp_file(index_file, "index")
                 
         except Exception as e:
             logger.error(f"Error loading index from IPFS: {e}")
