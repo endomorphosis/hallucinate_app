@@ -2111,9 +2111,13 @@ const createSwissKnifeWindow = (appName) => {
 let mainWindow = null;
 
 // Helper function to navigate within the main window
-const navigateToView = (viewPath) => {
+const navigateToView = (viewPath, loadOptions) => {
   if (mainWindow && !mainWindow.isDestroyed()) {
-    mainWindow.loadFile(viewPath);
+    if (loadOptions) {
+      mainWindow.loadFile(viewPath, loadOptions);
+    } else {
+      mainWindow.loadFile(viewPath);
+    }
   }
 };
 
