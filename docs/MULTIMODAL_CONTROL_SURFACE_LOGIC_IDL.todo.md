@@ -4899,7 +4899,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-435 Add operator recovery rehearsal for desktop-peer offload failures
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: launch
