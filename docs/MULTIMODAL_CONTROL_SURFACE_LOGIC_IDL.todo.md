@@ -21,6 +21,15 @@ PYTHONPATH=external/ipfs_datasets python3 scripts/virtual_ai_os_todo_supervisor.
 
 The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `Track`, `Depends on`, `Outputs`, `Validation`, and `Acceptance` metadata so `ipfs_datasets_py.optimizers.todo_daemon.implementation_daemon.parse_task_file` can ingest it directly.
 
+VAI-007 integration note: Hallucinate App is the virtual desktop's multimodal
+operator-console plane. `HAO-427` and `HAO-428` define the mediated session and
+offload ingress; `HAO-429` through `HAO-431` preserve follow-up implementation
+work for peer-offload receipts, hardware-free stream/recovery harnesses, and
+Meta-glasses display intents. The current IDL explicitly covers
+`operator_console_command_route`, `operator_console_stream_control`,
+`operator_console_proof_capture`, and `operator_console_error_recovery` between
+UI-plane participants and runtime-plane targets.
+
 ## HAO-000 Bootstrap supervised multimodal-control backlog processing
 
 - Status: completed

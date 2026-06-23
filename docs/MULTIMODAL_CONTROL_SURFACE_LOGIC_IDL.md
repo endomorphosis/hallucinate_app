@@ -911,6 +911,62 @@ This makes voice commands, gestures, display actions, and phone UI events
 observably policy-gated before they can reach a local runtime or desktop peer
 runtime.
 
+### Operator-console plane contract
+
+For VAI-007, Hallucinate App is promoted from a packaged shell to the
+multimodal operator console for the virtual desktop. The operator-console plane
+is the bridge between UI-plane participants, such as Swissknife, phone, and Meta
+glasses surfaces, and runtime-plane targets, such as local adapters, MCP
+providers, daemon-mediated workflows, desktop peers, and offloaded accelerator
+tasks. UI-plane adapters may present controls and streams, but Hallucinate App
+owns the command route, stream lease, proof chain, and recovery decision before
+runtime execution changes state.
+
+The operator-console IDL has four required subcontracts:
+
+| Subcontract | Required fields | UI-plane responsibility | Runtime-plane responsibility |
+| --- | --- | --- | --- |
+| `operator_console_command_route` | `route_id`, `interaction_id`, `command_intent_id`, `source_surface`, `target_runtime`, `policy_receipt_id`, `placement_hint`, `fallback_targets` | Publish the normalized UI event and render the selected command state. | Execute only the command route selected after mediation and return execution receipts. |
+| `operator_console_stream_control` | `stream_id`, `session_id`, `producer_participant_id`, `consumer_participant_ids`, `stream_kind`, `lease_state`, `backpressure_policy`, `pause_resume_receipt_ids` | Request, pause, resume, or stop audio, display, desktop-region, and response-token streams through Hallucinate App. | Honor stream leases, backpressure, cancellation, and fallback targets without bypassing mediation. |
+| `operator_console_proof_capture` | `proof_id`, `event_receipt_id`, `policy_receipt_id`, `command_receipt_id`, `stream_receipt_ids`, `runtime_receipt_id`, `receipt_cid`, `redaction_profile` | Show receipt-backed status and expose proof links for operator inspection. | Attach runtime output, error, stream, and artifact receipts to the same proof chain. |
+| `operator_console_error_recovery` | `recovery_id`, `failed_route_id`, `failure_class`, `last_good_receipt_id`, `retry_budget`, `fallback_surface`, `operator_action_required`, `recovery_receipt_id` | Render recovery state consistently on the phone UI, Swissknife UI, and Meta glasses terminal. | Retry, cancel, reroute, or fail closed according to the mediator-owned recovery outcome. |
+
+The command routing lifecycle is:
+
+1. A UI-plane surface submits an `interaction_envelope`.
+2. Hallucinate App validates `control_surface_contract`, evaluates policy, and
+   emits `policy_decision` plus `mediation_receipt`.
+3. Hallucinate App creates one `operator_console_command_route` from the
+   mediated `virtual_desktop_command_intent`.
+4. The selected runtime-plane target executes only that route and returns
+   `runtime_receipt_id`, `artifact_refs`, and any stream-control receipts.
+5. Hallucinate App appends all receipts to `operator_console_proof_capture`
+   and republishes status to every UI-plane participant.
+
+Stream control is command-scoped. A stream may be created only by an allowed
+command route, and every pause, resume, stop, backpressure, timeout, or consumer
+handoff emits a stream receipt. Display-region streams from a desktop peer,
+token streams from an agent workflow, audio streams from mobile or glasses, and
+state-sync streams from Swissknife all share the same `lease_state` vocabulary:
+`requested`, `active`, `paused`, `draining`, `stopped`, `failed`, and
+`recovered`.
+
+Proof capture is also command-scoped. The canonical proof chain is
+`event_receipt_id -> policy_receipt_id -> command_receipt_id ->
+stream_receipt_ids/runtime_receipt_id -> recovery_receipt_id`. Proof records
+may include CIDs for stored artifacts, but the operator console must preserve
+the receipt IDs in the UI so phone, Swissknife, desktop peer, and Meta glasses
+participants can render the same audit trail.
+
+Error recovery fails closed unless a mediated recovery route exists. Runtime
+timeouts, peer disconnects, stream failures, denied policy decisions, evaluator
+errors, malformed envelopes, missing proof receipts, and exhausted retry budgets
+must create `operator_console_error_recovery` records. The recovery decision may
+retry the same target, reroute to a fallback surface, request operator
+confirmation, cancel the command, or keep the command denied. Runtime-plane
+targets are not allowed to invent a recovery route without a
+`recovery_receipt_id` issued by Hallucinate App.
+
 ## Meta-Glasses Relationship
 The Meta-glasses path should be treated as:
 - a remote interaction surface,
