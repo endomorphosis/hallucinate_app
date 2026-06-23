@@ -13,7 +13,6 @@ from datetime import datetime, timezone
 import inspect
 import logging
 import re
-import warnings
 from collections.abc import Mapping
 from typing import Any
 
@@ -776,11 +775,8 @@ def _ipfs_explanations(logic_api: Any, source_text: str, compile_result: Any) ->
         try:
             explanations.extend(_string_list(explain_iter([source_text.strip()])))
         except Exception as exc:
-            # Log at WARNING so failures are visible in production logs rather
-            # than silently swallowed.  Explanation generation is best-effort.
             _logger.warning(
-                "compile_explain_iter raised an unexpected error; "
-                "falling back to remaining explanation sources",
+                "compile_explain_iter failed; trying next explanation source",
                 exc_info=exc,
             )
             _logger.warning("compile_explain_iter failed while building IPFS explanations", exc_info=exc)
@@ -794,16 +790,8 @@ def _ipfs_explanations(logic_api: Any, source_text: str, compile_result: Any) ->
                 if callable(compile_explain):
                     explanations.extend(_string_list(compile_explain([source_text.strip()])))
             except Exception as exc:
-                # Log at WARNING so failures are visible in production logs
-                # rather than silently swallowed.  Explanation generation is
-                # best-effort and the fallback chain continues.
                 _logger.warning(
-                    "NLUCANPolicyCompiler.compile_explain raised an unexpected error; "
-                    "falling back to remaining explanation sources",
-                    exc_info=exc,
-                )
-                _logger.warning(
-                    "NLUCANPolicyCompiler.compile_explain failed while building IPFS explanations",
+                    "NLUCANPolicyCompiler.compile_explain failed; falling back to result metadata",
                     exc_info=exc,
                 )
 
