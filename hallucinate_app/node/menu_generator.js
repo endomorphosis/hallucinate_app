@@ -396,6 +396,34 @@ export class MenuGenerator {
   }
 
   /**
+   * Open the settings view for a specific MCP server.
+   */
+  openServerConfig(item = {}) {
+    const settingsPath = resolveViewPath('views/settings.html');
+    const serverId = item?.serverId;
+
+    if (!serverId) {
+      this.navigateToView(settingsPath);
+      return;
+    }
+
+    const hasServerConfig = mcpServers.some(server => server.id === serverId);
+    if (!hasServerConfig) {
+      console.warn(`Unknown MCP server config requested: ${serverId}`);
+      this.navigateToView(settingsPath);
+      return;
+    }
+
+    const win = this.mainWindow;
+    if (win && !win.isDestroyed()) {
+      win.loadFile(settingsPath, { query: { server: serverId } });
+      return;
+    }
+
+    this.navigateToView(settingsPath);
+  }
+
+  /**
    * Handle custom actions
    */
   handleAction(action, item) {
@@ -440,11 +468,7 @@ export class MenuGenerator {
       }
 
       case 'openServerConfig':
-        if (item?.serverId) {
-          this.navigateToView(resolveViewPath(`views/settings.html?server=${encodeURIComponent(item.serverId)}`));
-        } else {
-          this.navigateToView(resolveViewPath('views/settings.html'));
-        }
+        this.openServerConfig(item);
         break;
 
       case 'resetConfig':
