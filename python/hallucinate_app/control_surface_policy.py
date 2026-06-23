@@ -12,7 +12,9 @@ from contextlib import contextmanager
 from dataclasses import asdict, dataclass, field, is_dataclass
 from datetime import datetime, timezone
 import inspect
+import logging
 import re
+import warnings
 from collections.abc import Mapping
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass, field, is_dataclass
@@ -54,6 +56,7 @@ _REQUIRED_IPFS_LOGIC_SYMBOLS = (
 _IPFS_LOGIC_SIGNATURE_MISMATCH_REASON = (
     "evaluate_nl_policy failed closed because the upstream evaluator signature is incompatible"
 )
+_logger = logging.getLogger(__name__)
 
 IGNORE_SURFACE_AT_TIME_TEMPLATE = "ignore my {surface} at {time_window}"
 REQUIRE_CONFIRMATION_BEFORE_METHOD_TEMPLATE = "require confirmation before {method}"
@@ -1455,8 +1458,11 @@ def _serialize_ipfs_value(value: Any) -> Any:
     if hasattr(value, "to_dict"):
         try:
             return _serialize_ipfs_value(value.to_dict())
-        except Exception:
-            pass
+        except Exception as exc:
+            _logger.warning(
+                "Failed to serialize IPFS value via to_dict(); trying fallback serializers",
+                exc_info=exc,
+            )
     if is_dataclass(value):
         try:
             return _serialize_ipfs_value(asdict(value))
