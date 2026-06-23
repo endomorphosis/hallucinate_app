@@ -1189,8 +1189,15 @@ def _ipfs_explanations(logic_api: Any, source_text: str, compile_result: Any) ->
     if callable(explain_iter):
         try:
             explanations.extend(_string_list(explain_iter([source_text.strip()])))
-        except Exception:
-            pass
+        except Exception as exc:
+            warnings.warn(
+                f"compile_explain_iter raised an unexpected error: {exc}",
+                stacklevel=2,
+            )
+            _logger.debug(
+                "compile_explain_iter raised an unexpected error",
+                exc_info=True,
+            )
 
     if not explanations:
         compiler_cls = getattr(logic_api, "NLUCANPolicyCompiler", None)
@@ -1200,8 +1207,15 @@ def _ipfs_explanations(logic_api: Any, source_text: str, compile_result: Any) ->
                 compile_explain = getattr(compiler, "compile_explain", None)
                 if callable(compile_explain):
                     explanations.extend(_string_list(compile_explain([source_text.strip()])))
-            except Exception:
-                pass
+            except Exception as exc:
+                warnings.warn(
+                    f"NLUCANPolicyCompiler.compile_explain raised an unexpected error: {exc}",
+                    stacklevel=2,
+                )
+                _logger.debug(
+                    "NLUCANPolicyCompiler.compile_explain raised an unexpected error",
+                    exc_info=True,
+                )
 
     metadata = _as_plain_mapping(_ipfs_field(compile_result, "metadata"))
     for value in (
