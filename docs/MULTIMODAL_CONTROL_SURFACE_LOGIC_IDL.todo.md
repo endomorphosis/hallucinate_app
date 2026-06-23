@@ -5404,3 +5404,47 @@ UI-plane participants and runtime-plane targets.
 - Outputs: data/hallucinate_multimodal_control/discovery, tests/test_meta_glasses_display_todo_queue.py
 - Validation: python3 -m py_compile tests/test_meta_glasses_display_todo_queue.py
 - Acceptance: Codebase scan filed this finding from tests/test_meta_glasses_display_todo_queue.py:13. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-463-codebase-scan-edabbccf9d9c.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-464 Resolve code annotation in implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.md:206
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.md
+- Validation: test -f implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.md
+- Acceptance: Codebase scan filed this finding from implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.md:206. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-464-codebase-scan-c9d92053c8e2.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-465 Resolve code annotation in tests/test_meta_glasses_display_todo_queue.py:106
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, tests/test_meta_glasses_display_todo_queue.py
+- Validation: python3 -m py_compile tests/test_meta_glasses_display_todo_queue.py
+- Acceptance: Codebase scan filed this finding from tests/test_meta_glasses_display_todo_queue.py:106. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-465-codebase-scan-66cf63fffa8e.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-466 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:49
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, tests/test_supervisor_objective_task_janitor.py
+- Validation: python3 -m py_compile tests/test_supervisor_objective_task_janitor.py
+- Acceptance: Codebase scan filed this finding from tests/test_supervisor_objective_task_janitor.py:49. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-466-codebase-scan-7359bf5ddb37.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-467 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:58
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, tests/test_supervisor_objective_task_janitor.py
+- Validation: python3 -m py_compile tests/test_supervisor_objective_task_janitor.py
+- Acceptance: Codebase scan filed this finding from tests/test_supervisor_objective_task_janitor.py:58. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-467-codebase-scan-5cf71978e5c4.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
