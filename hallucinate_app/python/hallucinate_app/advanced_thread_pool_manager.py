@@ -1123,7 +1123,13 @@ class AdvancedThreadPoolManager(ThreadPoolManager):
         with self.lock:
             for pool in self.pools_by_id.values():
                 # Check for tasks that are waiting and apply aging
-                for task_id, task in pool.active_tasks.items():
+                pending_tasks = [
+                    (task_id, task)
+                    for task_id, task in list(pool.active_tasks.items())
+                    if task.state == TaskState.PENDING
+                ]
+
+                for task_id, task in pending_tasks:
                     if task.state == TaskState.PENDING:
                         # Calculate waiting time
                         waiting_time = current_time - task.created_at
@@ -1167,6 +1173,10 @@ class AdvancedThreadPoolManager(ThreadPoolManager):
                                     # Create a new prioritized task with boosted priority
                                     current_queue = getattr(pool, "task_queue", None)
                                     if isinstance(current_queue, PriorityQueue):
+                                        current_task = pool.active_tasks.get(task_id)
+                                        if current_task is not task or task.state != TaskState.PENDING:
+                                            continue
+
                                         # Create a new task wrapper with the same ID
                                         boosted_task = PrioritizedTask(
                                             priority=boosted_priority,
