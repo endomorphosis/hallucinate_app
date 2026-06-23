@@ -165,8 +165,8 @@ class PlasmaManager:
             bytes: Object ID that can be used to retrieve the object
             
         Raises:
-            RuntimeError: If the plasma client is not available.
-            Exception: Propagates any serialization or plasma store write error.
+            Exception: Propagates any plasma or serialization error so callers
+                are not silently handed a ``None`` object ID.
         """
         if not self.has_arrow:
             # File-based fallback
@@ -192,8 +192,8 @@ class PlasmaManager:
             client.put(serialized, object_id)
             
             return object_id.binary()
-        except Exception:
-            logger.exception("Failed to put object in plasma store")
+        except Exception as e:
+            logger.error(f"Failed to put object in plasma store: {e}", exc_info=True)
             raise
     
     def get(self, object_id: bytes) -> Any:
@@ -220,8 +220,8 @@ class PlasmaManager:
             # Clean up the temporary file
             try:
                 os.unlink(file_path)
-            except OSError as e:
-                logger.warning("Failed to clean up temporary file %s: %s", file_path, e, exc_info=True)
+            except OSError:
+                pass
             
             return obj
         
@@ -238,9 +238,9 @@ class PlasmaManager:
             obj = pa.deserialize(serialized)
             
             return obj
-        except Exception:
-            logger.exception("Failed to get object from plasma store")
-            raise
+        except Exception as e:
+            logger.error(f"Failed to get object from plasma store: {e}", exc_info=True)
+            return None
     
     def delete(self, object_id: bytes):
         """
@@ -259,8 +259,8 @@ class PlasmaManager:
             
             # Delete the object from the plasma store
             self.client.delete([plasma_id])
-        except Exception:
-            logger.exception("Failed to delete object from plasma store")
+        except Exception as e:
+            logger.error(f"Failed to delete object from plasma store: {e}", exc_info=True)
 
 
 def ipfs_process_fn(command_queue, result_queue, plasma_socket=None):
