@@ -650,8 +650,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-057 Resolve code annotation in implementation_plan/docs/19-virtual-ai-os-submodule-integration.md:338
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: docs
 - Depends on: HAO-013
@@ -661,8 +662,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-058 Resolve code annotation in implementation_plan/docs/19-virtual-ai-os-submodule-integration.md:350
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: docs
 - Depends on: HAO-013
@@ -793,8 +795,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-070 Resolve code annotation in implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md:27
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: docs
 - Depends on: HAO-013
@@ -826,8 +829,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-073 Resolve code annotation in implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md:67
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: docs
 - Depends on: HAO-013
@@ -837,8 +841,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-074 Resolve code annotation in mobile/IMPLEMENTATION_SUMMARY.md:34
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: docs
 - Depends on: HAO-013
@@ -848,8 +853,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-075 Resolve code annotation in mobile/IMPLEMENTATION_SUMMARY.md:151
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: docs
 - Depends on: HAO-013
@@ -859,8 +865,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-076 Resolve code annotation in mobile/IMPLEMENTATION_SUMMARY.md:158
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: docs
 - Depends on: HAO-013
@@ -870,8 +877,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-077 Resolve code annotation in mobile/PR-049-IMPLEMENTATION-SUMMARY.md:53
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: docs
 - Depends on: HAO-013
@@ -881,8 +889,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-078 Resolve code annotation in mobile/PR-049-IMPLEMENTATION-SUMMARY.md:76
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: docs
 - Depends on: HAO-013
@@ -1563,8 +1572,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-140 Replace placeholder runtime path in src/handsfree/ipfs_kit_adapters.py:137
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P1
 - Track: runtime
 - Depends on: HAO-013
@@ -1629,8 +1639,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-146 Review swallowed exception path in src/handsfree/peer_chat.py:164
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P1
 - Track: runtime
 - Depends on: HAO-013
@@ -1651,8 +1662,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-148 Review swallowed exception path in src/handsfree/transport/libp2p_bluetooth.py:1244
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P1
 - Track: runtime
 - Depends on: HAO-013
@@ -1662,8 +1674,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-149 Resolve code annotation in tests/test_hallucinate_multimodal_control_todo_queue.py:13
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: quality
 - Depends on: HAO-013
@@ -1673,8 +1686,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-150 Resolve code annotation in tests/test_hallucinate_multimodal_control_todo_queue.py:109
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: quality
 - Depends on: HAO-013
@@ -1684,8 +1698,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-151 Resolve code annotation in tests/test_hallucinate_multimodal_control_todo_queue.py:148
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: quality
 - Depends on: HAO-013
@@ -1695,8 +1710,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-152 Resolve code annotation in tests/test_hallucinate_multimodal_control_todo_queue.py:158
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: quality
 - Depends on: HAO-013
@@ -1706,8 +1722,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-153 Resolve code annotation in tests/test_hallucinate_multimodal_control_todo_queue.py:198
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: quality
 - Depends on: HAO-013
@@ -1728,8 +1745,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-155 Resolve code annotation in tests/test_hallucinate_multimodal_control_todo_queue.py:264
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: quality
 - Depends on: HAO-013
@@ -1739,8 +1757,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-156 Resolve code annotation in tests/test_hallucinate_multimodal_control_todo_queue.py:352
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: quality
 - Depends on: HAO-013
@@ -1772,8 +1791,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-159 Resolve code annotation in tracking/PR-052-glasses-js-integration-tts.md:26
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: docs
 - Depends on: HAO-013
@@ -1783,8 +1803,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-160 Resolve code annotation in tracking/PR-079-agent-runner-minimal.md:7
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: docs
 - Depends on: HAO-013
@@ -1794,8 +1815,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-161 Resolve code annotation in tracking/PR-079-agent-runner-minimal.md:16
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: docs
 - Depends on: HAO-013
@@ -1827,8 +1849,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-164 Resolve code annotation in tracking/PR-090-agent-runner-docs-sync.md:1
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: docs
 - Depends on: HAO-013
@@ -1871,8 +1894,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-168 Resolve code annotation in work/PR-081-privacy-mode-per-profile.md:18
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: docs
 - Depends on: HAO-013
@@ -1893,8 +1917,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-170 Resolve code annotation in hallucinate_app/MENU_STRUCTURE.md:11
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: docs
 - Depends on: HAO-013
@@ -1915,8 +1940,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-172 Resolve code annotation in hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md:3
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: docs
 - Depends on: HAO-013
@@ -1948,8 +1974,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-175 Resolve code annotation in hallucinate_app/hallucinate_app/experiments/webnn-developer-preview/demos/image-classification/models/webnn/mobilenet-v2/config.json:1265
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P2
 - Track: ops
 - Depends on: HAO-013
@@ -2014,8 +2041,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-181 Resolve code annotation in hallucinate_app/hallucinate_app/experiments/webnn-developer-preview/demos/whisper-base/whisper.js:232
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: ops
 - Depends on: HAO-013
@@ -2058,8 +2086,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-185 Resolve code annotation in hallucinate_app/hallucinate_app/node/menu_generator.js:433
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: ops
 - Depends on: HAO-013
@@ -2069,8 +2098,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-186 Resolve code annotation in hallucinate_app/hallucinate_app/node/menu_generator.js:439
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: ops
 - Depends on: HAO-013
@@ -2102,8 +2132,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-189 Resolve code annotation in scripts/hallucinate_multimodal_control_todo_supervisor.py:301
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: runtime
 - Depends on: HAO-013
@@ -2113,8 +2144,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-190 Resolve code annotation in scripts/hallucinate_multimodal_control_todo_supervisor.py:303
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: runtime
 - Depends on: HAO-013
@@ -2135,8 +2167,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-192 Resolve code annotation in scripts/meta_glasses_display_todo_supervisor.py:304
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: runtime
 - Depends on: HAO-013
@@ -2168,8 +2201,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-195 Resolve code annotation in scripts/hallucinate_multimodal_control_todo_supervisor.py:302
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: runtime
 - Depends on: HAO-013
@@ -2223,8 +2257,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-200 Resolve code annotation in hallucinate_app/hallucinate_app/python/hallucinate_app/advanced_thread_pool_manager.py:1171
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P2
 - Track: runtime
 - Depends on:
@@ -2289,8 +2324,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-206 Review swallowed exception path in hallucinate_app/hallucinate_app/python/hallucinate_app/duckdb_ipld_kit.py:796
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P1
 - Track: runtime
 - Depends on:
@@ -2333,8 +2369,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-210 Resolve code annotation in hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py:1102
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P2
 - Track: runtime
 - Depends on:
@@ -2432,8 +2469,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-219 Resolve code annotation in hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py:1111
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P2
 - Track: runtime
 - Depends on:
@@ -2443,8 +2481,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-220 Resolve code annotation in hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py:1112
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P2
 - Track: runtime
 - Depends on:
@@ -2509,8 +2548,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-226 Resolve code annotation in hallucinate_app/hallucinate_app/python/hallucinate_app/error_monitor.py:1118
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P2
 - Track: runtime
 - Depends on: HAO-013
@@ -2575,8 +2615,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-232 Resolve code annotation in scripts/hallucinate_multimodal_control_todo_supervisor.py:304
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: runtime
 - Depends on:
@@ -2586,8 +2627,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-233 Resolve code annotation in scripts/virtual_ai_os_todo_supervisor.py:17
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: runtime
 - Depends on:
@@ -2608,8 +2650,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-235 Resolve code annotation in scripts/virtual_ai_os_todo_supervisor.py:159
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: runtime
 - Depends on:
@@ -2685,8 +2728,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-242 Resolve code annotation in scripts/hallucinate_multimodal_control_todo_supervisor.py:304
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: runtime
 - Depends on: HAO-013
@@ -2696,8 +2740,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-243 Resolve code annotation in scripts/hallucinate_multimodal_control_todo_supervisor.py:305
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: runtime
 - Depends on: HAO-013
@@ -2707,8 +2752,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-244 Resolve code annotation in scripts/hallucinate_multimodal_control_todo_supervisor.py:307
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: runtime
 - Depends on: HAO-013
@@ -2729,8 +2775,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-246 Resolve code annotation in scripts/virtual_ai_os_todo_supervisor.py:168
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: runtime
 - Depends on: HAO-013
@@ -2773,8 +2820,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-250 Resolve code annotation in scripts/virtual_ai_os_todo_supervisor.py:44
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: runtime
 - Depends on:
@@ -2828,8 +2876,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-255 Resolve code annotation in scripts/virtual_ai_os_todo_supervisor.py:168
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: runtime
 - Depends on:
@@ -2839,8 +2888,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-256 Resolve code annotation in scripts/virtual_ai_os_todo_supervisor.py:170
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: runtime
 - Depends on:
@@ -2872,8 +2922,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-259 Resolve code annotation in scripts/virtual_ai_os_todo_supervisor.py:19
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: runtime
 - Depends on:
@@ -2883,8 +2934,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-260 Resolve code annotation in scripts/virtual_ai_os_todo_supervisor.py:20
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: runtime
 - Depends on:
@@ -2927,8 +2979,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-264 Resolve code annotation in scripts/virtual_ai_os_todo_supervisor.py:19
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: runtime
 - Depends on:
@@ -2971,8 +3024,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-268 Review swallowed exception path in hallucinate_app/hallucinate_app/python/hallucinate_app/js_bridge/pyarrow_content_index_bridge.py:752
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P1
 - Track: runtime
 - Depends on:
@@ -3202,8 +3256,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-289 Review swallowed exception path in hallucinate_app/python/hallucinate_app/control_surface_policy.py:409
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P1
 - Track: runtime
 - Depends on: HAO-013
@@ -3224,8 +3279,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-291 Review swallowed exception path in hallucinate_app/python/hallucinate_app/control_surface_policy.py:768
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P1
 - Track: runtime
 - Depends on: HAO-013
@@ -3268,8 +3324,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-295 Review swallowed exception path in hallucinate_app/python/hallucinate_app/control_surface_policy.py:1015
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P1
 - Track: runtime
 - Depends on: HAO-013
@@ -3301,8 +3358,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-298 Review swallowed exception path in hallucinate_app/python/hallucinate_app/control_surface_receipts.py:566
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P1
 - Track: runtime
 - Depends on:
@@ -3312,8 +3370,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-299 Review swallowed exception path in hallucinate_app/python/hallucinate_app/control_surface_store.py:508
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P1
 - Track: runtime
 - Depends on:
@@ -3334,8 +3393,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-301 Resolve code annotation in hallucinate_app/python/hallucinate_app/ipfs_kit_bridge.py:793
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
 - Track: runtime
 - Depends on:
@@ -3437,8 +3497,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-310 Resolve 2 dirty backlogged worktrees blocked by unsupported_status
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P1
 - Track: ops
 - Fingerprint: d8c53b0842812253f457ab6430d5d95c8c404195
@@ -4649,8 +4710,9 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-419 Resolve 1 dirty backlogged worktrees blocked by content_not_in_target
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P2
 - Track: ops
 - Fingerprint: 3f71a37d7ccc446dae6c7b44c3452ce88e2fe4c5
@@ -4737,3 +4799,58 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/cache_manager.py
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-13-hao-426-hao-406-merge-retry-budget.md
 - Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-406. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-13-hao-426-hao-406-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-406 from strategy blocked_tasks.
+
+## HAO-427 Define the virtual desktop multimodal session contract
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: runtime
+- Depends on: HAO-021
+- Outputs: hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
+- Validation: PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py
+- Acceptance: Define the Hallucinate App control-surface contract for a virtual desktop session spanning phone, desktop peer, Swissknife UI, and Meta glasses terminal, including normalized events, command intents, placement hints, and receipt IDs.
+
+## HAO-428 Route mobile and glasses events through mediation for offload sessions
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: mobile
+- Depends on: HAO-427
+- Outputs: hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md, tests/test_hallucinate_multimodal_control_todo_queue.py
+- Validation: PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py
+- Acceptance: Specify or implement the mediation path for voice, gesture, display action, and phone UI events so offload-session commands cannot bypass policy decisions before reaching a local or desktop peer runtime.
+
+## HAO-429 Add peer-offload policy receipts and recovery states
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: backend
+- Depends on: HAO-427, HAO-428
+- Outputs: hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md, tests/test_hallucinate_multimodal_control_todo_queue.py
+- Validation: PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py
+- Acceptance: Capture policy decisions, peer selection, fallback, cancellation, timeout, and retry outcomes as receipts that the phone UI, Swissknife, and Meta glasses display can all render consistently.
+
+## HAO-430 Build the hardware-free multimodal offload harness
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: quality
+- Depends on: HAO-427, HAO-428, HAO-429
+- Outputs: tests/test_hallucinate_multimodal_control_todo_queue.py, data/hallucinate_multimodal_control/discovery
+- Validation: PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py
+- Acceptance: Add or document a deterministic harness that simulates phone input, desktop peer offload, Swissknife operator UI, and Meta glasses terminal output enough to prove routing, mediation, receipts, and recovery without physical devices.
+
+## HAO-431 Integrate Meta glasses display intents with the Hallucinate App command plane
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: integration
+- Depends on: HAO-427
+- Outputs: hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md, implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.todo.md
+- Validation: PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py tests/test_meta_glasses_display_todo_queue.py
+- Acceptance: Connect MGW display-widget actions and confirmations to Hallucinate App normalized intents so glasses can act as an interface to the phone-hosted virtual desktop without defining a second command contract.
