@@ -153,8 +153,8 @@ class AuthKeystoreIntegration:
                 
                 # Get the key from keystore
                 return await self.keystore.get_key(provider)
-        except Exception as e:
-            logger.exception(f"Failed to get authorized key for {provider}: {e}")
+        except Exception:
+            logger.exception(f"Failed to get authorized key for {provider}")
             raise
     
     async def set_authorized_key(self, provider: str, key: str, auth_token: str, 
