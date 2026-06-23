@@ -320,14 +320,14 @@ class ThreadPoolMonitorTests(unittest.TestCase):
         
         # Wait for all tasks to complete (don't want to interfere with later tests)
         cleanup_errors = []
-        for future in futures + many_tasks:
+        for index, future in enumerate(futures + many_tasks):
             try:
                 future.result(timeout=2.0)
             except (concurrent.futures.TimeoutError, CancelledError):
                 # Expected: tasks may still be running or were cancelled during cleanup
                 pass
             except Exception as exc:
-                cleanup_errors.append(f"{type(exc).__name__}: {exc}")
+                cleanup_errors.append(f"future[{index}] {type(exc).__name__}: {exc}")
 
         self.assertFalse(
             cleanup_errors,
