@@ -3400,7 +3400,8 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-307 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/add_pins_monkey_patch.py:39
 
-- Status: todo
+- Status: blocked
+- Blocked reason: archival codebase scan out of product scope for the VAI/MGW/HAO integration run
 - Completion: manual
 - Priority: P1
 - Track: runtime
@@ -3411,7 +3412,8 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-308 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/advanced_filecoin.py:984
 
-- Status: todo
+- Status: blocked
+- Blocked reason: archival codebase scan out of product scope for the VAI/MGW/HAO integration run
 - Completion: manual
 - Priority: P1
 - Track: runtime
@@ -3483,7 +3485,8 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-314 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/direct_mcp_server.py:159
 
-- Status: todo
+- Status: blocked
+- Blocked reason: archival codebase scan out of product scope for the VAI/MGW/HAO integration run
 - Completion: manual
 - Priority: P1
 - Track: runtime
@@ -3494,7 +3497,8 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-315 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/direct_mcp_server.py:217
 
-- Status: todo
+- Status: blocked
+- Blocked reason: archival codebase scan out of product scope for the VAI/MGW/HAO integration run
 - Completion: manual
 - Priority: P1
 - Track: runtime
@@ -3615,7 +3619,8 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-326 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/fix_all_storacha.py:55
 
-- Status: todo
+- Status: blocked
+- Blocked reason: archival codebase scan out of product scope for the VAI/MGW/HAO integration run
 - Completion: manual
 - Priority: P1
 - Track: runtime
@@ -3714,7 +3719,8 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-335 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/fix_s3_backend.py:698
 
-- Status: todo
+- Status: blocked
+- Blocked reason: archival codebase scan out of product scope for the VAI/MGW/HAO integration run
 - Completion: manual
 - Priority: P1
 - Track: runtime
@@ -3912,7 +3918,8 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-353 Review swallowed exception path in external/ipfs_kit/archive/archive_clutter/fix_scripts/fixed_runner.py:58
 
-- Status: todo
+- Status: blocked
+- Blocked reason: archival codebase scan out of product scope for the VAI/MGW/HAO integration run
 - Completion: manual
 - Priority: P1
 - Track: runtime
@@ -3967,7 +3974,8 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-358 Review swallowed exception path in external/ipfs_kit/archive/cli_drafts/ipfs_kit_cli_ultra_fast.py:78
 
-- Status: todo
+- Status: blocked
+- Blocked reason: archival codebase scan out of product scope for the VAI/MGW/HAO integration run
 - Completion: manual
 - Priority: P1
 - Track: runtime
@@ -4440,7 +4448,8 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-401 Resolve code annotation in external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py:131
 
-- Status: todo
+- Status: blocked
+- Blocked reason: archival codebase scan out of product scope for the VAI/MGW/HAO integration run
 - Completion: manual
 - Priority: P3
 - Track: runtime
@@ -4495,7 +4504,8 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-406 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/cache_manager.py:1032
 
-- Status: todo
+- Status: blocked
+- Blocked reason: archival codebase scan out of product scope for the VAI/MGW/HAO integration run
 - Completion: manual
 - Priority: P1
 - Track: runtime
@@ -4506,7 +4516,8 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-407 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/migration_store.py:117
 
-- Status: todo
+- Status: blocked
+- Blocked reason: archival codebase scan out of product scope for the VAI/MGW/HAO integration run
 - Completion: manual
 - Priority: P1
 - Track: runtime
@@ -4717,7 +4728,8 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-426 Resolve merge retry-budget failure for HAO-406
 
-- Status: todo
+- Status: blocked
+- Blocked reason: archival codebase scan out of product scope for the VAI/MGW/HAO integration run
 - Completion: manual
 - Priority: P1
 - Track: ops
