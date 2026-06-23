@@ -457,8 +457,8 @@ export class MenuGenerator {
         break;
 
       case 'openSwissKnifeApp': {
-        const appName = item?.app;
-        if (typeof appName !== 'string' || appName.length === 0) {
+        const appName = typeof item?.app === 'string' ? item.app.trim() : '';
+        if (appName.length === 0) {
           console.warn('SwissKnife app menu item is missing an app id.');
           break;
         }

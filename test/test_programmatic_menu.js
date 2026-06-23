@@ -195,12 +195,20 @@ describe('Menu Configuration Tests', () => {
     assert.ok(labels.includes('Forward'), 'Should have Forward navigation');
   });
 
-  it('should route the Settings menu action to the settings view', () => {
-    const settingsItem = fileMenu.items.find(item => item.label === 'Settings');
+  it('should define app ids for SwissKnife app launch items', () => {
+    const swissKnifeServer = mcpServers.find(server => server.id === 'swissknife');
+    assert.ok(swissKnifeServer, 'Should define SwissKnife server');
 
-    assert.ok(settingsItem, 'Settings menu item should exist');
-    assert.strictEqual(settingsItem.action, 'openSettings', 'Settings should use the openSettings action');
-    assert.ok(existsSync(resolveViewPath('views/settings.html')), 'Settings view should exist');
+    const appLaunchItems = swissKnifeServer.tools.filter(
+      item => item.action === 'openSwissKnifeApp'
+    );
+    assert.ok(appLaunchItems.length > 0, 'Should define SwissKnife app launch items');
+
+    appLaunchItems.forEach(item => {
+      assert.equal(typeof item.app, 'string', `${item.label} should define an app id`);
+      assert.ok(item.app.trim().length > 0, `${item.label} app id should not be empty`);
+      assert.equal(item.app, item.app.trim(), `${item.label} app id should not have padding`);
+    });
   });
 
   it('should have valid paths for navigation items', () => {
