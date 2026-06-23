@@ -292,14 +292,57 @@ export class Whisper {
     // log(`Encoder inference time: ${(performance.now() - start).toFixed(2)}ms`);
     // start = performance.now();
     // -----------------------------------DECODER 1ST INFERENCE-----------------------------------------
-    // English transcription without timestamps.
-    let tokens = this.createInitialTokens();
-    let attention_mask = this.createInitialAttentionMask(tokens.length);
+    // create list of tokens for english language and transcribe task, no need of time stamps
+    let tokens = [
+      WHISPER_TOKEN_START_OF_TRANSCRIPT,
+      WHISPER_TOKEN_ENGLISH,
+      WHISPER_TOKEN_TRANSCRIBE,
+      WHISPER_TOKEN_NO_TIMESTAMPS,
+    ];
+    // let tokens = [WHISPER_TOKEN_START_OF_TRANSCRIPT, WHISPER_TOKEN_ENGLISH, WHISPER_TOKEN_TRANSCRIBE, WHISPER_TOKEN_TIMESTAMPS_START]; // keep timestep token
+    if (tokens.length !== this.num_init_tokens) {
+      throw new Error(
+        `Expected ${this.num_init_tokens} initial decoder tokens, got ${tokens.length}`
+      );
+    }
+
+    let attention_mask;
+    if (this.mask_4d) {
+      const min_val = toHalf(-65500);
+      const mask_data = new Uint16Array(
+        this.num_init_tokens * this.num_init_tokens
+      );
+      for (
+        let targetToken = 0;
+        targetToken < this.num_init_tokens;
+        targetToken++
+      ) {
+        for (
+          let sourceToken = 0;
+          sourceToken < this.num_init_tokens;
+          sourceToken++
+        ) {
+          mask_data[targetToken * this.num_init_tokens + sourceToken] =
+            sourceToken > targetToken ? min_val : 0;
+        }
+      }
+      attention_mask = new ort.Tensor(
+        "float16",
+        mask_data,
+        [1, 1, this.num_init_tokens, this.num_init_tokens]
+      );
+    } else {
+      attention_mask = new ort.Tensor(
+        "int32",
+        new Int32Array(this.num_init_tokens).fill(1),
+        [1, this.num_init_tokens]
+      );
+    }
     // create decoder input for the first inference
     const decoder_input = {
       "input_ids": new ort.Tensor("int32", new Int32Array(tokens), [
         1,
-        tokens.length,
+        this.num_init_tokens,
       ]),
       "attention_mask": attention_mask,
       "encoder_hidden_states": last_hidden_state,
@@ -312,13 +355,14 @@ export class Whisper {
     );
     // console.log(`Non-KV cache decoder inference time: ${(performance.now() - start).toFixed(2)}ms`);
     // start = performance.now();
-    let logits = decoder_output["logits"]["cpuData"];
+    const decoder_logits = decoder_output["logits"];
+    let logits = decoder_logits["cpuData"];
 
     if (this.dataType == "float16") {
       logits = convertToFloat32Array(logits);
     }
     // find out the token with highest probability, cast INT64 to INT32
-    const new_token = get_new_tokens(logits, decoder_output["logits"].dims);
+    const new_token = get_new_tokens(logits, decoder_logits.dims);
 
     // add token to final buffer
     tokens = tokens.concat(new_token);
@@ -349,17 +393,17 @@ export class Whisper {
       this.mask_4d
     );
     if (this.mask_4d) {
-      attention_mask = new ort.Tensor("float16", mask_data, [
-        1,
-        1,
-        1,
-        this.max_sequence_length,
-      ]);
+        attention_mask = new ort.Tensor('float16', mask_data, [
+          1,
+          1,
+          1,
+          this.max_sequence_length,
+        ]);
     } else {
-      attention_mask = new ort.Tensor("int64", mask_data, [
-        1,
-        this.max_sequence_length,
-      ]);
+        attention_mask = new ort.Tensor('int64', mask_data, [
+          1,
+          this.max_sequence_length,
+        ]);
     }
     decoder_input["attention_mask"] = attention_mask;
     // create position_ids as input, value should be same of No. of prefill tokens
@@ -402,14 +446,12 @@ export class Whisper {
       // console.log(`Decoder inference time · Iteration ${i-3}: ${(performance.now() - start).toFixed(2)}ms`);
       // start = performance.now();
       // find out the token with highest probability, cast INT64 to INT32
-      let logits = decoder_cached_output["logits"]["cpuData"];
+      const decoder_cached_logits = decoder_cached_output["logits"];
+      let logits = decoder_cached_logits["cpuData"];
       if (this.dataType == "float16") {
         logits = convertToFloat32Array(logits);
       }
-      const new_token = get_new_tokens(
-        logits,
-        decoder_cached_output["logits"].dims
-      );
+      const new_token = get_new_tokens(logits, decoder_cached_logits.dims);
 
       // add token to final buffer
       tokens = tokens.concat(new_token);
