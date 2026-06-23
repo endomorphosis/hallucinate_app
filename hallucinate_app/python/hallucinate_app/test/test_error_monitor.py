@@ -22,7 +22,7 @@ if parent_dir not in sys.path:
     sys.path.insert(0, parent_dir)
 
 # Import required modules
-from hallucinate_app.error_monitor import error_monitor, ErrorData, ErrorMonitor, ErrorLevel, ErrorSource, RecoveryStrategy
+from hallucinate_app.error_monitor import error_monitor, ErrorMonitor, ErrorLevel, ErrorSource, RecoveryStrategy, ErrorData
 from hallucinate_app.pyarrow_content_index import PyArrowContentIndex, ContentIndexError, ContentNotFoundError
 
 class TestErrorMonitor(unittest.TestCase):
@@ -627,3 +627,70 @@ class TestMessagesSimilar(unittest.TestCase):
             "Fault at 0xDEADBEEF in module alpha",
             "Fault at 0xCAFEBABE in module beta",
         ))
+
+
+class TestErrorMonitorDuplicateDetection(unittest.TestCase):
+    """Focused tests for ErrorMonitor._find_duplicate_error."""
+
+    def setUp(self):
+        self.monitor = ErrorMonitor()
+        self.monitor.errors = {}
+
+    def _error(self, error_id, message, last_seen, component="worker", source=ErrorSource.PYTHON):
+        return ErrorData(
+            id=error_id,
+            timestamp=last_seen,
+            first_seen=last_seen,
+            last_seen=last_seen,
+            level=ErrorLevel.ERROR,
+            source=source,
+            component=component,
+            operation="run",
+            message=message,
+        )
+
+    def test_duplicate_detection_returns_most_recent_matching_error(self):
+        """Line 1110 must not return the first matching ID when a newer duplicate exists (VAI-134)."""
+        older = self._error(
+            "older",
+            "Connection failed at 0xdeadbeef: timeout",
+            "2024-01-01T00:00:00",
+        )
+        newer = self._error(
+            "newer",
+            "Connection failed at 0xcafebabe: timeout",
+            "2024-01-02T00:00:00",
+        )
+        self.monitor.errors = {
+            older.id: older,
+            newer.id: newer,
+        }
+
+        incoming = self._error(
+            "incoming",
+            "Connection failed at 0xfeedface: timeout",
+            "2024-01-03T00:00:00",
+        )
+
+        self.assertEqual(self.monitor._find_duplicate_error(incoming), "newer")
+
+    def test_duplicate_detection_ignores_non_matching_component(self):
+        match = self._error("match", "Disk quota exceeded on /var/log", "2024-01-01T00:00:00")
+        other_component = self._error(
+            "other",
+            "Disk quota exceeded on /var/log",
+            "2024-01-02T00:00:00",
+            component="api",
+        )
+        self.monitor.errors = {
+            match.id: match,
+            other_component.id: other_component,
+        }
+
+        incoming = self._error(
+            "incoming",
+            "Disk quota exceeded on /var/log",
+            "2024-01-03T00:00:00",
+        )
+
+        self.assertEqual(self.monitor._find_duplicate_error(incoming), "match")
