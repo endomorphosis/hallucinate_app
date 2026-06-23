@@ -1028,6 +1028,69 @@ The artifact must include these launch-slice checks:
 - The deterministic harness remains hardware-free: fixed clock, simulated
   network, stable participant IDs, and no device-local policy authority.
 
+### Physical-device operator handoff gates
+
+`HAO-433` defines the operator handoff gates that must pass before the
+Hallucinate App command plane may move from hardware-free replay to
+physical-device validation with a real phone, a desktop peer, and Meta glasses.
+The handoff is a command-plane promotion, not a new runtime mode: every
+physical-device event must still enter as an `interaction_envelope`, pass
+mediation, produce receipt-backed command and recovery records, and render the
+same status across phone UI, Swissknife UI, desktop peer, and Meta glasses
+terminal.
+
+The canonical handoff record is `physical_device_operator_handoff_gate@0.1.0`.
+It is emitted after the HAO-432 deterministic replay ledger passes and before
+any real phone, desktop peer, or Meta glasses session can execute a mediated
+command:
+
+```json
+{
+  "physical_device_operator_handoff_gate": {
+    "gate_id": "gate_hao433_physical_device_operator_handoff",
+    "task_id": "HAO-433",
+    "session_id": "vdsk_physical_validation_candidate",
+    "source_replay_artifact": "data/hallucinate_multimodal_control/discovery/2026-06-23-hao-432-launch-slice-replay-receipts.md",
+    "required_participants": [
+      "phone:operator",
+      "desktop:peer",
+      "swissknife:ui",
+      "meta_glasses:terminal"
+    ],
+    "promotion_state": "blocked_until_all_gates_pass",
+    "operator_handoff_receipt_id": "rcpt_gate_hao433_operator_handoff",
+    "verified_by": "hallucinate_app_command_plane"
+  }
+}
+```
+
+The command plane must evaluate these gates in order:
+
+| Gate | Required command-plane verification | Blocks physical-device validation when |
+| --- | --- | --- |
+| Replay parity gate | The HAO-432 launch-slice replay passes with fixed participant IDs, parent receipt continuity, no desktop peer dispatch before `mediation_receipt`, and the same fallback/retry/cancel states rendered to phone, Swissknife UI, and Meta glasses. | Any physical-device path requires behavior not present in hardware-free replay, or the replay ledger cannot be reproduced from stored receipts. |
+| Real phone ingress gate | The phone-hosted controller can publish voice, gesture, and phone UI events as `interaction_envelope` records with `context.platform: "mobile"`, `session.participant_id: "phone:operator"`, transport correlation ID, and no direct desktop peer or local runtime dispatch. | The phone adapter can execute or render a command without a `policy_receipt_id`, or cannot attach the active virtual desktop session. |
+| Desktop peer readiness gate | The desktop peer announces authenticated transport, capability refs, stream-region support, runtime health, retry budget, and receipt return path before it can be selected by `peer_offload_policy_receipt`. | The peer cannot prove the selected command route, cannot return runtime receipts, or attempts to own policy, fallback, retry, or cancellation decisions. |
+| Meta glasses terminal gate | Meta glasses display-widget actions and confirmations map through the HAO-431 bridge into the existing command plane with `context.platform: "meta_glasses"`, `participant_id: "meta_glasses:terminal"`, display-action evidence, and receipt aliases preserved. | A glasses action targets the phone-hosted virtual desktop without an active session, command receipt, or mediated `desktop.request_handoff` / `terminal.activate_action` result. |
+| Operator handoff gate | The operator explicitly acknowledges the physical-device session, sees the selected phone, desktop peer, and Meta glasses participants, and receives the replay-derived proof chain before hardware input is allowed to affect state. | The operator cannot inspect the prior replay proof, participant identities, current policy state, or fail-closed recovery route. |
+| Fail-closed recovery gate | Every physical-device route has a matching recovery receipt plan for timeout, disconnect, denied policy, malformed envelope, user cancellation, and exhausted retry budget. | Any route would leave the phone-hosted virtual desktop, desktop peer, or Meta glasses terminal in a state not represented by `operator_console_error_recovery`. |
+
+Promotion from hardware-free replay to physical-device validation is allowed
+only when the command plane emits an allowed
+`operator_handoff_receipt_id` whose parents include the final HAO-432 replay
+receipt, the real phone ingress proof, the desktop peer readiness proof, the
+Meta glasses terminal proof, and the operator acknowledgement proof. The receipt
+must name `promotion_state: "physical_validation_allowed"` and must be rendered
+to all operator surfaces before the first physical-device command is accepted.
+
+Physical-device validation remains fail-closed. Missing transport
+authentication, missing active session, missing receipt parents, mismatched
+participant IDs, unavailable desktop peer runtime, stale Meta glasses display
+action, or absent operator acknowledgement must produce a denial or recovery
+receipt and keep the session in hardware-free replay mode. No physical phone,
+desktop peer, or Meta glasses adapter may promote itself; only Hallucinate App
+can emit the operator handoff receipt that unlocks the physical-device session.
+
 ### Meta glasses display-widget intent bridge
 
 `HAO-431` integrates Meta glasses display-widget actions with the Hallucinate App
