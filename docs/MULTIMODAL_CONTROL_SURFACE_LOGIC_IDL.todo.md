@@ -4844,7 +4844,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-430 Build the hardware-free multimodal offload harness
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: quality
