@@ -5888,3 +5888,47 @@ UI-plane participants and runtime-plane targets.
 - Outputs: data/hallucinate_multimodal_control/discovery, swissknife/DESKTOP_VERIFICATION_REPORT.md
 - Validation: test -f swissknife/DESKTOP_VERIFICATION_REPORT.md
 - Acceptance: Codebase scan filed this finding from swissknife/DESKTOP_VERIFICATION_REPORT.md:122. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-507-codebase-scan-0dbc6e6537b4.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-508 Resolve code annotation in swissknife/DESKTOP_VERIFICATION_REPORT.md:705
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/DESKTOP_VERIFICATION_REPORT.md
+- Validation: test -f swissknife/DESKTOP_VERIFICATION_REPORT.md
+- Acceptance: Codebase scan filed this finding from swissknife/DESKTOP_VERIFICATION_REPORT.md:705. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-508-codebase-scan-aa959a235eea.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-509 Resolve code annotation in swissknife/DESKTOP_VERIFICATION_REPORT.md:725
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/DESKTOP_VERIFICATION_REPORT.md
+- Validation: test -f swissknife/DESKTOP_VERIFICATION_REPORT.md
+- Acceptance: Codebase scan filed this finding from swissknife/DESKTOP_VERIFICATION_REPORT.md:725. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-509-codebase-scan-b244cc91f7e7.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-510 Review swallowed exception path in swissknife/cleanup-archive/analysis/mcp_server_diagnostic.py:317
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/cleanup-archive/analysis/mcp_server_diagnostic.py
+- Validation: python3 -m py_compile swissknife/cleanup-archive/analysis/mcp_server_diagnostic.py
+- Acceptance: Codebase scan filed this finding from swissknife/cleanup-archive/analysis/mcp_server_diagnostic.py:317. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-510-codebase-scan-493233b95f34.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-511 Review swallowed exception path in swissknife/cleanup-archive/scripts/run_improved_mcp_tests.sh:207
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/cleanup-archive/scripts/run_improved_mcp_tests.sh
+- Validation: test -f swissknife/cleanup-archive/scripts/run_improved_mcp_tests.sh
+- Acceptance: Codebase scan filed this finding from swissknife/cleanup-archive/scripts/run_improved_mcp_tests.sh:207. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-511-codebase-scan-51d9b67233ec.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
