@@ -1253,8 +1253,7 @@ export default class AudioMotionAnalyzer {
 
 			  analyzerWidth  = canvas.width - centerX * ( isDualHorizontal || _mirror != 0 ),
 
-			  // Derived from channelHeight so dual-vertical LED channels stay flush; non-LED layouts use
-			  // the leftover pixel(s) from integer division as the separator between vertical channels.
+			  // deterministic 1-2px separator for non-LED vertical channels; LED and other layouts stay flush
 			  channelGap     = isDualVertical && ! isLeds ? canvas.height - channelHeight * 2 : 0,
 
 			  initialX       = centerX * ( _mirror == -1 && ! isDualHorizontal && ! _radial );
