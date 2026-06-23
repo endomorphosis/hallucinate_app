@@ -5715,7 +5715,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-492 Resolve code annotation in tests/test_agent_runner.py:440
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: quality
