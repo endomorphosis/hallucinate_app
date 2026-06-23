@@ -5262,13 +5262,13 @@ UI-plane participants and runtime-plane targets.
 - Validation: test -f implementation_plan/docs/19-virtual-ai-os-submodule-integration.md
 - Acceptance: Codebase scan filed this finding from implementation_plan/docs/19-virtual-ai-os-submodule-integration.md:267. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-450-codebase-scan-7898b4efd7d1.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
 
-## HAO-451 Resolve code annotation in tests/test_implementation_daemon_merge_lock_retry.py:101
+## HAO-451 Resolve code annotation in src/handsfree/agents/runner.py:103
 
 - Status: todo
 - Completion: manual
 - Priority: P3
-- Track: quality
+- Track: runtime
 - Depends on: HAO-013
-- Outputs: data/hallucinate_multimodal_control/discovery, tests/test_implementation_daemon_merge_lock_retry.py
-- Validation: python3 -m py_compile tests/test_implementation_daemon_merge_lock_retry.py
-- Acceptance: Codebase scan filed this finding from tests/test_implementation_daemon_merge_lock_retry.py:101. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-451-codebase-scan-2f375dbd1119.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+- Outputs: data/hallucinate_multimodal_control/discovery, src/handsfree/agents/runner.py
+- Validation: python3 -m py_compile src/handsfree/agents/runner.py
+- Acceptance: Codebase scan filed this finding from src/handsfree/agents/runner.py:103. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-451-codebase-scan-d9c6684a7f0c.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
