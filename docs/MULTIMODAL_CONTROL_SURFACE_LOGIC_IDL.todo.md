@@ -4885,3 +4885,25 @@ UI-plane participants and runtime-plane targets.
 - Outputs: hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md, data/hallucinate_multimodal_control/discovery
 - Validation: rg -n "HAO-433|physical-device|operator handoff|Meta glasses|desktop peer|phone-hosted" hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md data/hallucinate_multimodal_control/discovery
 - Acceptance: Define the handoff gates for a real phone, desktop peer, and Meta glasses operator session, including what the Hallucinate App command plane must verify before moving from hardware-free replay to physical-device validation.
+
+## HAO-434 Connect launch replay receipts to the VAI/MGW shared evidence packet
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: launch
+- Depends on: HAO-432, HAO-433
+- Outputs: hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md, data/hallucinate_multimodal_control/discovery, tests/test_hallucinate_multimodal_control_todo_queue.py
+- Validation: PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py tests/test_virtual_ai_os_todo_queue.py tests/test_meta_glasses_display_todo_queue.py -q
+- Acceptance: Extend the launch replay receipt chain so Hallucinate App emits the mediation, command-intent, peer-offload, recovery, and render receipt IDs consumed by the VAI launch replay and MGW glasses-widget launch replay, with identical session, command, policy, and placement correlation IDs.
+
+## HAO-435 Add operator recovery rehearsal for desktop-peer offload failures
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: launch
+- Depends on: HAO-434
+- Outputs: hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md, data/hallucinate_multimodal_control/discovery
+- Validation: rg -n "HAO-435|operator recovery rehearsal|desktop peer|offload failure|phone|Meta glasses|receipt" hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md data/hallucinate_multimodal_control/discovery
+- Acceptance: Define or implement the operator rehearsal for desktop-peer timeout, denial, retry exhaustion, user cancellation, and fallback-to-phone outcomes, proving that phone UI, Swissknife, and Meta glasses all render the same Hallucinate App recovery state and receipt chain.
