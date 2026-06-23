@@ -39,7 +39,6 @@ from .thread_pool_manager import (
     TaskPriority, 
     TaskType, 
     TaskState,
-    PrioritizedTask,
     ThreadPoolStats
 )
 
@@ -1193,22 +1192,38 @@ class AdvancedThreadPoolManager(ThreadPoolManager):
                                 # Check if we need to boost task priority.
                                 # Compute boosted_priority using the same formula used when
                                 # constructing PrioritizedTask so that the guard condition and
-                                # the actual new value are always consistent.
+                                # the actual new value are always consistent.  Previously the
+                                # condition used int(priority - boost) while the constructor
+                                # used max(0, priority - int(boost)); for boost < 1.0 the
+                                # condition evaluated True but the new priority was unchanged,
+                                # causing the task to be re-enqueued with an identical priority
+                                # every aging tick.
+                                # We only requeue when the integer priority level actually
+                                # improves to avoid churning the queue with no-op requeues.
                                 boosted_priority = max(0, task.priority - int(starvation_boost))
                                 if boosted_priority < task.priority:
-                                    # New priority is higher (lower numeric value); resubmit.
-                                    # PriorityQueue cannot reorder an entry that is already
-                                    # in the heap, so replace the pending entry with a boosted
-                                    # copy and leave the stale entry marked as cancelled.
-                                    boosted_task = self._requeue_with_boosted_priority(
-                                        pool,
-                                        task_id,
-                                        task,
-                                        boosted_priority
-                                    )
-                                    if boosted_task:
+                                    # New priority is higher (lower numeric value); reprioritize
+                                    # the queued task under PriorityQueue's mutex.  If the task
+                                    # has already been claimed by the scheduler it will no
+                                    # longer be present in the queue, so leave it alone.
+                                    current_queue = getattr(pool, "task_queue", None)
+                                    if isinstance(current_queue, PriorityQueue):
+                                        with current_queue.mutex:
+                                            try:
+                                                queue_index = next(
+                                                    index
+                                                    for index, queued_task in enumerate(current_queue.queue)
+                                                    if queued_task is task
+                                                )
+                                            except StopIteration:
+                                                continue
+
+                                            old_priority = task.priority
+                                            current_queue.queue[queue_index].priority = boosted_priority
+                                            heapq.heapify(current_queue.queue)
+                                        
                                         logger.debug(f"Boosted priority of waiting task {task_id} in pool {pool.pool_id} "
-                                                   f"from {task.priority} to {boosted_task.priority} due to waiting {waiting_time:.1f}s")
+                                                   f"from {old_priority} to {task.priority} due to waiting {waiting_time:.1f}s")
     
     def _requeue_with_boosted_priority(
         self,
