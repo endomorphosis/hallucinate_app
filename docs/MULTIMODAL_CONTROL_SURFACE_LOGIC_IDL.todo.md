@@ -5049,7 +5049,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-441 Inventory MCP server feature contracts for Swissknife integration
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: launch
