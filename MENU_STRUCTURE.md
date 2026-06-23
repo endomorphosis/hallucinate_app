@@ -8,7 +8,7 @@ The application menu is organized into six main sections for easy navigation:
 
 ### 1. File Menu
 - **Home** (Ctrl/Cmd+H) - Return to main dashboard
-- **Settings** (Ctrl/Cmd+,) - Open the application settings view
+- **Settings** (Ctrl/Cmd+,) - Open the settings view for theme, daemon startup, notification, MCP port, and developer logging preferences
 - **Quit** - Exit the application
 
 ### 2. Dashboards Menu
@@ -158,7 +158,7 @@ These have been replaced with single-window navigation to their respective views
 ## Future Improvements
 
 Potential enhancements to consider:
-- [ ] Implement Settings page
+- [ ] Add import/export support for saved application settings
 - [ ] Add recent views history menu
 - [ ] Add bookmark/favorites system
 - [ ] Implement tabbed interface option
