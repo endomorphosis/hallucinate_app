@@ -828,11 +828,22 @@ class DuckDBIPLDKit:
             }
             results["success"] = False
         
-        # Clean up test table; ignore errors since the table may not exist
+        # Clean up test table; DROP TABLE IF EXISTS already tolerates a missing table.
         try:
-            await self.execute("DROP TABLE IF EXISTS test_table")
-        except Exception:
-            pass
+            cleanup_result = await self.execute("DROP TABLE IF EXISTS test_table")
+            if not cleanup_result.get("success", False):
+                results["tests"]["cleanup"] = {
+                    "success": False,
+                    "error": cleanup_result.get("error", "Unknown cleanup error")
+                }
+                results["success"] = False
+        except Exception as e:
+            logger.exception("DuckDB-IPLD self-test cleanup failed")
+            results["tests"]["cleanup"] = {
+                "success": False,
+                "error": str(e)
+            }
+            results["success"] = False
         
         return results
 
