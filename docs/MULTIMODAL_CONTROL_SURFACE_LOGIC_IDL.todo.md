@@ -4846,7 +4846,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-431 Integrate Meta glasses display intents with the Hallucinate App command plane
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: integration
