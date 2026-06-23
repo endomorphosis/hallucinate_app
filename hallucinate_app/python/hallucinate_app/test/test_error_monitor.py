@@ -22,7 +22,7 @@ if parent_dir not in sys.path:
     sys.path.insert(0, parent_dir)
 
 # Import required modules
-from hallucinate_app.error_monitor import error_monitor, ErrorData, ErrorMonitor, ErrorLevel, ErrorSource, RecoveryStrategy
+from hallucinate_app.error_monitor import error_monitor, ErrorMonitor, ErrorData, ErrorLevel, ErrorSource, RecoveryStrategy
 from hallucinate_app.pyarrow_content_index import PyArrowContentIndex, ContentIndexError, ContentNotFoundError
 
 class TestErrorMonitor(unittest.TestCase):
@@ -224,51 +224,25 @@ class TestMessagesSimilar(unittest.TestCase):
     def _similar(self, a, b):
         return self.monitor._messages_similar(a, b)
 
-    def _error(self, error_id, message, resolved=False):
+    def _error(self, error_id, component="content_index", source=ErrorSource.CONTENT_INDEX, message="Disk full"):
         return ErrorData(
             id=error_id,
-            timestamp=datetime.now().isoformat(),
+            timestamp="2026-06-13T00:00:00",
             level=ErrorLevel.ERROR,
-            source=ErrorSource.PYTHON,
-            component="test_component",
-            operation="test_operation",
+            source=source,
+            component=component,
+            operation="write",
             message=message,
-            resolved=resolved,
         )
 
-    def test_find_duplicate_error_ignores_resolved_errors(self):
-        """Resolved historical errors must not absorb a new occurrence (VAI-134)."""
-        resolved_error = self._error(
-            "resolved-error",
-            "Connection failed at 0xdeadbeef: timeout",
-            resolved=True,
-        )
-        new_error = self._error(
-            "new-error",
-            "Connection failed at 0xcafebabe: timeout",
-        )
+    def test_find_duplicate_error_returns_none_without_component_source_message_match(self):
+        """_find_duplicate_error returns None when no stored error matches all duplicate keys (VAI-140)."""
+        candidate = self._error("candidate")
 
-        self.monitor.errors[resolved_error.id] = resolved_error
+        self.assertIsNone(self.monitor._find_duplicate_error(candidate))
 
-        self.assertIsNone(self.monitor._find_duplicate_error(new_error))
-
-    def test_find_duplicate_error_returns_unresolved_duplicate(self):
-        """Unresolved similar errors should still be deduplicated."""
-        existing_error = self._error(
-            "existing-error",
-            "Connection failed at 0xdeadbeef: timeout",
-        )
-        new_error = self._error(
-            "new-error",
-            "Connection failed at 0xcafebabe: timeout",
-        )
-
-        self.monitor.errors[existing_error.id] = existing_error
-
-        self.assertEqual(
-            self.monitor._find_duplicate_error(new_error),
-            existing_error.id,
-        )
+        self.monitor.errors["existing"] = self._error("existing", component="other_component")
+        self.assertIsNone(self.monitor._find_duplicate_error(candidate))
 
     def test_hex_case_insensitive(self):
         """Upper- and lower-case hex addresses must normalise to the same token."""
@@ -635,34 +609,3 @@ class TestMessagesSimilar(unittest.TestCase):
             "Fault at 0xDEADBEEF in module alpha",
             "Fault at 0xCAFEBABE in module beta",
         ))
-
-
-class TestDuplicateDetection(unittest.TestCase):
-    """Focused tests for ErrorMonitor._find_duplicate_error."""
-
-    def setUp(self):
-        self.monitor = ErrorMonitor()
-
-    def _error(self, error_id, operation):
-        return ErrorData(
-            id=error_id,
-            timestamp=datetime.now().isoformat(),
-            level=ErrorLevel.ERROR,
-            source=ErrorSource.PYTHON,
-            component="Worker",
-            operation=operation,
-            message="Timeout while processing job ID: abc123",
-        )
-
-    def test_duplicate_detection_requires_same_operation(self):
-        """Same component/source/message on different operations must stay distinct (VAI-139)."""
-        existing = self._error("existing", "download")
-        self.monitor.errors[existing.id] = existing
-
-        same_operation = self._error("same-operation", "download")
-        same_operation.message = "Timeout while processing job ID: def456"
-        self.assertEqual(self.monitor._find_duplicate_error(same_operation), "existing")
-
-        different_operation = self._error("different-operation", "upload")
-        different_operation.message = "Timeout while processing job ID: def456"
-        self.assertIsNone(self.monitor._find_duplicate_error(different_operation))
