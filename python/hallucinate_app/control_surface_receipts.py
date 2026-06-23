@@ -551,10 +551,11 @@ def _safe_ref(value: str) -> str:
 
 
 def _json_safe(value: Any) -> Any:
-    """Convert receipt values to JSON-safe structures.
+    """Convert receipt payload fragments into JSON-safe structures.
 
-    The ``as_dict`` fallback catches hook failures but lets recursive
-    serialization errors from a successful hook propagate.
+    Object hook failures are logged and fall through to later fallback
+    strategies. Recursive serialization errors from a successful hook are
+    allowed to propagate so invalid receipt payloads are not silently stringified.
     """
 
     if value is None or isinstance(value, (str, int, float, bool)):

@@ -3420,18 +3420,18 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/advanced_filecoin.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/advanced_filecoin.py:984. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-308-codebase-scan-f223d9e5d048.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
 
-## HAO-309 Resolve dirty main checkout blocking 183 worktree merges
+## HAO-309 Resolve dirty main checkout blocking 179 worktree merges
 
 - Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Fingerprint: e10018f50d0baf1251d5247d6997f9a6ec3b7e3b
+- Fingerprint: 9ebd3fe87c5a381b97c3f96098bb4c0ef03acf18
 - Dedupe key: reconciliation_guardrail:main_checkout_dirty
 - Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-309-reconciliation-c05f71151a70.md
-- Acceptance: Reconciliation guardrail filed this because 183 branch or worktree cleanup candidates are blocked by main_checkout_dirty. Use evidence and the machine-readable reconciliation plan in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-309-reconciliation-c05f71151a70.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
+- Acceptance: Reconciliation guardrail filed this because 179 branch or worktree cleanup candidates are blocked by main_checkout_dirty. Use evidence and the machine-readable reconciliation plan in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-309-reconciliation-c05f71151a70.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
 
 ## HAO-310 Resolve 2 dirty backlogged worktrees blocked by unsupported_status
 
@@ -3446,18 +3446,18 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-310-reconciliation-ab689090ed4d.md
 - Acceptance: Reconciliation guardrail filed this because 2 branch or worktree cleanup candidates are blocked by unsupported_status. Use evidence and the machine-readable reconciliation plan in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-310-reconciliation-ab689090ed4d.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
 
-## HAO-311 Resolve 182 preflight-conflicting backlogged worktree merges
+## HAO-311 Resolve 179 preflight-conflicting backlogged worktree merges
 
 - Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Fingerprint: 3a2db889c526b46f41a9c5f6b9c823d21b1ed94a
+- Fingerprint: 5945b14488762368cc2cd0076b81c95e43ccac3a
 - Dedupe key: reconciliation_guardrail:preflight_merge_conflict
 - Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-311-reconciliation-534cc45af3d6.md
-- Acceptance: Reconciliation guardrail filed this because 182 branch or worktree cleanup candidates are blocked by preflight_merge_conflict. Use evidence and the machine-readable reconciliation plan in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-311-reconciliation-534cc45af3d6.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
+- Acceptance: Reconciliation guardrail filed this because 179 branch or worktree cleanup candidates are blocked by preflight_merge_conflict. Use evidence and the machine-readable reconciliation plan in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-311-reconciliation-534cc45af3d6.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
 
 ## HAO-312 Resolve validation retry-budget failure for HAO-306
 
@@ -4543,7 +4543,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/auth_keystore_integration.py
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-410-hao-203-merge-retry-budget.md
 - Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-203. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-410-hao-203-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-203 from strategy blocked_tasks.
@@ -4554,7 +4554,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/ipfs_embeddings_py/ipfs_faiss_py.py
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-411-hao-223-merge-retry-budget.md
 - Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-223. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-411-hao-223-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-223 from strategy blocked_tasks.
@@ -4565,7 +4565,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/secure_duckdb_ipld_manager.py
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-412-hao-273-merge-retry-budget.md
 - Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-273. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-412-hao-273-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-273 from strategy blocked_tasks.
@@ -4576,7 +4576,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/python/hallucinate_app/control_surface_receipts.py
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-413-hao-298-merge-retry-budget.md
 - Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-298. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-413-hao-298-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-298 from strategy blocked_tasks.
@@ -4587,7 +4587,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/python/hallucinate_app/control_surface_store.py
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-414-hao-299-merge-retry-budget.md
 - Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-299. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-414-hao-299-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-299 from strategy blocked_tasks.
@@ -4598,7 +4598,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/python/hallucinate_app/control_surface_store.py
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-415-hao-300-merge-retry-budget.md
 - Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-300. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-415-hao-300-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-300 from strategy blocked_tasks.
@@ -4609,7 +4609,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/advanced_filecoin.py
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-416-hao-313-merge-retry-budget.md
 - Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-313. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-416-hao-313-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-313 from strategy blocked_tasks.
@@ -4620,7 +4620,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/direct_mcp_server.py
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-417-hao-314-merge-retry-budget.md
 - Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-314. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-417-hao-314-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-314 from strategy blocked_tasks.
@@ -4631,7 +4631,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/direct_mcp_server.py
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-418-hao-315-merge-retry-budget.md
 - Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-315. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-418-hao-315-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-315 from strategy blocked_tasks.
@@ -4655,7 +4655,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/hallucinate_app/python/hallucinate_app/js_bridge/pyarrow_content_index_bridge.py, data/hallucinate_multimodal_control/state/discovery
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/state/discovery/2026-06-12-hao-420-hao-268-merge-retry-budget.md
 - Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-268. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/state/discovery/2026-06-12-hao-420-hao-268-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-268 from strategy blocked_tasks.
@@ -4666,7 +4666,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/cli_drafts/ipfs_kit_cli_ultra_fast.py
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-421-hao-358-merge-retry-budget.md
 - Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-358. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-421-hao-358-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-358 from strategy blocked_tasks.
@@ -4699,7 +4699,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/applied_patches/fix_all_storacha.py
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-424-hao-326-merge-retry-budget.md
 - Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-326. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-424-hao-326-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-326 from strategy blocked_tasks.
@@ -4710,7 +4710,18 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Depends on: 
+- Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/archive_clutter/fix_scripts/fixed_runner.py
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-425-hao-353-merge-retry-budget.md
 - Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-353. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-12-hao-425-hao-353-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-353 from strategy blocked_tasks.
+
+## HAO-426 Resolve merge retry-budget failure for HAO-406
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on:
+- Outputs: data/hallucinate_multimodal_control/discovery, external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/cache_manager.py
+- Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-13-hao-426-hao-406-merge-retry-budget.md
+- Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-406. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-13-hao-426-hao-406-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-406 from strategy blocked_tasks.
