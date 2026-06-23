@@ -5075,7 +5075,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-442 Make Hallucinate App launch the Python MCP daemons
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: launch
