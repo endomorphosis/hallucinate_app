@@ -4942,3 +4942,107 @@ UI-plane participants and runtime-plane targets.
 - Candidate kind: validation_gate
 - Todo vector key: cc195571dde04580
 - Acceptance: Objective scan filed this gap for VAIOS-G697. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-436-objective-gap-3c1f2a790f3e.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (launch Playwright validation gate), and keep the supervisor-fed backlog aligned with the objective heap.  Split only if the gate needs a separate child for physical phone, desktop peer, or Meta glasses evidence capture.
+
+## HAO-437 Capture physical phone ingress rehearsal receipt
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: launch
+- Depends on: HAO-436
+- Outputs: data/hallucinate_multimodal_control/discovery/2026-06-23-hao-437-phone-ingress-rehearsal.md, docs/launch/phone_desktop_glasses_readiness.md, tests/test_hallucinate_multimodal_control_todo_queue.py
+- Validation: rg -n "HAO-437|real phone ingress|phone:operator|interaction_envelope|policy_receipt_id" docs/launch/phone_desktop_glasses_readiness.md hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md data/hallucinate_multimodal_control/discovery
+- Bundle: objective/launch/production-readiness-gate
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-launch-production-readiness-gate.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G697
+- Graph depth: 2
+- Parallel lane: physical-phone-ingress
+- Conflict policy: keep physical-device rehearsal evidence receipt-backed and fail-closed; do not replace the mediated command plane with a phone-local shortcut
+- Goal id: VAIOS-G697
+- Missing evidence: physical phone ingress rehearsal receipt
+- Surplus group: objective/VAIOS-G697
+- Merge family: objective/VAIOS-G697
+- Merge role: physical_phone_ingress
+- Work item count: 1
+- Work scope: physical_phone_ingress_receipt
+- Candidate kind: physical_device_follow_up
+- Acceptance: Add a receipt-backed rehearsal packet for a real phone-originated voice, gesture, or UI event that enters Hallucinate App as an `interaction_envelope`, preserves session and correlation IDs, cannot dispatch to a local or desktop runtime before `mediation_receipt` and `policy_receipt_id`, and records fail-closed recovery when the physical adapter is absent.
+
+## HAO-438 Capture desktop-peer offload smoke receipt and fallback
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: launch
+- Depends on: HAO-436
+- Outputs: data/hallucinate_multimodal_control/discovery/2026-06-23-hao-438-desktop-peer-offload-smoke.md, docs/launch/phone_desktop_glasses_readiness.md, tests/test_hallucinate_multimodal_control_todo_queue.py
+- Validation: rg -n "HAO-438|desktop-peer offload smoke|desktop:peer|peer_offload_policy_receipt|phone_local" docs/launch/phone_desktop_glasses_readiness.md hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md data/hallucinate_multimodal_control/discovery
+- Bundle: objective/launch/production-readiness-gate
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-launch-production-readiness-gate.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G697
+- Graph depth: 2
+- Parallel lane: desktop-peer-smoke
+- Conflict policy: keep peer selection in Hallucinate App receipts; desktop peers may report capability and runtime status but must not own policy, fallback, retry, or cancellation decisions
+- Goal id: VAIOS-G697
+- Missing evidence: desktop peer offload smoke receipt
+- Surplus group: objective/VAIOS-G697
+- Merge family: objective/VAIOS-G697
+- Merge role: desktop_peer_smoke
+- Work item count: 1
+- Work scope: desktop_peer_offload_smoke_receipt
+- Candidate kind: physical_device_follow_up
+- Acceptance: Add a desktop-peer offload smoke receipt that proves a phone-originated command can select `desktop:peer`, capture capability and runtime health, emit `peer_offload_policy_receipt`, and deterministically recover to `phone_local` with the same session, command, policy, and placement IDs when the peer is unavailable.
+
+## HAO-439 Capture Meta glasses terminal receipt and display-action bridge
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: launch
+- Depends on: HAO-436
+- Outputs: data/hallucinate_multimodal_control/discovery/2026-06-23-hao-439-meta-glasses-terminal-receipt.md, docs/launch/phone_desktop_glasses_readiness.md, tests/test_hallucinate_multimodal_control_todo_queue.py
+- Validation: rg -n "HAO-439|Meta glasses terminal receipt|meta_glasses:terminal|display_action|terminal.activate_action" docs/launch/phone_desktop_glasses_readiness.md hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md data/hallucinate_multimodal_control/discovery
+- Bundle: objective/launch/production-readiness-gate
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-launch-production-readiness-gate.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G697
+- Graph depth: 2
+- Parallel lane: meta-glasses-terminal
+- Conflict policy: preserve HAO-431 as the single display-action bridge; glasses actions must become normalized intents instead of a second command contract
+- Goal id: VAIOS-G697
+- Missing evidence: Meta glasses terminal receipt capture
+- Surplus group: objective/VAIOS-G697
+- Merge family: objective/VAIOS-G697
+- Merge role: meta_glasses_terminal_receipt
+- Work item count: 1
+- Work scope: meta_glasses_terminal_receipt
+- Candidate kind: physical_device_follow_up
+- Acceptance: Add a Meta glasses terminal receipt capture that proves display actions and confirmations map through the existing HAO-431 bridge into normalized Hallucinate App intents, preserve `meta_glasses:terminal` participant identity, render selected peer and recovery state, and fail closed when pairing or display evidence is stale.
+
+## HAO-440 Aggregate physical-readiness evidence into the launch gate
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: launch
+- Depends on: HAO-437, HAO-438, HAO-439
+- Outputs: tests/test_virtual_ai_os_launch_readiness_gate.py, docs/launch/phone_desktop_glasses_readiness.md, data/virtual_ai_os/discovery, data/hallucinate_multimodal_control/discovery
+- Validation: PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_virtual_ai_os_launch_readiness_gate.py tests/test_hallucinate_multimodal_control_todo_queue.py -q && npm --prefix swissknife run test:e2e:meta-glasses && npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts
+- Bundle: objective/launch/production-readiness-gate
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-launch-production-readiness-gate.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G697
+- Graph depth: 2
+- Parallel lane: launch-readiness-aggregate
+- Conflict policy: keep the aggregate gate evidence-based; launch-ready must require matching phone ingress, desktop-peer, Meta glasses, and Playwright receipt lineage
+- Goal id: VAIOS-G697
+- Missing evidence: aggregate physical readiness receipt and Playwright lineage
+- Surplus group: objective/VAIOS-G697
+- Merge family: objective/VAIOS-G697
+- Merge role: launch_readiness_aggregate
+- Work item count: 1
+- Work scope: launch_readiness_physical_evidence_aggregate
+- Candidate kind: validation_gate
+- Acceptance: Extend the `launch_readiness_receipt_v1` evidence so `VAIOS-G697` cannot be treated as launch-ready unless `HAO-437`, `HAO-438`, and `HAO-439` receipts are present, all Playwright launch gates are listed in the same receipt lineage, and hardware-free fallback remains explicit when physical capture is unavailable.
