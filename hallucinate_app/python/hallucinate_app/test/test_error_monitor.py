@@ -326,7 +326,6 @@ class TestMessagesSimilar(unittest.TestCase):
 
     def test_redundant_uppercase_ranges_removed(self):
         """_SIMILAR_PATTERN still matches uppercase hex after removing redundant ranges (VAI-132)."""
-        import re
         from hallucinate_app.error_monitor import ErrorMonitor
         pattern = ErrorMonitor._SIMILAR_PATTERN
         # Verify lowercase ranges are NOT duplicated with explicit uppercase ranges
@@ -335,6 +334,10 @@ class TestMessagesSimilar(unittest.TestCase):
         # upper- and lowercase) using the null-byte sentinel (HAO-275).
         self.assertEqual(pattern.sub('\x00', '0xDEADBEEF'), '\x00')
         self.assertEqual(pattern.sub('\x00', '0xdeadbeef'), '\x00')
+        self.assertEqual(
+            ErrorMonitor._normalize_similar_message('0xDEADBEEF'),
+            ErrorMonitor._SIMILAR_SENTINEL,
+        )
 
     def test_msg1_normalisation_uses_configured_sentinel(self):
         """msg1 normalisation must use _SIMILAR_SENTINEL, not a stale placeholder (VAI-139)."""
