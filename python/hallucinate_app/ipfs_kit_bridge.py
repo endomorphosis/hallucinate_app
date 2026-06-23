@@ -863,6 +863,19 @@ class IPFSKitBridge:
                         error("Error during metadata index cleanup", error=str(e))
                         track_error("metadata_index_cleanup", error_type=type(e).__name__)
 
+                if self.ipfs_simple_api:
+                    try:
+                        with timer("ipfs_simple_api_cleanup"):
+                            self._call_first_cleanup_method(
+                                self.ipfs_simple_api,
+                                ["close", "shutdown", "stop", "cleanup"],
+                                "ipfs_simple_api",
+                            )
+                    except Exception as e:
+                        cleanup_errors.append(f"ipfs_simple_api: {e}")
+                        error("Error during IPFS Simple API cleanup", error=str(e))
+                        track_error("ipfs_simple_api_cleanup", error_type=type(e).__name__)
+
                 try:
                     with timer("ipfs_kit_instance_cleanup"):
                         self._call_first_cleanup_method(
