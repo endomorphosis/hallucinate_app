@@ -42,6 +42,37 @@ The Electron application now includes a comprehensive daemon management system t
 
 ## MCP Servers
 
+### HAO-441 Launch Feature Contracts
+
+`HAO-441` records the launch-scoped MCP server feature inventory for
+Swissknife integration in
+`data/hallucinate_multimodal_control/discovery/2026-06-23-hao-441-mcp-server-feature-inventory.md`.
+The contract is intentionally explicit:
+
+- `ipfs_datasets_py` exposes hierarchical MCP meta-tools:
+  `tools_list_categories`, `tools_list_tools`, `tools_get_schema`, and
+  `tools_dispatch`. Swissknife dataset surfaces use `tools_dispatch` with
+  categories such as `dataset_tools`, `ipfs_tools`,
+  `index_management_tools`, `background_task_tools`, and
+  `provenance_tools`.
+- `ipfs_accelerate_py` exposes the canonical MCP++ runtime with
+  `tools_list_categories`, `tools_list_tools`, `tools_get_schema`,
+  `tools_dispatch`, and `tools_runtime_metrics`. Swissknife compute surfaces
+  consume hardware profile, inference job, job status, and telemetry bindings.
+- `ipfs_kit_py` exposes concrete IPFS, pin-management, storage, migration,
+  search, streaming, and system-health tools such as `ipfs_add`,
+  `ipfs_cat`, `ipfs_pin_add`, `list_pins`, `get_pin_stats`,
+  `system_health`, and `list_backends`. It does not provide a launch contract
+  for generic `tools_dispatch` task delegation; Swissknife and Hallucinate App
+  must name the concrete tool or endpoint.
+
+All three daemon paths must pass through the Hallucinate App pre-invocation
+mediation hook before transport dispatch. Receipts for launch evidence need the
+daemon id, package name, entrypoint, transport, protocol path, tool name,
+category where applicable, Swissknife consumer, policy decision, mediation
+receipt id, descriptor/interface CIDs, argument hash, redaction profile,
+upstream status, artifact/event/decision/receipt CIDs, and parent receipt CID.
+
 ### 1. IPFS Kit MCP (Port 3001)
 **Command:** `python -m ipfs_kit_py.cli mcp start`
 **Directory:** `ipfs_kit_py/`
