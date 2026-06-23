@@ -6,8 +6,6 @@
  */
 
 import { Menu, shell, dialog, app } from 'electron';
-import fs from 'fs';
-import path from 'path';
 import {
   mcpServers,
   dashboards,
@@ -512,46 +510,35 @@ export class MenuGenerator {
         break;
       }
 
-      case 'resetConfig':
-        dialog.showMessageBox(this.mainWindow, {
+      case 'resetConfig': {
+        const { response } = await dialog.showMessageBox({
           type: 'warning',
-          title: 'Reset Configuration',
-          message: 'Reset all configurations to defaults?',
-          detail: 'This will remove all saved settings and restore factory defaults. The application will restart after the reset.',
           buttons: ['Cancel', 'Reset'],
           defaultId: 0,
-          cancelId: 0
-        }).then(({ response }) => {
-          if (response === 1) {
-            try {
-              const userDataPath = app.getPath('userData');
-              const configFiles = ['config.json', 'settings.json', 'preferences.json'];
-              for (const file of configFiles) {
-                const filePath = path.join(userDataPath, file);
-                if (fs.existsSync(filePath)) {
-                  fs.unlinkSync(filePath);
-                }
-              }
-              console.log('Configuration reset to defaults.');
-              app.relaunch();
-              app.exit(0);
-            } catch (err) {
-              console.error('Failed to reset configuration:', err);
-              dialog.showMessageBox(this.mainWindow, {
-                type: 'error',
-                title: 'Reset Failed',
-                message: 'Could not reset configuration.',
-                detail: err.message
-              });
-            }
-          }
+          cancelId: 0,
+          title: 'Reset Configuration',
+          message: 'Reset all configurations to defaults?',
+          detail: 'This cannot be undone.'
         });
+        if (response === 1 && this.navigateToView) {
+          this.navigateToView(resolveViewPath('views/settings.html?reset=true'));
+        }
         break;
+      }
 
       case 'checkUpdates': {
-        this.checkForUpdates().catch(err => {
-          console.error('Failed to check for updates:', err);
+        const version = app.getVersion();
+        const { response: updateResponse } = await dialog.showMessageBox({
+          type: 'info',
+          buttons: ['Close', 'View Releases'],
+          defaultId: 0,
+          title: 'Check for Updates',
+          message: `Hallucinate App v${version}`,
+          detail: 'Visit the releases page to check for a newer version.'
         });
+        if (updateResponse === 1) {
+          shell.openExternal('https://github.com/endomorphosis/hallucinate_app/releases');
+        }
         break;
       }
 
