@@ -400,7 +400,20 @@ class TestMessagesSimilar(unittest.TestCase):
         # msg2 is entirely an address — after normalisation it becomes the sentinel '\x00' (len 1).
         msg1 = "Connection refused by remote host at port 8080"
         msg2 = "0xdeadbeef"
-        # The sentinel is shorter than _SIMILAR_MIN_LEN (10), so no substring match.
+        # "XXX" is shorter than _SIMILAR_MIN_LEN (10), so no substring match.
+        self.assertFalse(self._similar(msg1, msg2))
+
+    def test_short_msg1_not_falsely_matched(self):
+        """A very short normalised msg1 must not produce a false-positive similarity (VAI-136).
+
+        Symmetric companion to test_short_msg2_not_falsely_matched: when msg1
+        normalises to a short token the _SIMILAR_MIN_LEN guard must block the
+        first branch of the substring-match OR expression as well.
+        """
+        # msg1 is entirely an address — after normalisation it becomes "XXX" (len 3).
+        msg1 = "0xdeadbeef"
+        msg2 = "Connection refused by remote host at port 8080"
+        # "XXX" is shorter than _SIMILAR_MIN_LEN (10), so no substring match.
         self.assertFalse(self._similar(msg1, msg2))
 
     def test_two_different_bare_addresses_not_similar(self):
