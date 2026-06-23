@@ -5536,3 +5536,47 @@ UI-plane participants and runtime-plane targets.
 - Outputs: data/hallucinate_multimodal_control/discovery, tests/test_hallucinate_multimodal_control_todo_queue.py
 - Validation: python3 -m py_compile tests/test_hallucinate_multimodal_control_todo_queue.py
 - Acceptance: Codebase scan filed this finding from tests/test_hallucinate_multimodal_control_todo_queue.py:2134. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-475-codebase-scan-a6235743d005.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-476 Resolve code annotation in tests/test_implementation_daemon_merge_lock_retry.py:114
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, tests/test_implementation_daemon_merge_lock_retry.py
+- Validation: python3 -m py_compile tests/test_implementation_daemon_merge_lock_retry.py
+- Acceptance: Codebase scan filed this finding from tests/test_implementation_daemon_merge_lock_retry.py:114. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-476-codebase-scan-04bfc0065834.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-477 Resolve code annotation in tests/test_implementation_daemon_merge_lock_retry.py:121
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, tests/test_implementation_daemon_merge_lock_retry.py
+- Validation: python3 -m py_compile tests/test_implementation_daemon_merge_lock_retry.py
+- Acceptance: Codebase scan filed this finding from tests/test_implementation_daemon_merge_lock_retry.py:121. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-477-codebase-scan-76cb4c034940.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-478 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:176
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, tests/test_supervisor_objective_task_janitor.py
+- Validation: python3 -m py_compile tests/test_supervisor_objective_task_janitor.py
+- Acceptance: Codebase scan filed this finding from tests/test_supervisor_objective_task_janitor.py:176. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-478-codebase-scan-a540d4ac8dab.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-479 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:185
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, tests/test_supervisor_objective_task_janitor.py
+- Validation: python3 -m py_compile tests/test_supervisor_objective_task_janitor.py
+- Acceptance: Codebase scan filed this finding from tests/test_supervisor_objective_task_janitor.py:185. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-479-codebase-scan-9369bcad26ef.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
