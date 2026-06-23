@@ -478,8 +478,12 @@ class IPFSModelManager:
                     if test_file is not None:
                         try:
                             os.unlink(test_file)
-                        except OSError as exc:
-                            logger.debug("Could not remove temporary test file %s: %s", test_file, exc)
+                        except OSError:
+                            logger.warning(
+                                "Could not remove temporary test file %s",
+                                test_file,
+                                exc_info=True,
+                            )
             
             # Compile results
             ipfs_import_result = {"success": ipfs_import_test}
