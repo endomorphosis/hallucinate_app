@@ -5023,7 +5023,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-440 Aggregate physical-readiness evidence into the launch gate
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: launch
