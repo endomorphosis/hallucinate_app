@@ -4888,7 +4888,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-434 Connect launch replay receipts to the VAI/MGW shared evidence packet
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: launch
