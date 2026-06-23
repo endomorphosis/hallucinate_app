@@ -12,8 +12,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Daemon management
   daemon: {
     getAll: () => ipcRenderer.invoke('daemon:getAll'),
+    getLaunchPlan: () => ipcRenderer.invoke('daemon:getLaunchPlan'),
+    getLaunchReceipts: (limit) => ipcRenderer.invoke('daemon:getLaunchReceipts', limit),
+    checkHealth: (daemonId) => ipcRenderer.invoke('daemon:checkHealth', daemonId),
     start: (daemonId) => ipcRenderer.invoke('daemon:start', daemonId),
+    startAll: () => ipcRenderer.invoke('daemon:startAll'),
     stop: (daemonId) => ipcRenderer.invoke('daemon:stop', daemonId),
+    stopAll: () => ipcRenderer.invoke('daemon:stopAll'),
     restart: (daemonId) => ipcRenderer.invoke('daemon:restart', daemonId),
     getLogs: (daemonId) => ipcRenderer.invoke('daemon:getLogs', daemonId),
   },

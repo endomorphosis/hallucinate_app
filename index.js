@@ -200,12 +200,32 @@ ipcMain.handle('daemon:getAll', async () => {
   return daemonManager.getAllStatus();
 });
 
+ipcMain.handle('daemon:getLaunchPlan', async () => {
+  return daemonManager.getLaunchPlan();
+});
+
+ipcMain.handle('daemon:getLaunchReceipts', async (event, limit) => {
+  return daemonManager.getLaunchReceipts(limit);
+});
+
+ipcMain.handle('daemon:checkHealth', async (event, daemonId) => {
+  return await daemonManager.checkDaemonHealth(daemonId);
+});
+
 ipcMain.handle('daemon:start', async (event, daemonId) => {
   return await daemonManager.startDaemon(daemonId);
 });
 
+ipcMain.handle('daemon:startAll', async () => {
+  return await daemonManager.startAll();
+});
+
 ipcMain.handle('daemon:stop', async (event, daemonId) => {
   return await daemonManager.stopDaemon(daemonId);
+});
+
+ipcMain.handle('daemon:stopAll', async () => {
+  return await daemonManager.stopAll();
 });
 
 ipcMain.handle('daemon:restart', async (event, daemonId) => {

@@ -126,14 +126,75 @@ The SwissKnife virtual desktop is the primary user interface that integrates wit
 
 ## Daemon Manager Features
 
+### HAO-442 Launch Path
+
+`HAO-442` makes Hallucinate App the owner of the Python MCP daemon lifecycle.
+Swissknife and Meta glasses surfaces consume daemon state and launch receipts,
+but they must not spawn unmanaged `ipfs_accelerate_py`, `ipfs_datasets_py`, or
+`ipfs_kit_py` server processes.
+
+Startup order is deterministic:
+
+1. launch `ipfs_kit_py` as daemon id `ipfs-kit` on `127.0.0.1:3001`
+2. launch `ipfs_datasets_py` as daemon id `ipfs-datasets` on `127.0.0.1:3002`
+3. launch `ipfs_accelerate_py` as daemon id `ipfs-accelerate` on `127.0.0.1:3003`
+
+The ordered launch path lives in `hallucinate_app/node/mcp_daemon_manager.js`
+and is triggered from `hallucinate_app/index.js` after Electron startup. The
+preload bridge exposes renderer-safe methods for Swissknife and glasses
+renderers:
+
+- `window.electronAPI.daemon.getLaunchPlan()`
+- `window.electronAPI.daemon.getLaunchReceipts(limit)`
+- `window.electronAPI.daemon.checkHealth(daemonId)`
+- `window.electronAPI.daemon.startAll()` and `stopAll()`
+
+Each Python process receives a redacted, launch-scoped environment:
+
+- `PYTHONUNBUFFERED=1`
+- `PYTHONPATH=<daemon cwd>:<hallucinate_app root>:<existing PYTHONPATH>`
+- `HALLUCINATE_APP_MCP_DAEMON_ID`
+- `HALLUCINATE_APP_MCP_PACKAGE`
+- `HALLUCINATE_APP_MCP_PORT`
+- `HALLUCINATE_APP_CONTROL_SURFACE_CONTRACT_REF`
+- `CONTROL_SURFACE_DAEMON_MEDIATION`, defaulting to `shadow`
+
+Daemon health combines process liveness with a bounded HTTP probe of the
+configured health path. Launch startup waits for an initial daemon health result
+and records a `launch_health_checked` receipt. Ongoing daemon health checks run
+on the configured interval, default `30000ms`, and emit `daemon_health`
+receipts. A process-liveness failure marks the daemon stopped and schedules an
+auto-restart when the daemon has not exceeded the configured restart limit.
+
+Restart behavior is capped by `MCP_DAEMON_MAX_RESTARTS`, default `3`. Crash
+exits and failed process health checks both emit `restart_scheduled` receipts
+before relaunching. App shutdown stops daemons in reverse startup order so the
+compute and dataset servers leave before the storage/IPFS server.
+
+Every HAO-442 launch receipt uses
+`receipt_schema: mcp_daemon_launch_receipt_v1` and includes `task_id`,
+`daemon_id`, `server_package`, `startup_order`, exact `entrypoint`, `cwd`,
+`pid`, `port`, `endpoint`, `transport`, `rpc_path`, `health_path`,
+`mediation_hook`, `control_surface_contract_ref`, `swissknife_consumer`,
+`glasses_render_profile`, restart counters, redaction profile, event details,
+and `receipt_cid`. The render profile is `daemon-health-summary`, which gives
+Swissknife and Meta glasses enough data to show daemon launch state without raw
+payloads, credentials, transcripts, or service arguments.
+
 ### Automatic Startup
-- All MCP daemons auto-start 2 seconds after app launch
-- Configurable via environment variable (future)
+- All MCP daemons auto-start 2 seconds after app launch in HAO-442 startup
+  order: `ipfs_kit_py`, `ipfs_datasets_py`, then `ipfs_accelerate_py`.
+- Health and restart timing are configurable with
+  `MCP_DAEMON_STARTUP_TIMEOUT_MS`, `MCP_DAEMON_HEALTH_INTERVAL_MS`, and
+  `MCP_DAEMON_MAX_RESTARTS`.
 
 ### Health Monitoring
 - Health checks every 30 seconds
-- Automatic detection of crashed processes
-- Auto-restart with exponential backoff (max 3 attempts)
+- Daemon health checks record both process liveness and HTTP health probe
+  status.
+- Automatic detection of crashed or missing processes
+- Auto-restart on crash or failed process health, capped at 3 attempts by
+  default.
 
 ### Process Management
 - Individual daemon control (start/stop/restart)
