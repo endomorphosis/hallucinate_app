@@ -39,7 +39,7 @@ class ThreadPoolMonitorTests(unittest.TestCase):
             "default_max_workers": 4,
             "auto_create_pools": True
         })
-        
+
         # Create a thread pool monitor
         self.monitor = ThreadPoolMonitor(
             thread_pool_manager=self.manager,
@@ -48,7 +48,7 @@ class ThreadPoolMonitorTests(unittest.TestCase):
                 "metrics_window": 10    # Small window for testing
             }
         )
-        
+
         # Start the monitor
         self.monitor.start()
     
@@ -328,7 +328,7 @@ class ThreadPoolMonitorTests(unittest.TestCase):
                 pass
             except Exception as exc:
                 cleanup_errors.append(f"{type(exc).__name__}: {exc}")
-        
+
         self.assertFalse(
             cleanup_errors,
             "Unexpected exceptions from high-load cleanup futures: "
