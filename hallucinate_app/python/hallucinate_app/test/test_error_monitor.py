@@ -497,8 +497,39 @@ class TestMessagesSimilar(unittest.TestCase):
         """
         self.assertTrue(self._similar("0xdeadbeef", "0xdeadbeef"))
 
-    def test_sentinel_is_single_null_byte_not_xxx(self):
-        """_SIMILAR_SENTINEL must be the null-byte sentinel introduced in VAI-144 (HAO-227).
+    def test_equality_branch_requires_min_len(self):
+        """Equality branch rejects normalised strings shorter than _SIMILAR_MIN_LEN (HAO-216).
+
+        The original code returned True whenever clean_msg1 == clean_msg2
+        without checking the length.  When two different error messages each
+        consist solely of a volatile token (e.g. a bare hex address), both
+        normalise to the three-character string "XXX".  Without the min-length
+        guard those unrelated errors would collapse into the same duplicate
+        bucket.
+
+        This test uses a bare timestamp that normalises identically, confirming
+        the equality guard applies regardless of the kind of volatile token.
+        """
+        # Two messages that are entirely timestamps (volatile → stripped to "XXX").
+        # They are different errors and must not be considered similar.
+        msg1 = "2024-01-01"
+        msg2 = "2025-12-31"
+        self.assertFalse(self._similar(msg1, msg2))
+
+    def test_equality_branch_passes_with_long_normalised_string(self):
+        """Equality branch accepts normalised strings that meet _SIMILAR_MIN_LEN (HAO-216).
+
+        Confirms the positive case: two structurally identical messages that
+        carry different volatile tokens both normalise to the same long string
+        and must be treated as similar (genuine duplicates after stripping
+        volatile details).
+        """
+        msg1 = "Database connection timeout after 30s retrying 0xdeadbeef"
+        msg2 = "Database connection timeout after 30s retrying 0xcafebabe"
+        # Both normalise to "Database connection timeout after 30s retrying XXX"
+        # (well above _SIMILAR_MIN_LEN=10), so they are similar.
+        self.assertTrue(self._similar(msg1, msg2))
+
 
         A previous version of error_monitor.py used a three-character placeholder
         as the normalisation sentinel.  That sentinel was replaced with ``'\\x00'``
