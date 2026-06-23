@@ -1130,17 +1130,13 @@ class ErrorMonitor:
             return msg1 == msg2
         if msg1 == msg2:
             return True
-        clean_msg1 = self._normalise_similar_message(msg1)
-        clean_msg2 = self._normalise_similar_message(msg2)
-        if clean_msg1 == clean_msg2 and len(clean_msg1) >= self._SIMILAR_MIN_LEN:
-            return True
-        clean_msg1_contained_in_msg2 = (
-            len(clean_msg1) >= self._SIMILAR_MIN_LEN and clean_msg1 in clean_msg2
-        )
-        clean_msg2_contained_in_msg1 = (
-            len(clean_msg2) >= self._SIMILAR_MIN_LEN and clean_msg2 in clean_msg1
-        )
-        return clean_msg1_contained_in_msg2 or clean_msg2_contained_in_msg1
+        # Substring match only when the normalised string is long enough to be a
+        # meaningful discriminator.  A very short cleaned string (e.g. a message
+        # that was entirely a hex address and became "XXX") would otherwise cause
+        # unrelated errors to be treated as duplicates.
+        _MIN_SUBSTRING_LEN = 10
+        return ((len(clean_msg1) >= _MIN_SUBSTRING_LEN and clean_msg1 in clean_msg2) or
+                (len(clean_msg2) >= _MIN_SUBSTRING_LEN and clean_msg2 in clean_msg1))
     
     async def _check_alerts(self, error: ErrorData):
         """Check if any alert rules are triggered by this error"""
