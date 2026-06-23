@@ -5286,7 +5286,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-453 Resolve code annotation in tests/test_meta_glasses_display_todo_queue.py:13
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5297,7 +5297,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-454 Resolve code annotation in tests/test_meta_glasses_display_todo_queue.py:106
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5319,7 +5319,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-456 Resolve code annotation in implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.md:212
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: docs
@@ -5396,7 +5396,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-463 Resolve code annotation in tests/test_meta_glasses_display_todo_queue.py:13
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5407,7 +5407,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-464 Resolve code annotation in implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.md:206
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: docs
@@ -5418,7 +5418,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-465 Resolve code annotation in tests/test_meta_glasses_display_todo_queue.py:106
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: quality
