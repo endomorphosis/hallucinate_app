@@ -5495,7 +5495,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-472 Resolve code annotation in tests/test_hallucinate_multimodal_control_todo_queue.py:161
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5506,7 +5506,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-473 Resolve code annotation in tests/test_hallucinate_multimodal_control_todo_queue.py:286
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5517,7 +5517,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-474 Resolve code annotation in tests/test_hallucinate_multimodal_control_todo_queue.py:2080
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5528,7 +5528,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-475 Resolve code annotation in tests/test_hallucinate_multimodal_control_todo_queue.py:2134
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: quality
