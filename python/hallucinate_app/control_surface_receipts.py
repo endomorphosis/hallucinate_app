@@ -575,7 +575,7 @@ def _json_safe(value: Any) -> Any:
             raw = value.as_dict()
         except Exception as exc:  # noqa: BLE001
             _log.warning(
-                "_json_safe: as_dict() failed for %r; trying fallback serialization",
+                "_json_safe: as_dict() failed for %r; falling back to str()",
                 type(value).__name__,
                 exc_info=exc,
             )
