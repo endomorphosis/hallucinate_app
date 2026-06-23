@@ -378,6 +378,10 @@ def evaluate_ipfs_nl_policy(
     try:
         result = api.evaluate_nl_policy(nl_text, tool=tool, actor=actor, **kwargs)
     except Exception as exc:  # pragma: no cover - exact upstream failures vary.
+        _logger.warning(
+            "evaluate_nl_policy raised an unexpected error; returning deny decision",
+            exc_info=exc,
+        )
         return {
             "decision": DeonticOutcome.DENY.value,
             "reason": f"evaluate_nl_policy failed: {exc}",
@@ -515,6 +519,10 @@ def _compile_ipfs_logic_policy_result(
             actor=actor,
         )
     except Exception as exc:
+        _logger.warning(
+            "compile_nl_to_policy raised an unexpected error; returning clarification result",
+            exc_info=exc,
+        )
         clarification = _clarification_prompt(
             source_text,
             reason=f"compile_nl_to_policy failed: {exc}",
