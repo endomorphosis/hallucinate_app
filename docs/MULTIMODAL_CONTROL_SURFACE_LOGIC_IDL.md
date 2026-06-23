@@ -989,6 +989,45 @@ timeout, retry, or failed-closed outcome. All three UI surfaces render from the
 same receipt IDs and may only localize labels; they must not invent different
 status semantics for phone UI, Swissknife, or Meta glasses display.
 
+### Launch-slice deterministic replay artifacts
+
+`HAO-432` promotes the launch-slice receipts from policy examples into a
+deterministic replay artifact. The replay artifact lives at
+`data/hallucinate_multimodal_control/discovery/2026-06-23-hao-432-launch-slice-replay-receipts.md`
+and is the reviewable evidence that a phone-originated virtual desktop command
+can be replayed through desktop peer selection, policy decisions, retry,
+fallback, user cancellation, and Meta glasses status updates without physical
+hardware.
+
+The launch-slice artifact is a strict receipt ledger, not a narrative log. Each
+`replay_steps[]` entry carries a stable `phase`, deterministic timestamp, and
+the receipt object emitted by that phase. Replayers must process the sequence in
+order and reject any entry whose parent IDs do not match the prior receipt
+chain:
+`phone_event -> mediation_receipt -> virtual_desktop_command_intent ->
+peer_offload_policy_receipt -> runtime_receipt ->
+peer_offload_recovery_receipt -> meta_glasses_status_receipt ->
+render_receipt`. Retry, fallback, and cancellation are represented by appended
+`peer_offload_recovery_receipt` entries, so the original
+`policy_receipt_id`, `command_receipt_id`, and
+`peer_offload_policy_receipt_id` remain stable across recovery.
+
+The artifact must include these launch-slice checks:
+
+- The source event is a phone-originated command from `phone:operator`, and no
+  desktop peer dispatch appears before the `mediation_receipt`.
+- Desktop peer selection is recorded in `peer_offload_policy_receipt` with
+  `selected_peer.participant_id: "desktop:peer"` and the policy decision that
+  authorized the attempt.
+- Retry, fallback, and cancel outcomes are separate recovery receipts with
+  `recovery_state: "retry_scheduled"`, `recovery_state: "fallback_selected"`,
+  and `recovery_state: "cancelled"` respectively.
+- Meta glasses status updates are explicit
+  `meta_glasses_status_receipt` entries tied to the same recovery receipt IDs
+  rendered by the phone UI and Swissknife UI.
+- The deterministic harness remains hardware-free: fixed clock, simulated
+  network, stable participant IDs, and no device-local policy authority.
+
 ### Meta glasses display-widget intent bridge
 
 `HAO-431` integrates Meta glasses display-widget actions with the Hallucinate App
