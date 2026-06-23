@@ -8,8 +8,13 @@ freeform user rules.
 
 from __future__ import annotations
 
+from contextlib import contextmanager
 from dataclasses import asdict, dataclass, field, is_dataclass
+from datetime import datetime, timezone
+from functools import wraps
+from inspect import Parameter, signature
 import re
+from threading import RLock
 from collections.abc import Mapping
 from typing import Any
 
@@ -41,6 +46,7 @@ _REQUIRED_IPFS_LOGIC_SYMBOLS = (
     "NLUCANPolicyCompiler",
     "evaluate_with_manager",
 )
+_IPFS_EVALUATE_COMPAT_LOCK = RLock()
 
 IGNORE_SURFACE_AT_TIME_TEMPLATE = "ignore my {surface} at {time_window}"
 REQUIRE_CONFIRMATION_BEFORE_METHOD_TEMPLATE = "require confirmation before {method}"
@@ -370,23 +376,185 @@ def evaluate_ipfs_nl_policy(
             "missing": list(missing),
         }
 
+    compat_shims: tuple[str, ...] = ()
+    compat_context = (
+        _ipfs_logic_evaluation_compat_shims()
+        if _is_real_ipfs_logic_api(api)
+        else _no_ipfs_logic_evaluation_compat_shims()
+    )
     try:
-        result = api.evaluate_nl_policy(nl_text, tool=tool, actor=actor, **kwargs)
+        with compat_context as applied_shims:
+            compat_shims = applied_shims
+            result = api.evaluate_nl_policy(nl_text, tool=tool, actor=actor, **kwargs)
     except Exception as exc:  # pragma: no cover - exact upstream failures vary.
-        return {
+        payload = {
             "decision": DeonticOutcome.DENY.value,
             "reason": f"evaluate_nl_policy failed: {exc}",
             "compiler_lane": IPFS_LOGIC_COMPILER_LANE,
         }
+        if compat_shims:
+            payload["compat_shims"] = list(compat_shims)
+        return payload
 
     payload = _serialize_ipfs_value(result)
     if isinstance(payload, dict):
         payload.setdefault("compiler_lane", IPFS_LOGIC_COMPILER_LANE)
+        _record_ipfs_compat_shims(payload, compat_shims)
         return payload
-    return {
+    payload = {
         "decision": str(payload),
         "compiler_lane": IPFS_LOGIC_COMPILER_LANE,
     }
+    _record_ipfs_compat_shims(payload, compat_shims)
+    return payload
+
+
+def _is_real_ipfs_logic_api(api: Any) -> bool:
+    return getattr(api, "__name__", "") == "ipfs_datasets_py.logic.api"
+
+
+@contextmanager
+def _no_ipfs_logic_evaluation_compat_shims() -> Any:
+    yield ()
+
+
+@contextmanager
+def _ipfs_logic_evaluation_compat_shims() -> Any:
+    """Apply temporary adapters for audited upstream logic API drift."""
+
+    patches: list[tuple[Any, str, Any, bool]] = []
+    applied: list[str] = []
+    with _IPFS_EVALUATE_COMPAT_LOCK:
+        try:
+            _install_ipfs_policy_evaluator_at_time_compat(patches, applied)
+            _install_ipfs_compile_and_evaluate_input_compat(patches, applied)
+            _install_ipfs_bridge_result_alias_compat(patches, applied)
+            yield tuple(applied)
+        finally:
+            for target, name, original, had_attr in reversed(patches):
+                if had_attr:
+                    setattr(target, name, original)
+                else:
+                    try:
+                        delattr(target, name)
+                    except AttributeError:
+                        pass
+
+
+def _install_ipfs_policy_evaluator_at_time_compat(
+    patches: list[tuple[Any, str, Any, bool]],
+    applied: list[str],
+) -> None:
+    try:
+        from ipfs_datasets_py.mcp_server import temporal_policy  # type: ignore
+    except Exception:
+        return
+
+    evaluator_cls = getattr(temporal_policy, "PolicyEvaluator", None)
+    original = getattr(evaluator_cls, "evaluate", None)
+    if evaluator_cls is None or not callable(original):
+        return
+    try:
+        params = signature(original).parameters
+    except (TypeError, ValueError):
+        return
+    if "at_time" in params or "now" not in params:
+        return
+
+    @wraps(original)
+    def evaluate_with_at_time(self: Any, intent: Any, policy: Any, *args: Any, at_time: Any = None, **kwargs: Any) -> Any:
+        if at_time is not None and "now" not in kwargs:
+            kwargs["now"] = _coerce_ipfs_evaluation_now(at_time)
+        return original(self, intent, policy, *args, **kwargs)
+
+    _patch_attr(patches, evaluator_cls, "evaluate", evaluate_with_at_time)
+    applied.append("PolicyEvaluator.evaluate_at_time_to_now")
+
+
+def _install_ipfs_compile_and_evaluate_input_compat(
+    patches: list[tuple[Any, str, Any, bool]],
+    applied: list[str],
+) -> None:
+    try:
+        from ipfs_datasets_py.logic.integration import nl_ucan_policy_compiler  # type: ignore
+    except Exception:
+        return
+
+    original = getattr(nl_ucan_policy_compiler, "compile_nl_to_ucan_policy", None)
+    if not callable(original):
+        return
+    try:
+        params = signature(original).parameters
+    except (TypeError, ValueError):
+        return
+    accepts_audience_did = "audience_did" in params or any(
+        param.kind == Parameter.VAR_KEYWORD for param in params.values()
+    )
+    if accepts_audience_did:
+        return
+
+    @wraps(original)
+    def compile_with_bridge_kwargs(sentences: Any, *args: Any, audience_did: Any = None, **kwargs: Any) -> Any:
+        if isinstance(sentences, str):
+            sentences = [sentences]
+        return original(sentences, *args, **kwargs)
+
+    _patch_attr(patches, nl_ucan_policy_compiler, "compile_nl_to_ucan_policy", compile_with_bridge_kwargs)
+    applied.append("compile_nl_to_ucan_policy_bridge_input")
+
+
+def _install_ipfs_bridge_result_alias_compat(
+    patches: list[tuple[Any, str, Any, bool]],
+    applied: list[str],
+) -> None:
+    try:
+        from ipfs_datasets_py.logic.CEC.nl import dcec_to_ucan_bridge  # type: ignore
+    except Exception:
+        return
+
+    bridge_result_cls = getattr(dcec_to_ucan_bridge, "BridgeResult", None)
+    if bridge_result_cls is None or hasattr(bridge_result_cls, "deny_capabilities"):
+        return
+
+    _patch_attr(
+        patches,
+        bridge_result_cls,
+        "deny_capabilities",
+        property(lambda self: getattr(self, "denials", [])),
+    )
+    applied.append("BridgeResult.deny_capabilities_alias")
+
+
+def _patch_attr(
+    patches: list[tuple[Any, str, Any, bool]],
+    target: Any,
+    name: str,
+    value: Any,
+) -> None:
+    had_attr = hasattr(target, name)
+    original = getattr(target, name, None)
+    setattr(target, name, value)
+    patches.append((target, name, original, had_attr))
+
+
+def _coerce_ipfs_evaluation_now(value: Any) -> Any:
+    if isinstance(value, datetime):
+        return value if value.tzinfo is not None else value.replace(tzinfo=timezone.utc)
+    if isinstance(value, (int, float)):
+        return datetime.fromtimestamp(float(value), tz=timezone.utc)
+    if isinstance(value, str):
+        try:
+            return datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except ValueError:
+            return value
+    return value
+
+
+def _record_ipfs_compat_shims(payload: dict[str, Any], shims: tuple[str, ...]) -> None:
+    if not shims:
+        return
+    existing = _string_list(payload.get("compat_shims")) if "compat_shims" in payload else []
+    payload["compat_shims"] = list(dict.fromkeys(existing + list(shims)))
 
 
 def _strict_rejection_result(source_text: str, strict_error: str, reason: str) -> NLPolicyCompilation:

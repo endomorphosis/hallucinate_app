@@ -76,7 +76,33 @@ class _RecordingLogicAPI:
         return SimpleNamespace(decision="deny")
 
 
+class _FailingEvaluationLogicAPI(_RecordingLogicAPI):
+    def evaluate_nl_policy(self, nl_text: str, *, tool: str, actor: str | None = None, **_: object) -> object:
+        self.evaluate_calls.append((nl_text, tool, actor))
+        raise RuntimeError("policy evaluator exploded")
+
+
 class TestControlSurfacePolicyIpfsLogic(unittest.TestCase):
+    def _real_logic_api_or_skip(self) -> object:
+        try:
+            from ipfs_datasets_py.logic import api as real_api  # type: ignore
+        except Exception as exc:
+            self.skipTest(f"real ipfs_datasets_py.logic.api unavailable: {exc}")
+        missing = [
+            name
+            for name in (
+                "compile_nl_to_policy",
+                "evaluate_nl_policy",
+                "NLUCANPolicyCompiler",
+                "evaluate_with_manager",
+            )
+            if not hasattr(real_api, name)
+        ]
+        if missing:
+            self.skipTest(f"real ipfs_datasets_py.logic.api missing: {', '.join(missing)}")
+        self.assertEqual(getattr(real_api, "__name__", ""), "ipfs_datasets_py.logic.api")
+        return real_api
+
     def test_freeform_rule_routes_through_ipfs_logic_api(self) -> None:
         api = _RecordingLogicAPI()
 
@@ -175,6 +201,51 @@ class TestControlSurfacePolicyIpfsLogic(unittest.TestCase):
         self.assertEqual(api.evaluate_calls, [("Never let agents delete records", "delete_record", "user:alice")])
         self.assertEqual(result["decision"], "deny")
         self.assertEqual(result["compiler_lane"], IPFS_LOGIC_COMPILER_LANE)
+
+    def test_evaluator_error_fails_closed_without_disabling_future_calls(self) -> None:
+        failing_api = _FailingEvaluationLogicAPI()
+
+        failed = evaluate_ipfs_nl_policy(
+            "Alice may read files",
+            tool="read",
+            actor="alice",
+            logic_api=failing_api,
+        )
+
+        self.assertEqual(failing_api.evaluate_calls, [("Alice may read files", "read", "alice")])
+        self.assertEqual(failed["decision"], "deny")
+        self.assertIn("evaluate_nl_policy failed", failed["reason"])
+
+        healthy_api = _RecordingLogicAPI()
+        recovered = evaluate_ipfs_nl_policy(
+            "Never let agents delete records",
+            tool="delete_record",
+            actor="user:alice",
+            logic_api=healthy_api,
+        )
+
+        self.assertEqual(
+            healthy_api.evaluate_calls,
+            [("Never let agents delete records", "delete_record", "user:alice")],
+        )
+        self.assertEqual(recovered["decision"], "deny")
+        self.assertNotIn("policy evaluator exploded", recovered.get("reason", ""))
+
+    def test_real_ipfs_evaluate_nl_policy_adapts_upstream_compatibility(self) -> None:
+        real_api = self._real_logic_api_or_skip()
+
+        result = evaluate_ipfs_nl_policy(
+            "Alice may read files",
+            tool="read",
+            actor="alice",
+            audience_did="did:key:alice",
+            logic_api=real_api,
+        )
+
+        self.assertIn(result.get("decision"), {"allow", "permit"})
+        self.assertEqual(result.get("compiler_lane"), IPFS_LOGIC_COMPILER_LANE)
+        self.assertNotIn("unexpected keyword argument", str(result.get("reason", "")))
+        self.assertNotIn("unavailable", str(result.get("reason", "")).lower())
 
 
 if __name__ == "__main__":
