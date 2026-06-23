@@ -4866,7 +4866,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-432 Promote launch-slice receipts into deterministic replay artifacts
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: launch
