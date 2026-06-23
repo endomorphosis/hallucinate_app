@@ -248,12 +248,11 @@ class AuthKeystoreIntegration:
             auth_token: UCAN capability token
         
         Returns:
-            list: Array of provider names if authorized, None if authorization denied.
+            list: Array of provider names if authorized, None if authorization is denied.
         
         Raises:
-            Exception: Re-raises any unexpected runtime error after logging it, so
-                callers can distinguish a genuine authorization denial (``None``) from
-                an unexpected backend failure.
+            Exception: Re-raises any unexpected runtime error after logging it, so callers
+                can distinguish an authorization denial (returns None) from a backend failure.
         """
         if not self.initialized:
             raise ValueError("Integration module not initialized. Call init() first")
