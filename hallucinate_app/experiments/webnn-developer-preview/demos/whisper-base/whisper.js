@@ -355,14 +355,14 @@ export class Whisper {
     );
     // console.log(`Non-KV cache decoder inference time: ${(performance.now() - start).toFixed(2)}ms`);
     // start = performance.now();
-    const decoder_logits = decoder_output["logits"];
-    let logits = decoder_logits["cpuData"];
+    const logitsTensor = decoder_output["logits"];
+    let logits = logitsTensor["cpuData"];
 
     if (this.dataType == "float16") {
       logits = convertToFloat32Array(logits);
     }
     // find out the token with highest probability, cast INT64 to INT32
-    const new_token = get_new_tokens(logits, decoder_logits.dims);
+    const new_token = get_new_tokens(logits, logitsTensor.dims);
 
     // add token to final buffer
     tokens = tokens.concat(new_token);
@@ -446,12 +446,12 @@ export class Whisper {
       // console.log(`Decoder inference time · Iteration ${i-3}: ${(performance.now() - start).toFixed(2)}ms`);
       // start = performance.now();
       // find out the token with highest probability, cast INT64 to INT32
-      const decoder_cached_logits = decoder_cached_output["logits"];
-      let logits = decoder_cached_logits["cpuData"];
+      const logitsTensor = decoder_cached_output["logits"];
+      let logits = logitsTensor["cpuData"];
       if (this.dataType == "float16") {
         logits = convertToFloat32Array(logits);
       }
-      const new_token = get_new_tokens(logits, decoder_cached_logits.dims);
+      const new_token = get_new_tokens(logits, logitsTensor.dims);
 
       // add token to final buffer
       tokens = tokens.concat(new_token);
