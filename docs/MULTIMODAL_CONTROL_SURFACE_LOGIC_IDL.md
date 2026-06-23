@@ -1091,6 +1091,70 @@ receipt and keep the session in hardware-free replay mode. No physical phone,
 desktop peer, or Meta glasses adapter may promote itself; only Hallucinate App
 can emit the operator handoff receipt that unlocks the physical-device session.
 
+### VAI/MGW shared launch evidence packet
+
+`HAO-434` connects the Hallucinate App launch replay receipts to the shared
+evidence packet consumed by the VAI launch replay and MGW glasses-widget launch
+replay. Hallucinate App remains the receipt emitter. VAI and MGW consume the
+same mediation, command-intent, peer-offload, recovery, and render receipt IDs
+with identical `session_id`, `command_correlation_id`,
+`policy_correlation_id`, and `placement_correlation_id`.
+
+The packet lives at
+`data/hallucinate_multimodal_control/discovery/2026-06-23-hao-434-vai-mgw-shared-evidence-packet.md`
+and extends the HAO-432 replay ledger without changing replay authority. It
+must expose these fields:
+
+```json
+{
+  "vai_mgw_shared_launch_evidence_packet": {
+    "task_id": "HAO-434",
+    "source_replay_artifact": "launch_slice_replay_receipts",
+    "correlation_ids": {
+      "session_id": "vdsk_hao432_launch_slice",
+      "command_correlation_id": "cmdcorr_hao434_open_monitor",
+      "policy_correlation_id": "polcorr_hao434_open_monitor",
+      "placement_correlation_id": "placecorr_hao434_desktop_peer"
+    },
+    "emitted_receipt_ids": {
+      "mediation_receipt_id": "rcpt_policy_hao432_open_monitor",
+      "command_intent_receipt_id": "rcpt_cmd_hao432_open_monitor",
+      "peer_offload_policy_receipt_id": "rcpt_offload_hao432_open_monitor",
+      "recovery_receipt_ids": [
+        "rcpt_recovery_hao432_retry",
+        "rcpt_recovery_hao432_fallback",
+        "rcpt_recovery_hao432_cancelled"
+      ],
+      "render_receipt_ids": {
+        "phone:operator": "rcpt_render_hao432_phone",
+        "swissknife:ui": "rcpt_render_hao432_swissknife",
+        "meta_glasses:terminal": "rcpt_render_hao432_glasses"
+      }
+    },
+    "consumed_by": [
+      "virtual_ai_os.launch_replay",
+      "meta_glasses_display_widgets.glasses_widget_launch_replay"
+    ]
+  }
+}
+```
+
+The command plane must stamp the four correlation IDs onto every emitted
+receipt in the packet, including `mediation_receipt`,
+`virtual_desktop_command_intent`, `peer_offload_policy_receipt`, each
+`peer_offload_recovery_receipt`, and each surface `render_receipt`. The VAI
+launch replay and MGW glasses-widget launch replay must reject the packet when
+any consumed receipt has a different session, command, policy, or placement
+correlation value from the Hallucinate App emitted receipt.
+
+For MGW, the Meta glasses `render_receipt_id` is also the widget
+`orb_receipt_cid` alias. That alias is evidence only: the MGW display widget
+may render the replayed state, but it may not confirm, cancel, retry, or
+dispatch the virtual desktop command from a client-local receipt. Any mismatch
+between the widget `correlation_id`, `request_id`, `orb_receipt_cid`,
+`policy_receipt_cid`, and the HAO-434 packet must reject the packet and stop at
+the last valid Hallucinate App recovery receipt.
+
 ### Meta glasses display-widget intent bridge
 
 `HAO-431` integrates Meta glasses display-widget actions with the Hallucinate App
