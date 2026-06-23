@@ -470,10 +470,9 @@ export class MenuGenerator {
       }
 
       case 'openServerConfig':
-        if (item?.serverId && this.mainWindow && !this.mainWindow.isDestroyed()) {
-          this.mainWindow.loadFile(resolveViewPath('views/settings.html'), {
-            query: { server: String(item.serverId) }
-          });
+        // Server-specific configuration is handled by the shared settings view.
+        if (item?.serverId) {
+          this.navigateToView(resolveViewPath(`views/settings.html?server=${encodeURIComponent(item.serverId)}`));
         } else {
           this.navigateToView(resolveViewPath('views/settings.html'));
         }
