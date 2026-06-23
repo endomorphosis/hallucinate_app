@@ -6,6 +6,8 @@
  */
 
 import { Menu, shell, dialog, app } from 'electron';
+import fs from 'fs';
+import path from 'path';
 import {
   mcpServers,
   dashboards,
@@ -511,24 +513,36 @@ export class MenuGenerator {
       }
 
       case 'resetConfig':
-        dialog.showMessageBox({
+        dialog.showMessageBox(this.mainWindow, {
           type: 'warning',
-          buttons: ['Reset', 'Cancel'],
-          defaultId: 1,
-          cancelId: 1,
           title: 'Reset Configuration',
-          message: 'Reset all settings to defaults?',
-          detail: 'This will clear all stored configuration and reload the application. This action cannot be undone.'
+          message: 'Reset all configurations to defaults?',
+          detail: 'This will remove all saved settings and restore factory defaults. The application will restart after the reset.',
+          buttons: ['Cancel', 'Reset'],
+          defaultId: 0,
+          cancelId: 0
         }).then(({ response }) => {
-          if (response === 0) {
-            const win = this.mainWindow;
-            if (win && !win.isDestroyed()) {
-              win.webContents.session.clearStorageData({ storages: ['localstorage', 'cookies', 'indexdb'] })
-                .then(() => {
-                  console.log('Configuration reset to defaults.');
-                  win.webContents.reload();
-                })
-                .catch(err => console.error('Failed to clear storage during config reset:', err));
+          if (response === 1) {
+            try {
+              const userDataPath = app.getPath('userData');
+              const configFiles = ['config.json', 'settings.json', 'preferences.json'];
+              for (const file of configFiles) {
+                const filePath = path.join(userDataPath, file);
+                if (fs.existsSync(filePath)) {
+                  fs.unlinkSync(filePath);
+                }
+              }
+              console.log('Configuration reset to defaults.');
+              app.relaunch();
+              app.exit(0);
+            } catch (err) {
+              console.error('Failed to reset configuration:', err);
+              dialog.showMessageBox(this.mainWindow, {
+                type: 'error',
+                title: 'Reset Failed',
+                message: 'Could not reset configuration.',
+                detail: err.message
+              });
             }
           }
         });
