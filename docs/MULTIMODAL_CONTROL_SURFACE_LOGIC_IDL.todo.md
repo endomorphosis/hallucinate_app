@@ -5228,3 +5228,47 @@ UI-plane participants and runtime-plane targets.
 - Work scope: launch_readiness_mcp_evidence_aggregate
 - Candidate kind: validation_gate
 - Acceptance: Extend the launch-readiness packet so `VAIOS-G697` remains open until Hallucinate App daemon launch, Swissknife app feature invocation, Mcp-Plus-Plus compatibility, and HAO/Swissknife Playwright results are all present with the same session, daemon, command, policy, and tool receipt lineage.
+
+## HAO-448 Resolve code annotation in implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.md:184
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.md
+- Validation: test -f implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.md
+- Acceptance: Codebase scan filed this finding from implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.md:184. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-448-codebase-scan-f0055c28bddc.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-449 Resolve code annotation in implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.md:190
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.md
+- Validation: test -f implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.md
+- Acceptance: Codebase scan filed this finding from implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.md:190. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-449-codebase-scan-4fec7789bf82.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-450 Resolve code annotation in implementation_plan/docs/19-virtual-ai-os-submodule-integration.md:267
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/19-virtual-ai-os-submodule-integration.md
+- Validation: test -f implementation_plan/docs/19-virtual-ai-os-submodule-integration.md
+- Acceptance: Codebase scan filed this finding from implementation_plan/docs/19-virtual-ai-os-submodule-integration.md:267. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-450-codebase-scan-7898b4efd7d1.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-451 Resolve code annotation in tests/test_implementation_daemon_merge_lock_retry.py:101
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, tests/test_implementation_daemon_merge_lock_retry.py
+- Validation: python3 -m py_compile tests/test_implementation_daemon_merge_lock_retry.py
+- Acceptance: Codebase scan filed this finding from tests/test_implementation_daemon_merge_lock_retry.py:101. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-451-codebase-scan-2f375dbd1119.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
