@@ -1155,6 +1155,45 @@ between the widget `correlation_id`, `request_id`, `orb_receipt_cid`,
 `policy_receipt_cid`, and the HAO-434 packet must reject the packet and stop at
 the last valid Hallucinate App recovery receipt.
 
+### Operator recovery rehearsal for desktop peer offload failure
+
+`HAO-435` adds an operator recovery rehearsal over the HAO-434 shared evidence
+packet before any physical-device offload validation is promoted. The rehearsal
+is hardware-free and replays desktop peer offload failure outcomes through the
+same Hallucinate App recovery contract used by the phone UI, Swissknife UI, and
+Meta glasses terminal. It proves that every surface renders the same
+`operator_console_error_recovery` state, source recovery receipt, and receipt
+chain before the operator is allowed to continue.
+
+The rehearsal artifact lives at
+`data/hallucinate_multimodal_control/discovery/2026-06-23-hao-435-operator-recovery-rehearsal.md`
+and extends the HAO-434 packet with these required drills:
+
+| Drill | Injected offload failure | Required Hallucinate App outcome | Surface parity proof |
+| --- | --- | --- | --- |
+| `desktop_peer_timeout` | The selected desktop peer does not return a runtime receipt before the dispatch timeout. | Emit `peer_offload_recovery_receipt` with `recovery_state: "retry_scheduled"` while retry budget remains. | Phone UI, Swissknife UI, and Meta glasses render the same retry state and parent `peer_offload_policy_receipt`. |
+| `desktop_peer_denial` | Policy denies the desktop peer route or the peer readiness proof is stale. | Stop before peer dispatch and emit denied `operator_console_error_recovery` with no runtime invocation. | All three surfaces render the denial receipt and the last good mediation receipt. |
+| `retry_exhaustion` | The final retry attempt also times out or disconnects. | Emit exhausted recovery with `recovery_state: "fallback_selected"` and the selected fallback participant. | Phone UI, Swissknife UI, and Meta glasses show the same exhausted retry count, fallback target, and recovery receipt. |
+| `user_cancellation` | The operator cancels from phone, Swissknife, or Meta glasses while recovery is pending. | Emit cancelled recovery whose parent is the last allowed recovery receipt. | All render receipts use `state: "cancelled"` and preserve the cancel source participant. |
+| `fallback_to_phone` | Desktop peer and Swissknife fallback are unavailable, or policy selects the phone as the safest local surface. | Emit fallback recovery with `fallback_surface: "phone:operator"` and no desktop peer execution. | Phone UI, Swissknife UI, and Meta glasses render the phone fallback receipt chain, with Meta glasses only showing status. |
+
+Each drill must replay the chain
+`mediation_receipt_id -> command_intent_receipt_id ->
+peer_offload_policy_receipt_id -> recovery_receipt_id -> render_receipt_ids`.
+The three render receipts must carry the same `session_id`,
+`command_correlation_id`, `policy_correlation_id`,
+`placement_correlation_id`, `source_recovery_receipt_id`, and
+`recovery_state`. A rehearsal fails closed when any surface mints an
+independent state, omits the source receipt, or renders a fallback target not
+selected by Hallucinate App.
+
+The operator console may expose retry, cancel, continue-on-phone, and fail
+closed controls during the rehearsal, but those controls are display-only until
+the corresponding Hallucinate App recovery receipt exists. Desktop peer,
+Swissknife, phone, and Meta glasses adapters must not promote a client-local
+timeout, denial, retry exhaustion, cancellation, or fallback-to-phone result
+into command state without the shared receipt chain.
+
 ### Meta glasses display-widget intent bridge
 
 `HAO-431` integrates Meta glasses display-widget actions with the Hallucinate App
