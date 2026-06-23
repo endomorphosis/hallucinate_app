@@ -5264,7 +5264,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-451 Resolve code annotation in src/handsfree/agents/runner.py:103
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: runtime
