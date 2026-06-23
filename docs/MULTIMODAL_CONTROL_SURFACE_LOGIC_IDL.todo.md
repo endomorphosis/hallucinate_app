@@ -5880,7 +5880,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-507 Resolve code annotation in swissknife/DESKTOP_VERIFICATION_REPORT.md:122
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: docs
