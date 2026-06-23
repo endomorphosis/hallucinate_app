@@ -8,6 +8,10 @@ freeform user rules.
 
 from __future__ import annotations
 
+from dataclasses import asdict, dataclass, field, is_dataclass
+from datetime import datetime, timezone
+import inspect
+import re
 from collections.abc import Mapping
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass, field, is_dataclass
@@ -384,7 +388,7 @@ def evaluate_ipfs_nl_policy(
         else _no_ipfs_logic_evaluation_compat_shims()
     )
     try:
-        result = _call_evaluate_nl_policy(
+        result = _evaluate_ipfs_nl_policy_with_compat(
             api,
             nl_text,
             tool=tool,
@@ -653,6 +657,63 @@ def _ipfs_evaluation_failure_reason(exc: Exception) -> str:
     if "unexpected keyword argument" in reason:
         return _IPFS_LOGIC_SIGNATURE_MISMATCH_REASON
     return f"evaluate_nl_policy failed: {reason}"
+
+
+def _evaluate_ipfs_nl_policy_with_compat(
+    logic_api: Any,
+    nl_text: str,
+    *,
+    tool: str,
+    actor: str | None,
+    **kwargs: Any,
+) -> Any:
+    evaluate_nl_policy = getattr(logic_api, "evaluate_nl_policy")
+    policy_evaluator_cls = _ipfs_policy_evaluator_class_for_compat(logic_api)
+    if policy_evaluator_cls is None:
+        return evaluate_nl_policy(nl_text, tool=tool, actor=actor, **kwargs)
+
+    original_evaluate = getattr(policy_evaluator_cls, "evaluate", None)
+    if not callable(original_evaluate) or not _policy_evaluator_needs_at_time_compat(original_evaluate):
+        return evaluate_nl_policy(nl_text, tool=tool, actor=actor, **kwargs)
+
+    def evaluate_with_at_time_compat(self: Any, intent: Any, policy: Any, *args: Any, **eval_kwargs: Any) -> Any:
+        if "at_time" in eval_kwargs:
+            at_time = eval_kwargs.pop("at_time")
+            eval_kwargs.setdefault("now", _coerce_ipfs_policy_eval_time(at_time))
+        return original_evaluate(self, intent, policy, *args, **eval_kwargs)
+
+    policy_evaluator_cls.evaluate = evaluate_with_at_time_compat
+    try:
+        return evaluate_nl_policy(nl_text, tool=tool, actor=actor, **kwargs)
+    finally:
+        policy_evaluator_cls.evaluate = original_evaluate
+
+
+def _ipfs_policy_evaluator_class_for_compat(logic_api: Any) -> Any | None:
+    if getattr(logic_api, "__name__", "") != "ipfs_datasets_py.logic.api":
+        return None
+    try:
+        from ipfs_datasets_py.mcp_server.temporal_policy import PolicyEvaluator  # type: ignore
+    except Exception:
+        return None
+    return PolicyEvaluator
+
+
+def _policy_evaluator_needs_at_time_compat(evaluate: Any) -> bool:
+    try:
+        parameters = inspect.signature(evaluate).parameters
+    except (TypeError, ValueError):
+        return False
+    return "at_time" not in parameters and "now" in parameters
+
+
+def _coerce_ipfs_policy_eval_time(value: Any) -> Any:
+    if value is None or isinstance(value, datetime):
+        return value
+    try:
+        return datetime.fromtimestamp(float(value), tz=timezone.utc)
+    except (TypeError, ValueError, OSError, OverflowError):
+        return value
 
 
 def _strict_rejection_result(source_text: str, strict_error: str, reason: str) -> NLPolicyCompilation:
