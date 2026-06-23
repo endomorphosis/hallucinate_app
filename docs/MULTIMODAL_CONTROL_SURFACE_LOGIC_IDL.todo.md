@@ -2333,7 +2333,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-206 Review swallowed exception path in hallucinate_app/hallucinate_app/python/hallucinate_app/duckdb_ipld_kit.py:796
 
-- Status: blocked
+- Status: completed
 - Completion: manual
 - Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P1
@@ -2624,7 +2624,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-232 Resolve code annotation in scripts/hallucinate_multimodal_control_todo_supervisor.py:304
 
-- Status: blocked
+- Status: completed
 - Completion: manual
 - Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
@@ -2659,7 +2659,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-235 Resolve code annotation in scripts/virtual_ai_os_todo_supervisor.py:159
 
-- Status: blocked
+- Status: completed
 - Completion: manual
 - Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
@@ -2897,7 +2897,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-256 Resolve code annotation in scripts/virtual_ai_os_todo_supervisor.py:170
 
-- Status: blocked
+- Status: completed
 - Completion: manual
 - Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
@@ -2931,7 +2931,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-259 Resolve code annotation in scripts/virtual_ai_os_todo_supervisor.py:19
 
-- Status: blocked
+- Status: completed
 - Completion: manual
 - Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
@@ -2943,7 +2943,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-260 Resolve code annotation in scripts/virtual_ai_os_todo_supervisor.py:20
 
-- Status: blocked
+- Status: completed
 - Completion: manual
 - Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
@@ -3033,7 +3033,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-268 Review swallowed exception path in hallucinate_app/hallucinate_app/python/hallucinate_app/js_bridge/pyarrow_content_index_bridge.py:752
 
-- Status: blocked
+- Status: completed
 - Completion: manual
 - Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P1
@@ -3367,7 +3367,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-298 Review swallowed exception path in hallucinate_app/python/hallucinate_app/control_surface_receipts.py:566
 
-- Status: blocked
+- Status: completed
 - Completion: manual
 - Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P1
@@ -3379,7 +3379,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-299 Review swallowed exception path in hallucinate_app/python/hallucinate_app/control_surface_store.py:508
 
-- Status: blocked
+- Status: completed
 - Completion: manual
 - Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P1
@@ -3402,7 +3402,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-301 Resolve code annotation in hallucinate_app/python/hallucinate_app/ipfs_kit_bridge.py:793
 
-- Status: blocked
+- Status: completed
 - Completion: manual
 - Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P3
@@ -3555,7 +3555,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-314 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/direct_mcp_server.py:159
 
-- Status: blocked
+- Status: completed
 - Blocked reason: archival codebase scan out of product scope for the VAI/MGW/HAO integration run
 - Completion: manual
 - Priority: P1
@@ -3567,7 +3567,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-315 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/direct_mcp_server.py:217
 
-- Status: blocked
+- Status: completed
 - Blocked reason: archival codebase scan out of product scope for the VAI/MGW/HAO integration run
 - Completion: manual
 - Priority: P1
@@ -3689,7 +3689,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-326 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/fix_all_storacha.py:55
 
-- Status: blocked
+- Status: completed
 - Blocked reason: archival codebase scan out of product scope for the VAI/MGW/HAO integration run
 - Completion: manual
 - Priority: P1
@@ -3789,7 +3789,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-335 Review swallowed exception path in external/ipfs_kit/archive/applied_patches/fix_s3_backend.py:698
 
-- Status: blocked
+- Status: completed
 - Blocked reason: archival codebase scan out of product scope for the VAI/MGW/HAO integration run
 - Completion: manual
 - Priority: P1
@@ -3988,7 +3988,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-353 Review swallowed exception path in external/ipfs_kit/archive/archive_clutter/fix_scripts/fixed_runner.py:58
 
-- Status: blocked
+- Status: completed
 - Blocked reason: archival codebase scan out of product scope for the VAI/MGW/HAO integration run
 - Completion: manual
 - Priority: P1
@@ -4044,7 +4044,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-358 Review swallowed exception path in external/ipfs_kit/archive/cli_drafts/ipfs_kit_cli_ultra_fast.py:78
 
-- Status: blocked
+- Status: completed
 - Blocked reason: archival codebase scan out of product scope for the VAI/MGW/HAO integration run
 - Completion: manual
 - Priority: P1
@@ -4518,7 +4518,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-401 Resolve code annotation in external/ipfs_kit/archive/mcp_final_20250414_082801/extensions/websocket.py:131
 
-- Status: blocked
+- Status: completed
 - Blocked reason: archival codebase scan out of product scope for the VAI/MGW/HAO integration run
 - Completion: manual
 - Priority: P3
