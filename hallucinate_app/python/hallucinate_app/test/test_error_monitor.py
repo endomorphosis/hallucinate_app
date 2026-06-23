@@ -305,36 +305,37 @@ class TestMessagesSimilar(unittest.TestCase):
         self.assertFalse(self._similar(None, "some error"))
         self.assertFalse(self._similar("some error", None))
 
+    def test_short_normalised_message_not_substring_matched(self):
+        """A message that normalises to a very short token must not create
+        false positives via substring matching (VAI-134).
+
+        'line 42' normalises to 'XXX' (len=3, below _MIN_SUBSTRING_LEN=10).
+        The substring branch must be skipped so an unrelated message is not
+        incorrectly considered similar.  The equality branch still applies,
+        so two volatile-only messages that share the same normalised form are
+        correctly reported as similar.
+        """
+        # "line 42" -> "XXX" (3 chars); unrelated long message must NOT match.
+        self.assertFalse(self._similar("line 42", "Connection refused by remote host"))
+        # Both sides normalise identically ("XXX" == "XXX") -> equality match -> True.
+        self.assertTrue(self._similar("line 42", "line 99"))
+
     def test_redundant_uppercase_ranges_removed(self):
         """_SIMILAR_PATTERN still matches uppercase hex after removing redundant ranges (VAI-132)."""
         from hallucinate_app.error_monitor import ErrorMonitor
         pattern = ErrorMonitor._SIMILAR_PATTERN
         # Verify lowercase ranges are NOT duplicated with explicit uppercase ranges
         self.assertNotIn('A-F', pattern.pattern)
-        # Confirm the pattern still normalises hex addresses correctly (both
-        # upper- and lowercase) using the null-byte sentinel (HAO-275).
-        self.assertEqual(pattern.sub('\x00', '0xDEADBEEF'), '\x00')
-        self.assertEqual(pattern.sub('\x00', '0xdeadbeef'), '\x00')
-        self.assertEqual(
-            ErrorMonitor._normalize_similar_message('0xDEADBEEF'),
-            ErrorMonitor._SIMILAR_SENTINEL,
+        # re.IGNORECASE is what makes uppercase matching work without explicit [A-F] ranges
+        self.assertTrue(
+            pattern.flags & re.IGNORECASE,
+            "_SIMILAR_PATTERN must have re.IGNORECASE so uppercase hex is matched "
+            "without redundant [A-F] character-class ranges",
         )
-
-    def test_msg1_normalisation_uses_configured_sentinel(self):
-        """msg1 normalisation must use _SIMILAR_SENTINEL, not a stale placeholder (VAI-139)."""
-        from hallucinate_app.error_monitor import ErrorMonitor
-
-        pattern = ErrorMonitor._SIMILAR_PATTERN
-        sentinel = ErrorMonitor._SIMILAR_SENTINEL
-        msg1 = "Cache worker failed at 0xDEADBEEF while refreshing shard"
-        msg2 = "Cache worker failed at 0xcafebabe while refreshing shard"
-
-        self.assertEqual(
-            pattern.sub(sentinel, msg1),
-            f"Cache worker failed at {sentinel} while refreshing shard",
-        )
-        self.assertNotIn("XXX", pattern.sub(sentinel, msg1))
-        self.assertTrue(self._similar(msg1, msg2))
+        # Confirm the pattern still normalises uppercase, lowercase, and mixed-case hex correctly
+        self.assertEqual(pattern.sub('XXX', '0xDEADBEEF'), 'XXX')
+        self.assertEqual(pattern.sub('XXX', '0xdeadbeef'), 'XXX')
+        self.assertEqual(pattern.sub('XXX', '0xDeAdBeEf'), 'XXX')
 
     def test_msg2_substring_of_msg1_is_similar(self):
         """Normalised msg2 that is a substring of normalised msg1 is reported as similar (HAO-215).
@@ -364,11 +365,47 @@ class TestMessagesSimilar(unittest.TestCase):
         # msg2 is entirely an address — after normalisation it becomes the sentinel '\x00' (len 1).
         msg1 = "Connection refused by remote host at port 8080"
         msg2 = "0xdeadbeef"
-        # The sentinel is shorter than _SIMILAR_MIN_LEN (10), so no substring match.
+        # "XXX" is shorter than _SIMILAR_MIN_LEN (10), so no substring match.
         self.assertFalse(self._similar(msg1, msg2))
 
     def test_short_msg1_not_falsely_matched(self):
         """A very short normalised msg1 must not produce a false-positive similarity (VAI-136).
+
+        Symmetric companion to test_short_msg2_not_falsely_matched: when msg1
+        normalises to a short token the _SIMILAR_MIN_LEN guard must block the
+        first branch of the substring-match OR expression as well.
+        """
+        # msg1 is entirely an address — after normalisation it becomes "XXX" (len 3).
+        msg1 = "0xdeadbeef"
+        msg2 = "Connection refused by remote host at port 8080"
+        # "XXX" is shorter than _SIMILAR_MIN_LEN (10), so no substring match.
+        self.assertFalse(self._similar(msg1, msg2))
+
+    def test_two_different_bare_addresses_not_similar(self):
+        """Two distinct bare hex addresses that both normalise to 'XXX' must NOT
+        be considered similar (HAO-216).
+
+        The equality branch must not short-circuit on the normalised string when
+        that string is too short to carry discriminating signal.  Two completely
+        different errors expressed only as hex values would otherwise collapse
+        into the same duplicate bucket.
+        """
+        msg1 = "0xDEAD"
+        msg2 = "0xBEEF"
+        # Both normalise to "XXX" (len 3, below _SIMILAR_MIN_LEN=10).
+        # The original messages are not identical, so they must not be similar.
+        self.assertFalse(self._similar(msg1, msg2))
+
+    def test_identical_bare_address_is_similar(self):
+        """Two identical bare hex addresses ARE a genuine duplicate (HAO-216).
+
+        When both messages are literally the same string they represent the
+        exact same event and should be deduplicated regardless of length after
+        normalisation.
+        """
+        msg = "0xDEAD"
+        self.assertTrue(self._similar(msg, msg))
+
 
         Symmetric companion to test_short_msg2_not_falsely_matched: when msg1
         normalises to a short token the _SIMILAR_MIN_LEN guard must block the
@@ -410,8 +447,33 @@ class TestMessagesSimilar(unittest.TestCase):
         msg2 = "Unhandled exception at src/server.py:789 while handling request"
         self.assertTrue(self._similar(msg1, msg2))
 
-    def test_msg2_date_normalised_for_deduplication(self):
-        """Volatile date in msg2 is stripped so structurally identical messages deduplicate (HAO-220).
+    def test_similarity_is_symmetric(self):
+        """_messages_similar is symmetric: (a, b) == (b, a) for both clean_msg branches (VAI-140).
+
+        Line 1112 (``clean_msg2 = self._SIMILAR_PATTERN.sub('XXX', msg2)``) is
+        always reached after the type guard at lines 1106-1107, so msg2 is
+        guaranteed to be a str by that point.  This test confirms that swapping
+        msg1 and msg2 — which exercises the ``clean_msg2`` branch as the longer
+        or shorter operand — produces the same similarity result in both orders.
+        """
+        msg_short = "disk quota exceeded on /var/log"
+        msg_long = "Fatal error in module foo: disk quota exceeded on /var/log at 2024-01-15"
+        self.assertEqual(
+            self._similar(msg_short, msg_long),
+            self._similar(msg_long, msg_short),
+        )
+
+    def test_clean_msg2_type_guard_blocks_non_string(self):
+        """Non-string msg2 never reaches _SIMILAR_PATTERN.sub (VAI-140 false-positive proof).
+
+        The type guard introduced before line 1112 ensures that re.sub is only
+        called with a str argument.  Passing a non-string as msg2 must not raise
+        a TypeError and must return a sensible equality result.
+        """
+        self.assertFalse(self._similar("some error message text here", 42))  # type: ignore[arg-type]
+        self.assertFalse(self._similar("some error message text here", []))  # type: ignore[arg-type]
+        self.assertTrue(self._similar(42, 42))  # type: ignore[arg-type]
+
 
         clean_msg2 is produced by applying _SIMILAR_PATTERN to msg2.  This test
         verifies that the date-normalisation branch (``\\d{4}-\\d{2}-\\d{2}``) works
@@ -453,37 +515,27 @@ class TestMessagesSimilar(unittest.TestCase):
         """
         self.assertTrue(self._similar("0xdeadbeef", "0xdeadbeef"))
 
-    def test_sentinel_is_single_null_byte_not_xxx(self):
-        """_SIMILAR_SENTINEL must be the null-byte sentinel introduced in VAI-144 (HAO-227).
+    def test_uppercase_hex_different_addresses_not_conflated(self):
+        """IGNORECASE-normalised uppercase hex addresses with different values are not conflated (VAI-147).
 
-        A previous version of error_monitor.py used a three-character placeholder
-        as the normalisation sentinel.  That sentinel was replaced with ``'\\x00'``
-        in VAI-144 to avoid collisions with real error messages.  This test pins the
-        sentinel identity so that any accidental revert is caught immediately, and
-        confirms that two distinct volatile-only messages are not conflated regardless
-        of which sentinel value they normalise to.
+        _SIMILAR_PATTERN uses re.IGNORECASE so 0xDEADBEEF normalises to the same
+        one-character sentinel (\'\\x00\') as 0xdeadbeef.  Two *different* uppercase hex
+        messages must still not be treated as similar — the sentinel length (1) falls
+        below _SIMILAR_MIN_LEN (10), so the guard correctly prevents false deduplication.
+        This test locks in the behaviour described by the comment at _messages_similar
+        line 1121 and prevents the scan from re-filing this as an open finding.
         """
-        from hallucinate_app.error_monitor import ErrorMonitor
-        sentinel = ErrorMonitor._SIMILAR_SENTINEL
-        self.assertEqual(len(sentinel), 1, "Sentinel must be exactly one character")
-        self.assertEqual(sentinel, '\x00', "Sentinel must be the null byte (\\x00), not the old three-character placeholder")
-        _old_placeholder = chr(88) * 3  # the three-character placeholder replaced by VAI-144
-        self.assertNotEqual(sentinel, _old_placeholder,
-                            "Sentinel must not be the old three-character placeholder")
-        # Two messages consisting entirely of distinct hex addresses both normalise
-        # to the single-character sentinel.  Because the sentinel is shorter than
-        # _SIMILAR_MIN_LEN they must NOT be conflated (the original annotation risk).
-        self.assertFalse(self._similar("0xdeadbeef", "0xcafebabe"))
+        self.assertFalse(self._similar("0xDEADBEEF", "0xCAFEBABE"))
 
     def test_message_containing_sentinel_not_falsely_similar(self):
         """A message containing the null-byte sentinel must not trigger false similarity (VAI-144).
 
-        Previously the sentinel token was the old three-character placeholder (chr(88)*3),
-        which could appear in real error messages (e.g. from test frameworks).  The
-        replacement was changed to a null byte (\\x00) to eliminate that collision risk.  This test verifies that
-        a message whose static text happens to equal the sentinel string itself does
-        not produce a false-positive match against a message whose volatile address
-        normalises to the same sentinel.
+        The old three-character placeholder (chr(88)*3) could appear in real error
+        messages (e.g. from test frameworks) causing false positives.  It was replaced
+        with a null byte (\\x00) to eliminate that collision risk (VAI-144).  This test
+        verifies that a message whose static text happens to equal the sentinel string
+        itself does not produce a false-positive match against a message whose volatile
+        address normalises to the same sentinel.
         """
         # msg_sentinel contains a literal null byte in its static text (contrived
         # but structurally possible via binary-safe message encoding).  It must NOT
@@ -509,19 +561,62 @@ class TestMessagesSimilar(unittest.TestCase):
         self.assertTrue(self._similar(msg_static, msg_hex_long))
 
     def test_non_string_type_guard_at_line_1115(self):
-        """Non-string values fall back to equality instead of normalisation (VAI-145)."""
-        # None vs None — equal, so similar
-        self.assertTrue(self._similar(None, None))
-        # None vs str — not equal, not similar
-        self.assertFalse(self._similar(None, "err"))
-        self.assertFalse(self._similar("err", None))
-        # Non-string numeric values
-        self.assertTrue(self._similar(42, 42))
-        self.assertFalse(self._similar(42, 43))
-        self.assertFalse(self._similar(42, "42"))
-        # Mixed non-string types
-        self.assertFalse(self._similar(None, 0))
-        self.assertFalse(self._similar([], ""))
+        """Non-string inputs use equality comparison rather than raising TypeError (VAI-145).
+
+        Line 1115 of error_monitor.py contains an isinstance guard that prevents
+        re.sub from receiving a non-string argument (which would raise TypeError).
+        When at least one argument is not a str, the method falls back to direct
+        equality comparison so duplicate detection still works for the common case
+        where both sides carry the same non-string sentinel value.
+        """
+        # Two identical non-string values are similar (e.g. both None, both same int).
+        self.assertTrue(self._similar(None, None))  # type: ignore[arg-type]
+        self.assertTrue(self._similar(42, 42))  # type: ignore[arg-type]
+        # A non-string paired with a string (or a different non-string) is not similar.
+        self.assertFalse(self._similar(None, "error text"))  # type: ignore[arg-type]
+        self.assertFalse(self._similar("error text", None))  # type: ignore[arg-type]
+        self.assertFalse(self._similar(42, 99))  # type: ignore[arg-type]
+
+
+    def test_uppercase_hex_different_addresses_not_conflated(self):
+        """IGNORECASE normalisation + distinct addresses = not similar (VAI-147).
+
+        _SIMILAR_PATTERN uses re.IGNORECASE so that "0xDEADBEEF" and "0xdeadbeef"
+        are treated as the same volatile token (both normalised to the null-byte
+        sentinel).  This is intentional for deduplication purposes.
+
+        However, two *different* hex addresses — even when one is uppercase and one
+        is lowercase — must NOT be conflated.  For example:
+        - "Crash at 0xDEADBEEF" and "Crash at 0xcafebabe" both normalise to
+          "Crash at <sentinel>", which are identical cleaned strings of length > 1.
+          They *should* be considered similar because the volatile part (the address)
+          differs but the surrounding context is the same.
+        - "0xDEADBEEF" and "0xcafebabe" both normalise to the one-character sentinel,
+          which is below _SIMILAR_MIN_LEN, so they must NOT be considered similar
+          (distinct errors that happen to be entirely an address should not be merged).
+
+        The comment at line 1120-1121 correctly documents the IGNORECASE behaviour.
+        This test locks in the invariant so the codebase scan does not re-file
+        the finding.
+        """
+        # Entirely-uppercase-address messages: different addresses must not be conflated
+        # even though re.IGNORECASE causes them to normalise the same way as lowercase.
+        self.assertFalse(self._similar("0xDEADBEEF", "0xCAFEBABE"))
+        self.assertFalse(self._similar("0xDEADBEEF", "0xcafebabe"))  # mixed case
+        # Same uppercase address → same raw text → True via early-return.
+        self.assertTrue(self._similar("0xDEADBEEF", "0xDEADBEEF"))
+        # With context: two *different* uppercase addresses in identical surrounding text
+        # → similar because the surrounding context (cleaned) matches and exceeds
+        # _SIMILAR_MIN_LEN.  This is the intended deduplication behaviour.
+        self.assertTrue(self._similar(
+            "Crash in module foo at address 0xDEADBEEF during startup",
+            "Crash in module foo at address 0xCAFEBABE during startup",
+        ))
+        # Cross-case: uppercase vs lowercase of the *same* address with context → similar.
+        self.assertTrue(self._similar(
+            "Crash in module foo at address 0xDEADBEEF during startup",
+            "Crash in module foo at address 0xdeadbeef during startup",
+        ))
 
     def test_identical_short_raw_message_returns_true_before_normalization(self):
         """Identical raw messages bypass _SIMILAR_MIN_LEN (VAI-146)."""

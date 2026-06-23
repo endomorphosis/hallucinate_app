@@ -784,30 +784,21 @@ class ErrorMonitor:
     # Compiled once; re.IGNORECASE ensures both 0xDEADBEEF and 0xdeadbeef are normalised.
     # Character classes use only lowercase ranges — re.IGNORECASE covers the uppercase
     # variants, so explicit [A-F] / [A-Fa-f] ranges are redundant and removed.
-    # Keep timestamps before stack traces so "at 2026-05-28" is not consumed
-    # as a partial "at file:line" token.
+    # UUID pattern added (HAO-230): RFC-4122 UUIDs are common volatile tokens in
+    # error messages (e.g. request IDs, correlation IDs) and must be normalised
+    # so that two otherwise-identical messages differing only in UUIDs are still
+    # recognised as duplicates.  The UUID pattern is anchored to the full
+    # 8-4-4-4-12 hex group structure to avoid over-matching short hex words.
     _SIMILAR_PATTERN = re.compile(
-        r'line \d+'
-        r'|\d{4}-\d{2}-\d{2}(?:[t ]\d{2}:\d{2}:\d{2}(?:[.,]\d+)?(?:z|[+-]\d{2}:?\d{2})?)?'
-        r'|at (?!\d{4}-\d{2}-\d{2})[^:]+:\d+'
-        r'|0x[0-9a-f]+'
-        r'|ID: [a-f0-9-]+',
+        r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+        r'|line \d+|at [^:]+:\d+|0x[0-9a-f]+|\d{4}-\d{2}-\d{2}|ID: [a-f0-9-]+',
         re.IGNORECASE,
     )
-    _SIMILAR_MIN_LEN: int = 10
-    # Sentinel used to replace volatile details during normalisation.  A null
-    # byte cannot appear in ordinary error-message strings, so it will never
-    # collide with real message content and cause a false-positive similarity
-    # match (VAI-144).  The sentinel is deliberately shorter than _SIMILAR_MIN_LEN
-    # so that a message consisting entirely of volatile tokens normalises to a
-    # string whose length falls below the minimum and is not falsely treated as
-    # similar to another fully-volatile message.
-    _SIMILAR_SENTINEL = '\x00'
-
-    @classmethod
-    def _normalize_similar_message(cls, message: str) -> str:
-        """Replace volatile message details with the collision-resistant sentinel."""
-        return cls._SIMILAR_PATTERN.sub(cls._SIMILAR_SENTINEL, message)
+    # Minimum length a normalised message must have before it is used as a
+    # substring discriminator.  A very short cleaned string (e.g. a message
+    # that was entirely a volatile token and became "XXX") would otherwise
+    # cause unrelated errors to be treated as duplicates.
+    _SIMILAR_MIN_LEN = 10
     
     def __init__(self, resources=None, config=None):
         self.resources = resources or {}
@@ -1128,19 +1119,29 @@ class ErrorMonitor:
         """Check if two error messages are similar"""
         if not isinstance(msg1, str) or not isinstance(msg2, str):
             return msg1 == msg2
-        if msg1 == msg2:
-            return True
-        clean_msg1 = self._normalise_similar_message(msg1)
-        clean_msg2 = self._normalise_similar_message(msg2)
-        if clean_msg1 == clean_msg2 and len(clean_msg1) >= self._SIMILAR_MIN_LEN:
-            return True
-        clean_msg1_contained_in_msg2 = (
-            len(clean_msg1) >= self._SIMILAR_MIN_LEN and clean_msg1 in clean_msg2
+        # Remove volatile details (addresses, line numbers, timestamps, IDs).
+        # _SIMILAR_PATTERN uses re.IGNORECASE so uppercase hex (0xDEADBEEF) is
+        # also normalised, preventing missed duplicates.
+        clean_msg1 = self._SIMILAR_PATTERN.sub('XXX', msg1)
+        clean_msg2 = self._SIMILAR_PATTERN.sub('XXX', msg2)
+        
+        # Exact match when the cleaned string is long enough to carry real
+        # signal.  When both messages normalise to the same *short* string
+        # (e.g. two bare hex addresses "0xDEAD" and "0xBEEF" both become
+        # "XXX"), the cleaned string offers no discriminating information and
+        # treating the pair as similar would collapse unrelated error buckets.
+        # In that degenerate case we only consider them similar when the
+        # original messages were themselves identical (genuine duplicate).
+        if clean_msg1 == clean_msg2:
+            if len(clean_msg1) >= self._SIMILAR_MIN_LEN or msg1 == msg2:
+                return True
+        # Substring match only when the normalised string is long enough to be a
+        # meaningful discriminator — see _SIMILAR_MIN_LEN.  Explicit parentheses
+        # clarify the and/or precedence so readers do not have to recall it.
+        return (
+            (len(clean_msg1) >= self._SIMILAR_MIN_LEN and clean_msg1 in clean_msg2)
+            or (len(clean_msg2) >= self._SIMILAR_MIN_LEN and clean_msg2 in clean_msg1)
         )
-        clean_msg2_contained_in_msg1 = (
-            len(clean_msg2) >= self._SIMILAR_MIN_LEN and clean_msg2 in clean_msg1
-        )
-        return clean_msg1_contained_in_msg2 or clean_msg2_contained_in_msg1
     
     async def _check_alerts(self, error: ErrorData):
         """Check if any alert rules are triggered by this error"""

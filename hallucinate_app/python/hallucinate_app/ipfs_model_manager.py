@@ -472,11 +472,7 @@ class IPFSModelManager:
                     try:
                         os.unlink(test_file)
                     except OSError:
-                        logger.debug(
-                            "Could not remove temporary test file %s",
-                            test_file,
-                            exc_info=True,
-                        )
+                        pass
                         
                 except Exception as exc:
                     # Self-tests return partial failures to callers, but keep the

@@ -205,36 +205,14 @@ class DuckDBIPLDKit:
                         "sql": sql,
                         "execution_time_ms": (time.time() - start_time) * 1000
                     }
-                except Exception as df_exc:
-                    if sql.lstrip().upper().startswith(("SELECT", "WITH")):
-                        logger.warning(
-                            "Failed to materialize DuckDB query result for SQL %r: %s",
-                            sql,
-                            df_exc,
-                            exc_info=True,
-                        )
-                        result = {
-                            "success": False,
-                            "error": str(df_exc),
-                            "sql": sql,
-                            "execution_time_ms": (time.time() - start_time) * 1000
-                        }
-                        self.stats["last_operation_time"] = (time.time() - start_time) * 1000
-                        return result
-
-                    # For non-SELECT queries (INSERT/UPDATE/DELETE), .df() is unavailable.
-                    # Use .rowcount; fall back to -1 if attribute is missing or DuckDB returns None.
-                    logger.debug("result_cursor.df() unavailable (expected for non-SELECT): %s", df_exc)
-                    try:
-                        rows_affected = result_cursor.rowcount if hasattr(result_cursor, 'rowcount') else -1
-                        if rows_affected is None:
-                            rows_affected = -1
-                        result = {
-                            "success": True,
-                            "rows_affected": rows_affected,
-                            "sql": sql,
-                            "execution_time_ms": (time.time() - start_time) * 1000
-                        }
+                except Exception:
+                    # For non-SELECT queries, fetchdf() raises; get affected row count instead
+                    result = {
+                        "success": True,
+                        "rows_affected": result_cursor.execute("SELECT changes()").fetchone()[0],
+                        "sql": sql,
+                        "execution_time_ms": (time.time() - start_time) * 1000
+                    }
             except Exception as e:
                 result = {
                     "success": False,
@@ -745,16 +723,9 @@ class DuckDBIPLDKit:
                     result = self.conn.execute("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='main'").fetchone()
                     table_count = result[0] if result else 0
                 except Exception as e:
-                    # information_schema may not be available in all DuckDB versions;
-                    # fall back to 0 rather than propagating the error.
-                    logger.debug(
-                        "Unable to read DuckDB table count from information_schema; returning 0",
-                        exc_info=True,
-                    )
-                    table_count = 0
-                    table_count_error = str(e)
-
-            stats = {
+                    print(f"Warning: failed to query table count: {e}")
+            
+            return {
                 **self.stats,
                 "table_count": table_count,
                 "conn_open": self.conn is not None,
@@ -857,11 +828,11 @@ class DuckDBIPLDKit:
             }
             results["success"] = False
         
-        # Clean up test table
+        # Clean up test table; ignore errors since the table may not exist
         try:
             await self.execute("DROP TABLE IF EXISTS test_table")
-        except Exception as e:
-            logger.warning("Failed to drop test table during cleanup (non-fatal): %s", e)
+        except Exception:
+            pass
         
         return results
 

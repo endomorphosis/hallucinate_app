@@ -510,43 +510,44 @@ export class MenuGenerator {
         break;
       }
 
-      case 'resetConfig':
-        dialog.showMessageBox({
+      case 'resetConfig': {
+        const { response } = await dialog.showMessageBox({
           type: 'warning',
-          buttons: ['Reset', 'Cancel'],
-          defaultId: 1,
-          cancelId: 1,
+          buttons: ['Cancel', 'Reset'],
+          defaultId: 0,
+          cancelId: 0,
           title: 'Reset Configuration',
-          message: 'Reset all settings to defaults?',
-          detail: 'This will clear all stored configuration and reload the application. This action cannot be undone.'
-        }).then(({ response }) => {
-          if (response === 0) {
-            const win = this.mainWindow;
-            if (win && !win.isDestroyed()) {
-              win.webContents.session.clearStorageData({ storages: ['localstorage', 'cookies', 'indexdb'] })
-                .then(() => {
-                  console.log('Configuration reset to defaults.');
-                  win.webContents.reload();
-                })
-                .catch(err => console.error('Failed to clear storage during config reset:', err));
-            }
-          }
+          message: 'Reset all configurations to defaults?',
+          detail: 'This cannot be undone.'
         });
+        if (response === 1 && this.navigateToView) {
+          this.navigateToView(resolveViewPath('views/settings.html?reset=true'));
+        }
         break;
+      }
 
       case 'checkUpdates': {
-        this.checkForUpdates().catch(err => {
-          console.error('Failed to check for updates:', err);
+        const version = app.getVersion();
+        const { response: updateResponse } = await dialog.showMessageBox({
+          type: 'info',
+          buttons: ['Close', 'View Releases'],
+          defaultId: 0,
+          title: 'Check for Updates',
+          message: `Hallucinate App v${version}`,
+          detail: 'Visit the releases page to check for a newer version.'
         });
+        if (updateResponse === 1) {
+          shell.openExternal('https://github.com/endomorphosis/hallucinate_app/releases');
+        }
         break;
       }
 
       case 'showAbout': {
-        const currentVersion = app.getVersion();
+        const aboutVersion = app.getVersion();
         dialog.showMessageBox({
           type: 'info',
           title: 'About Hallucinate App',
-          message: `Hallucinate App v${currentVersion}`,
+          message: `Hallucinate App v${aboutVersion}`,
           detail: `A comprehensive platform for IPFS-powered AI development.
 
 Includes:

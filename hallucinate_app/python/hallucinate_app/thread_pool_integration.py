@@ -824,13 +824,13 @@ class ThreadPoolIntegration:
                 sleep_time=0.1
             )
             
-            # Wait for result; capture any exception so it can be surfaced in the
-            # test report rather than being silently swallowed.
-            history_future_error: str | None = None
+            # Wait for result
+            history_future_error = None
             try:
                 history_future.result(timeout=1.0)
             except Exception as e:
-                history_future_error = str(e)
+                history_future_error = e
+                logger.warning(f"Exception while waiting for history tracking task result: {e}")
             
             # Check status and result
             status = self.get_task_status(history_task_id)
@@ -849,7 +849,7 @@ class ThreadPoolIntegration:
                     "task_id": history_task_id,
                     "status": status,
                     "has_result": result is not None,
-                    **({"future_error": history_future_error} if history_future_error else {})
+                    "future_error": str(history_future_error) if history_future_error else None
                 }
             }
             

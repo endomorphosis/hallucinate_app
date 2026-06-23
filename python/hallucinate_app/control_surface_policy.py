@@ -8,15 +8,18 @@ freeform user rules.
 
 from __future__ import annotations
 
+from contextlib import contextmanager
 from dataclasses import asdict, dataclass, field, is_dataclass
 from datetime import datetime, timezone
 import inspect
-import logging
 import re
 from collections.abc import Mapping
+from contextlib import contextmanager
+from dataclasses import asdict, dataclass, field, is_dataclass
+from datetime import datetime, timezone
+import inspect
+import re
 from typing import Any
-
-_logger = logging.getLogger(__name__)
 
 from hallucinate_app.control_surface_logic_ir import (
     ControlSurfaceNorm,
@@ -38,11 +41,18 @@ IPFS_LOGIC_EVALUATE_API = "ipfs_datasets_py.logic.api.evaluate_nl_policy"
 IPFS_LOGIC_COMPILER_CLASS = "ipfs_datasets_py.logic.api.NLUCANPolicyCompiler"
 DEFAULT_IPFS_MIN_CONFIDENCE = 0.72
 DEFAULT_IPFS_CLARIFY_BELOW = 0.85
+_IPFS_LOGIC_SIGNATURE_MISMATCH_REASON = (
+    "evaluate_nl_policy failed closed because the upstream policy evaluator "
+    "uses an incompatible temporal argument signature"
+)
 _REQUIRED_IPFS_LOGIC_SYMBOLS = (
     "compile_nl_to_policy",
     "evaluate_nl_policy",
     "NLUCANPolicyCompiler",
     "evaluate_with_manager",
+)
+_IPFS_LOGIC_SIGNATURE_MISMATCH_REASON = (
+    "evaluate_nl_policy failed closed because the upstream evaluator signature is incompatible"
 )
 
 IGNORE_SURFACE_AT_TIME_TEMPLATE = "ignore my {surface} at {time_window}"
@@ -373,89 +383,401 @@ def evaluate_ipfs_nl_policy(
             "missing": list(missing),
         }
 
-    restore_evaluator = _install_ipfs_at_time_evaluator_adapter(api)
+    compat_shims: tuple[str, ...] = ()
+    compat_context = (
+        _ipfs_logic_evaluation_compat_shims()
+        if _is_real_ipfs_logic_api(api)
+        else _no_ipfs_logic_evaluation_compat_shims()
+    )
     try:
-        result = api.evaluate_nl_policy(nl_text, tool=tool, actor=actor, **kwargs)
+        result = _call_evaluate_nl_policy(
+            api,
+            nl_text,
+            tool=tool,
+            actor=actor,
+            **kwargs,
+        )
     except Exception as exc:  # pragma: no cover - exact upstream failures vary.
-        _logger.warning("evaluate_nl_policy failed; denying policy evaluation", exc_info=exc)
-        return {
+        payload = {
             "decision": DeonticOutcome.DENY.value,
-            "reason": f"evaluate_nl_policy failed: {exc}",
+            "reason": _ipfs_evaluation_failure_reason(exc),
             "compiler_lane": IPFS_LOGIC_COMPILER_LANE,
         }
-    finally:
-        if restore_evaluator is not None:
-            restore_evaluator()
+        if compat_shims:
+            payload["compat_shims"] = list(compat_shims)
+        return payload
 
     payload = _serialize_ipfs_value(result)
     if isinstance(payload, dict):
+        payload = _normalize_ipfs_evaluation_payload(payload)
         payload.setdefault("compiler_lane", IPFS_LOGIC_COMPILER_LANE)
-        return payload
+        return _normalize_ipfs_evaluation_payload(payload)
     return {
         "decision": str(payload),
         "compiler_lane": IPFS_LOGIC_COMPILER_LANE,
     }
+    _record_ipfs_compat_shims(payload, compat_shims)
+    return payload
 
 
-def _install_ipfs_at_time_evaluator_adapter(logic_api: Any) -> Any:
-    """Temporarily adapt real upstream ``at_time`` calls to ``now``.
+def _is_real_ipfs_logic_api(api: Any) -> bool:
+    return getattr(api, "__name__", "") == "ipfs_datasets_py.logic.api"
 
-    Some ``ipfs_datasets_py`` checkouts route ``evaluate_nl_policy`` through a
-    bridge that calls ``PolicyEvaluator.evaluate(..., at_time=...)`` while the
-    evaluator itself accepts ``now``. Keep the compatibility shim scoped to the
-    one upstream call so a failed evaluation does not poison later calls.
-    """
 
-    if getattr(logic_api, "__name__", "") != "ipfs_datasets_py.logic.api":
-        return None
+@contextmanager
+def _no_ipfs_logic_evaluation_compat_shims() -> Any:
+    yield ()
+
+
+@contextmanager
+def _ipfs_logic_evaluation_compat_shims() -> Any:
+    """Apply temporary adapters for audited upstream logic API drift."""
+
+    patches: list[tuple[Any, str, Any, bool]] = []
+    applied: list[str] = []
+    with _IPFS_EVALUATE_COMPAT_LOCK:
+        try:
+            _install_ipfs_policy_evaluator_at_time_compat(patches, applied)
+            _install_ipfs_compile_and_evaluate_input_compat(patches, applied)
+            _install_ipfs_bridge_result_alias_compat(patches, applied)
+            yield tuple(applied)
+        finally:
+            for target, name, original, had_attr in reversed(patches):
+                if had_attr:
+                    setattr(target, name, original)
+                else:
+                    try:
+                        delattr(target, name)
+                    except AttributeError:
+                        pass
+
+
+def _install_ipfs_policy_evaluator_at_time_compat(
+    patches: list[tuple[Any, str, Any, bool]],
+    applied: list[str],
+) -> None:
+    try:
+        from ipfs_datasets_py.mcp_server import temporal_policy  # type: ignore
+    except Exception:
+        return
+
+    evaluator_cls = getattr(temporal_policy, "PolicyEvaluator", None)
+    original = getattr(evaluator_cls, "evaluate", None)
+    if evaluator_cls is None or not callable(original):
+        return
+    try:
+        params = signature(original).parameters
+    except (TypeError, ValueError):
+        return
+    if "at_time" in params or "now" not in params:
+        return
+
+    @wraps(original)
+    def evaluate_with_at_time(self: Any, intent: Any, policy: Any, *args: Any, at_time: Any = None, **kwargs: Any) -> Any:
+        if at_time is not None and "now" not in kwargs:
+            kwargs["now"] = _coerce_ipfs_evaluation_now(at_time)
+        return original(self, intent, policy, *args, **kwargs)
+
+    _patch_attr(patches, evaluator_cls, "evaluate", evaluate_with_at_time)
+    applied.append("PolicyEvaluator.evaluate_at_time_to_now")
+
+
+def _install_ipfs_compile_and_evaluate_input_compat(
+    patches: list[tuple[Any, str, Any, bool]],
+    applied: list[str],
+) -> None:
+    try:
+        from ipfs_datasets_py.logic.integration import nl_ucan_policy_compiler  # type: ignore
+    except Exception:
+        return
+
+    original = getattr(nl_ucan_policy_compiler, "compile_nl_to_ucan_policy", None)
+    if not callable(original):
+        return
+    try:
+        params = signature(original).parameters
+    except (TypeError, ValueError):
+        return
+    accepts_audience_did = "audience_did" in params or any(
+        param.kind == Parameter.VAR_KEYWORD for param in params.values()
+    )
+    if accepts_audience_did:
+        return
+
+    @wraps(original)
+    def compile_with_bridge_kwargs(sentences: Any, *args: Any, audience_did: Any = None, **kwargs: Any) -> Any:
+        if isinstance(sentences, str):
+            sentences = [sentences]
+        return original(sentences, *args, **kwargs)
+
+    _patch_attr(patches, nl_ucan_policy_compiler, "compile_nl_to_ucan_policy", compile_with_bridge_kwargs)
+    applied.append("compile_nl_to_ucan_policy_bridge_input")
+
+
+def _install_ipfs_bridge_result_alias_compat(
+    patches: list[tuple[Any, str, Any, bool]],
+    applied: list[str],
+) -> None:
+    try:
+        from ipfs_datasets_py.logic.CEC.nl import dcec_to_ucan_bridge  # type: ignore
+    except Exception:
+        return
+
+    bridge_result_cls = getattr(dcec_to_ucan_bridge, "BridgeResult", None)
+    if bridge_result_cls is None or hasattr(bridge_result_cls, "deny_capabilities"):
+        return
+
+    _patch_attr(
+        patches,
+        bridge_result_cls,
+        "deny_capabilities",
+        property(lambda self: getattr(self, "denials", [])),
+    )
+    applied.append("BridgeResult.deny_capabilities_alias")
+
+
+def _patch_attr(
+    patches: list[tuple[Any, str, Any, bool]],
+    target: Any,
+    name: str,
+    value: Any,
+) -> None:
+    had_attr = hasattr(target, name)
+    original = getattr(target, name, None)
+    setattr(target, name, value)
+    patches.append((target, name, original, had_attr))
+
+
+def _coerce_ipfs_evaluation_now(value: Any) -> Any:
+    if isinstance(value, datetime):
+        return value if value.tzinfo is not None else value.replace(tzinfo=timezone.utc)
+    if isinstance(value, (int, float)):
+        return datetime.fromtimestamp(float(value), tz=timezone.utc)
+    if isinstance(value, str):
+        try:
+            return datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except ValueError:
+            return value
+    return value
+
+
+def _record_ipfs_compat_shims(payload: dict[str, Any], shims: tuple[str, ...]) -> None:
+    if not shims:
+        return
+    existing = _string_list(payload.get("compat_shims")) if "compat_shims" in payload else []
+    payload["compat_shims"] = list(dict.fromkeys(existing + list(shims)))
+
+
+def _call_evaluate_nl_policy(
+    logic_api: Any,
+    nl_text: str,
+    *,
+    tool: str,
+    actor: str | None,
+    kwargs: Mapping[str, Any],
+) -> Any:
+    evaluate_nl_policy = getattr(logic_api, "evaluate_nl_policy")
+    with _ipfs_policy_evaluator_at_time_compatibility():
+        return evaluate_nl_policy(nl_text, tool=tool, actor=actor, **dict(kwargs))
+
+
+@contextmanager
+def _ipfs_policy_evaluator_at_time_compatibility() -> Iterator[None]:
+    """Temporarily adapt upstream ``at_time`` calls to evaluators expecting ``now``."""
+
     try:
         from ipfs_datasets_py.mcp_server.temporal_policy import PolicyEvaluator  # type: ignore
-    except ImportError as exc:
-        _logger.debug(
-            "Skipping ipfs_datasets_py PolicyEvaluator at_time adapter; temporal policy import failed",
-            exc_info=exc,
-        )
-        return None
+    except Exception:
+        yield
+        return
 
     original_evaluate = getattr(PolicyEvaluator, "evaluate", None)
     if not callable(original_evaluate):
-        return None
+        yield
+        return
+
     try:
         parameters = inspect.signature(original_evaluate).parameters
     except (TypeError, ValueError):
-        return None
+        yield
+        return
+
     if "at_time" in parameters or "now" not in parameters:
-        return None
+        yield
+        return
 
     def evaluate_with_at_time(
         self: Any,
         intent: Any,
         policy: Any,
         *args: Any,
-        **call_kwargs: Any,
+        at_time: Any = None,
+        now: Any = None,
+        **policy_kwargs: Any,
     ) -> Any:
-        at_time = call_kwargs.pop("at_time", None)
-        if at_time is not None and "now" not in call_kwargs:
-            call_kwargs["now"] = _coerce_ipfs_at_time_to_datetime(at_time)
-        return original_evaluate(self, intent, policy, *args, **call_kwargs)
+        if now is None and at_time is not None:
+            now = _coerce_ipfs_evaluation_time(at_time)
+        return original_evaluate(
+            self,
+            intent,
+            policy,
+            *args,
+            now=now,
+            **policy_kwargs,
+        )
 
     PolicyEvaluator.evaluate = evaluate_with_at_time  # type: ignore[method-assign]
-
-    def restore_evaluator() -> None:
-        if getattr(PolicyEvaluator, "evaluate", None) is evaluate_with_at_time:
-            PolicyEvaluator.evaluate = original_evaluate  # type: ignore[method-assign]
-
-    return restore_evaluator
+    try:
+        yield
+    finally:
+        PolicyEvaluator.evaluate = original_evaluate  # type: ignore[method-assign]
 
 
-def _coerce_ipfs_at_time_to_datetime(at_time: Any) -> Any:
-    if isinstance(at_time, datetime):
-        if at_time.tzinfo is None:
-            return at_time.replace(tzinfo=timezone.utc)
-        return at_time
-    if isinstance(at_time, (int, float)):
-        return datetime.fromtimestamp(float(at_time), tz=timezone.utc)
-    return at_time
+def _coerce_ipfs_evaluation_time(value: Any) -> Any:
+    if isinstance(value, datetime):
+        return value if value.tzinfo else value.replace(tzinfo=timezone.utc)
+    try:
+        return datetime.fromtimestamp(float(value), timezone.utc)
+    except (TypeError, ValueError, OverflowError):
+        return value
+
+
+def _normalize_ipfs_evaluation_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    reason = str(payload.get("reason", ""))
+    if "unexpected keyword argument" not in reason:
+        return payload
+    normalized = dict(payload)
+    normalized["decision"] = DeonticOutcome.DENY.value
+    normalized["reason"] = _IPFS_LOGIC_SIGNATURE_MISMATCH_REASON
+    normalized["upstream_signature_mismatch"] = True
+    return normalized
+
+
+def _ipfs_evaluation_failure_reason(exc: Exception) -> str:
+    reason = str(exc)
+    if "unexpected keyword argument" in reason:
+        return _IPFS_LOGIC_SIGNATURE_MISMATCH_REASON
+    return f"evaluate_nl_policy failed: {reason}"
+
+
+def _evaluate_ipfs_nl_policy_with_compat(
+    logic_api: Any,
+    nl_text: str,
+    *,
+    tool: str,
+    actor: str | None,
+    **kwargs: Any,
+) -> Any:
+    evaluate_nl_policy = getattr(logic_api, "evaluate_nl_policy")
+    policy_evaluator_cls = _ipfs_policy_evaluator_class_for_compat(logic_api)
+    if policy_evaluator_cls is None:
+        return evaluate_nl_policy(nl_text, tool=tool, actor=actor, **kwargs)
+
+    original_evaluate = getattr(policy_evaluator_cls, "evaluate", None)
+    if not callable(original_evaluate) or not _policy_evaluator_needs_at_time_compat(original_evaluate):
+        return evaluate_nl_policy(nl_text, tool=tool, actor=actor, **kwargs)
+
+    def evaluate_with_at_time_compat(self: Any, intent: Any, policy: Any, *args: Any, **eval_kwargs: Any) -> Any:
+        if "at_time" in eval_kwargs:
+            at_time = eval_kwargs.pop("at_time")
+            eval_kwargs.setdefault("now", _coerce_ipfs_policy_eval_time(at_time))
+        return original_evaluate(self, intent, policy, *args, **eval_kwargs)
+
+    policy_evaluator_cls.evaluate = evaluate_with_at_time_compat
+    try:
+        return evaluate_nl_policy(nl_text, tool=tool, actor=actor, **kwargs)
+    finally:
+        policy_evaluator_cls.evaluate = original_evaluate
+
+
+def _ipfs_policy_evaluator_class_for_compat(logic_api: Any) -> Any | None:
+    if getattr(logic_api, "__name__", "") != "ipfs_datasets_py.logic.api":
+        return None
+    try:
+        from ipfs_datasets_py.mcp_server.temporal_policy import PolicyEvaluator  # type: ignore
+    except Exception:
+        return None
+    return PolicyEvaluator
+
+
+def _policy_evaluator_needs_at_time_compat(evaluate: Any) -> bool:
+    try:
+        parameters = inspect.signature(evaluate).parameters
+    except (TypeError, ValueError):
+        return False
+    return "at_time" not in parameters and "now" in parameters
+
+
+def _coerce_ipfs_policy_eval_time(value: Any) -> Any:
+    if value is None or isinstance(value, datetime):
+        return value
+    try:
+        return datetime.fromtimestamp(float(value), tz=timezone.utc)
+    except (TypeError, ValueError, OSError, OverflowError):
+        return value
+
+
+def _evaluate_ipfs_nl_policy_with_compat(
+    logic_api: Any,
+    nl_text: str,
+    *,
+    tool: str,
+    actor: str | None,
+    **kwargs: Any,
+) -> Any:
+    evaluate_nl_policy = getattr(logic_api, "evaluate_nl_policy")
+    policy_evaluator_cls = _ipfs_policy_evaluator_class_for_compat(logic_api)
+    if policy_evaluator_cls is None:
+        return evaluate_nl_policy(nl_text, tool=tool, actor=actor, **kwargs)
+
+    original_evaluate = getattr(policy_evaluator_cls, "evaluate", None)
+    if not callable(original_evaluate) or not _policy_evaluator_needs_at_time_compat(original_evaluate):
+        return evaluate_nl_policy(nl_text, tool=tool, actor=actor, **kwargs)
+
+    def evaluate_with_at_time_compat(
+        self: Any,
+        intent: Any,
+        policy: Any,
+        *args: Any,
+        **eval_kwargs: Any,
+    ) -> Any:
+        if "at_time" in eval_kwargs:
+            at_time = eval_kwargs.pop("at_time")
+            eval_kwargs.setdefault("now", _coerce_ipfs_policy_eval_time(at_time))
+        return original_evaluate(self, intent, policy, *args, **eval_kwargs)
+
+    policy_evaluator_cls.evaluate = evaluate_with_at_time_compat
+    try:
+        return evaluate_nl_policy(nl_text, tool=tool, actor=actor, **kwargs)
+    finally:
+        policy_evaluator_cls.evaluate = original_evaluate
+
+
+def _ipfs_policy_evaluator_class_for_compat(logic_api: Any) -> Any | None:
+    if getattr(logic_api, "__name__", "") != "ipfs_datasets_py.logic.api":
+        return None
+    try:
+        from ipfs_datasets_py.mcp_server.temporal_policy import PolicyEvaluator  # type: ignore
+    except Exception:
+        return None
+    return PolicyEvaluator
+
+
+def _policy_evaluator_needs_at_time_compat(evaluate: Any) -> bool:
+    try:
+        parameters = inspect.signature(evaluate).parameters
+    except (TypeError, ValueError):
+        return False
+    return "at_time" not in parameters and "now" in parameters
+
+
+def _coerce_ipfs_policy_eval_time(value: Any) -> Any:
+    if value is None or isinstance(value, datetime):
+        return value
+    try:
+        return datetime.fromtimestamp(float(value), tz=timezone.utc)
+    except (TypeError, ValueError, OSError, OverflowError):
+        return value
 
 
 def _strict_rejection_result(source_text: str, strict_error: str, reason: str) -> NLPolicyCompilation:
@@ -478,7 +800,7 @@ def _resolve_ipfs_logic_api(logic_api: Any = None) -> tuple[Any | None, tuple[st
     if api is None:
         try:
             from ipfs_datasets_py.logic import api as loaded_api  # type: ignore
-        except ImportError:
+        except Exception:
             return None, _REQUIRED_IPFS_LOGIC_SYMBOLS
         api = loaded_api
 
@@ -515,7 +837,6 @@ def _compile_ipfs_logic_policy_result(
             actor=actor,
         )
     except Exception as exc:
-        _logger.warning("compile_nl_to_policy failed; requesting clarification", exc_info=exc)
         clarification = _clarification_prompt(
             source_text,
             reason=f"compile_nl_to_policy failed: {exc}",
@@ -612,6 +933,100 @@ def _call_compile_nl_to_policy(
     if last_error is not None:
         raise last_error
     return compile_nl_to_policy(sentences)
+
+
+def _call_evaluate_nl_policy(
+    logic_api: Any,
+    nl_text: str,
+    *,
+    tool: str,
+    actor: str | None,
+    **kwargs: Any,
+) -> Any:
+    evaluate_nl_policy = getattr(logic_api, "evaluate_nl_policy")
+    with _ipfs_policy_evaluator_at_time_compatibility(logic_api):
+        return evaluate_nl_policy(nl_text, tool=tool, actor=actor, **kwargs)
+
+
+@contextmanager
+def _ipfs_policy_evaluator_at_time_compatibility(logic_api: Any):
+    """Temporarily adapt the real upstream ``at_time``/``now`` mismatch."""
+
+    if _ipfs_api_module_name(logic_api) != "ipfs_datasets_py.logic.api":
+        yield
+        return
+
+    try:
+        from ipfs_datasets_py.mcp_server.temporal_policy import PolicyEvaluator  # type: ignore
+    except Exception:
+        yield
+        return
+
+    original_evaluate = getattr(PolicyEvaluator, "evaluate", None)
+    if not callable(original_evaluate):
+        yield
+        return
+
+    try:
+        parameters = inspect.signature(original_evaluate).parameters
+    except (TypeError, ValueError):
+        yield
+        return
+
+    if "at_time" in parameters or "now" not in parameters:
+        yield
+        return
+
+    def evaluate_with_at_time(self: Any, intent: Any, policy: Any, *args: Any, **kwargs: Any) -> Any:
+        if "at_time" in kwargs and "now" not in kwargs:
+            kwargs["now"] = _coerce_ipfs_evaluation_time(kwargs.pop("at_time"))
+        else:
+            kwargs.pop("at_time", None)
+        return original_evaluate(self, intent, policy, *args, **kwargs)
+
+    PolicyEvaluator.evaluate = evaluate_with_at_time
+    try:
+        yield
+    finally:
+        PolicyEvaluator.evaluate = original_evaluate
+
+
+def _ipfs_api_module_name(logic_api: Any) -> str:
+    name = _first_text(getattr(logic_api, "__name__", ""))
+    if name:
+        return name
+    return _first_text(getattr(type(logic_api), "__module__", ""))
+
+
+def _coerce_ipfs_evaluation_time(value: Any) -> Any:
+    if isinstance(value, datetime):
+        return value if value.tzinfo is not None else value.replace(tzinfo=timezone.utc)
+    if isinstance(value, (int, float)):
+        return datetime.fromtimestamp(float(value), tz=timezone.utc)
+    if isinstance(value, str):
+        try:
+            return datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except ValueError:
+            return value
+    return value
+
+
+def _normalize_ipfs_evaluation_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    reason = str(payload.get("reason", ""))
+    if "unexpected keyword argument" not in reason:
+        return payload
+    normalized = dict(payload)
+    normalized["decision"] = DeonticOutcome.DENY.value
+    normalized["reason"] = _IPFS_LOGIC_SIGNATURE_MISMATCH_REASON
+    normalized["upstream_signature_mismatch"] = True
+    return normalized
+
+
+def _ipfs_evaluation_failure_reason(exc: Exception) -> str:
+    reason = str(exc)
+    if "unexpected keyword argument" in reason:
+        return _IPFS_LOGIC_SIGNATURE_MISMATCH_REASON
+    return f"evaluate_nl_policy failed: {reason}"
 
 
 def _policy_from_ipfs_logic_result(
@@ -775,11 +1190,14 @@ def _ipfs_explanations(logic_api: Any, source_text: str, compile_result: Any) ->
         try:
             explanations.extend(_string_list(explain_iter([source_text.strip()])))
         except Exception as exc:
-            _logger.warning(
-                "compile_explain_iter failed; trying next explanation source",
-                exc_info=exc,
+            warnings.warn(
+                f"compile_explain_iter raised an unexpected error: {exc}",
+                stacklevel=2,
             )
-            _logger.warning("compile_explain_iter failed while building IPFS explanations", exc_info=exc)
+            _logger.debug(
+                "compile_explain_iter raised an unexpected error",
+                exc_info=True,
+            )
 
     if not explanations:
         compiler_cls = getattr(logic_api, "NLUCANPolicyCompiler", None)
@@ -790,9 +1208,13 @@ def _ipfs_explanations(logic_api: Any, source_text: str, compile_result: Any) ->
                 if callable(compile_explain):
                     explanations.extend(_string_list(compile_explain([source_text.strip()])))
             except Exception as exc:
-                _logger.warning(
-                    "NLUCANPolicyCompiler.compile_explain failed; falling back to result metadata",
-                    exc_info=exc,
+                warnings.warn(
+                    f"NLUCANPolicyCompiler.compile_explain raised an unexpected error: {exc}",
+                    stacklevel=2,
+                )
+                _logger.debug(
+                    "NLUCANPolicyCompiler.compile_explain raised an unexpected error",
+                    exc_info=True,
                 )
 
     metadata = _as_plain_mapping(_ipfs_field(compile_result, "metadata"))
@@ -1018,20 +1440,7 @@ def _first_text(*values: Any) -> str:
     return ""
 
 
-def _warn_ipfs_serializer_fallback(converter_name: str, value: Any, exc: Exception) -> None:
-    _logger.warning(
-        "_serialize_ipfs_value: %s failed for %r; trying next strategy",
-        converter_name,
-        type(value),
-        exc_info=exc,
-    )
-
-
 def _serialize_ipfs_value(value: Any) -> Any:
-    # This is a best-effort serialization boundary for optional upstream
-    # compiler objects.  Broad catches below are intentionally limited to the
-    # conversion call being attempted, and every failure is logged before the
-    # fallback chain continues.
     if value is None or isinstance(value, (str, int, float, bool)):
         return value
     if isinstance(value, Mapping):
@@ -1039,34 +1448,20 @@ def _serialize_ipfs_value(value: Any) -> Any:
     if isinstance(value, (list, tuple, set)):
         return [_serialize_ipfs_value(item) for item in value]
     if hasattr(value, "as_dict"):
-        # Only catch exceptions from as_dict() itself; let recursive serialization
-        # errors propagate so they are not silently swallowed by this fallback chain.
         try:
-            raw = value.as_dict()
-        except Exception as exc:
-            # Log at WARNING so failures are visible in production logs rather than
-            # silently swallowed.  The fallback chain continues to the next strategy.
-            _warn_ipfs_serializer_fallback("as_dict()", value, exc)
-        else:
-            return _serialize_ipfs_value(raw)
+            return _serialize_ipfs_value(value.as_dict())
+        except Exception:
+            pass
     if hasattr(value, "to_dict"):
         try:
-            raw = value.to_dict()
-        except Exception as exc:
-            # Log at WARNING so failures are visible in production logs rather than
-            # silently swallowed.  The fallback chain continues to the next strategy.
-            _warn_ipfs_serializer_fallback("to_dict()", value, exc)
-        else:
-            return _serialize_ipfs_value(raw)
+            return _serialize_ipfs_value(value.to_dict())
+        except Exception:
+            pass
     if is_dataclass(value):
         try:
-            raw = asdict(value)
-        except Exception as exc:
-            # Log at WARNING so failures are visible in production logs rather than
-            # silently swallowed.  The fallback chain continues to the next strategy.
-            _warn_ipfs_serializer_fallback("asdict()", value, exc)
-        else:
-            return _serialize_ipfs_value(raw)
+            return _serialize_ipfs_value(asdict(value))
+        except Exception:
+            pass
     if hasattr(value, "__dict__"):
         public_attrs = {
             key: item
