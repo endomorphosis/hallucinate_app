@@ -805,7 +805,7 @@ class ErrorMonitor:
     _SIMILAR_SENTINEL = '\x00'
 
     def _normalize_similar_message(self, message: str) -> str:
-        """Replace volatile error-message details with the collision-safe sentinel."""
+        """Normalize volatile details before comparing error messages."""
         return self._SIMILAR_PATTERN.sub(self._SIMILAR_SENTINEL, message)
     
     def __init__(self, resources=None, config=None):
