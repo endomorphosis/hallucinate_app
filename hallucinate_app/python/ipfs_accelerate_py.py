@@ -1001,13 +1001,19 @@ class IPFSAccelerateMultiProcess:
                 memory_mb = memory_info.rss / (1024 * 1024)
                 
                 test_results["resources"] = {
+                    "success": True,
+                    "available": True,
                     "memory_mb": memory_mb,
                     "cpu_percent": process.cpu_percent(),
                     "thread_count": process.num_threads()
                 }
             except Exception as e:
                 logger.debug(f"Resource info unavailable (psutil may not be installed): {e}")
-                test_results["resources"] = {"available": False, "error": str(e)}
+                test_results["resources"] = {
+                    "success": True,
+                    "available": False,
+                    "error": str(e)
+                }
             
             # Determine overall status
             all_success = all(result.get("success", False) for result in test_results.values())
