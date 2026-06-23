@@ -2028,7 +2028,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-179 Resolve code annotation in hallucinate_app/hallucinate_app/experiments/webnn-developer-preview/demos/whisper-base/generation_utils.js:52
 
-- Status: completed
+- Status: done
 - Completion: manual
 - Priority: P3
 - Track: ops
