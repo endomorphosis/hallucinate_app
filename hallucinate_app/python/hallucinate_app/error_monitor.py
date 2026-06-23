@@ -795,8 +795,10 @@ class ErrorMonitor:
         re.IGNORECASE,
     )
     _SIMILAR_MIN_LEN = 10
-    # Sentinel used to replace volatile details during normalisation.  A null
-    # byte cannot appear in ordinary error-message strings, so it will never
+    # Sentinel used to replace volatile details during normalisation.  This must
+    # not regress to the old literal "XXX" placeholder: real error messages can
+    # contain that text, causing false-positive duplicate matches (HAO-210).  A
+    # null byte cannot appear in ordinary error-message strings, so it will never
     # collide with real message content and cause a false-positive similarity
     # match (VAI-144).  The sentinel is deliberately shorter than _SIMILAR_MIN_LEN
     # so that a message consisting entirely of volatile tokens normalises to a
