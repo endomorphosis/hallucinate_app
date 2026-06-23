@@ -782,9 +782,12 @@ def _ipfs_explanations(logic_api: Any, source_text: str, compile_result: Any) ->
         try:
             explanations.extend(_string_list(explain_iter([source_text.strip()])))
         except Exception as exc:
-            warnings.warn(
-                f"compile_explain_iter raised an unexpected error: {exc}",
-                stacklevel=2,
+            # Log at WARNING so failures are visible in production logs rather
+            # than silently swallowed.  Explanation generation is best-effort.
+            _logger.warning(
+                "compile_explain_iter raised an unexpected error; "
+                "falling back to remaining explanation sources",
+                exc_info=exc,
             )
 
     if not explanations:
@@ -796,9 +799,13 @@ def _ipfs_explanations(logic_api: Any, source_text: str, compile_result: Any) ->
                 if callable(compile_explain):
                     explanations.extend(_string_list(compile_explain([source_text.strip()])))
             except Exception as exc:
-                warnings.warn(
-                    f"NLUCANPolicyCompiler.compile_explain raised an unexpected error: {exc}",
-                    stacklevel=2,
+                # Log at WARNING so failures are visible in production logs
+                # rather than silently swallowed.  Explanation generation is
+                # best-effort and the fallback chain continues.
+                _logger.warning(
+                    "NLUCANPolicyCompiler.compile_explain raised an unexpected error; "
+                    "falling back to remaining explanation sources",
+                    exc_info=exc,
                 )
 
     metadata = _as_plain_mapping(_ipfs_field(compile_result, "metadata"))
