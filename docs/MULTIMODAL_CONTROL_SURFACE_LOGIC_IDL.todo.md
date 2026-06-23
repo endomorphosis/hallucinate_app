@@ -4945,7 +4945,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-437 Capture physical phone ingress rehearsal receipt
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: launch
