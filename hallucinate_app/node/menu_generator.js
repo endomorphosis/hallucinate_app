@@ -17,6 +17,34 @@ import {
   resolveViewPath
 } from './menu_config.js';
 
+const RELEASES_URL = 'https://github.com/endomorphosis/hallucinate_app/releases';
+const LATEST_RELEASE_API_URL = 'https://api.github.com/repos/endomorphosis/hallucinate_app/releases/latest';
+
+function parseVersion(version) {
+  return String(version || '')
+    .trim()
+    .replace(/^v/i, '')
+    .split(/[.-]/)
+    .map(part => Number.parseInt(part, 10))
+    .map(part => (Number.isNaN(part) ? 0 : part));
+}
+
+function compareVersions(left, right) {
+  const leftParts = parseVersion(left);
+  const rightParts = parseVersion(right);
+  const length = Math.max(leftParts.length, rightParts.length);
+
+  for (let index = 0; index < length; index += 1) {
+    const leftPart = leftParts[index] || 0;
+    const rightPart = rightParts[index] || 0;
+
+    if (leftPart > rightPart) return 1;
+    if (leftPart < rightPart) return -1;
+  }
+
+  return 0;
+}
+
 /**
  * Menu Generator Class
  * Builds Electron menu from configuration
@@ -507,20 +535,8 @@ export class MenuGenerator {
         break;
 
       case 'checkUpdates': {
-        const currentVersion = app.getVersion();
-        const releasesUrl = 'https://github.com/endomorphosis/hallucinate_app/releases';
-        dialog.showMessageBox(this.mainWindow, {
-          type: 'info',
-          title: 'Check for Updates',
-          message: `Current version: ${currentVersion}`,
-          detail: 'Visit the releases page to check for the latest version.',
-          buttons: ['Open Releases Page', 'Close'],
-          defaultId: 0,
-          cancelId: 1
-        }).then(({ response }) => {
-          if (response === 0) {
-            shell.openExternal(releasesUrl);
-          }
+        this.checkForUpdates().catch(err => {
+          console.error('Failed to check for updates:', err);
         });
         break;
       }
@@ -550,14 +566,67 @@ Includes:
   }
 
   /**
-   * Open SwissKnife directly to a configured app when one is supplied.
+   * Check GitHub releases for a newer application version.
    */
-  openSwissKnifeApp(item) {
-    const appName = typeof item?.app === 'string' && item.app.length > 0
-      ? item.app
-      : undefined;
+  async checkForUpdates() {
+    const currentVersion = app.getVersion();
 
-    this.createSwissKnifeWindow(appName);
+    try {
+      const response = await fetch(LATEST_RELEASE_API_URL, {
+        headers: {
+          Accept: 'application/vnd.github+json',
+          'User-Agent': `hallucinate_app/${currentVersion}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`GitHub releases request failed with HTTP ${response.status}`);
+      }
+
+      const latestRelease = await response.json();
+      const latestVersion = latestRelease?.tag_name;
+
+      if (typeof latestVersion !== 'string' || latestVersion.length === 0) {
+        throw new Error('GitHub latest release response did not include a tag name');
+      }
+
+      const releaseUrl = latestRelease.html_url || RELEASES_URL;
+      const updateAvailable = compareVersions(latestVersion, currentVersion) > 0;
+
+      const { response: selectedButton } = await dialog.showMessageBox(this.mainWindow, {
+        type: updateAvailable ? 'info' : 'none',
+        title: 'Check for Updates',
+        message: updateAvailable
+          ? `Update available: ${latestVersion}`
+          : `Hallucinate App is up to date (${currentVersion})`,
+        detail: updateAvailable
+          ? `Current version: ${currentVersion}\nLatest version: ${latestVersion}`
+          : `Latest release: ${latestVersion}`,
+        buttons: updateAvailable ? ['Open Release Page', 'Close'] : ['Open Releases Page', 'Close'],
+        defaultId: 0,
+        cancelId: 1
+      });
+
+      if (selectedButton === 0) {
+        await shell.openExternal(updateAvailable ? releaseUrl : RELEASES_URL);
+      }
+    } catch (err) {
+      console.error('Unable to check GitHub releases:', err);
+
+      const { response: selectedButton } = await dialog.showMessageBox(this.mainWindow, {
+        type: 'warning',
+        title: 'Check for Updates',
+        message: `Current version: ${currentVersion}`,
+        detail: 'Unable to reach GitHub releases. You can open the releases page to check manually.',
+        buttons: ['Open Releases Page', 'Close'],
+        defaultId: 0,
+        cancelId: 1
+      });
+
+      if (selectedButton === 0) {
+        await shell.openExternal(RELEASES_URL);
+      }
+    }
   }
 
   /**
