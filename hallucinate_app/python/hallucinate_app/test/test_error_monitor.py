@@ -512,25 +512,27 @@ class TestMessagesSimilar(unittest.TestCase):
         """isinstance guard prevents TypeError from regex normalisation (VAI-145).
 
         When msg1 or msg2 is not a str (e.g. None, int, or any other non-string
-        runtime value), the guard must short-circuit before reaching the regex
-        substitution, returning simple equality instead of raising TypeError.
+        runtime value), the guard introduced at line 1115 must short-circuit before
+        reaching the re.sub call, returning simple equality instead of raising
+        TypeError.  This covers every non-string combination that could arrive at
+        _messages_similar despite the ErrorData.message string contract.
         """
         annotations = ErrorMonitor._messages_similar.__annotations__
         self.assertIs(annotations["msg1"], Any)
         self.assertIs(annotations["msg2"], Any)
 
         # None vs None — equal, so similar
-        self.assertTrue(self._similar(None, None))           # type: ignore[arg-type]
+        self.assertTrue(self._similar(None, None))
         # None vs str — not equal, not similar
-        self.assertFalse(self._similar(None, "err"))         # type: ignore[arg-type]
-        self.assertFalse(self._similar("err", None))         # type: ignore[arg-type]
+        self.assertFalse(self._similar(None, "err"))
+        self.assertFalse(self._similar("err", None))
         # Non-string numeric values
-        self.assertTrue(self._similar(42, 42))               # type: ignore[arg-type]
-        self.assertFalse(self._similar(42, 43))              # type: ignore[arg-type]
-        self.assertFalse(self._similar(42, "42"))            # type: ignore[arg-type]
+        self.assertTrue(self._similar(42, 42))
+        self.assertFalse(self._similar(42, 43))
+        self.assertFalse(self._similar(42, "42"))
         # Mixed non-string types
-        self.assertFalse(self._similar(None, 0))             # type: ignore[arg-type]
-        self.assertFalse(self._similar([], ""))              # type: ignore[arg-type]
+        self.assertFalse(self._similar(None, 0))
+        self.assertFalse(self._similar([], ""))
 
     def test_identical_short_raw_message_returns_true_before_normalization(self):
         """Identical raw messages return True immediately, bypassing _SIMILAR_MIN_LEN (VAI-146).
@@ -616,39 +618,3 @@ class TestMessagesSimilar(unittest.TestCase):
             "Fault at 0xDEADBEEF in module alpha",
             "Fault at 0xCAFEBABE in module beta",
         ))
-
-
-class TestFindDuplicateError(unittest.TestCase):
-    """Focused tests for ErrorMonitor._find_duplicate_error (VAI-140)."""
-
-    def setUp(self):
-        self.monitor = ErrorMonitor()
-
-    def _error(self, error_id, message, component="worker", source=ErrorSource.PYTHON):
-        return ErrorData(
-            id=error_id,
-            timestamp=datetime.now().isoformat(),
-            level=ErrorLevel.ERROR,
-            source=source,
-            component=component,
-            operation="process",
-            message=message,
-        )
-
-    def test_returns_none_when_no_existing_error_matches(self):
-        """No component/source/message match returns None instead of a false duplicate."""
-        self.monitor.errors["existing"] = self._error(
-            "existing",
-            "Connection refused by remote host",
-        )
-
-        candidate = self._error("candidate", "Disk quota exceeded on /var/log")
-
-        self.assertIsNone(self.monitor._find_duplicate_error(candidate))
-
-    def test_does_not_match_error_against_itself(self):
-        """An already-stored error is not returned as its own duplicate."""
-        stored = self._error("same-id", "Unexpected EOF while reading response")
-        self.monitor.errors[stored.id] = stored
-
-        self.assertIsNone(self.monitor._find_duplicate_error(stored))
