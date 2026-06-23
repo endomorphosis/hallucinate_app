@@ -614,7 +614,7 @@ class IPFSAccelerateMultiProcess:
                         })
                 
                 except Exception as e:
-                    logger.error(f"Error processing command in model process for {model_id}: {e}")
+                    logger.exception("Error processing command in model process for %s", model_id)
                     try:
                         result_queue.put({
                             "action": "error",
@@ -622,7 +622,14 @@ class IPFSAccelerateMultiProcess:
                             "error": str(e)
                         })
                     except Exception as queue_err:
-                        logger.warning(f"Failed to send error to result queue for {model_id}: {queue_err}")
+                        logger.exception(
+                            "Failed to send command error to result queue for %s; "
+                            "shutting down model process: %s",
+                            model_id,
+                            queue_err,
+                        )
+                        exit_event.set()
+                        break
             
             # Clean up
             logger.info(f"Model process for {model_id} shutting down")
