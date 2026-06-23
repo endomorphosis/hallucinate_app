@@ -8,15 +8,13 @@ freeform user rules.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass, field, is_dataclass
 from datetime import datetime, timezone
-from functools import wraps
-from inspect import Parameter, signature
+import inspect
 import re
-from threading import RLock
-from collections.abc import Mapping
-from typing import Any
+from typing import Any, Iterator
 
 _logger = logging.getLogger(__name__)
 
@@ -46,7 +44,9 @@ _REQUIRED_IPFS_LOGIC_SYMBOLS = (
     "NLUCANPolicyCompiler",
     "evaluate_with_manager",
 )
-_IPFS_EVALUATE_COMPAT_LOCK = RLock()
+_IPFS_LOGIC_SIGNATURE_MISMATCH_REASON = (
+    "evaluate_nl_policy failed closed because the upstream evaluator signature is incompatible"
+)
 
 IGNORE_SURFACE_AT_TIME_TEMPLATE = "ignore my {surface} at {time_window}"
 REQUIRE_CONFIRMATION_BEFORE_METHOD_TEMPLATE = "require confirmation before {method}"
@@ -383,13 +383,17 @@ def evaluate_ipfs_nl_policy(
         else _no_ipfs_logic_evaluation_compat_shims()
     )
     try:
-        with compat_context as applied_shims:
-            compat_shims = applied_shims
-            result = api.evaluate_nl_policy(nl_text, tool=tool, actor=actor, **kwargs)
+        result = _call_evaluate_nl_policy(
+            api,
+            nl_text,
+            tool=tool,
+            actor=actor,
+            kwargs=kwargs,
+        )
     except Exception as exc:  # pragma: no cover - exact upstream failures vary.
         payload = {
             "decision": DeonticOutcome.DENY.value,
-            "reason": f"evaluate_nl_policy failed: {exc}",
+            "reason": _ipfs_evaluation_failure_reason(exc),
             "compiler_lane": IPFS_LOGIC_COMPILER_LANE,
         }
         if compat_shims:
@@ -398,6 +402,7 @@ def evaluate_ipfs_nl_policy(
 
     payload = _serialize_ipfs_value(result)
     if isinstance(payload, dict):
+        payload = _normalize_ipfs_evaluation_payload(payload)
         payload.setdefault("compiler_lane", IPFS_LOGIC_COMPILER_LANE)
         _record_ipfs_compat_shims(payload, compat_shims)
         return payload
@@ -555,6 +560,98 @@ def _record_ipfs_compat_shims(payload: dict[str, Any], shims: tuple[str, ...]) -
         return
     existing = _string_list(payload.get("compat_shims")) if "compat_shims" in payload else []
     payload["compat_shims"] = list(dict.fromkeys(existing + list(shims)))
+
+
+def _call_evaluate_nl_policy(
+    logic_api: Any,
+    nl_text: str,
+    *,
+    tool: str,
+    actor: str | None,
+    kwargs: Mapping[str, Any],
+) -> Any:
+    evaluate_nl_policy = getattr(logic_api, "evaluate_nl_policy")
+    with _ipfs_policy_evaluator_at_time_compatibility():
+        return evaluate_nl_policy(nl_text, tool=tool, actor=actor, **dict(kwargs))
+
+
+@contextmanager
+def _ipfs_policy_evaluator_at_time_compatibility() -> Iterator[None]:
+    """Temporarily adapt upstream ``at_time`` calls to evaluators expecting ``now``."""
+
+    try:
+        from ipfs_datasets_py.mcp_server.temporal_policy import PolicyEvaluator  # type: ignore
+    except Exception:
+        yield
+        return
+
+    original_evaluate = getattr(PolicyEvaluator, "evaluate", None)
+    if not callable(original_evaluate):
+        yield
+        return
+
+    try:
+        parameters = inspect.signature(original_evaluate).parameters
+    except (TypeError, ValueError):
+        yield
+        return
+
+    if "at_time" in parameters or "now" not in parameters:
+        yield
+        return
+
+    def evaluate_with_at_time(
+        self: Any,
+        intent: Any,
+        policy: Any,
+        *args: Any,
+        at_time: Any = None,
+        now: Any = None,
+        **policy_kwargs: Any,
+    ) -> Any:
+        if now is None and at_time is not None:
+            now = _coerce_ipfs_evaluation_time(at_time)
+        return original_evaluate(
+            self,
+            intent,
+            policy,
+            *args,
+            now=now,
+            **policy_kwargs,
+        )
+
+    PolicyEvaluator.evaluate = evaluate_with_at_time  # type: ignore[method-assign]
+    try:
+        yield
+    finally:
+        PolicyEvaluator.evaluate = original_evaluate  # type: ignore[method-assign]
+
+
+def _coerce_ipfs_evaluation_time(value: Any) -> Any:
+    if isinstance(value, datetime):
+        return value if value.tzinfo else value.replace(tzinfo=timezone.utc)
+    try:
+        return datetime.fromtimestamp(float(value), timezone.utc)
+    except (TypeError, ValueError, OverflowError):
+        return value
+
+
+def _normalize_ipfs_evaluation_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    reason = str(payload.get("reason", ""))
+    if "unexpected keyword argument" not in reason:
+        return payload
+    normalized = dict(payload)
+    normalized["decision"] = DeonticOutcome.DENY.value
+    normalized["reason"] = _IPFS_LOGIC_SIGNATURE_MISMATCH_REASON
+    normalized["upstream_signature_mismatch"] = True
+    return normalized
+
+
+def _ipfs_evaluation_failure_reason(exc: Exception) -> str:
+    reason = str(exc)
+    if "unexpected keyword argument" in reason:
+        return _IPFS_LOGIC_SIGNATURE_MISMATCH_REASON
+    return f"evaluate_nl_policy failed: {reason}"
 
 
 def _strict_rejection_result(source_text: str, strict_error: str, reason: str) -> NLPolicyCompilation:
