@@ -315,8 +315,8 @@ class AuthKeystoreIntegration:
                 
                 # Get key info from keystore
                 return await self.keystore.get_key_info(provider)
-        except Exception as e:
-            logger.exception(f"Failed to get authorized key info for {provider}: {e}")
+        except Exception:
+            logger.exception(f"Failed to get authorized key info for {provider}")
             raise
     
     async def rotate_authorized_key(self, provider: str, new_key: str, auth_token: str,
