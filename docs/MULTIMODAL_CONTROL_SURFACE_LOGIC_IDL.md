@@ -911,6 +911,65 @@ This makes voice commands, gestures, display actions, and phone UI events
 observably policy-gated before they can reach a local runtime or desktop peer
 runtime.
 
+### Meta glasses display-widget intent bridge
+
+`HAO-431` integrates Meta glasses display-widget actions with the Hallucinate App
+command plane by treating MGW action payloads as remote interaction events for
+the existing `virtual_desktop_session`. The bridge does not define a second
+command contract. It preserves the MGW display-widget action contract as raw
+input evidence, then emits the same normalized intents and
+`virtual_desktop_command_intent` records used by the phone controller,
+Swissknife UI, and desktop peer.
+
+MGW display actions map into the shared command plane as follows:
+
+| MGW action or confirmation | Canonical envelope | Normalized intent before mediation | Mediated command intent |
+| --- | --- | --- | --- |
+| `focusDisplayWidgetAction`, `focus_next`, `focus_previous`, region focus, or D-pad navigation | `surface: "gesture"` with `surface_event: "swipe"` or `surface_event: "tap"` and `raw_payload.display_action` | `terminal.focus_card` with `target_ref` set to the widget, card, region, or focus action ID | `terminal.focus_card` issued to `meta_glasses:terminal` with placement and render receipts |
+| `activateDisplayWidgetAction`, selected action activation, or widget button press | `surface: "gesture"` or `surface: "mouse"` with `raw_payload.display_action.action_id` | `terminal.activate_action` when the target remains display-local, or `desktop.request_handoff` when the action targets the phone-hosted virtual desktop | `terminal.activate_action`, `desktop.open_widget`, `desktop.focus_window`, `desktop.activate_control`, or `desktop.request_handoff` according to policy |
+| Confirmation accept or continue from the widget | `surface: "voice"` or `surface: "gesture"` with `surface_event: "confirm"` and `raw_payload.confirmation_prompt.prompt_id` | `desktop.confirm_command` with `target_ref` set to the prompt or command receipt ID | `desktop.confirm_command` issued to the policy-selected participant |
+| Confirmation reject, cancel, dismiss, reset, or timeout action | `surface: "voice"` or `surface: "gesture"` with `surface_event: "cancel"` or `surface_event: "tap"` | `desktop.cancel_command`, `terminal.dismiss`, or `terminal.render_summary` depending on the prompt action | `desktop.cancel_command`, `terminal.dismiss`, `terminal.render_summary`, or fallback render command with denial/recovery receipt |
+| `render_widget`, `update_widget`, `clear_widget`, `play_video`, or `subscribe_updates` result acknowledgement | `surface: "agent"` with `surface_event: "proposal"` and `raw_payload.display_receipt` | `terminal.render_summary` or `desktop.sync_state` for render-state convergence | Receipt-backed render/update command or recovery state for `meta_glasses:terminal`, `phone:operator`, or `swissknife:ui` |
+
+The adapter must copy these MGW fields into `raw_payload.display_action` when
+present: `widget_id`, `descriptor_cid`, `manifest_cid`, `action_id`,
+`action_kind`, `confirmation_prompt.prompt_id`, `correlation_id`,
+`request_id`, `orb_receipt_cid`, `policy_receipt_cid`, `render_path`,
+`fallback_path`, and any display-safe selected region or focus ID. These fields
+are evidence for receipts; they are not command-plane authority.
+
+The bridge lifecycle is:
+
+1. The mobile DAT bridge, display-webapp preview, simulator, or Swissknife ORB
+   handler receives an MGW display-widget action or confirmation.
+2. The adapter creates one `interaction_envelope` with `context.platform:
+   "meta_glasses"`, `context.device_context.remote_surface`, the active
+   `session.session_id`, and `session.participant_id:
+   "meta_glasses:terminal"`.
+3. The adapter stores the original MGW payload in `raw_payload.display_action`
+   and resolves only the preliminary `normalized_intent` listed above.
+4. Hallucinate App validates and mediates the envelope through the shared
+   `control_surface_contract`, producing `policy_decision` and
+   `mediation_receipt` records before dispatch.
+5. Only the resulting `virtual_desktop_command_intent` may call Swissknife,
+   desktop peer, phone UI, or Meta glasses render targets. The command carries
+   `policy_receipt_id`, `command_receipt_id`, and the render or recovery
+   receipt ID returned to the widget.
+
+The required receipt chain for MGW-originated commands is
+`display_action_receipt_id -> event_receipt_id -> policy_receipt_id ->
+command_receipt_id -> render_receipt_id`. If the MGW payload already contains
+`orb_receipt_cid` or `policy_receipt_cid`, the bridge records those as aliases
+on the matching receipt object and still allocates the Hallucinate App
+`receipt_id` values. A confirmation prompt shown on glasses must therefore
+confirm the Hallucinate App command receipt, not a client-local display action.
+
+The bridge must reject any MGW action that cannot be tied to the active
+`virtual_desktop_session`, participant ID, and policy receipt. Rejected actions
+stop at a denial `mediation_receipt` and may render `terminal.render_summary`,
+`terminal.dismiss`, or a display-widget recovery message, but they must not
+invoke a desktop, phone, or Swissknife command directly.
+
 ## Meta-Glasses Relationship
 The Meta-glasses path should be treated as:
 - a remote interaction surface,
