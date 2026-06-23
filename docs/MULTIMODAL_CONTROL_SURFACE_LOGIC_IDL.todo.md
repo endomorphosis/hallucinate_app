@@ -5756,3 +5756,47 @@ UI-plane participants and runtime-plane targets.
 - Outputs: data/hallucinate_multimodal_control/discovery, tracking/PR-079-agent-runner-minimal.md
 - Validation: test -f tracking/PR-079-agent-runner-minimal.md
 - Acceptance: Codebase scan filed this finding from tracking/PR-079-agent-runner-minimal.md:56. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-495-codebase-scan-0a3992f37e3e.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-496 Resolve code annotation in tests/test_agent_runner.py:435
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, tests/test_agent_runner.py
+- Validation: python3 -m py_compile tests/test_agent_runner.py
+- Acceptance: Codebase scan filed this finding from tests/test_agent_runner.py:435. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-496-codebase-scan-4e05798c3058.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-497 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:54
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, tests/test_supervisor_objective_task_janitor.py
+- Validation: python3 -m py_compile tests/test_supervisor_objective_task_janitor.py
+- Acceptance: Codebase scan filed this finding from tests/test_supervisor_objective_task_janitor.py:54. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-497-codebase-scan-1aa0d0120649.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-498 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:63
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, tests/test_supervisor_objective_task_janitor.py
+- Validation: python3 -m py_compile tests/test_supervisor_objective_task_janitor.py
+- Acceptance: Codebase scan filed this finding from tests/test_supervisor_objective_task_janitor.py:63. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-498-codebase-scan-5a3102335d9c.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-499 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:110
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, tests/test_supervisor_objective_task_janitor.py
+- Validation: python3 -m py_compile tests/test_supervisor_objective_task_janitor.py
+- Acceptance: Codebase scan filed this finding from tests/test_supervisor_objective_task_janitor.py:110. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-499-codebase-scan-f5182b96f0db.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
