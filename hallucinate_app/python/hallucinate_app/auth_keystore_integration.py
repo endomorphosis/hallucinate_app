@@ -169,14 +169,13 @@ class AuthKeystoreIntegration:
             options: Additional options
         
         Returns:
-            bool: True if key was stored successfully, False if the caller is not
-                authorized for the requested provider.
+            bool: True if key was stored successfully, False if authorization was denied.
 
         Raises:
             ValueError: If the integration module is not initialized.
             Exception: Re-raises any unexpected runtime error after logging it, so
-                callers can distinguish a genuine authorization denial (``False``)
-                from an unexpected backend failure.
+                callers can distinguish a genuine authorization denial (``False``) from
+                an unexpected backend failure.
         """
         if not self.initialized:
             raise ValueError("Integration module not initialized. Call init() first")
@@ -210,14 +209,13 @@ class AuthKeystoreIntegration:
             auth_token: UCAN capability token
         
         Returns:
-            bool: True if key was deleted successfully, False if the caller is not
-                authorized for the requested provider.
+            bool: True if key was deleted successfully, False if authorization was denied.
 
         Raises:
             ValueError: If the integration module is not initialized.
             Exception: Re-raises any unexpected runtime error after logging it, so
-                callers can distinguish a genuine authorization denial (``False``)
-                from an unexpected backend failure.
+                callers can distinguish a genuine authorization denial (``False``) from
+                an unexpected backend failure.
         """
         if not self.initialized:
             raise ValueError("Integration module not initialized. Call init() first")
@@ -331,14 +329,13 @@ class AuthKeystoreIntegration:
             options: Additional options
         
         Returns:
-            bool: True if key was rotated successfully, False if the caller is not
-                authorized for the requested provider.
+            bool: True if key was rotated successfully, False if authorization was denied.
 
         Raises:
             ValueError: If the integration module is not initialized.
             Exception: Re-raises any unexpected runtime error after logging it, so
-                callers can distinguish a genuine authorization denial (``False``)
-                from an unexpected backend failure.
+                callers can distinguish a genuine authorization denial (``False``) from
+                an unexpected backend failure.
         """
         if not self.initialized:
             raise ValueError("Integration module not initialized. Call init() first")
