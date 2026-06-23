@@ -428,30 +428,32 @@ class TestSecurePyArrowIndexManagerIntegration(unittest.TestCase):
     
     def test_capability_verification_sync(self):
         """Test capability verification for sync operations with real auth manager"""
-        # Test sync with sync token
+        # Test sync with sync token - only catch unavailability errors, not assertion failures
         try:
             sync_result = self.loop.run_until_complete(
                 self.secure_pyarrow_index_manager.sync_with_ipfs_pinset(True, self.sync_token)
             )
-            # Skip detailed verification since syncing may take a long time
-            # Just verify that it returns a dictionary
-            self.assertIsInstance(sync_result, dict)
-            
-            # Test with invalid token
-            with self.assertRaises((PermissionError, ValueError, RuntimeError)):
-                self.loop.run_until_complete(
-                    self.secure_pyarrow_index_manager.sync_with_ipfs_pinset(True, "invalid-token")
-                )
-            
-            # Test with wrong capability token (read instead of sync)
-            with self.assertRaises((PermissionError, ValueError, RuntimeError)):
-                self.loop.run_until_complete(
-                    self.secure_pyarrow_index_manager.sync_with_ipfs_pinset(True, self.read_token)
-                )
-        except Exception as e:
-            # If sync is not available in the test environment, log and skip
-            logger.warning(f"Skipping sync test, sync operation failed: {e}")
+        except (NotImplementedError, AttributeError, OSError, ConnectionError) as e:
+            # Sync is not available in this test environment; skip gracefully
+            logger.warning(f"Skipping sync test, sync operation not available: {e}")
             self.skipTest(f"Sync operation not available: {e}")
+            return
+
+        # Skip detailed verification since syncing may take a long time
+        # Just verify that it returns a dictionary
+        self.assertIsInstance(sync_result, dict)
+
+        # Test with invalid token
+        with self.assertRaises((PermissionError, ValueError, RuntimeError)):
+            self.loop.run_until_complete(
+                self.secure_pyarrow_index_manager.sync_with_ipfs_pinset(True, "invalid-token")
+            )
+
+        # Test with wrong capability token (read instead of sync)
+        with self.assertRaises((PermissionError, ValueError, RuntimeError)):
+            self.loop.run_until_complete(
+                self.secure_pyarrow_index_manager.sync_with_ipfs_pinset(True, self.read_token)
+            )
     
     def test_stats_tracking(self):
         """Test statistics tracking with real components"""
