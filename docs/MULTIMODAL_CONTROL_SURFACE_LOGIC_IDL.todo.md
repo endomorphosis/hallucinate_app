@@ -4910,7 +4910,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-436 Close objective gap: Production launch readiness gate
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: launch
