@@ -17,7 +17,7 @@ from pathlib import Path
 # Add parent directory to path to import hallucinate_app modules
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
-from hallucinate_app.ipfs_accelerate_server_mp import IPFSAccelerateServer
+from hallucinate_app.ipfs_accelerate_server_mp import IPFSAccelerateServer, PlasmaManager
 from hallucinate_app.thread_pool_manager import ThreadPoolManager, TaskType, TaskPriority
 from hallucinate_app.ipfs_accelerate_mp_adapter import IPFSAccelerateAdapter
 
@@ -142,13 +142,26 @@ class TestIPFSAccelerateMP(unittest.TestCase):
         
         # Check it's stopped
         self.assertFalse(self.server.running)
-        
+
         # Check processes are stopped or None
         if self.server.ipfs_process:
             self.assertFalse(self.server.ipfs_process.is_alive())
-        
+
         if self.server.ml_process:
             self.assertFalse(self.server.ml_process.is_alive())
+
+
+class TestPlasmaManager(unittest.TestCase):
+    """Focused tests for PlasmaManager error handling."""
+
+    def test_put_requires_active_client_when_arrow_is_enabled(self):
+        manager = PlasmaManager.__new__(PlasmaManager)
+        manager.has_arrow = True
+        manager.client = None
+        manager.socket_path = "/tmp/missing_plasma_test"
+
+        with self.assertRaisesRegex(RuntimeError, "Plasma store client is not available"):
+            manager.put({"value": "not stored"})
 
 
 class TestThreadPoolIntegration(unittest.TestCase):
@@ -451,6 +464,7 @@ def run_tests():
         # Create a test suite with both test classes
         suite = unittest.TestSuite()
         suite.addTest(unittest.makeSuite(TestIPFSAccelerateMP))
+        suite.addTest(unittest.makeSuite(TestPlasmaManager))
         suite.addTest(unittest.makeSuite(ThreadPoolIntegrationAsyncTests))
         
         # Run the tests
