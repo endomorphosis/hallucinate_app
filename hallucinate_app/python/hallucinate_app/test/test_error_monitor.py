@@ -22,7 +22,14 @@ if parent_dir not in sys.path:
     sys.path.insert(0, parent_dir)
 
 # Import required modules
-from hallucinate_app.error_monitor import error_monitor, ErrorMonitor, ErrorData, ErrorLevel, ErrorSource, RecoveryStrategy
+from hallucinate_app.error_monitor import (
+    error_monitor,
+    ErrorData,
+    ErrorMonitor,
+    ErrorLevel,
+    ErrorSource,
+    RecoveryStrategy,
+)
 from hallucinate_app.pyarrow_content_index import PyArrowContentIndex, ContentIndexError, ContentNotFoundError
 
 class TestErrorMonitor(unittest.TestCase):
@@ -609,3 +616,39 @@ class TestMessagesSimilar(unittest.TestCase):
             "Fault at 0xDEADBEEF in module alpha",
             "Fault at 0xCAFEBABE in module beta",
         ))
+
+
+class TestFindDuplicateError(unittest.TestCase):
+    """Focused tests for ErrorMonitor._find_duplicate_error (VAI-140)."""
+
+    def setUp(self):
+        self.monitor = ErrorMonitor()
+
+    def _error(self, error_id, message, component="worker", source=ErrorSource.PYTHON):
+        return ErrorData(
+            id=error_id,
+            timestamp=datetime.now().isoformat(),
+            level=ErrorLevel.ERROR,
+            source=source,
+            component=component,
+            operation="process",
+            message=message,
+        )
+
+    def test_returns_none_when_no_existing_error_matches(self):
+        """No component/source/message match returns None instead of a false duplicate."""
+        self.monitor.errors["existing"] = self._error(
+            "existing",
+            "Connection refused by remote host",
+        )
+
+        candidate = self._error("candidate", "Disk quota exceeded on /var/log")
+
+        self.assertIsNone(self.monitor._find_duplicate_error(candidate))
+
+    def test_does_not_match_error_against_itself(self):
+        """An already-stored error is not returned as its own duplicate."""
+        stored = self._error("same-id", "Unexpected EOF while reading response")
+        self.monitor.errors[stored.id] = stored
+
+        self.assertIsNone(self.monitor._find_duplicate_error(stored))

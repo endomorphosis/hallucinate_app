@@ -1109,7 +1109,9 @@ class ErrorMonitor:
         """Find if this error is a duplicate of an existing one"""
         matching_errors = []
         for existing_id, existing in self.errors.items():
-            # Check if it's the same operation within the same component and has a similar message
+            if existing_id == error.id:
+                continue
+            # Check if it's the same component and similar message
             if (existing.component == error.component and 
                 existing.source == error.source and
                 existing.operation == error.operation and
