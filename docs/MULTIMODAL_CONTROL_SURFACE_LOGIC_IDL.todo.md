@@ -5803,7 +5803,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-500 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:67
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: quality
