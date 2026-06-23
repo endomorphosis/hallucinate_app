@@ -4802,7 +4802,7 @@ The board uses `## HAO-` task headers plus `Status`, `Completion`, `Priority`, `
 
 ## HAO-427 Define the virtual desktop multimodal session contract
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: runtime
