@@ -5114,7 +5114,7 @@ UI-plane participants and runtime-plane targets.
 - Graph parents: VAIOS-G697
 - Graph depth: 2
 - Parallel lane: swissknife-mcp-capability-registry
-- Conflict policy: expose MCP features through Swissknife capability descriptors and mediated intents; do not let app-specific adapters bypass Hallucinate App policy receipts
+- Conflict policy: expose MCP features through Swissknife capability descriptors and mediated intents; do not let app-specific adapters bypass Hallucinate App policy receipts; do not edit MGW-owned plan, queue, or queue-test files under implementation_plan/docs/18-swissknife-meta-glasses-display-widgets* or tests/test_meta_glasses_display_todo_queue.py
 - Goal id: VAIOS-G697
 - Missing evidence: Swissknife MCP capability registry for Python server features
 - Surplus group: objective/VAIOS-G697
