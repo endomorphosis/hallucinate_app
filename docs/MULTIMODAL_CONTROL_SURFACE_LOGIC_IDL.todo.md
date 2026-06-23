@@ -4907,3 +4907,38 @@ UI-plane participants and runtime-plane targets.
 - Outputs: hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md, data/hallucinate_multimodal_control/discovery
 - Validation: rg -n "HAO-435|operator recovery rehearsal|desktop peer|offload failure|phone|Meta glasses|receipt" hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md data/hallucinate_multimodal_control/discovery
 - Acceptance: Define or implement the operator rehearsal for desktop-peer timeout, denial, retry exhaustion, user cancellation, and fallback-to-phone outcomes, proving that phone UI, Swissknife, and Meta glasses all render the same Hallucinate App recovery state and receipt chain.
+
+## HAO-436 Close objective gap: Production launch readiness gate
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: launch
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, tests/test_virtual_ai_os_launch_readiness_gate.py, docs/launch/phone_desktop_glasses_readiness.md, data/virtual_ai_os/discovery
+- Validation: PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_virtual_ai_os_launch_readiness_gate.py -q && npm --prefix swissknife run test:e2e:meta-glasses && npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts
+- Bundle: objective/launch/production-readiness-gate
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-launch-production-readiness-gate.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G689
+- Graph depth: 1
+- Parallel lane: launch-readiness-gate
+- Conflict policy: keep launch readiness evidence in explicit receipts and tests; do not accept generic AST or documentation matches as sufficient proof
+- Goal id: VAIOS-G697
+- Missing evidence: launch Playwright validation gate
+- Embedding query: production launch gate phone hosted Swissknife virtual desktop desktop peer offload Meta glasses terminal physical validation receipts Playwright e2e
+- AST query: LaunchReadinessGate, launch_readiness_receipt_v1, phone_desktop_glasses_readiness, playwright, meta-glasses-virtual-os, multimodal-control-surface
+- Surplus group: objective/VAIOS-G697
+- Merge key: 6e8ea139dc089f90
+- Merge family: objective/VAIOS-G697
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: launch_validation_gate
+- Goal packet: 
+- Goal packet role: 
+- Goal packet goals: 
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Candidate kind: validation_gate
+- Todo vector key: cc195571dde04580
+- Acceptance: Objective scan filed this gap for VAIOS-G697. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-436-objective-gap-3c1f2a790f3e.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (launch Playwright validation gate), and keep the supervisor-fed backlog aligned with the objective heap.  Split only if the gate needs a separate child for physical phone, desktop peer, or Meta glasses evidence capture.
