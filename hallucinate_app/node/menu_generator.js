@@ -556,11 +556,11 @@ export class MenuGenerator {
       }
 
       case 'showAbout': {
-        const currentVersion = app.getVersion();
+        const aboutVersion = app.getVersion();
         dialog.showMessageBox({
           type: 'info',
           title: 'About Hallucinate App',
-          message: `Hallucinate App v${currentVersion}`,
+          message: `Hallucinate App v${aboutVersion}`,
           detail: `A comprehensive platform for IPFS-powered AI development.
 
 Includes:
