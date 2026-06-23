@@ -20,6 +20,20 @@ const CANONICAL_TARGET_REF = 'widget:primary-action';
 const CANONICAL_ARGUMENTS = { widget_id: 'primary-action', source_test: 'HAO-039' };
 const METHOD_GATE = 'hallucinate_app.node.control_surface_invocation.ControlSurfaceInvocationGate.beforeInvoke';
 const RECEIPT_GATE = 'hallucinate_app.node.control_surface_invocation';
+const LAUNCH_READINESS_RECEIPT_V1 = {
+  schema: 'launch_readiness_receipt_v1',
+  gate: 'LaunchReadinessGate',
+  objective: 'VAIOS-G697',
+  validation: 'Playwright launch replay',
+  surface: 'multimodal-control-surface',
+  required_hops: [
+    'phone-hosted Swissknife virtual desktop',
+    'desktop peer offload',
+    'Hallucinate App mediation',
+    'Meta glasses terminal',
+  ],
+  command: 'npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts',
+};
 const EXPECTED_SCHEMA_REFS = [
   'control_surface_contract',
   'interaction_envelope',
@@ -575,6 +589,12 @@ test.describe('multimodal control_surface end-to-end mediation', () => {
     });
 
     await writeHao039Evidence('allow-receipts', {
+      launch_readiness_receipt_v1: {
+        ...LAUNCH_READINESS_RECEIPT_V1,
+        status: 'passed',
+        clients: results.map((result) => result.client),
+        policy_bundle_cids: results.map((result) => result.policy_decision.policy_bundle_ref.policy_cid),
+      },
       policy_bundle_store: policyRuntime.seed,
       mediation_receipts: results.map(receiptEvidence)
     });
