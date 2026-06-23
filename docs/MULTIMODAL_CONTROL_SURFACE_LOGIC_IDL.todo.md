@@ -5253,7 +5253,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-450 Resolve code annotation in implementation_plan/docs/19-virtual-ai-os-submodule-integration.md:267
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P3
 - Track: docs
