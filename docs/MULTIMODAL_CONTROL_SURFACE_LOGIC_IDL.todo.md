@@ -5046,3 +5046,185 @@ UI-plane participants and runtime-plane targets.
 - Work scope: launch_readiness_physical_evidence_aggregate
 - Candidate kind: validation_gate
 - Acceptance: Extend the `launch_readiness_receipt_v1` evidence so `VAIOS-G697` cannot be treated as launch-ready unless `HAO-437`, `HAO-438`, and `HAO-439` receipts are present, all Playwright launch gates are listed in the same receipt lineage, and hardware-free fallback remains explicit when physical capture is unavailable.
+
+## HAO-441 Inventory MCP server feature contracts for Swissknife integration
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: launch
+- Depends on: HAO-436
+- Outputs: data/hallucinate_multimodal_control/discovery/2026-06-23-hao-441-mcp-server-feature-inventory.md, hallucinate_app/docs/MCP_DAEMON_ARCHITECTURE.md, docs/launch/phone_desktop_glasses_readiness.md
+- Validation: rg -n "HAO-441|MCP server feature inventory|ipfs_accelerate_py|ipfs_datasets_py|ipfs_kit_py|Swissknife" data/hallucinate_multimodal_control/discovery hallucinate_app/docs docs/launch
+- Bundle: objective/launch/production-readiness-gate
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-launch-production-readiness-gate.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G697
+- Graph depth: 2
+- Parallel lane: mcp-feature-inventory
+- Conflict policy: treat MCP server features as explicit capability contracts; do not infer Swissknife app support from generic package presence
+- Goal id: VAIOS-G697
+- Missing evidence: MCP server feature inventory for ipfs_accelerate_py, ipfs_datasets_py, and ipfs_kit_py
+- Surplus group: objective/VAIOS-G697
+- Merge family: objective/VAIOS-G697
+- Merge role: mcp_feature_inventory
+- Work item count: 1
+- Work scope: mcp_server_feature_inventory
+- Candidate kind: launch_integration
+- Acceptance: Produce a launch-scoped inventory of the MCP features exposed by `ipfs_accelerate_py`, `ipfs_datasets_py`, and `ipfs_kit_py`, including tool names, daemon entrypoints, transport/protocol assumptions, security boundaries, expected Swissknife consumers, and receipt fields needed by Hallucinate App mediation.
+
+## HAO-442 Make Hallucinate App launch the Python MCP daemons
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: launch
+- Depends on: HAO-441
+- Outputs: hallucinate_app/docs/MCP_DAEMON_ARCHITECTURE.md, hallucinate_app/index.js, hallucinate_app/preload.js, hallucinate_app/scripts, data/hallucinate_multimodal_control/discovery/2026-06-23-hao-442-mcp-daemon-launch.md
+- Validation: rg -n "HAO-442|launch.*ipfs_accelerate_py|launch.*ipfs_datasets_py|launch.*ipfs_kit_py|MCP daemon|daemon health" hallucinate_app docs data/hallucinate_multimodal_control/discovery
+- Bundle: objective/launch/production-readiness-gate
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-launch-production-readiness-gate.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G697
+- Graph depth: 2
+- Parallel lane: hallucinate-mcp-daemon-launch
+- Conflict policy: Hallucinate App owns daemon lifecycle and health receipts; Swissknife apps may request capabilities but must not spawn unmanaged server processes
+- Goal id: VAIOS-G697
+- Missing evidence: Hallucinate App MCP daemon launch and health supervision
+- Surplus group: objective/VAIOS-G697
+- Merge family: objective/VAIOS-G697
+- Merge role: hallucinate_mcp_daemon_launch
+- Work item count: 1
+- Work scope: hallucinate_mcp_daemon_launch
+- Candidate kind: launch_integration
+- Acceptance: Implement or document the Hallucinate App launch path for the `ipfs_accelerate_py`, `ipfs_datasets_py`, and `ipfs_kit_py` MCP daemons, including startup order, environment, health checks, restart behavior, mediation hooks, and launch receipts that can be rendered by Swissknife and Meta glasses.
+
+## HAO-443 Expose MCP server capabilities to Swissknife applications
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: launch
+- Depends on: HAO-441
+- Outputs: swissknife/src, swissknife/contracts, hallucinate_app/swissknife, data/hallucinate_multimodal_control/discovery/2026-06-23-hao-443-swissknife-mcp-capability-registry.md
+- Validation: rg -n "HAO-443|Swissknife MCP capability registry|ipfs_accelerate_py|ipfs_datasets_py|ipfs_kit_py|capability descriptor" swissknife hallucinate_app data/hallucinate_multimodal_control/discovery
+- Bundle: objective/launch/production-readiness-gate
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-launch-production-readiness-gate.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G697
+- Graph depth: 2
+- Parallel lane: swissknife-mcp-capability-registry
+- Conflict policy: expose MCP features through Swissknife capability descriptors and mediated intents; do not let app-specific adapters bypass Hallucinate App policy receipts
+- Goal id: VAIOS-G697
+- Missing evidence: Swissknife MCP capability registry for Python server features
+- Surplus group: objective/VAIOS-G697
+- Merge family: objective/VAIOS-G697
+- Merge role: swissknife_mcp_capability_registry
+- Work item count: 1
+- Work scope: swissknife_mcp_capability_registry
+- Candidate kind: launch_integration
+- Acceptance: Add a Swissknife-facing capability registry that maps `ipfs_accelerate_py`, `ipfs_datasets_py`, and `ipfs_kit_py` MCP tools into app-visible descriptors, normalized command intents, permission scopes, UI affordances, and Hallucinate App mediation receipt aliases.
+
+## HAO-444 Prove Swissknife apps can invoke the Python MCP server features
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: launch
+- Depends on: HAO-442, HAO-443
+- Outputs: swissknife/test/e2e/mcp-server-feature-apps.spec.ts, swissknife/test/e2e, data/hallucinate_multimodal_control/discovery/2026-06-23-hao-444-swissknife-mcp-app-invocation.md
+- Validation: rg -n "HAO-444|Swissknife app.*MCP|ipfs_accelerate_py|ipfs_datasets_py|ipfs_kit_py|tool invocation receipt" swissknife data/hallucinate_multimodal_control/discovery
+- Bundle: objective/launch/production-readiness-gate
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-launch-production-readiness-gate.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G697
+- Graph depth: 2
+- Parallel lane: swissknife-mcp-feature-apps
+- Conflict policy: each Swissknife app invocation must carry command, policy, daemon, and tool receipt IDs back through Hallucinate App
+- Goal id: VAIOS-G697
+- Missing evidence: Swissknife applications invoking Python MCP server features
+- Surplus group: objective/VAIOS-G697
+- Merge family: objective/VAIOS-G697
+- Merge role: swissknife_mcp_feature_apps
+- Work item count: 1
+- Work scope: swissknife_mcp_feature_app_invocation
+- Candidate kind: launch_integration
+- Acceptance: Add app-level proof that Swissknife applications can invoke representative `ipfs_accelerate_py`, `ipfs_datasets_py`, and `ipfs_kit_py` MCP features through the capability registry, receive deterministic results or fail-closed errors, and expose the same invocation receipts to Hallucinate App and the launch evidence packet.
+
+## HAO-445 Validate Mcp-Plus-Plus protocol compatibility
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: launch
+- Depends on: HAO-441
+- Outputs: Mcp-Plus-Plus, swissknife/contracts, hallucinate_app/docs/MCP_DAEMON_ARCHITECTURE.md, data/hallucinate_multimodal_control/discovery/2026-06-23-hao-445-mcp-plus-plus-compatibility.md
+- Validation: rg -n "HAO-445|Mcp-Plus-Plus|MCP\\+\\+|protocol negotiation|capability descriptor|tool receipt" Mcp-Plus-Plus swissknife hallucinate_app data/hallucinate_multimodal_control/discovery
+- Bundle: objective/launch/production-readiness-gate
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-launch-production-readiness-gate.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G697
+- Graph depth: 2
+- Parallel lane: mcp-plus-plus-compat
+- Conflict policy: preserve compatibility with Mcp-Plus-Plus protocol semantics while keeping Hallucinate App as the mediation and receipt authority
+- Goal id: VAIOS-G697
+- Missing evidence: Mcp-Plus-Plus compatibility for Hallucinate App and Swissknife MCP bridges
+- Surplus group: objective/VAIOS-G697
+- Merge family: objective/VAIOS-G697
+- Merge role: mcp_plus_plus_compatibility
+- Work item count: 1
+- Work scope: mcp_plus_plus_protocol_compatibility
+- Candidate kind: launch_integration
+- Acceptance: Verify and document how Hallucinate App and Swissknife negotiate Mcp-Plus-Plus-compatible capability descriptors, transports, tool calls, errors, receipts, and lifecycle events while preserving the same policy and command contract used by the Python MCP daemons.
+
+## HAO-446 Add HAO and Swissknife Playwright coverage for MCP integration
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: launch
+- Depends on: HAO-444, HAO-445
+- Outputs: hallucinate_app/test/e2e/hao-swissknife-mcp-integration.spec.ts, swissknife/test/e2e/mcp-server-feature-apps.spec.ts, hallucinate_app/package.json, swissknife/package.json
+- Validation: npm --prefix hallucinate_app run test:e2e -- hao-swissknife-mcp-integration.spec.ts && npm --prefix swissknife run test:e2e:mcp
+- Bundle: objective/launch/production-readiness-gate
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-launch-production-readiness-gate.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G697
+- Graph depth: 2
+- Parallel lane: hao-swissknife-mcp-playwright
+- Conflict policy: Playwright must prove visible app behavior plus daemon/tool receipts; do not count static docs or unit-only mocks as launch evidence
+- Goal id: VAIOS-G697
+- Missing evidence: HAO and Swissknife Playwright MCP integration tests
+- Surplus group: objective/VAIOS-G697
+- Merge family: objective/VAIOS-G697
+- Merge role: hao_swissknife_mcp_playwright
+- Work item count: 1
+- Work scope: hao_swissknife_mcp_playwright_e2e
+- Candidate kind: validation_gate
+- Acceptance: Add Playwright tests that launch the Hallucinate App MCP integration surface, verify the Python MCP daemons are reachable or fail closed with health receipts, open Swissknife applications that consume those features, exercise representative tool calls, and assert Mcp-Plus-Plus-compatible receipts are visible in the UI.
+
+## HAO-447 Aggregate MCP server and Swissknife evidence into launch readiness
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: launch
+- Depends on: HAO-440, HAO-446
+- Outputs: tests/test_virtual_ai_os_launch_readiness_gate.py, docs/launch/phone_desktop_glasses_readiness.md, data/hallucinate_multimodal_control/discovery, data/virtual_ai_os/discovery
+- Validation: PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_virtual_ai_os_launch_readiness_gate.py tests/test_hallucinate_multimodal_control_todo_queue.py -q && npm --prefix hallucinate_app run test:e2e -- hao-swissknife-mcp-integration.spec.ts && npm --prefix swissknife run test:e2e:mcp
+- Bundle: objective/launch/production-readiness-gate
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-launch-production-readiness-gate.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G697
+- Graph depth: 2
+- Parallel lane: launch-readiness-mcp-aggregate
+- Conflict policy: launch readiness must include daemon lifecycle, Swissknife app usage, Mcp-Plus-Plus compatibility, and Playwright evidence in one receipt lineage
+- Goal id: VAIOS-G697
+- Missing evidence: aggregate MCP server, Swissknife, Mcp-Plus-Plus, and Playwright launch evidence
+- Surplus group: objective/VAIOS-G697
+- Merge family: objective/VAIOS-G697
+- Merge role: launch_readiness_mcp_aggregate
+- Work item count: 1
+- Work scope: launch_readiness_mcp_evidence_aggregate
+- Candidate kind: validation_gate
+- Acceptance: Extend the launch-readiness packet so `VAIOS-G697` remains open until Hallucinate App daemon launch, Swissknife app feature invocation, Mcp-Plus-Plus compatibility, and HAO/Swissknife Playwright results are all present with the same session, daemon, command, policy, and tool receipt lineage.
