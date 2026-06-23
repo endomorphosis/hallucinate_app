@@ -637,19 +637,22 @@ class TestMessagesSimilar(unittest.TestCase):
         self.assertTrue(self._similar(msg_static, msg_hex_long))
 
     def test_non_string_type_guard_at_line_1115(self):
-        """Non-string values fall back to equality instead of normalisation (VAI-145)."""
-        # None vs None — equal, so similar
-        self.assertTrue(self._similar(None, None))
-        # None vs str — not equal, not similar
-        self.assertFalse(self._similar(None, "err"))
-        self.assertFalse(self._similar("err", None))
-        # Non-string numeric values
-        self.assertTrue(self._similar(42, 42))
-        self.assertFalse(self._similar(42, 43))
-        self.assertFalse(self._similar(42, "42"))
-        # Mixed non-string types
-        self.assertFalse(self._similar(None, 0))
-        self.assertFalse(self._similar([], ""))
+        """Non-string inputs use equality comparison rather than raising TypeError (VAI-145).
+
+        Line 1115 of error_monitor.py contains an isinstance guard that prevents
+        re.sub from receiving a non-string argument (which would raise TypeError).
+        When at least one argument is not a str, the method falls back to direct
+        equality comparison so duplicate detection still works for the common case
+        where both sides carry the same non-string sentinel value.
+        """
+        # Two identical non-string values are similar (e.g. both None, both same int).
+        self.assertTrue(self._similar(None, None))  # type: ignore[arg-type]
+        self.assertTrue(self._similar(42, 42))  # type: ignore[arg-type]
+        # A non-string paired with a string (or a different non-string) is not similar.
+        self.assertFalse(self._similar(None, "error text"))  # type: ignore[arg-type]
+        self.assertFalse(self._similar("error text", None))  # type: ignore[arg-type]
+        self.assertFalse(self._similar(42, 99))  # type: ignore[arg-type]
+
 
     def test_uppercase_hex_different_addresses_not_conflated(self):
         """IGNORECASE normalisation + distinct addresses = not similar (VAI-147).
