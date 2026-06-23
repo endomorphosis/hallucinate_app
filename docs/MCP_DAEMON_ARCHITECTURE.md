@@ -73,6 +73,51 @@ category where applicable, Swissknife consumer, policy decision, mediation
 receipt id, descriptor/interface CIDs, argument hash, redaction profile,
 upstream status, artifact/event/decision/receipt CIDs, and parent receipt CID.
 
+### HAO-445 Mcp-Plus-Plus Compatibility
+
+`HAO-445` validates the Mcp-Plus-Plus launch compatibility contract for
+Hallucinate App and Swissknife without changing the Python daemon command
+surface documented by `HAO-441`. The compatibility evidence lives in
+`Mcp-Plus-Plus/docs/compatibility/HAO-445-hallucinate-swissknife.md`,
+`swissknife/contracts/mcp_plus_plus_compatibility_receipt.schema.json`, and
+`data/hallucinate_multimodal_control/discovery/2026-06-23-hao-445-mcp-plus-plus-compatibility.md`.
+
+The compatible protocol negotiation path is:
+
+1. Swissknife or Hallucinate App opens the configured transport and sends MCP
+   `initialize` with `protocolVersion`, `clientInfo`, and
+   `capabilities.mcpPlusPlusProfiles`.
+2. The daemon or adapter returns standard MCP capabilities plus accepted
+   MCP++ profiles. The client records the negotiated profile set and sends
+   `notifications/initialized`.
+3. Swissknife resolves the capability descriptor through MCP++ Profile A
+   semantics: descriptor/interface CID, `interfaces/list`, `interfaces/get`,
+   `interfaces/compat`, methods, schemas, `requires[]`, compatibility metadata,
+   error definitions, and event stream declarations.
+4. Hallucinate App builds the normal interaction envelope and policy decision
+   before any `tools/call`, `tools_dispatch`, concrete `ipfs_kit_py` tool, or
+   REST endpoint is dispatched.
+5. The final tool receipt links the protocol negotiation, capability descriptor,
+   transport, policy outcome, daemon response or error, lifecycle events,
+   descriptor/interface CID, argument hash, decision CID, event CID, receipt
+   CID, and parent receipt CID.
+
+Launch-compatible transports are `mcp-server`, `http`, `stdio`, `websocket`,
+`local`, `orb`, and optional MCP+p2p `/mcp+p2p/1.0.0`. Peer identity,
+descriptor trust, UCAN checks, and upstream MCP++ policy controls can strengthen
+the request, but they do not replace Hallucinate App mediation. Swissknife
+capability descriptors describe the operation; Hallucinate App remains the
+policy and command authority; Python daemon commands remain the execution
+authority.
+
+Errors must preserve both layers. Policy failures use the existing outcomes
+`deny`, `require_confirmation`, `defer`, `rewrite`, `fallback_surface`, and
+`rate_limit`; daemon failures preserve JSON-RPC codes, transport timeouts,
+unavailable health, schema mismatch, and upstream execution errors. Compatible
+launch receipts never include raw payload bodies, credentials, media, prompts,
+transcripts, or bearer tokens; they carry CIDs, hashes, schema ids, status,
+redacted auth context, and a tool receipt lineage.
+
 ### 1. IPFS Kit MCP (Port 3001)
 **Command:** `python -m ipfs_kit_py.cli mcp start`
 **Directory:** `ipfs_kit_py/`
