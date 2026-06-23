@@ -329,11 +329,14 @@ class ThreadPoolMonitorTests(unittest.TestCase):
             except Exception as exc:
                 cleanup_errors.append(exc)
 
-        if cleanup_errors:
-            self.fail(
-                "Unexpected exception during cleanup future.result(): "
-                f"{cleanup_errors[0]!r}"
+        self.assertEqual(
+            cleanup_errors,
+            [],
+            "Unexpected task exceptions during high-load cleanup: " +
+            ", ".join(
+                f"{type(exc).__name__}: {exc}" for exc in cleanup_errors
             )
+        )
 
 
 # Helper to run async tests
