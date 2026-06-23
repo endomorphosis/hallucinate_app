@@ -469,14 +469,20 @@ export class MenuGenerator {
         break;
       }
 
-      case 'openServerConfig':
-        // Server-specific configuration is handled by the shared settings view.
-        if (item?.serverId) {
-          this.navigateToView(resolveViewPath(`views/settings.html?server=${encodeURIComponent(item.serverId)}`));
+      case 'openServerConfig': {
+        const serverId = item?.serverId;
+        const server = mcpServers.find(candidate => candidate.id === serverId);
+
+        if (server) {
+          this.navigateToView(resolveViewPath(`views/settings.html?server=${encodeURIComponent(server.id)}`));
         } else {
+          if (serverId) {
+            console.warn(`Unknown MCP server configuration requested: ${serverId}`);
+          }
           this.navigateToView(resolveViewPath('views/settings.html'));
         }
         break;
+      }
 
       case 'resetConfig':
         dialog.showMessageBox({
