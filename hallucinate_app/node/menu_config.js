@@ -348,7 +348,7 @@ export function getBasePath() {
  * Resolve a view path to absolute path
  */
 export function resolveViewPath(viewPath) {
-  return path.join(getBasePath(), 'hallucinate_app', 'node', viewPath);
+  return path.join(getBasePath(), 'node', viewPath);
 }
 
 /**

@@ -445,7 +445,7 @@ export class MenuGenerator {
         break;
 
       case 'openSettings':
-        this.navigateToView(resolveViewPath('views/settings.html'));
+        this.openSettings();
         break;
 
       case 'openSwissKnifeWindow':
@@ -534,6 +534,13 @@ Includes:
       default:
         console.warn(`Unknown action: ${action}`);
     }
+  }
+
+  /**
+   * Open the application settings view.
+   */
+  openSettings() {
+    this.navigateToView(resolveViewPath('views/settings.html'));
   }
 
   /**

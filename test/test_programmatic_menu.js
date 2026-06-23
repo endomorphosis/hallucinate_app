@@ -7,10 +7,11 @@
 
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { runMenuStructureTests, getAllTestableItems } from './menu_test_framework.js';
+import { fileMenu, resolveViewPath } from '../hallucinate_app/node/menu_config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -138,6 +139,14 @@ describe('Menu Configuration Tests', () => {
     const labels = navItems.map(item => item.label);
     assert.ok(labels.includes('Back'), 'Should have Back navigation');
     assert.ok(labels.includes('Forward'), 'Should have Forward navigation');
+  });
+
+  it('should route the Settings menu action to the settings view', () => {
+    const settingsItem = fileMenu.items.find(item => item.label === 'Settings');
+
+    assert.ok(settingsItem, 'Settings menu item should exist');
+    assert.strictEqual(settingsItem.action, 'openSettings', 'Settings should use the openSettings action');
+    assert.ok(existsSync(resolveViewPath('views/settings.html')), 'Settings view should exist');
   });
 
   it('should have valid paths for navigation items', () => {
