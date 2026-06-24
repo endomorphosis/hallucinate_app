@@ -3497,7 +3497,7 @@ UI-plane participants and runtime-plane targets.
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Fingerprint: b05f350321ac12ced9641fd4af25d7c90ec275fe
+- Fingerprint: a8e75438a31f8b933c21e959b5dbf6fd6e32d9e3
 - Dedupe key: reconciliation_guardrail:main_checkout_dirty
 - Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
@@ -6200,3 +6200,36 @@ UI-plane participants and runtime-plane targets.
 - Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/browser/test_webgpu_browsers_comparison.ts
 - Validation: test -f swissknife/ipfs_accelerate_js/test/browser/test_webgpu_browsers_comparison.ts
 - Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/browser/test_webgpu_browsers_comparison.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-535-codebase-scan-1d39953b62c2.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-536 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webgpu_compute_shaders.ts:1
+
+- Status: todo
+- Completion: manual
+- Priority: P2
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/browser/test_webgpu_compute_shaders.ts
+- Validation: test -f swissknife/ipfs_accelerate_js/test/browser/test_webgpu_compute_shaders.ts
+- Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/browser/test_webgpu_compute_shaders.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-536-codebase-scan-f7f312005529.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-537 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webgpu_compute_transfer_overlap.ts:1
+
+- Status: todo
+- Completion: manual
+- Priority: P2
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/browser/test_webgpu_compute_transfer_overlap.ts
+- Validation: test -f swissknife/ipfs_accelerate_js/test/browser/test_webgpu_compute_transfer_overlap.ts
+- Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/browser/test_webgpu_compute_transfer_overlap.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-537-codebase-scan-d636463c9d64.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-538 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webgpu_kv_cache_optimization.ts:1
+
+- Status: todo
+- Completion: manual
+- Priority: P2
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/browser/test_webgpu_kv_cache_optimization.ts
+- Validation: test -f swissknife/ipfs_accelerate_js/test/browser/test_webgpu_kv_cache_optimization.ts
+- Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/browser/test_webgpu_kv_cache_optimization.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-538-codebase-scan-da8f80493ff9.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
