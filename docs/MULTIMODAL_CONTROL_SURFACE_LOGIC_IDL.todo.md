@@ -5935,8 +5935,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-512 Review swallowed exception path in swissknife/examples/docker_error_reporting_integration.py:57
 
-- Status: todo
-- Completion: manual
+- Status: completed
+- Completion: manual 2026-06-24: replaced the broad Docker error-reporting initializer catch with targeted integer parsing errors and propagated initialization failures; validation passed with `python3 -m py_compile swissknife/examples/docker_error_reporting_integration.py`.
 - Priority: P1
 - Track: runtime
 - Depends on: HAO-013
@@ -5946,7 +5946,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-513 Resolve code annotation in swissknife/ipfs_accelerate_js/src/p2p/network-manager.ts:491
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; P3 code annotation is not launch-critical.
 - Completion: manual
 - Priority: P3
 - Track: ops
@@ -5957,7 +5958,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-514 Resolve code annotation in swissknife/ipfs_accelerate_js/src/p2p/network-manager.ts:492
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; P3 code annotation is not launch-critical.
 - Completion: manual
 - Priority: P3
 - Track: ops
