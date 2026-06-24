@@ -593,10 +593,7 @@ class IPFSFaissPy:
                     finally:
                         # Clean up metadata file
                         if meta_file_path and os.path.exists(meta_file_path):
-                            try:
-                                os.unlink(meta_file_path)
-                            except OSError:
-                                pass
+                            _unlink_temp_file(meta_file_path, "metadata")
                 
                 # Infer type if not in metadata
                 if "type" not in index_info:
