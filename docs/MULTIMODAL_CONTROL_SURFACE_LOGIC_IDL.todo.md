@@ -5308,7 +5308,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-455 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:49
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5330,7 +5330,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-457 Review swallowed exception path in src/handsfree/agents/runner.py:111
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P1
 - Track: runtime
@@ -5341,7 +5341,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-458 Resolve code annotation in src/handsfree/agents/runner.py:112
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: runtime
@@ -5352,7 +5352,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-459 Resolve code annotation in src/handsfree/agents/runner.py:117
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: runtime
@@ -5374,7 +5374,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-461 Resolve code annotation in src/handsfree/agents/runner.py:142
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: runtime
@@ -5385,7 +5385,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-462 Resolve code annotation in tests/test_implementation_daemon_merge_lock_retry.py:101
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5429,7 +5429,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-466 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:49
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5440,7 +5440,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-467 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:58
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5451,7 +5451,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-468 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:58
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5462,7 +5462,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-469 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:62
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5473,7 +5473,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-470 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:105
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5484,7 +5484,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-471 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:164
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5539,7 +5539,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-476 Resolve code annotation in tests/test_implementation_daemon_merge_lock_retry.py:114
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5550,7 +5550,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-477 Resolve code annotation in tests/test_implementation_daemon_merge_lock_retry.py:121
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5561,7 +5561,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-478 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:176
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5572,7 +5572,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-479 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:185
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5583,7 +5583,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-480 Resolve code annotation in tests/test_implementation_daemon_merge_lock_retry.py:114
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5594,7 +5594,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-481 Resolve code annotation in tests/test_implementation_daemon_merge_lock_retry.py:121
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5605,7 +5605,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-482 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:105
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5616,7 +5616,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-483 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:164
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5649,7 +5649,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-486 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:228
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5660,7 +5660,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-487 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:279
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5671,7 +5671,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-488 Resolve code annotation in src/handsfree/agents/runner.py:113
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: runtime
@@ -5682,7 +5682,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-489 Resolve code annotation in src/handsfree/agents/runner.py:122
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: runtime
@@ -5693,7 +5693,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-490 Resolve code annotation in src/handsfree/agents/runner.py:147
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: runtime
@@ -5704,7 +5704,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-491 Resolve code annotation in tests/test_agent_runner.py:417
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5737,7 +5737,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-494 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:367
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5748,7 +5748,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-495 Resolve code annotation in tracking/PR-079-agent-runner-minimal.md:56
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: docs
@@ -5759,7 +5759,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-496 Resolve code annotation in tests/test_agent_runner.py:435
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5770,7 +5770,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-497 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:54
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5781,7 +5781,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-498 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:63
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5792,7 +5792,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-499 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:110
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5825,7 +5825,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-502 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:173
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5836,7 +5836,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-503 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:237
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5847,7 +5847,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-504 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:288
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5858,7 +5858,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-505 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:292
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5869,7 +5869,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-506 Resolve code annotation in tests/test_supervisor_objective_task_janitor.py:376
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: quality
@@ -5891,7 +5891,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-508 Resolve code annotation in swissknife/DESKTOP_VERIFICATION_REPORT.md:705
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: docs
@@ -5902,7 +5902,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-509 Resolve code annotation in swissknife/DESKTOP_VERIFICATION_REPORT.md:725
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P3
 - Track: docs
@@ -5913,7 +5913,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-510 Review swallowed exception path in swissknife/cleanup-archive/analysis/mcp_server_diagnostic.py:317
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P1
 - Track: runtime
@@ -5924,7 +5924,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-511 Review swallowed exception path in swissknife/cleanup-archive/scripts/run_improved_mcp_tests.sh:207
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P1
 - Track: runtime
