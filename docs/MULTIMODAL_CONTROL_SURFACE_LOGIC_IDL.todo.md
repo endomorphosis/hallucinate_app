@@ -6027,7 +6027,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-520 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_fault_tolerant_cross_browser_model_sharding.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6038,7 +6039,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-521 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_firefox_webgpu_compute_shaders.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6049,7 +6051,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-522 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_ipfs_accelerate_webnn_webgpu.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6060,7 +6063,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-523 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_ipfs_accelerate_with_real_webnn_webgpu.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6071,7 +6075,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-524 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_ipfs_with_webnn_webgpu.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6082,7 +6087,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-525 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_real_webnn_webgpu.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6093,7 +6099,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-526 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_real_webnn_webgpu_implementations.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6104,7 +6111,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-527 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_safari_webgpu_fallback.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6115,7 +6123,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-528 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_safari_webgpu_support.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6126,7 +6135,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-529 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webgpu_4bit_inference.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6137,7 +6147,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-530 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webgpu_4bit_llm_inference.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6148,7 +6159,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-531 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webgpu_4bit_model_coverage.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6159,7 +6171,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-532 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webgpu_browsers_comparison.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6170,7 +6183,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-533 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webgpu_4bit_llm_inference.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6181,7 +6195,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-534 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webgpu_4bit_model_coverage.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6192,7 +6207,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-535 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webgpu_browsers_comparison.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6203,7 +6219,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-536 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webgpu_compute_shaders.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6214,7 +6231,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-537 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webgpu_compute_transfer_overlap.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6225,7 +6243,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-538 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webgpu_kv_cache_optimization.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6236,7 +6255,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-539 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webgpu_low_latency.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6247,7 +6267,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-540 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webgpu_parallel_model_loading.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6258,7 +6279,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-541 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webgpu_shader_precompilation.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6269,7 +6291,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-542 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webgpu_compute_shaders.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6280,7 +6303,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-543 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webgpu_compute_transfer_overlap.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6291,7 +6315,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-544 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webgpu_kv_cache_optimization.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6302,7 +6327,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-545 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webgpu_transformer_compute_shaders.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6313,7 +6339,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-546 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webgpu_video_compute_shaders.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6324,7 +6351,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-547 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webgpu_webnn_bridge.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6346,7 +6374,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-549 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webnn_cross_browser.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6357,7 +6386,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-550 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webnn_implementation.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6368,7 +6398,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-551 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webnn_minimal.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6379,7 +6410,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-552 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webnn_webgpu_integration.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6390,7 +6422,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-553 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webnn_webgpu_simplified.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6401,7 +6434,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-554 Resolve code annotation in swissknife/ipfs_accelerate_js/test/performance/test_benchmark.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6412,7 +6446,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-555 Resolve code annotation in swissknife/ipfs_accelerate_js/test/performance/test_predictive_performance_system.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6423,7 +6458,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-556 Resolve code annotation in swissknife/ipfs_accelerate_js/test/performance/test_time_series_performance.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6445,7 +6481,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-558 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_active_learning.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6456,7 +6493,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-559 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_all_models.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6467,7 +6505,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-560 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webnn_webgpu_simplified.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6478,7 +6517,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-561 Resolve code annotation in swissknife/ipfs_accelerate_js/test/performance/test_benchmark.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6489,7 +6529,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-562 Resolve code annotation in swissknife/ipfs_accelerate_js/test/performance/test_predictive_performance_system.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6500,7 +6541,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-563 Resolve code annotation in swissknife/ipfs_accelerate_js/test/performance/test_time_series_performance.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6511,7 +6553,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-564 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_active_learning.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6522,7 +6565,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-565 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_all_models.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6533,7 +6577,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-566 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_automated_hardware_compatibility.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6544,7 +6589,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-567 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_batch_generator.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6555,7 +6601,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-568 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_batch_generator_minimal.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6566,7 +6613,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-569 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_batch_inference.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6577,7 +6625,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-570 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_comprehensive_hardware.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6588,7 +6637,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-571 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_comprehensive_hardware_coverage.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6599,7 +6649,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-572 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_cross_platform_4bit.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6610,7 +6661,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-573 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_cuda_debug.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6621,7 +6673,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-574 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_default_embed.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6632,7 +6685,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-575 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_default_lm.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6643,7 +6697,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-576 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_enhanced_openvino.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6654,7 +6709,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-577 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_generator.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6665,7 +6721,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-578 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hardware_backend.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6676,7 +6733,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-579 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hardware_selection.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6687,7 +6745,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-580 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf___help.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6698,7 +6757,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-581 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_default_lm.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6709,7 +6769,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-582 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_enhanced_openvino.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6720,7 +6781,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-583 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_generator.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6742,7 +6804,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-585 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hardware_selection.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6753,7 +6816,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-586 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf___help.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6775,7 +6839,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-588 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf___model.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6786,7 +6851,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-589 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_align.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6797,7 +6863,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-590 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf___model.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6808,7 +6875,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-591 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_align.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6819,7 +6887,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-592 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_autoformer.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6830,7 +6899,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-593 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_backslash.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6841,7 +6911,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-594 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_backslash_py.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6852,7 +6923,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-595 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_bark.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6863,7 +6935,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-596 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_autoformer.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6874,7 +6947,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-597 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_backslash.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6885,7 +6959,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-598 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_bark.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6918,7 +6993,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-601 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_big_bird.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6929,7 +7005,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-602 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_bigbird_pegasus.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6940,7 +7017,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-603 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_bit.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6951,7 +7029,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-604 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_blenderbot.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6962,7 +7041,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-605 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_blenderbot_small.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6973,7 +7053,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-606 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_blip.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6984,7 +7065,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-607 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_blip2.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -6995,7 +7077,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-608 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_blip_2.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7006,7 +7089,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-609 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_bloom.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7017,7 +7101,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-610 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_bridgetower.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7028,7 +7113,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-611 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_blip2.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7039,7 +7125,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-612 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_blip_2.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7050,7 +7137,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-613 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_bloom.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7072,7 +7160,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-615 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_bros.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7083,7 +7172,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-616 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_canine.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7094,7 +7184,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-617 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_bros.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7105,7 +7196,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-618 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_canine.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7116,7 +7208,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-619 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_chameleon.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7127,7 +7220,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-620 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_chameleon.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7138,7 +7232,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-621 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_claude3_haiku.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7149,7 +7244,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-622 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_clvp.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7160,7 +7256,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-623 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_cm3.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7171,7 +7268,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-624 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_codegen.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7182,7 +7280,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-625 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_cogvlm2.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7193,7 +7292,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-626 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_cohere.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7204,7 +7304,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-627 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_command_r.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7215,7 +7316,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-628 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_convnext.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7248,7 +7350,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-631 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_ctrl.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7259,7 +7362,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-632 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_claude3_haiku.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7270,7 +7374,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-633 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_clvp.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7281,7 +7386,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-634 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_cm3.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7314,7 +7420,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-637 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_cohere.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7325,7 +7432,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-638 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_cvt.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7336,7 +7444,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-639 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_dac.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7347,7 +7456,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-640 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_data2vec_text.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7358,7 +7468,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-641 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_dbrx.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7369,7 +7480,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-642 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_dbrx_instruct.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7380,7 +7492,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-643 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_decision_transformer.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7391,7 +7504,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-644 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_data2vec_text.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7402,7 +7516,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-645 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_dbrx_instruct.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7413,7 +7528,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-646 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_decision_transformer.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7424,7 +7540,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-647 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_deepseek.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7435,7 +7552,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-648 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_deepseek_coder.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7446,7 +7564,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-649 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_deepseek_distil.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7457,7 +7576,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-650 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_deepseek_r1.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7468,7 +7588,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-651 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_deepseek_r1_distil.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7479,7 +7600,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-652 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_deit.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7490,7 +7612,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-653 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_deepseek_r1_distil.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7501,7 +7624,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-654 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_deit.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7512,7 +7636,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-655 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_depth_anything.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7523,7 +7648,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-656 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_deta.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7534,7 +7660,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-657 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_dinat.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7545,7 +7672,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-658 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_dino.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7556,7 +7684,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-659 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_depth_anything.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7567,7 +7696,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-660 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_deta.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7578,7 +7708,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-661 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_dinat.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7589,7 +7720,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-662 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_dinov2.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7600,7 +7732,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-663 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_donut.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7611,7 +7744,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-664 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_donut_swin.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7622,7 +7756,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-665 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_donut_swin.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7633,7 +7768,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-666 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_dpr.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7644,7 +7780,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-667 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_dpt.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7655,7 +7792,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-668 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_efficientformer.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7666,7 +7804,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-669 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_efficientnet.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7677,7 +7816,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-670 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_electra.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7688,7 +7828,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-671 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_dpr.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7699,7 +7840,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-672 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_dpt.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7710,7 +7852,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-673 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_efficientformer.ts:1
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because this stale scan/repair task is not on the Swissknife, MCP++, phone/desktop offload, or Meta glasses critical path.
 - Completion: manual
 - Priority: P2
 - Track: quality
