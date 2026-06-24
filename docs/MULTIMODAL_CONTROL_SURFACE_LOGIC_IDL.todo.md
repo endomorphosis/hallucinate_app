@@ -7586,3 +7586,36 @@ UI-plane participants and runtime-plane targets.
 - Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/unit/test_hf_dinat.ts
 - Validation: test -f swissknife/ipfs_accelerate_js/test/unit/test_hf_dinat.ts
 - Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/unit/test_hf_dinat.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-661-codebase-scan-9a74b88e06cf.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-662 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_dino.ts:1
+
+- Status: todo
+- Completion: manual
+- Priority: P2
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/unit/test_hf_dino.ts
+- Validation: test -f swissknife/ipfs_accelerate_js/test/unit/test_hf_dino.ts
+- Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/unit/test_hf_dino.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-662-codebase-scan-669a61083619.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-663 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_dinov2.ts:1
+
+- Status: todo
+- Completion: manual
+- Priority: P2
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/unit/test_hf_dinov2.ts
+- Validation: test -f swissknife/ipfs_accelerate_js/test/unit/test_hf_dinov2.ts
+- Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/unit/test_hf_dinov2.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-663-codebase-scan-18950e1154bd.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-664 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_donut.ts:1
+
+- Status: todo
+- Completion: manual
+- Priority: P2
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/unit/test_hf_donut.ts
+- Validation: test -f swissknife/ipfs_accelerate_js/test/unit/test_hf_donut.ts
+- Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/unit/test_hf_donut.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-664-codebase-scan-e79c1d962235.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
