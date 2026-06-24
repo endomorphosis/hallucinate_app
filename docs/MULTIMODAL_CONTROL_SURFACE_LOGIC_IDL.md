@@ -352,6 +352,42 @@ supervised MCP server transport`.
 This makes MCP server supervision visible to Swissknife applications while
 keeping all service calls inside the multimodal control-surface mediation path.
 
+### HAO-675 Playwright launch replay coverage
+
+`HAO-675` adds the Playwright launch replay contract that binds the Swissknife
+and Hallucinate App browser gates to the HAO-674 MCP++ mediation path. The
+canonical replay fixture is stored in both Playwright trees:
+
+- `hallucinate_app/test/e2e/fixtures/hao-675-launch-replay.json`
+- `swissknife/test/e2e/fixtures/hao-675-launch-replay.json`
+
+The replay route is:
+
+`Swissknife application command intent -> MCP++ service capability discovery ->
+Hallucinate App interaction_envelope -> Hallucinate App policy_decision ->
+Hallucinate App mediation_receipt -> desktop peer offload receipt -> simulated
+Meta glasses terminal render -> production launch readiness receipt`.
+
+The fixture is hardware-free and Playwright-ready. It requires both commands to
+validate the same HAO-675 lineage:
+
+```bash
+npm --prefix swissknife run test:e2e:meta-glasses -- meta-glasses-virtual-os.spec.ts
+npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts
+```
+
+Launch readiness is not inferred from text-only discovery. The Swissknife
+Playwright spec verifies that MCP++ service capabilities for `ipfs_kit_py`,
+`ipfs_datasets_py`, and `ipfs_accelerate_py` are advertised to Swissknife
+applications before dispatch. The Hallucinate App Playwright spec verifies that
+the same replay remains inside the `interaction_envelope`, `policy_decision`,
+and `mediation_receipt` path before service transport. The simulated Meta
+glasses interaction preserves `participant_id: "meta_glasses:terminal"` and
+`normalized_intent: "terminal.activate_action"`. The pass/fail receipts include
+`desktop peer offload` and `production launch readiness`, so a launch-ready
+result depends on the mediated Swissknife invocation, MCP++ discovery, Meta
+glasses render, and desktop peer offload evidence all passing in one replay.
+
 ### VAIOS-G030 objective proof: interface descriptor language
 
 This document is the scanner-visible interface descriptor language proof for the

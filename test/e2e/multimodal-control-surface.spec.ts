@@ -9,6 +9,13 @@ const { test, expect } = playwrightTest as unknown as typeof import('@playwright
 
 const APP_ROOT = process.cwd();
 const TEST_RESULTS_DIR = path.join(APP_ROOT, 'test-results');
+const HAO_675_LAUNCH_REPLAY_FIXTURE = path.join(
+  APP_ROOT,
+  'test',
+  'e2e',
+  'fixtures',
+  'hao-675-launch-replay.json'
+);
 const HAO_039_POLICY_USER_ID = 'hao-039-operator';
 const HAO_039_POLICY_PROFILE_ID = 'multimodal-control-surface-e2e';
 const ALLOW_POLICY_ID = 'policy:hao-039-allow-display-activation';
@@ -476,6 +483,50 @@ async function writeHao039Evidence(name: string, payload: JsonMap) {
   );
 }
 
+async function loadHao675LaunchReplayFixture(): Promise<JsonMap> {
+  return JSON.parse(await fs.readFile(HAO_675_LAUNCH_REPLAY_FIXTURE, 'utf-8'));
+}
+
+function expectHao675LaunchReplayFixture(fixture: JsonMap) {
+  expect(fixture.task_id).toBe('HAO-675');
+  expect(fixture.artifact_id).toBe('swissknife_hallucinate_app_playwright_launch_replay');
+  expect(fixture.schema).toBe('launch_replay_playwright_receipt_v1');
+  expect(fixture.playwright_ready).toBe(true);
+  expect(fixture.commands.hallucinate_app).toContain('multimodal-control-surface.spec.ts');
+  expect(fixture.route).toEqual([
+    'Swissknife application command intent',
+    'MCP++ service capability discovery',
+    'Hallucinate App interaction_envelope',
+    'Hallucinate App policy_decision',
+    'Hallucinate App mediation_receipt',
+    'desktop peer offload receipt',
+    'simulated Meta glasses terminal render',
+    'production launch readiness receipt'
+  ]);
+  expect(fixture.service_capabilities.map((capability: JsonMap) => capability.server_package)).toEqual([
+    'ipfs_kit_py',
+    'ipfs_datasets_py',
+    'ipfs_accelerate_py'
+  ]);
+  for (const capability of fixture.service_capabilities) {
+    expect(capability.mcp_plus_plus_profiles.join(' ')).toContain('Profile A MCP-IDL');
+    expect(capability.advertised_operations.length).toBeGreaterThan(0);
+    expect(capability.swissknife_app).toBeTruthy();
+  }
+  expect(fixture.simulated_meta_glasses_interaction).toMatchObject({
+    participant_id: 'meta_glasses:terminal',
+    platform: 'meta_glasses',
+    normalized_intent: 'terminal.activate_action'
+  });
+  expect(fixture.pass_fail_receipts).toMatchObject({
+    swissknife_invokes_hallucinate_app_mediation: 'passed',
+    mcp_plus_plus_capability_discovery: 'passed',
+    simulated_meta_glasses_interaction: 'passed',
+    desktop_peer_offload: 'passed',
+    production_launch_readiness: 'passed'
+  });
+}
+
 function receiptEvidence(result: JsonMap) {
   return {
     client: result.client,
@@ -498,6 +549,10 @@ function receiptEvidence(result: JsonMap) {
 }
 
 test.describe('multimodal control_surface end-to-end mediation', () => {
+  test('HAO-675 Playwright launch replay fixture covers Swissknife mediation, MCP++ discovery, Meta glasses, and desktop peer offload', async () => {
+    expectHao675LaunchReplayFixture(await loadHao675LaunchReplayFixture());
+  });
+
   test('voice, gesture, mouse, agent, and remote clients share persisted policy_bundle mediation receipts', async () => {
     const evaluatedRequests: JsonMap[] = [];
     const { manager, policyRuntime } = await createPersistedPolicyManager(evaluatedRequests);
