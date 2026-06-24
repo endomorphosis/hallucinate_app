@@ -5946,9 +5946,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-513 Resolve code annotation in swissknife/ipfs_accelerate_js/src/p2p/network-manager.ts:491
 
-- Status: blocked
-- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; P3 code annotation is not launch-critical.
-- Completion: manual
+- Status: completed
+- Completion: manual 2026-06-24: added capability-based network region grouping to `SwissKnifeP2PNetworkManager.networkTopology`; validation covered by TypeScript source inspection and existing p2p type definitions.
 - Priority: P3
 - Track: ops
 - Depends on: HAO-013
