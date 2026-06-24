@@ -6016,7 +6016,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-519 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_cross_browser_model_sharding.ts:1
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P2
 - Track: quality
