@@ -20,17 +20,17 @@ export const mcpServers = [
     name: 'IPFS Kit MCP',
     displayName: 'IPFS Kit',
     icon: '📦',
-    port: 3001,
+    port: 8004,
     dashboardPath: 'views/ipfs_kit_dashboard.html',
-    webDashboardUrl: 'http://127.0.0.1:3001/dashboard',
+    webDashboardUrl: 'http://127.0.0.1:8004/dashboard',
     accelerator: 'CmdOrCtrl+Alt+1',
     tools: [
-      { label: 'Add to IPFS', url: 'http://127.0.0.1:3001/tools/add' },
-      { label: 'Get from IPFS', url: 'http://127.0.0.1:3001/tools/get' },
-      { label: 'Pin Content', url: 'http://127.0.0.1:3001/tools/pin' },
-      { label: 'IPFS Status', url: 'http://127.0.0.1:3001/status' },
+      { label: 'Add to IPFS', url: 'http://127.0.0.1:8004/tools/add' },
+      { label: 'Get from IPFS', url: 'http://127.0.0.1:8004/tools/get' },
+      { label: 'Pin Content', url: 'http://127.0.0.1:8004/tools/pin' },
+      { label: 'IPFS Status', url: 'http://127.0.0.1:8004/status' },
       { type: 'separator' },
-      { label: 'Configure IPFS Node', url: 'http://127.0.0.1:3001/config' }
+      { label: 'Configure IPFS Node', url: 'http://127.0.0.1:8004/config' }
     ]
   },
   {
@@ -40,7 +40,7 @@ export const mcpServers = [
     icon: '📚',
     port: 3002,
     dashboardPath: 'views/ipfs_datasets_dashboard.html',
-    webDashboardUrl: 'http://127.0.0.1:3002/dashboard',
+    webDashboardUrl: 'http://127.0.0.1:8899/mcp',
     accelerator: 'CmdOrCtrl+Alt+2',
     tools: [
       { label: 'Load HuggingFace Dataset', url: 'http://127.0.0.1:3002/tools/load' },
@@ -59,15 +59,15 @@ export const mcpServers = [
     icon: '⚡',
     port: 3003,
     dashboardPath: 'views/ipfs_accelerate_dashboard.html',
-    webDashboardUrl: 'http://127.0.0.1:3006/dashboard',
+    webDashboardUrl: 'http://127.0.0.1:3003/dashboard',
     accelerator: 'CmdOrCtrl+Alt+3',
     tools: [
-      { label: 'Model Inference', url: 'http://127.0.0.1:3006/tools/inference' },
-      { label: 'Batch Processing', url: 'http://127.0.0.1:3006/tools/batch' },
-      { label: 'Distributed Training', url: 'http://127.0.0.1:3006/tools/training' },
+      { label: 'Model Inference', url: 'http://127.0.0.1:3003/tools/inference' },
+      { label: 'Batch Processing', url: 'http://127.0.0.1:3003/tools/batch' },
+      { label: 'Distributed Training', url: 'http://127.0.0.1:3003/tools/training' },
       { type: 'separator' },
-      { label: 'GPU Monitor', url: 'http://127.0.0.1:3006/tools/gpu' },
-      { label: 'Performance Metrics', url: 'http://127.0.0.1:3006/metrics' }
+      { label: 'GPU Monitor', url: 'http://127.0.0.1:3003/tools/gpu' },
+      { label: 'Performance Metrics', url: 'http://127.0.0.1:3003/metrics' }
     ]
   },
   {

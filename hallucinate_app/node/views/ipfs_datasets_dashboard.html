@@ -161,6 +161,46 @@
       color: #718096;
       font-size: 0.9rem;
     }
+
+    .dashboard-catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .dashboard-catalog-item {
+      text-align: left;
+      padding: 0.9rem 1rem;
+      border: 1px solid #cbd5e0;
+      border-radius: 6px;
+      background: #f8fafc;
+      cursor: pointer;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    .dashboard-catalog-item:hover {
+      border-color: #4299e1;
+      box-shadow: 0 4px 12px rgba(66, 153, 225, 0.15);
+      transform: translateY(-1px);
+    }
+
+    .dashboard-catalog-item.active {
+      border-color: #2b6cb0;
+      background: #ebf8ff;
+    }
+
+    .dashboard-catalog-item strong {
+      display: block;
+      margin-bottom: 0.35rem;
+      color: #2d3748;
+    }
+
+    .dashboard-catalog-item span {
+      display: block;
+      color: #4a5568;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
 <body>
@@ -201,7 +241,7 @@
           </div>
           <div class="status-item">
             <span class="status-label">Protocol:</span>
-            <span class="status-value">HTTP/MCP</span>
+            <span class="status-value">HTTP/FastAPI</span>
           </div>
           <div class="status-item">
             <span class="status-label">Uptime:</span>
@@ -210,7 +250,36 @@
         </div>
         
         <div class="alert alert-info">
-          <i class="fas fa-lightbulb"></i> <strong>Tip:</strong> The IPFS Datasets MCP server runs on port 3002 and provides programmatic access to dataset operations.
+          <i class="fas fa-lightbulb"></i> <strong>Tip:</strong> The IPFS Datasets service runs on port 3002 and exposes a FastAPI surface for health checks and dataset operations.
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><i class="fas fa-network-wired"></i> MCP++ Bridge Status</h2>
+        <div class="status-grid">
+          <div class="status-item">
+            <span class="status-label">Bridge Status:</span>
+            <span class="status-value" id="mcpplusplus-status">Checking...</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Mode:</span>
+            <span class="status-value" id="mcpplusplus-mode">--</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Version:</span>
+            <span class="status-value" id="mcpplusplus-version">--</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Requirements:</span>
+            <span class="status-value" id="mcpplusplus-requirements">--</span>
+          </div>
+        </div>
+        <div class="info-section">
+          <h3><i class="fas fa-list"></i> Missing Requirements</h3>
+          <ul id="mcpplusplus-missing"></ul>
+          <div class="alert alert-info" id="mcpplusplus-message">
+            Waiting for daemon telemetry...
+          </div>
         </div>
       </div>
       
@@ -232,6 +301,8 @@
         <div class="info-section">
           <h3>API Endpoints:</h3>
           <ul>
+            <li><code>/health</code> - Liveness check for the datasets service</li>
+            <li><code>/health/ready</code> - Readiness check for tool and dependency availability</li>
             <li><code>/datasets/list</code> - List available datasets</li>
             <li><code>/datasets/load</code> - Load a dataset from HuggingFace or IPFS</li>
             <li><code>/datasets/info</code> - Get dataset metadata</li>
@@ -241,18 +312,137 @@
           <div class="alert alert-warning">
             <i class="fas fa-exclamation-triangle"></i> <strong>Note:</strong> Ensure the IPFS Datasets MCP server is running to use these features. Start it from the Daemons menu or the Daemon Manager.
           </div>
+
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> <strong>Dashboard Integration:</strong> The active IPFS Datasets FastAPI MCP service on port <code>3002</code> exposes the dataset APIs, while the native package MCP dashboard is launched as a companion service and embedded below from <code>http://127.0.0.1:8899/mcp</code>.
+          </div>
         </div>
+      </div>
+
+      <div class="card">
+        <h2><i class="fas fa-th-large"></i> Datasets Dashboard Catalog</h2>
+        <div class="info-section">
+          <p>Switch between the native <code>ipfs_datasets_py</code> dashboard routes that are mounted into the companion dashboard process for validation.</p>
+          <div class="alert alert-info" id="native-dashboard-selection">
+            <i class="fas fa-info-circle"></i> Selected dashboard: MCP Overview
+          </div>
+          <div class="dashboard-catalog-grid" id="native-dashboard-catalog"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><i class="fas fa-window-maximize"></i> Native Package Dashboard</h2>
+        <div class="info-section">
+          <p>This embedded view is served directly by <code>ipfs_datasets_py.dashboards.mcp_dashboard.MCPDashboard</code> and complements the Hallucinate validation controls above.</p>
+          <button class="btn btn-secondary" id="btn-reload-native-dashboard">
+            <i class="fas fa-sync"></i> Reload Native Dashboard
+          </button>
+        </div>
+        <iframe
+          id="package-dashboard-frame"
+          title="IPFS Datasets Native Dashboard"
+          src="http://127.0.0.1:8899/mcp"
+          style="width: 100%; min-height: 720px; border: 1px solid #e2e8f0; border-radius: 8px; background: white;"
+        ></iframe>
       </div>
     </div>
   </div>
   
   <script type="module">
-    const { ipcRenderer } = window.require('electron');
+    const daemonApi = window?.electronAPI?.daemon;
+    const navigationApi = window?.electronAPI?.navigation;
+    const fallbackDashboardCatalog = [
+      { id: 'admin-overview', label: 'Admin Overview', path: '/', description: 'Base admin status, metrics, logs, and configuration surface.' },
+      { id: 'mcp-overview', label: 'MCP Overview', path: '/mcp', description: 'Primary MCP dashboard with tool registry and workflow panels.' },
+      { id: 'analytics', label: 'Analytics', path: '/mcp/analytics', description: 'Advanced analytics and monitoring metrics.' },
+      { id: 'rag-query', label: 'RAG Query', path: '/mcp/rag', description: 'Interactive RAG query interface and result workflows.' },
+      { id: 'investigation', label: 'Investigation', path: '/mcp/investigation', description: 'Content investigation, geospatial, and entity analysis surface.' },
+      { id: 'caselaw', label: 'Caselaw', path: '/mcp/caselaw', description: 'Temporal deontic logic caselaw dashboard.' },
+      { id: 'finance', label: 'Finance', path: '/mcp/finance', description: 'Finance-oriented deontic analysis dashboard.' },
+      { id: 'medicine', label: 'Medicine', path: '/mcp/medicine', description: 'Medical and biochemical workflow dashboard.' },
+      { id: 'software', label: 'Software', path: '/mcp/software', description: 'Software engineering theorem and workflow dashboard.' },
+      { id: 'patents', label: 'Patent Dashboard', path: '/mcp/patents/', description: 'Patent search, dataset build, and GraphRAG ingestion workflows.' },
+      { id: 'discord', label: 'Discord Dashboard', path: '/mcp/discord/', description: 'Discord export, guild/channel browsing, and analytics dashboard.' },
+      { id: 'common-crawl', label: 'Common Crawl', path: '/subdashboard/common-crawl', description: 'Common Crawl search dashboard wrapper and health surface.' },
+    ];
+    let datasetsDashboardBaseUrl = 'http://127.0.0.1:8899';
+    let datasetsDashboardCatalogUrl = `${datasetsDashboardBaseUrl}/api/hallucinate/dashboard-catalog`;
+    let datasetsDashboardCatalogLoaded = false;
+    let selectedDatasetDashboardPath = '/mcp';
+
+    if (!daemonApi) {
+      console.error('Daemon API bridge is unavailable.');
+    }
+
+    function buildDatasetsDashboardUrl(routePath) {
+      return new URL(routePath, `${datasetsDashboardBaseUrl}/`).toString();
+    }
+
+    function updateSelectedDashboardMessage(label, routePath) {
+      document.getElementById('native-dashboard-selection').innerHTML =
+        `<i class="fas fa-info-circle"></i> Selected dashboard: ${label} <code>${routePath}</code>`;
+    }
+
+    function selectNativeDashboard(routePath, label) {
+      selectedDatasetDashboardPath = routePath;
+      const frame = document.getElementById('package-dashboard-frame');
+      frame.src = buildDatasetsDashboardUrl(routePath);
+      updateSelectedDashboardMessage(label, routePath);
+
+      document.querySelectorAll('.dashboard-catalog-item').forEach((item) => {
+        item.classList.toggle('active', item.dataset.route === routePath);
+      });
+    }
+
+    function renderNativeDashboardCatalog(entries) {
+      const catalog = document.getElementById('native-dashboard-catalog');
+      catalog.innerHTML = entries.map((entry) => `
+        <button class="dashboard-catalog-item${entry.path === selectedDatasetDashboardPath ? ' active' : ''}" data-route="${entry.path}" data-label="${entry.label}">
+          <strong>${entry.label}</strong>
+          <span>${entry.description}</span>
+        </button>
+      `).join('');
+
+      catalog.querySelectorAll('.dashboard-catalog-item').forEach((button) => {
+        button.addEventListener('click', () => {
+          selectNativeDashboard(button.dataset.route, button.dataset.label);
+        });
+      });
+
+      const selected = entries.find((entry) => entry.path === selectedDatasetDashboardPath) || entries[0];
+      if (selected) {
+        updateSelectedDashboardMessage(selected.label, selected.path);
+      }
+    }
+
+    async function loadNativeDashboardCatalog(force = false) {
+      if (datasetsDashboardCatalogLoaded && !force) {
+        return;
+      }
+
+      try {
+        const response = await fetch(datasetsDashboardCatalogUrl);
+        if (!response.ok) {
+          throw new Error(`Catalog request failed with status ${response.status}`);
+        }
+
+        const payload = await response.json();
+        const entries = Array.isArray(payload?.dashboards) && payload.dashboards.length
+          ? payload.dashboards
+          : fallbackDashboardCatalog;
+        renderNativeDashboardCatalog(entries);
+      } catch (error) {
+        console.warn('Falling back to static dashboard catalog:', error);
+        renderNativeDashboardCatalog(fallbackDashboardCatalog);
+      }
+
+      datasetsDashboardCatalogLoaded = true;
+    }
     
     // Update server status
     async function updateServerStatus() {
       try {
-        const status = await ipcRenderer.invoke('daemon:getAll');
+        const status = await daemonApi.getAll();
         const datasetsStatus = status['ipfs-datasets'];
         
         const statusElement = document.getElementById('server-status');
@@ -266,10 +456,70 @@
           statusElement.innerHTML = '<span style="color: #ef4444; font-weight: 600;"><i class="fas fa-times-circle"></i> Stopped</span>';
           uptimeElement.textContent = '--';
         }
+
+        const nativeDashboard = datasetsStatus?.nativeDashboard;
+        if (nativeDashboard?.url) {
+          const nativeDashboardUrl = new URL(nativeDashboard.url);
+          datasetsDashboardBaseUrl = nativeDashboardUrl.origin;
+          datasetsDashboardCatalogUrl = nativeDashboard.catalogUrl || `${nativeDashboardUrl.origin}/api/hallucinate/dashboard-catalog`;
+
+          const frame = document.getElementById('package-dashboard-frame');
+          const desiredSrc = buildDatasetsDashboardUrl(selectedDatasetDashboardPath);
+          if (frame.src !== desiredSrc) {
+            frame.src = desiredSrc;
+          }
+
+          if (!datasetsDashboardCatalogLoaded) {
+            await loadNativeDashboardCatalog();
+          }
+        }
+
+        renderMcpPlusPlusStatus(datasetsStatus?.mcpPlusPlus || null);
       } catch (error) {
         console.error('Failed to get server status:', error);
         document.getElementById('server-status').innerHTML = '<span style="color: #f59e0b;"><i class="fas fa-exclamation-circle"></i> Unknown</span>';
+        renderMcpPlusPlusStatus(null);
+        if (!datasetsDashboardCatalogLoaded) {
+          await loadNativeDashboardCatalog();
+        }
       }
+    }
+
+    function renderMcpPlusPlusStatus(mcpStatus) {
+      const statusEl = document.getElementById('mcpplusplus-status');
+      const modeEl = document.getElementById('mcpplusplus-mode');
+      const versionEl = document.getElementById('mcpplusplus-version');
+      const requirementsEl = document.getElementById('mcpplusplus-requirements');
+      const missingEl = document.getElementById('mcpplusplus-missing');
+      const messageEl = document.getElementById('mcpplusplus-message');
+
+      if (!mcpStatus) {
+        statusEl.innerHTML = '<span style="color: #f59e0b; font-weight: 600;"><i class="fas fa-exclamation-circle"></i> Unknown</span>';
+        modeEl.textContent = '--';
+        versionEl.textContent = '--';
+        requirementsEl.textContent = '--';
+        missingEl.innerHTML = '<li>No MCP++ telemetry available yet.</li>';
+        messageEl.innerHTML = '<i class="fas fa-info-circle"></i> Waiting for daemon telemetry...';
+        return;
+      }
+
+      const available = Boolean(mcpStatus.available);
+      statusEl.innerHTML = available
+        ? '<span style="color: #10b981; font-weight: 600;"><i class="fas fa-check-circle"></i> Available</span>'
+        : '<span style="color: #f59e0b; font-weight: 600;"><i class="fas fa-exclamation-triangle"></i> Unavailable</span>';
+
+      modeEl.textContent = String(mcpStatus.mode || '--');
+      versionEl.textContent = String(mcpStatus.mcplusplus_version || '--');
+      requirementsEl.textContent = mcpStatus.requirements_ok ? 'Satisfied' : 'Missing requirements';
+
+      const missing = Array.isArray(mcpStatus.missing_requirements)
+        ? mcpStatus.missing_requirements
+        : [];
+      missingEl.innerHTML = missing.length
+        ? missing.map((item) => `<li>${item}</li>`).join('')
+        : '<li>None</li>';
+
+      messageEl.innerHTML = `<i class="fas fa-info-circle"></i> ${mcpStatus.message || 'No MCP++ status message available.'}`;
     }
     
     // Test MCP connection
@@ -280,12 +530,12 @@
       
       try {
         // Test connection to MCP server
-        const response = await fetch('http://localhost:3002/health').catch(() => null);
+        const response = await fetch('http://localhost:3002/health/ready').catch(() => null);
         
         if (response && response.ok) {
-          alert('✅ Connection successful! IPFS Datasets MCP server is responding.');
+          alert('✅ Connection successful! IPFS Datasets service is responding.');
         } else {
-          alert('❌ Connection failed. Please start the IPFS Datasets MCP server from the Daemons menu.');
+          alert('❌ Connection failed. Please start the IPFS Datasets service from the Daemons menu.');
         }
       } catch (error) {
         alert('❌ Connection test failed: ' + error.message);
@@ -298,7 +548,7 @@
     // View server logs
     document.getElementById('btn-view-logs').addEventListener('click', async () => {
       try {
-        const logs = await ipcRenderer.invoke('daemon:getLogs', 'ipfs-datasets', 50);
+        const logs = await daemonApi.getLogs('ipfs-datasets');
         if (logs && logs.length > 0) {
           const logText = logs.map(log => `[${new Date(log.time).toLocaleTimeString()}] ${log.message}`).join('\n');
           alert('Recent Logs:\n\n' + logText);
@@ -312,10 +562,16 @@
     
     // Open daemon manager
     document.getElementById('btn-open-daemon-manager').addEventListener('click', () => {
-      ipcRenderer.send('open-daemon-manager');
+      navigationApi?.openDaemonManager?.();
+    });
+
+    document.getElementById('btn-reload-native-dashboard').addEventListener('click', () => {
+      const frame = document.getElementById('package-dashboard-frame');
+      frame.src = frame.src;
     });
     
     // Initial status update and periodic refresh
+    loadNativeDashboardCatalog();
     updateServerStatus();
     setInterval(updateServerStatus, 5000);
   </script>

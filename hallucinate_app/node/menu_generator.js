@@ -62,6 +62,60 @@ export class MenuGenerator {
     this.menuItems = new Map();
   }
 
+  getMcpServers() {
+    if (!this.daemonManager || typeof this.daemonManager.getLaunchPlan !== 'function') {
+      return mcpServers;
+    }
+
+    const launchPlan = this.daemonManager.getLaunchPlan();
+    const byDaemonId = new Map(launchPlan.map((item) => [item.daemon_id, item]));
+
+    const rewriteLocalUrl = (value, port) => {
+      if (!value || typeof value !== 'string') {
+        return value;
+      }
+
+      try {
+        const parsed = new URL(value);
+        if (parsed.hostname === '127.0.0.1' || parsed.hostname === 'localhost') {
+          parsed.port = String(port);
+          return parsed.toString();
+        }
+      } catch {
+        return value;
+      }
+
+      return value;
+    };
+
+    return mcpServers.map((server) => {
+      const live = byDaemonId.get(server.id);
+      if (!live) {
+        return server;
+      }
+
+      const port = Number(live.port || server.port);
+      const endpoint = live.endpoint || `http://127.0.0.1:${port}`;
+      const webDashboardUrl = live.native_dashboard_url || `${endpoint}/dashboard`;
+      const tools = (server.tools || []).map((tool) => {
+        if (!tool?.url) {
+          return tool;
+        }
+        return {
+          ...tool,
+          url: rewriteLocalUrl(tool.url, port)
+        };
+      });
+
+      return {
+        ...server,
+        port,
+        webDashboardUrl,
+        tools
+      };
+    });
+  }
+
   /**
    * Generate the complete application menu
    */
@@ -183,7 +237,7 @@ export class MenuGenerator {
     submenu.push({ type: 'separator' });
 
     // Individual MCP server controls
-    mcpServers.forEach(server => {
+    this.getMcpServers().forEach(server => {
       submenu.push(this.generateServerSubmenu(server));
     });
 
@@ -302,7 +356,7 @@ export class MenuGenerator {
     const submenu = [];
 
     // MCP Server tools organized by server
-    mcpServers.forEach(server => {
+    this.getMcpServers().forEach(server => {
       if (server.tools && server.tools.length > 0) {
         const toolItems = server.tools.map(tool => {
           if (tool.type === 'separator') {
@@ -435,7 +489,7 @@ export class MenuGenerator {
       return;
     }
 
-    const hasServerConfig = mcpServers.some(server => server.id === serverId);
+    const hasServerConfig = this.getMcpServers().some(server => server.id === serverId);
     if (!hasServerConfig) {
       console.warn(`Unknown MCP server config requested: ${serverId}`);
       this.navigateToView(settingsPath);
@@ -454,7 +508,7 @@ export class MenuGenerator {
   /**
    * Handle custom actions
    */
-  handleAction(action, item) {
+  async handleAction(action, item) {
     switch (action) {
       case 'navigateHome':
         this.navigateToView(resolveViewPath('views/dashboard.html'));

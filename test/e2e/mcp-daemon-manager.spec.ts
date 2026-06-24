@@ -343,7 +343,7 @@ test.describe('MCP Daemon Manager - CLI Simulation', () => {
     const configs = manager.daemonConfigs;
     
     expect(configs[0].id).toBe('ipfs-kit');
-    expect(configs[0].port).toBe(3001);
+    expect(configs[0].port).toBe(8004);
     expect(configs[0].command).toBe('python');
     
     expect(configs[1].id).toBe('ipfs-datasets');

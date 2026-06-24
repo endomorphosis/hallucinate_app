@@ -94,6 +94,30 @@ logInfo('STARTUP', 'Hallucinate App starting...', {
   arch: process.arch
 });
 
+// Reduce Chromium startup noise by disabling system proxy watchers and
+// background network services that are not needed for local dashboard usage.
+const configureChromiumRuntime = () => {
+  const switchEntries = [
+    ['no-proxy-server'],
+    ['proxy-server', 'direct://'],
+    ['proxy-bypass-list', '*'],
+    ['disable-background-networking'],
+    ['disable-component-update']
+  ];
+
+  for (const [name, value] of switchEntries) {
+    if (!app.commandLine.hasSwitch(name)) {
+      if (typeof value === 'undefined') {
+        app.commandLine.appendSwitch(name);
+      } else {
+        app.commandLine.appendSwitch(name, value);
+      }
+    }
+  }
+};
+
+configureChromiumRuntime();
+
 // Handle creating/removing shortcuts on Windows when installing/uninstalling
 if (electron_squirrel_startup) {
   logInfo('SQUIRREL', 'Squirrel startup detected, quitting...');
@@ -174,21 +198,41 @@ function startSwissKnifeServer() {
 // Initialize MCP Daemon Manager
 const daemonManager = new MCPDaemonManager();
 
+const broadcastDaemonEvent = (type, data = {}) => {
+  for (const win of BrowserWindow.getAllWindows()) {
+    if (!win.isDestroyed()) {
+      win.webContents.send('daemon:event', { type, data });
+    }
+  }
+};
+
 // Setup daemon manager event listeners
 daemonManager.on('started', ({ daemon, port }) => {
   console.log(`✅ ${daemon} started on port ${port}`);
+  broadcastDaemonEvent('started', { daemon, port });
 });
 
 daemonManager.on('stopped', ({ daemon }) => {
   console.log(`🛑 ${daemon} stopped`);
+  broadcastDaemonEvent('stopped', { daemon });
 });
 
 daemonManager.on('error', ({ daemon, error }) => {
   console.error(`❌ ${daemon} error: ${error}`);
+  broadcastDaemonEvent('error', { daemon, error });
+});
+
+daemonManager.on('health-check', ({ daemon, healthy, health }) => {
+  broadcastDaemonEvent('health-check', { daemon, healthy, health });
 });
 
 daemonManager.on('all-started', () => {
   console.log('🚀 All MCP daemons are running');
+  broadcastDaemonEvent('all-started');
+});
+
+daemonManager.on('all-stopped', () => {
+  broadcastDaemonEvent('all-stopped');
 });
 
 // Setup test and benchmark handlers
@@ -1177,7 +1221,7 @@ const createBenchmarkWindow = () => {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'preload.cjs'),
       sandbox: false
     },
     title: 'IPFS Python Modules - Benchmark Dashboard',
@@ -1202,7 +1246,7 @@ const createTestWindow = () => {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'preload.cjs'),
       sandbox: false
     },
     title: 'IPFS HuggingFace Bridge - Module Testing',
@@ -1263,7 +1307,7 @@ const createIPFSKitDashboardWindow = () => {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'preload.cjs'),
       sandbox: false
     },
     title: 'IPFS Kit Dashboard',
@@ -1288,217 +1332,14 @@ const createDaemonManagerWindow = () => {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'preload.cjs'),
       sandbox: false
     },
     title: 'MCP Daemon Manager',
     icon: path.join(__dirname, 'hallucinate_app', 'assets', 'icon.png')
   });
 
-  // Create simple HTML content for daemon manager
-  const daemonManagerHTML = `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' http://localhost:*">
-  <title>MCP Daemon Manager</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-    }
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    .daemon-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-    .daemon-card {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      padding: 20px;
-      backdrop-filter: blur(10px);
-    }
-    .daemon-card h2 {
-      margin-top: 0;
-      font-size: 1.5em;
-    }
-    .status {
-      display: inline-block;
-      padding: 5px 15px;
-      border-radius: 20px;
-      font-weight: bold;
-      margin-bottom: 15px;
-    }
-    .status.running { background: #10b981; }
-    .status.stopped { background: #ef4444; }
-    .status.starting { background: #f59e0b; }
-    .status.error { background: #dc2626; }
-    .info-row {
-      margin: 8px 0;
-      display: flex;
-      justify-content: space-between;
-    }
-    .buttons {
-      margin-top: 15px;
-      display: flex;
-      gap: 10px;
-    }
-    button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: opacity 0.2s;
-    }
-    button:hover {
-      opacity: 0.8;
-    }
-    .btn-start { background: #10b981; color: white; }
-    .btn-stop { background: #ef4444; color: white; }
-    .btn-restart { background: #f59e0b; color: white; }
-    .controls {
-      text-align: center;
-      margin: 30px 0;
-    }
-    .controls button {
-      padding: 15px 30px;
-      font-size: 1.1em;
-      margin: 0 10px;
-    }
-    .logs {
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 10px;
-      padding: 20px;
-      max-height: 300px;
-      overflow-y: auto;
-      font-family: 'Courier New', monospace;
-      font-size: 0.9em;
-    }
-    .log-entry {
-      margin: 5px 0;
-      padding: 5px;
-      border-left: 3px solid #667eea;
-      padding-left: 10px;
-    }
-    .log-entry.error {
-      border-left-color: #ef4444;
-      color: #fca5a5;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>🔧 MCP Daemon Manager</h1>
-    
-    <div class="controls">
-      <button class="btn-start" onclick="startAll()">🚀 Start All Daemons</button>
-      <button class="btn-stop" onclick="stopAll()">🛑 Stop All Daemons</button>
-      <button class="btn-restart" onclick="refreshStatus()">🔄 Refresh Status</button>
-    </div>
-    
-    <div class="daemon-grid" id="daemon-grid">
-      <!-- Daemon cards will be inserted here -->
-    </div>
-    
-    <h2>📋 Event Log</h2>
-    <div class="logs" id="event-log">
-      <div class="log-entry">Daemon manager initialized</div>
-    </div>
-  </div>
-  
-  <script>
-    const { ipcRenderer } = require('electron');
-    
-    function updateDaemonStatus() {
-      // In a real implementation, this would query the daemon manager
-      // For now, we'll create a placeholder
-      const daemons = [
-        { id: 'ipfs-kit', name: 'IPFS Kit MCP', port: 3001, status: 'running' },
-        { id: 'ipfs-datasets', name: 'IPFS Datasets MCP', port: 3002, status: 'running' },
-        { id: 'ipfs-accelerate', name: 'IPFS Accelerate MCP', port: 3003, status: 'running' }
-      ];
-      
-      const grid = document.getElementById('daemon-grid');
-      grid.innerHTML = daemons.map(daemon => \`
-        <div class="daemon-card">
-          <h2>\${daemon.name}</h2>
-          <span class="status \${daemon.status}">\${daemon.status.toUpperCase()}</span>
-          <div class="info-row">
-            <span>Port:</span>
-            <span>\${daemon.port}</span>
-          </div>
-          <div class="info-row">
-            <span>ID:</span>
-            <span>\${daemon.id}</span>
-          </div>
-          <div class="buttons">
-            <button class="btn-start" onclick="startDaemon('\${daemon.id}')">Start</button>
-            <button class="btn-stop" onclick="stopDaemon('\${daemon.id}')">Stop</button>
-            <button class="btn-restart" onclick="restartDaemon('\${daemon.id}')">Restart</button>
-          </div>
-        </div>
-      \`).join('');
-    }
-    
-    function addLog(message, isError = false) {
-      const log = document.getElementById('event-log');
-      const entry = document.createElement('div');
-      entry.className = 'log-entry' + (isError ? ' error' : '');
-      const time = new Date().toLocaleTimeString();
-      entry.textContent = \`[\${time}] \${message}\`;
-      log.insertBefore(entry, log.firstChild);
-    }
-    
-    function startAll() {
-      addLog('Starting all daemons...');
-    }
-    
-    function stopAll() {
-      addLog('Stopping all daemons...');
-    }
-    
-    function refreshStatus() {
-      addLog('Refreshing status...');
-      updateDaemonStatus();
-    }
-    
-    function startDaemon(id) {
-      addLog(\`Starting daemon: \${id}\`);
-    }
-    
-    function stopDaemon(id) {
-      addLog(\`Stopping daemon: \${id}\`);
-    }
-    
-    function restartDaemon(id) {
-      addLog(\`Restarting daemon: \${id}\`);
-    }
-    
-    // Initial status update
-    updateDaemonStatus();
-    
-    // Auto-refresh every 10 seconds
-    setInterval(updateDaemonStatus, 10000);
-  </script>
-</body>
-</html>
-  `;
-
-  win.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(daemonManagerHTML)}`);
+  win.loadFile(path.join(__dirname, 'hallucinate_app', 'node', 'views', 'daemon_manager.html'));
   
   if (process.env.NODE_ENV === 'development') {
     win.webContents.openDevTools();
@@ -1523,7 +1364,7 @@ const createOperatorConsoleWindow = () => {
       nodeIntegration: false,
       contextIsolation: true,
       webSecurity: true,
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'preload.cjs'),
       sandbox: false
     },
     title: HALLUCINATE_APP_OPERATOR_CONSOLE_EVIDENCE,
@@ -2054,7 +1895,7 @@ const createMCPDashboardWindow = (title, url, width = 1200, height = 800) => {
       nodeIntegration: false,
       contextIsolation: true,
       webSecurity: true,
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'preload.cjs'),
       sandbox: false
     },
     title,
@@ -2072,7 +1913,7 @@ const createMCPDashboardWindow = (title, url, width = 1200, height = 800) => {
 
 // Create windows for specific MCP dashboards
 const createIPFSKitDashboard = () => {
-  return createMCPDashboardWindow('IPFS Kit MCP Dashboard', 'http://127.0.0.1:3001/dashboard');
+  return createMCPDashboardWindow('IPFS Kit MCP Dashboard', 'http://127.0.0.1:8004/dashboard');
 };
 
 const createIPFSDatasetsDashboard = () => {
@@ -2080,7 +1921,7 @@ const createIPFSDatasetsDashboard = () => {
 };
 
 const createIPFSAccelerateDashboard = () => {
-  return createMCPDashboardWindow('IPFS Accelerate MCP Dashboard', 'http://127.0.0.1:3006/dashboard');
+  return createMCPDashboardWindow('IPFS Accelerate MCP Dashboard', 'http://127.0.0.1:3003/dashboard');
 };
 
 const createSwissKnifeMCPDashboard = () => {
@@ -2100,7 +1941,7 @@ const createSwissKnifeWindow = (appName) => {
       enableRemoteModule: false,         // Disabled for security
       webSecurity: true,                 // Enabled - use localhost server instead
       allowRunningInsecureContent: false, // Disabled for security
-      preload: path.join(__dirname, 'preload.js'), // Secure IPC bridge
+      preload: path.join(__dirname, 'preload.cjs'), // Secure IPC bridge
       sandbox: false                     // Disabled to allow preload script
     },
     title: 'hallucinate_app - IPFS HuggingFace Bridge',

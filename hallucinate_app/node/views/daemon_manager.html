@@ -131,6 +131,40 @@
       color: #63171b;
     }
 
+    .capability-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.8em;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .capability-available {
+      background: #c6f6d5;
+      color: #22543d;
+    }
+
+    .capability-degraded {
+      background: #feebc8;
+      color: #7c2d12;
+    }
+
+    .capability-unavailable,
+    .capability-error {
+      background: #fed7d7;
+      color: #742a2a;
+    }
+
+    .capability-unknown,
+    .capability-na {
+      background: #e2e8f0;
+      color: #4a5568;
+    }
+
     .daemon-info {
       margin: 15px 0;
       color: #4a5568;
@@ -255,30 +289,45 @@
   </div>
 
   <script>
-    const { ipcRenderer } = require('electron');
+    const daemonApi = window?.electronAPI?.daemon;
+    if (!daemonApi) {
+      console.error('Daemon API bridge is unavailable.');
+    }
 
     // Update daemon display
     function updateDaemons(status) {
       const grid = document.getElementById('daemonGrid');
       grid.innerHTML = '';
 
-      for (const [name, info] of Object.entries(status)) {
-        const card = createDaemonCard(name, info);
+      for (const [daemonId, info] of Object.entries(status)) {
+        const card = createDaemonCard(daemonId, info);
         grid.appendChild(card);
       }
     }
 
     // Create daemon card
-    function createDaemonCard(name, info) {
+    function createDaemonCard(daemonId, info) {
       const card = document.createElement('div');
       card.className = 'daemon-card';
       
       const statusClass = `status-${info.status}`;
       const uptime = info.uptime ? formatUptime(info.uptime) : 'N/A';
+      const healthLabel = info?.lastHealth?.healthy ? 'healthy' : 'degraded';
+      const endpoint = info?.endpoint || `http://127.0.0.1:${info.port}`;
+      const mcpPlusPlus = info?.mcpPlusPlus || null;
+      const mcpState = mcpPlusPlus
+        ? (mcpPlusPlus.state || (mcpPlusPlus.available ? 'available' : 'degraded'))
+        : 'n/a';
+      const mcpMode = mcpPlusPlus?.mode || 'n/a';
+      const mcpProfile = mcpPlusPlus?.active_profile || 'n/a';
+      const mcpNegotiation = mcpPlusPlus
+        ? (mcpPlusPlus.supports_profile_negotiation ? 'yes' : 'no')
+        : 'n/a';
+      const mcpStateClass = `capability-${String(mcpState).toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
       
       card.innerHTML = `
         <div class="daemon-header">
-          <div class="daemon-name">${formatDaemonName(name)}</div>
+          <div class="daemon-name">${info?.name || formatDaemonName(daemonId)}</div>
           <div class="status-badge ${statusClass}">${info.status}</div>
         </div>
         <div class="daemon-info">
@@ -294,17 +343,45 @@
             <span class="info-label">Restarts:</span>
             <span>${info.restartCount}</span>
           </div>
+          <div class="info-row">
+            <span class="info-label">Port:</span>
+            <span>${info.port}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Health:</span>
+            <span>${healthLabel}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Endpoint:</span>
+            <span>${endpoint}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">MCP++ State:</span>
+            <span class="capability-badge ${mcpStateClass}">${mcpState}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">MCP++ Mode:</span>
+            <span>${mcpMode}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">MCP++ Profile:</span>
+            <span>${mcpProfile}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">MCP++ Negotiation:</span>
+            <span>${mcpNegotiation}</span>
+          </div>
         </div>
         <div class="daemon-actions">
-          <button class="daemon-btn start" onclick="startDaemon('${name}')" 
+          <button class="daemon-btn start" onclick="startDaemon('${daemonId}')" 
                   ${info.status === 'running' ? 'disabled' : ''}>
             Start
           </button>
-          <button class="daemon-btn stop" onclick="stopDaemon('${name}')"
+          <button class="daemon-btn stop" onclick="stopDaemon('${daemonId}')"
                   ${info.status === 'stopped' ? 'disabled' : ''}>
             Stop
           </button>
-          <button class="daemon-btn restart" onclick="restartDaemon('${name}')"
+          <button class="daemon-btn restart" onclick="restartDaemon('${daemonId}')"
                   ${info.status === 'stopped' ? 'disabled' : ''}>
             Restart
           </button>
@@ -357,8 +434,8 @@
     // Daemon control functions
     async function startAll() {
       try {
-        const status = await ipcRenderer.invoke('daemon:start-all');
-        updateDaemons(status);
+        await daemonApi.startAll();
+        await refreshStatus();
         addEvent('All daemons started', 'success');
       } catch (error) {
         addEvent(`Error starting daemons: ${error.message}`, 'error');
@@ -367,8 +444,8 @@
 
     async function stopAll() {
       try {
-        const status = await ipcRenderer.invoke('daemon:stop-all');
-        updateDaemons(status);
+        await daemonApi.stopAll();
+        await refreshStatus();
         addEvent('All daemons stopped', 'success');
       } catch (error) {
         addEvent(`Error stopping daemons: ${error.message}`, 'error');
@@ -377,7 +454,7 @@
 
     async function startDaemon(name) {
       try {
-        await ipcRenderer.invoke('daemon:start', name);
+        await daemonApi.start(name);
         await refreshStatus();
         addEvent(`Started ${formatDaemonName(name)}`, 'success');
       } catch (error) {
@@ -387,7 +464,7 @@
 
     async function stopDaemon(name) {
       try {
-        await ipcRenderer.invoke('daemon:stop', name);
+        await daemonApi.stop(name);
         await refreshStatus();
         addEvent(`Stopped ${formatDaemonName(name)}`, 'success');
       } catch (error) {
@@ -397,7 +474,7 @@
 
     async function restartDaemon(name) {
       try {
-        await ipcRenderer.invoke('daemon:restart', name);
+        await daemonApi.restart(name);
         await refreshStatus();
         addEvent(`Restarted ${formatDaemonName(name)}`, 'success');
       } catch (error) {
@@ -407,32 +484,61 @@
 
     async function refreshStatus() {
       try {
-        const status = await ipcRenderer.invoke('daemon:get-status');
+        const status = await daemonApi.getAll();
         updateDaemons(status);
       } catch (error) {
         addEvent(`Error refreshing status: ${error.message}`, 'error');
       }
     }
 
+    async function addMcpPlusPlusEvent(daemonId, eventType = 'info') {
+      try {
+        const status = await daemonApi.getAll();
+        const daemonStatus = status?.[daemonId];
+        const capability = daemonStatus?.mcpPlusPlus;
+        if (!capability) {
+          return;
+        }
+
+        const mode = capability.mode || 'unknown';
+        const state = capability.state || (capability.available ? 'available' : 'degraded');
+        const profile = capability.active_profile || 'none';
+        addEvent(`${formatDaemonName(daemonId)} MCP++ ${state} (${mode}, profile: ${profile})`, eventType);
+      } catch {
+        // Ignore MCP++ telemetry lookup failures in the event log path.
+      }
+    }
+
     // Listen for daemon events
-    ipcRenderer.on('daemon-event', (event, { type, data }) => {
-      const name = formatDaemonName(data.name);
+    const detachDaemonListener = daemonApi?.onEvent?.(({ type, data }) => {
+      const name = formatDaemonName(data?.daemon || data?.name || 'daemon');
       
       switch (type) {
-        case 'daemon-started':
-          addEvent(`${name} started (PID: ${data.pid})`, 'success');
+        case 'started':
+          addEvent(`${name} started`, 'success');
+          if (data?.daemon) {
+            addMcpPlusPlusEvent(data.daemon, 'info');
+          }
           break;
-        case 'daemon-stopped':
+        case 'stopped':
           addEvent(`${name} stopped`, 'info');
           break;
-        case 'daemon-crashed':
-          addEvent(`${name} crashed (code: ${data.code})`, 'error');
+        case 'all-started':
+          addEvent('All MCP daemons are running', 'success');
           break;
-        case 'daemon-failed':
-          addEvent(`${name} failed to start`, 'error');
+        case 'all-stopped':
+          addEvent('All MCP daemons are stopped', 'info');
           break;
-        case 'daemon-error':
-          addEvent(`${name} error: ${data.error?.message || 'Unknown error'}`, 'error');
+        case 'error':
+          addEvent(`${name} error: ${data?.error || 'Unknown error'}`, 'error');
+          break;
+        case 'health-check':
+          if (data?.healthy === false) {
+            addEvent(`${name} health check degraded`, 'error');
+            if (data?.daemon) {
+              addMcpPlusPlusEvent(data.daemon, 'error');
+            }
+          }
           break;
       }
       
@@ -445,6 +551,12 @@
     
     // Auto-refresh every 10 seconds
     setInterval(refreshStatus, 10000);
+
+    window.addEventListener('beforeunload', () => {
+      if (typeof detachDaemonListener === 'function') {
+        detachDaemonListener();
+      }
+    });
   </script>
 </body>
 </html>

@@ -254,6 +254,35 @@
           <i class="fas fa-lightbulb"></i> <strong>Tip:</strong> The IPFS Accelerate MCP server runs on port 3003 and provides high-performance model serving capabilities.
         </div>
       </div>
+
+      <div class="card">
+        <h2><i class="fas fa-network-wired"></i> MCP++ Runtime Capability</h2>
+        <div class="status-grid">
+          <div class="status-item">
+            <span class="status-label">Bridge Status:</span>
+            <span class="status-value" id="mcpplusplus-status">Checking...</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Negotiation Mode:</span>
+            <span class="status-value" id="mcpplusplus-mode">--</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Active Profile:</span>
+            <span class="status-value" id="mcpplusplus-active-profile">--</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Supports Negotiation:</span>
+            <span class="status-value" id="mcpplusplus-negotiation">--</span>
+          </div>
+        </div>
+        <div class="info-section">
+          <h3><i class="fas fa-list"></i> Advertised Profiles</h3>
+          <ul id="mcpplusplus-profiles"></ul>
+          <div class="alert alert-info" id="mcpplusplus-message">
+            Waiting for daemon telemetry...
+          </div>
+        </div>
+      </div>
       
       <div class="card">
         <h2><i class="fas fa-cog"></i> Quick Actions</h2>
@@ -293,16 +322,37 @@
           </div>
         </div>
       </div>
+
+      <div class="card">
+        <h2><i class="fas fa-window-maximize"></i> Native Package Dashboard</h2>
+        <div class="info-section">
+          <p>This embedded view is served directly by the ipfs_accelerate_py MCP server and complements the Hallucinate wrapper controls above.</p>
+          <button class="btn btn-secondary" id="btn-reload-native-dashboard">
+            <i class="fas fa-sync"></i> Reload Native Dashboard
+          </button>
+        </div>
+        <iframe
+          id="package-dashboard-frame"
+          title="IPFS Accelerate Native Dashboard"
+          src="http://127.0.0.1:3003/dashboard"
+          style="width: 100%; min-height: 720px; border: 1px solid #e2e8f0; border-radius: 8px; background: white;"
+        ></iframe>
+      </div>
     </div>
   </div>
   
   <script type="module">
-    const { ipcRenderer } = window.require('electron');
+    const daemonApi = window?.electronAPI?.daemon;
+    const navigationApi = window?.electronAPI?.navigation;
+
+    if (!daemonApi) {
+      console.error('Daemon API bridge is unavailable.');
+    }
     
     // Update server status
     async function updateServerStatus() {
       try {
-        const status = await ipcRenderer.invoke('daemon:getAll');
+        const status = await daemonApi.getAll();
         const accelerateStatus = status['ipfs-accelerate'];
         
         const statusElement = document.getElementById('server-status');
@@ -316,10 +366,48 @@
           statusElement.innerHTML = '<span style="color: #ef4444; font-weight: 600;"><i class="fas fa-times-circle"></i> Stopped</span>';
           uptimeElement.textContent = '--';
         }
+
+        renderMcpPlusPlusStatus(accelerateStatus?.mcpPlusPlus || null);
       } catch (error) {
         console.error('Failed to get server status:', error);
         document.getElementById('server-status').innerHTML = '<span style="color: #f59e0b;"><i class="fas fa-exclamation-circle"></i> Unknown</span>';
+        renderMcpPlusPlusStatus(null);
       }
+    }
+
+    function renderMcpPlusPlusStatus(mcpStatus) {
+      const statusEl = document.getElementById('mcpplusplus-status');
+      const modeEl = document.getElementById('mcpplusplus-mode');
+      const activeProfileEl = document.getElementById('mcpplusplus-active-profile');
+      const negotiationEl = document.getElementById('mcpplusplus-negotiation');
+      const profilesEl = document.getElementById('mcpplusplus-profiles');
+      const messageEl = document.getElementById('mcpplusplus-message');
+
+      if (!mcpStatus) {
+        statusEl.innerHTML = '<span style="color: #f59e0b; font-weight: 600;"><i class="fas fa-exclamation-circle"></i> Unknown</span>';
+        modeEl.textContent = '--';
+        activeProfileEl.textContent = '--';
+        negotiationEl.textContent = '--';
+        profilesEl.innerHTML = '<li>No MCP++ telemetry available yet.</li>';
+        messageEl.innerHTML = '<i class="fas fa-info-circle"></i> Waiting for daemon telemetry...';
+        return;
+      }
+
+      const available = Boolean(mcpStatus.available);
+      statusEl.innerHTML = available
+        ? '<span style="color: #10b981; font-weight: 600;"><i class="fas fa-check-circle"></i> Available</span>'
+        : '<span style="color: #f59e0b; font-weight: 600;"><i class="fas fa-exclamation-triangle"></i> Degraded</span>';
+
+      modeEl.textContent = String(mcpStatus.mode || '--');
+      activeProfileEl.textContent = String(mcpStatus.active_profile || '--');
+      negotiationEl.textContent = mcpStatus.supports_profile_negotiation ? 'Yes' : 'No';
+
+      const profiles = Array.isArray(mcpStatus.profiles) ? mcpStatus.profiles : [];
+      profilesEl.innerHTML = profiles.length
+        ? profiles.map((profile) => `<li><code>${profile}</code></li>`).join('')
+        : '<li>No profiles advertised.</li>';
+
+      messageEl.innerHTML = `<i class="fas fa-info-circle"></i> ${mcpStatus.message || 'No MCP++ status message available.'}`;
     }
     
     // Test MCP connection
@@ -347,13 +435,13 @@
     
     // Open model tester
     document.getElementById('btn-open-model-tester').addEventListener('click', () => {
-      ipcRenderer.send('open-model-tester');
+      navigationApi?.openModelTester?.();
     });
     
     // View server logs
     document.getElementById('btn-view-logs').addEventListener('click', async () => {
       try {
-        const logs = await ipcRenderer.invoke('daemon:getLogs', 'ipfs-accelerate', 50);
+        const logs = await daemonApi.getLogs('ipfs-accelerate');
         if (logs && logs.length > 0) {
           const logText = logs.map(log => `[${new Date(log.time).toLocaleTimeString()}] ${log.message}`).join('\n');
           alert('Recent Logs:\n\n' + logText);
@@ -367,7 +455,12 @@
     
     // Open daemon manager
     document.getElementById('btn-open-daemon-manager').addEventListener('click', () => {
-      ipcRenderer.send('open-daemon-manager');
+      navigationApi?.openDaemonManager?.();
+    });
+
+    document.getElementById('btn-reload-native-dashboard').addEventListener('click', () => {
+      const frame = document.getElementById('package-dashboard-frame');
+      frame.src = frame.src;
     });
     
     // Initial status update and periodic refresh

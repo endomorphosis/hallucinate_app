@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com; connect-src 'self' http://localhost:*">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com; connect-src 'self' http://localhost:* http://127.0.0.1:*; frame-src http://localhost:* http://127.0.0.1:*;">
   <title>IPFS Kit Dashboard</title>
   
   <!-- Add Font Awesome for icons -->
@@ -65,41 +65,144 @@
       <p>Test and manage IPFS Kit functionality</p>
     </div>
     
-    <div id="dashboard-container"></div>
+    <div id="dashboard-container">
+      <div class="status-panel" style="padding: 1.25rem; border-bottom: 1px solid #e2e8f0;">
+        <h2 style="margin: 0 0 0.75rem 0; font-size: 1.2rem; color: #2d3748;">MCP Server Status</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem;">
+          <div><strong>Status:</strong> <span id="server-status">Checking...</span></div>
+          <div><strong>Port:</strong> 8004</div>
+          <div><strong>Health:</strong> <span id="health-status">Unknown</span></div>
+          <div><strong>Endpoint:</strong> <span id="endpoint-status">http://127.0.0.1:8004</span></div>
+        </div>
+      </div>
+
+      <div class="actions-panel" style="padding: 1.25rem; border-bottom: 1px solid #e2e8f0;">
+        <h2 style="margin: 0 0 0.75rem 0; font-size: 1.2rem; color: #2d3748;">Quick Actions</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+          <button id="btn-test-connection" style="padding: 0.5rem 0.75rem;">Test MCP Connection</button>
+          <button id="btn-view-logs" style="padding: 0.5rem 0.75rem;">View Server Logs</button>
+          <button id="btn-open-web-dashboard" style="padding: 0.5rem 0.75rem;">Open Web Dashboard</button>
+          <button id="btn-open-daemon-manager" style="padding: 0.5rem 0.75rem;">Open Daemon Manager</button>
+        </div>
+      </div>
+
+      <div class="features-panel" style="padding: 1.25rem;">
+        <h2 style="margin: 0 0 0.75rem 0; font-size: 1.2rem; color: #2d3748;">Exposed MCP Features</h2>
+        <ul style="margin: 0; padding-left: 1.25rem; color: #4a5568;">
+          <li><code>/api/mcp/status</code> - MCP service health and readiness</li>
+          <li><code>/tools/add</code> - Add content to IPFS</li>
+          <li><code>/tools/get</code> - Retrieve content from IPFS</li>
+          <li><code>/tools/pin</code> - Pin content for persistence</li>
+          <li><code>/status</code> - Node and connectivity state</li>
+        </ul>
+      </div>
+
+      <div class="native-dashboard-panel" style="padding: 1.25rem; border-top: 1px solid #e2e8f0; background: #f8fafc;">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 0.75rem;">
+          <div>
+            <h2 style="margin: 0; font-size: 1.2rem; color: #2d3748;">Native Package Dashboard</h2>
+            <p style="margin: 0.35rem 0 0; color: #4a5568;">Embedded dashboard served directly by ipfs_kit_py on the MCP endpoint.</p>
+          </div>
+          <button id="btn-reload-native-dashboard" style="padding: 0.5rem 0.75rem;">Reload Native Dashboard</button>
+        </div>
+        <iframe
+          id="package-dashboard-frame"
+          title="IPFS Kit Native Dashboard"
+          src="http://127.0.0.1:8004/dashboard"
+          style="width: 100%; min-height: 720px; border: 1px solid #cbd5e0; border-radius: 8px; background: white;"
+        ></iframe>
+      </div>
+    </div>
   </div>
   
-  <script type="module">
-    import { registerIPFSKitDashboard } from '../dashboard/register_ipfs_dashboard.js';
-    
-    // Initialize the dashboard when the page loads
-    document.addEventListener('DOMContentLoaded', async () => {
+  <script>
+    const daemonApi = window?.electronAPI?.daemon;
+    const navigationApi = window?.electronAPI?.navigation;
+
+    if (!daemonApi) {
+      console.error('Daemon API bridge is unavailable.');
+    }
+
+    async function updateServerStatus() {
+      const serverStatus = document.getElementById('server-status');
+      const healthStatus = document.getElementById('health-status');
+      const endpointStatus = document.getElementById('endpoint-status');
+
       try {
-        // Register and initialize the IPFS Kit dashboard
-        const result = await registerIPFSKitDashboard({
-          container: document.getElementById('dashboard-container')
-        });
-        
-        if (!result) {
-          console.error('Failed to initialize IPFS Kit dashboard');
-          document.getElementById('dashboard-container').innerHTML = `
-            <div class="error-message" style="padding: 2rem; text-align: center;">
-              <i class="fas fa-exclamation-circle" style="font-size: 3rem; display: block; margin-bottom: 1rem;"></i>
-              <h2>Dashboard Initialization Failed</h2>
-              <p>There was a problem initializing the IPFS Kit dashboard. Please check the console for details.</p>
-            </div>
-          `;
+        const status = await daemonApi.getAll();
+        const kitStatus = status['ipfs-kit'];
+
+        if (kitStatus && kitStatus.status === 'running') {
+          serverStatus.textContent = 'Running';
+          serverStatus.style.color = '#2f855a';
+          endpointStatus.textContent = kitStatus.endpoint || 'http://127.0.0.1:8004';
+        } else {
+          serverStatus.textContent = 'Stopped';
+          serverStatus.style.color = '#c53030';
+          endpointStatus.textContent = 'http://127.0.0.1:8004';
         }
+
+        const health = await daemonApi.checkHealth('ipfs-kit');
+        healthStatus.textContent = health?.healthy ? 'Healthy' : 'Degraded';
+        healthStatus.style.color = health?.healthy ? '#2f855a' : '#c53030';
       } catch (error) {
-        console.error('Error initializing dashboard:', error);
-        document.getElementById('dashboard-container').innerHTML = `
-          <div class="error-message" style="padding: 2rem; text-align: center;">
-            <i class="fas fa-exclamation-circle" style="font-size: 3rem; display: block; margin-bottom: 1rem;"></i>
-            <h2>Error</h2>
-            <p>${error.message}</p>
-          </div>
-        `;
+        serverStatus.textContent = 'Unknown';
+        serverStatus.style.color = '#b7791f';
+        healthStatus.textContent = 'Unknown';
+        healthStatus.style.color = '#b7791f';
+      }
+    }
+
+    document.getElementById('btn-test-connection').addEventListener('click', async () => {
+      const button = document.getElementById('btn-test-connection');
+      const original = button.textContent;
+      button.disabled = true;
+      button.textContent = 'Testing...';
+      try {
+        const response = await fetch('http://127.0.0.1:8004/api/mcp/status').catch(() => null);
+        if (response && response.ok) {
+          alert('Connection successful! IPFS Kit MCP service is responding.');
+        } else {
+          alert('Connection failed. Start IPFS Kit MCP from Daemon Manager and retry.');
+        }
+      } finally {
+        button.disabled = false;
+        button.textContent = original;
       }
     });
+
+    document.getElementById('btn-view-logs').addEventListener('click', async () => {
+      try {
+        const logs = await daemonApi.getLogs('ipfs-kit');
+        if (logs && logs.length > 0) {
+          const text = logs
+            .slice(-20)
+            .map((log) => `[${new Date(log.time).toLocaleTimeString()}] ${log.message}`)
+            .join('\n');
+          alert(`Recent Logs:\n\n${text}`);
+        } else {
+          alert('No logs available. IPFS Kit MCP may not be running yet.');
+        }
+      } catch (error) {
+        alert(`Failed to retrieve logs: ${error.message}`);
+      }
+    });
+
+    document.getElementById('btn-open-web-dashboard').addEventListener('click', () => {
+      window.open('http://127.0.0.1:8004/dashboard', '_blank', 'noopener,noreferrer');
+    });
+
+    document.getElementById('btn-open-daemon-manager').addEventListener('click', () => {
+      navigationApi?.openDaemonManager?.();
+    });
+
+    document.getElementById('btn-reload-native-dashboard').addEventListener('click', () => {
+      const frame = document.getElementById('package-dashboard-frame');
+      frame.src = frame.src;
+    });
+
+    updateServerStatus();
+    setInterval(updateServerStatus, 5000);
   </script>
 </body>
 </html>

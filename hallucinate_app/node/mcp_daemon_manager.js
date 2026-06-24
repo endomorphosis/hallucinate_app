@@ -3,8 +3,9 @@
  * Manages IPFS MCP server daemons and SwissKnife integration
  */
 
-import { spawn } from 'child_process';
+import { spawn, spawnSync } from 'child_process';
 import { EventEmitter } from 'events';
+import fs from 'fs';
 import path from 'path';
 import url from 'url';
 import crypto from 'crypto';
@@ -16,6 +17,22 @@ const DEFAULT_HEALTH_INTERVAL_MS = 30000;
 const DEFAULT_STARTUP_TIMEOUT_MS = 5000;
 const DEFAULT_MAX_RESTARTS = 3;
 const LAUNCH_TASK_ID = 'HAO-442';
+const STARTUP_MESSAGE_PATTERNS = [
+  /\bserver running\b/i,
+  /\bapplication startup complete\b/i,
+  /\buvicorn running on\b/i,
+  /\blistening on\b/i,
+  /\bmcp started:\b/i,
+  /\bstarted mcp dashboard\b/i
+];
+
+const ACCELERATE_MCPPLUSPLUS_PROFILES = [
+  'mcp++/profile-a-idl',
+  'mcp++/profile-b-cid-artifacts',
+  'mcp++/profile-c-ucan',
+  'mcp++/profile-d-temporal-policy',
+  'mcp++/profile-e-mcp-p2p'
+];
 
 function stableReceiptCid(value) {
   const canonical = JSON.stringify(value);
@@ -27,6 +44,8 @@ class MCPDaemonManager extends EventEmitter {
   constructor(options = {}) {
     super();
     this.daemons = new Map();
+    this.dashboardSidecars = new Map();
+    this.mcpPlusPlusCapabilities = new Map();
     this.launchReceipts = [];
     this.restartCounts = new Map();
     this.healthCheckInterval = null;
@@ -34,6 +53,7 @@ class MCPDaemonManager extends EventEmitter {
     this.healthIntervalMs = Number(options.healthIntervalMs || process.env.MCP_DAEMON_HEALTH_INTERVAL_MS || DEFAULT_HEALTH_INTERVAL_MS);
     this.startupTimeoutMs = Number(options.startupTimeoutMs || process.env.MCP_DAEMON_STARTUP_TIMEOUT_MS || DEFAULT_STARTUP_TIMEOUT_MS);
     this.maxRestarts = Number(options.maxRestarts || process.env.MCP_DAEMON_MAX_RESTARTS || DEFAULT_MAX_RESTARTS);
+    this.pythonCommand = options.pythonCommand || this._resolveDaemonPythonCommand();
     this.controlSurfaceInvocationGate = options.controlSurfaceInvocationGate || new ControlSurfaceInvocationGate({
       source: 'hallucinate_app.node.mcp_daemon_manager'
     });
@@ -56,13 +76,14 @@ class MCPDaemonManager extends EventEmitter {
         packageName: 'ipfs_kit_py',
         name: 'IPFS Kit MCP',
         launchOrder: 10,
-        command: 'python',
+        command: this.pythonCommand,
         args: ['-m', 'ipfs_kit_py.cli', 'mcp', 'start'],
         cwd: path.join(this.baseDir, 'ipfs_kit_py'),
-        port: 3001,
+        port: 8004,
         transport: 'http',
         rpcPath: '/mcp/tools/call',
-        healthPath: '/health',
+        healthPath: '/api/mcp/status',
+        detachedLauncher: true,
         swissknifeConsumer: 'Swissknife IPFS storage, pin dashboard, and backend health surfaces',
         mediationContractRef: 'control_surface_contract:mcp-daemon:ipfs-kit'
       },
@@ -71,13 +92,21 @@ class MCPDaemonManager extends EventEmitter {
         packageName: 'ipfs_datasets_py',
         name: 'IPFS Datasets MCP',
         launchOrder: 20,
-        command: 'python',
-        args: ['-m', 'ipfs_datasets_py.mcp_server', '--http', '--port', '3002'],
+        command: this.pythonCommand,
+        args: ['-m', 'uvicorn', 'ipfs_datasets_py.mcp_server.fastapi_service:app', '--host', '127.0.0.1', '--port', '3002'],
         cwd: path.join(this.baseDir, 'ipfs_datasets_py'),
         port: 3002,
         transport: 'http',
-        rpcPath: '/mcp',
-        healthPath: '/health',
+        rpcPath: '/datasets/load',
+        healthPath: '/health/ready',
+        nativeDashboard: {
+          port: 8899,
+          path: '/mcp',
+          catalogPath: '/api/hallucinate/dashboard-catalog',
+          healthPath: '/api/mcp/status',
+          command: this.pythonCommand,
+          args: [path.join(this.baseDir, 'scripts', 'ipfs_datasets_dashboard_launcher.py'), '--host', '127.0.0.1', '--port', '8899', '--mcp-host', '127.0.0.1', '--mcp-port', '3002']
+        },
         swissknifeConsumer: 'Swissknife dataset, content, index, provenance, and background task surfaces',
         mediationContractRef: 'control_surface_contract:mcp-daemon:ipfs-datasets'
       },
@@ -86,17 +115,35 @@ class MCPDaemonManager extends EventEmitter {
         packageName: 'ipfs_accelerate_py',
         name: 'IPFS Accelerate MCP',
         launchOrder: 30,
-        command: 'python',
+        command: this.pythonCommand,
         args: ['-m', 'ipfs_accelerate_py.cli', 'mcp', 'start', '--port', '3003'],
         cwd: path.join(this.baseDir, 'ipfs_accelerate_py'),
         port: 3003,
         transport: 'http',
         rpcPath: '/mcp',
-        healthPath: '/health',
+        healthPath: '/api/mcp/status',
         swissknifeConsumer: 'Swissknife hardware profile, inference job, job status, and telemetry surfaces',
         mediationContractRef: 'control_surface_contract:mcp-daemon:ipfs-accelerate'
       }
     ];
+  }
+
+  _resolveDaemonPythonCommand() {
+    const explicitPython = process.env.MCP_DAEMON_PYTHON;
+    if (explicitPython) {
+      return explicitPython;
+    }
+
+    const venvDir = process.env.VIRTUAL_ENV || path.resolve(this.baseDir, '..', '.venv');
+    const candidate = process.platform === 'win32'
+      ? path.join(venvDir, 'Scripts', 'python.exe')
+      : path.join(venvDir, 'bin', 'python');
+
+    if (fs.existsSync(candidate)) {
+      return candidate;
+    }
+
+    return 'python';
   }
 
   /**
@@ -167,14 +214,7 @@ class MCPDaemonManager extends EventEmitter {
       console.log(`[${config.name}] ${message}`);
       this.emit('log', { daemon: daemonId, level: 'info', message });
       
-      // Check for successful startup indicators
-      if (message.includes('Server running') || 
-          message.includes('Started') || 
-          message.includes('Listening') ||
-          message.includes('ready')) {
-        daemon.status = 'running';
-        this.emit('started', { daemon: daemonId, port: config.port });
-      }
+      this._markDaemonStartedFromOutput(daemonId, daemon, config, message);
     });
 
     process.stderr.on('data', (data) => {
@@ -214,13 +254,26 @@ class MCPDaemonManager extends EventEmitter {
 
     process.on('exit', (code, signal) => {
       console.log(`[${config.name}] Process exited with code ${code}, signal ${signal}`);
-      daemon.status = 'stopped';
+      if (config.detachedLauncher && code === 0) {
+        daemon.launcherExited = true;
+      } else {
+        daemon.status = 'stopped';
+      }
       this._recordLaunchReceipt(config, daemon, 'process_exit', code === 0 ? 'stopped' : 'error', {
         exit_code: code,
         signal,
         restart_count: daemon.restartCount
       });
       
+      if (config.detachedLauncher && code === 0) {
+        this.emit('log', {
+          daemon: daemonId,
+          level: 'info',
+          message: `${config.name} launcher exited after handing off to the background service`
+        });
+        return;
+      }
+
       if (code !== 0 && code !== null) {
         daemon.lastError = `Exited with code ${code}`;
         this.emit('error', { daemon: daemonId, error: `Exited with code ${code}` });
@@ -260,6 +313,9 @@ class MCPDaemonManager extends EventEmitter {
       health: daemon.lastHealth
     });
 
+    await this._startNativeDashboardSidecar(config);
+    await this._refreshMcpPlusPlusStatus(config, daemon);
+
     return daemon;
   }
 
@@ -278,6 +334,7 @@ class MCPDaemonManager extends EventEmitter {
     }
 
     console.log(`[${daemon.name}] Stopping...`);
+    await this._stopNativeDashboardSidecar(daemonId);
     daemon.process.kill('SIGTERM');
     
     // Force kill after 5 seconds if still running
@@ -379,7 +436,9 @@ class MCPDaemonManager extends EventEmitter {
         restartCount: daemon.restartCount,
         lastError: daemon.lastError,
         lastHealth: daemon.lastHealth,
+        mcpPlusPlus: this._mcpPlusPlusStatus(id, daemon),
         endpoint: daemon.endpoint,
+        nativeDashboard: this._nativeDashboardStatus(id),
         packageName: daemon.packageName,
         launchOrder: daemon.launchOrder,
         recentLogs: daemon.logs.slice(-10)
@@ -408,7 +467,9 @@ class MCPDaemonManager extends EventEmitter {
       restartCount: daemon.restartCount,
       lastError: daemon.lastError,
       lastHealth: daemon.lastHealth,
+      mcpPlusPlus: this._mcpPlusPlusStatus(daemonId, daemon),
       endpoint: daemon.endpoint,
+      nativeDashboard: this._nativeDashboardStatus(daemonId),
       packageName: daemon.packageName,
       launchOrder: daemon.launchOrder,
       recentLogs: daemon.logs.slice(-10)
@@ -488,6 +549,11 @@ class MCPDaemonManager extends EventEmitter {
         transport: config.transport,
         rpc_path: config.rpcPath,
         health_path: config.healthPath,
+        native_dashboard_url: config.nativeDashboard
+          ? `http://127.0.0.1:${config.nativeDashboard.port}${config.nativeDashboard.path}`
+          : null,
+        native_dashboard_health_path: config.nativeDashboard?.healthPath || null,
+        mcpplusplus: this._launchPlanMcpPlusPlus(config),
         mediation_contract_ref: config.mediationContractRef,
         swissknife_consumer: config.swissknifeConsumer,
         restart_behavior: `auto-restart after crash or failed process health up to ${this.maxRestarts} attempts`
@@ -639,6 +705,233 @@ class MCPDaemonManager extends EventEmitter {
     return `http://127.0.0.1:${config.port}`;
   }
 
+  _nativeDashboardStatus(daemonId) {
+    const sidecar = this.dashboardSidecars.get(daemonId);
+    if (!sidecar) {
+      return null;
+    }
+
+    return {
+      pid: sidecar.process?.pid || null,
+      port: sidecar.port,
+      url: sidecar.url,
+      healthUrl: sidecar.healthUrl,
+      catalogUrl: sidecar.catalogUrl,
+      status: sidecar.status
+    };
+  }
+
+  _mcpPlusPlusStatus(daemonId, daemon = null) {
+    if (daemon?.mcpPlusPlus) {
+      return daemon.mcpPlusPlus;
+    }
+    return this.mcpPlusPlusCapabilities.get(daemonId) || null;
+  }
+
+  _launchPlanMcpPlusPlus(config) {
+    if (config.id === 'ipfs-accelerate') {
+      return {
+        available: true,
+        supports_profile_negotiation: true,
+        mode: 'optional_additive',
+        profiles: [...ACCELERATE_MCPPLUSPLUS_PROFILES]
+      };
+    }
+
+    if (config.id === 'ipfs-datasets') {
+      return {
+        provider: 'ipfs_datasets_py.mcp_server.mcplusplus',
+        bridge_to: 'ipfs_accelerate_py.mcplusplus_module',
+        supports_profile_negotiation: false,
+        mode: 'optional_bridge',
+        profiles: []
+      };
+    }
+
+    return null;
+  }
+
+  async _refreshMcpPlusPlusStatus(config, daemon) {
+    const status = this._collectMcpPlusPlusStatus(config);
+    this.mcpPlusPlusCapabilities.set(config.id, status);
+    if (daemon) {
+      daemon.mcpPlusPlus = status;
+    }
+    return status;
+  }
+
+  _collectMcpPlusPlusStatus(config) {
+    if (config.id === 'ipfs-accelerate') {
+      return {
+        provider: 'ipfs_accelerate_py.mcp_server.server.get_unified_supported_profiles',
+        available: true,
+        state: 'available',
+        supports_profile_negotiation: true,
+        mode: 'optional_additive',
+        profiles: [...ACCELERATE_MCPPLUSPLUS_PROFILES],
+        active_profile: ACCELERATE_MCPPLUSPLUS_PROFILES[0],
+        message: 'Unified MCP++ profiles are advertised by the accelerate MCP runtime.'
+      };
+    }
+
+    if (config.id === 'ipfs-datasets') {
+      const probeScript = [
+        'import json',
+        'status = {"provider": "ipfs_datasets_py.mcp_server.mcplusplus"}',
+        'try:',
+        '    from ipfs_datasets_py.mcp_server import mcplusplus',
+        '    caps = mcplusplus.get_capabilities()',
+        '    ok, missing = mcplusplus.check_requirements()',
+        '    available = bool(caps.get("mcplusplus_available"))',
+        '    status.update({',
+        '        "available": available,',
+        '        "state": "available" if available else "degraded",',
+        '        "mode": "optional_bridge",',
+        '        "supports_profile_negotiation": False,',
+        '        "profiles": [],',
+        '        "bridge_capabilities": caps.get("capabilities", {}),',
+        '        "mcplusplus_version": caps.get("mcplusplus_version"),',
+        '        "requirements_ok": bool(ok),',
+        '        "missing_requirements": list(missing or []),',
+        '    })',
+        'except Exception as exc:',
+        '    status.update({',
+        '        "available": False,',
+        '        "state": "unavailable",',
+        '        "mode": "optional_bridge",',
+        '        "supports_profile_negotiation": False,',
+        '        "profiles": [],',
+        '        "error": str(exc),',
+        '    })',
+        'print(json.dumps(status))'
+      ].join('\n');
+
+      try {
+        const result = spawnSync(config.command, ['-c', probeScript], {
+          cwd: config.cwd,
+          env: this._buildDaemonEnv(config),
+          encoding: 'utf8',
+          timeout: 4000
+        });
+
+        const raw = String(result.stdout || '').trim();
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          return {
+            ...parsed,
+            message: parsed.available
+              ? 'Datasets MCP++ bridge is available via ipfs_accelerate_py.mcplusplus_module.'
+              : 'Datasets MCP++ bridge is unavailable; P2P engines run in degraded local mode.'
+          };
+        }
+
+        return {
+          provider: 'ipfs_datasets_py.mcp_server.mcplusplus',
+          available: false,
+          state: 'unavailable',
+          mode: 'optional_bridge',
+          supports_profile_negotiation: false,
+          profiles: [],
+          error: String(result.stderr || 'empty capability probe response'),
+          message: 'Datasets MCP++ bridge probe returned no data.'
+        };
+      } catch (error) {
+        return {
+          provider: 'ipfs_datasets_py.mcp_server.mcplusplus',
+          available: false,
+          state: 'unavailable',
+          mode: 'optional_bridge',
+          supports_profile_negotiation: false,
+          profiles: [],
+          error: error.message,
+          message: 'Datasets MCP++ bridge probe failed.'
+        };
+      }
+    }
+
+    return null;
+  }
+
+  async _startNativeDashboardSidecar(config) {
+    if (!config.nativeDashboard) {
+      return null;
+    }
+
+    const existing = this.dashboardSidecars.get(config.id);
+    if (existing && existing.status !== 'stopped') {
+      return existing;
+    }
+
+    const dashboardProcess = spawn(config.nativeDashboard.command, config.nativeDashboard.args, {
+      cwd: config.cwd,
+      env: this._buildDaemonEnv(config),
+      stdio: ['ignore', 'pipe', 'pipe']
+    });
+
+    const sidecar = {
+      daemonId: config.id,
+      port: config.nativeDashboard.port,
+      url: `http://127.0.0.1:${config.nativeDashboard.port}${config.nativeDashboard.path}`,
+      healthUrl: `http://127.0.0.1:${config.nativeDashboard.port}${config.nativeDashboard.healthPath}`,
+      catalogUrl: config.nativeDashboard.catalogPath
+        ? `http://127.0.0.1:${config.nativeDashboard.port}${config.nativeDashboard.catalogPath}`
+        : null,
+      process: dashboardProcess,
+      status: 'starting',
+      logs: []
+    };
+    this.dashboardSidecars.set(config.id, sidecar);
+
+    dashboardProcess.stdout.on('data', (data) => {
+      const message = data.toString().trim();
+      if (message) {
+        sidecar.logs.push({ time: Date.now(), level: 'info', message });
+      }
+    });
+
+    dashboardProcess.stderr.on('data', (data) => {
+      const message = data.toString().trim();
+      if (message) {
+        sidecar.logs.push({ time: Date.now(), level: 'error', message });
+      }
+    });
+
+    dashboardProcess.on('exit', () => {
+      sidecar.status = 'stopped';
+    });
+
+    const deadline = Date.now() + this.startupTimeoutMs;
+    while (Date.now() < deadline) {
+      try {
+        const response = await fetch(sidecar.healthUrl);
+        if (response.ok) {
+          sidecar.status = 'running';
+          return sidecar;
+        }
+      } catch {
+        // Native dashboard is still starting.
+      }
+      await new Promise((resolve) => setTimeout(resolve, 250));
+    }
+
+    sidecar.status = 'degraded';
+    return sidecar;
+  }
+
+  async _stopNativeDashboardSidecar(daemonId) {
+    const sidecar = this.dashboardSidecars.get(daemonId);
+    if (!sidecar || sidecar.status === 'stopped') {
+      return;
+    }
+
+    sidecar.status = 'stopped';
+    try {
+      sidecar.process.kill('SIGTERM');
+    } catch {
+      // Ignore sidecar stop failures during shutdown.
+    }
+  }
+
   async _waitForDaemonHealth(config, daemon) {
     const deadline = Date.now() + this.startupTimeoutMs;
     let lastHealth = await this._checkDaemonHealth(config, daemon);
@@ -686,8 +979,31 @@ class MCPDaemonManager extends EventEmitter {
       }
     }
 
+    if (config.detachedLauncher && result.endpoint_ok) {
+      result.process_alive = true;
+    }
+
     result.healthy = result.process_alive && result.endpoint_ok;
     return result;
+  }
+
+  _markDaemonStartedFromOutput(daemonId, daemon, config, message) {
+    if (daemon.status !== 'starting') {
+      return;
+    }
+
+    const normalized = String(message || '').trim();
+    if (!normalized) {
+      return;
+    }
+
+    const isStartupMessage = STARTUP_MESSAGE_PATTERNS.some((pattern) => pattern.test(normalized));
+    if (!isStartupMessage) {
+      return;
+    }
+
+    daemon.status = 'running';
+    this.emit('started', { daemon: daemonId, port: config.port });
   }
 
   _recordLaunchReceipt(config, daemon, eventType, outcome, details = {}) {

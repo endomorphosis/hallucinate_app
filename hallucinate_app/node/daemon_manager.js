@@ -344,7 +344,7 @@ class DaemonManager extends EventEmitter {
       cwd: path.join(rootDir, 'swissknife'),
       env: {
         MCP_SERVER_NAME: 'ipfs-accelerate',
-        MCP_SERVER_PORT: '3001'
+        MCP_SERVER_PORT: '3003'
       },
       autoRestart: true,
       maxRestarts: 5
