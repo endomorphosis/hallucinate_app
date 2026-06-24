@@ -7718,3 +7718,25 @@ UI-plane participants and runtime-plane targets.
 - Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/unit/test_hf_efficientformer.ts
 - Validation: test -f swissknife/ipfs_accelerate_js/test/unit/test_hf_efficientformer.ts
 - Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/unit/test_hf_efficientformer.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-673-codebase-scan-81177723e089.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-674 Integrate MCP server launch contracts with Swissknife control surfaces
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: integration
+- Depends on: HAO-014, HAO-020, HAO-021
+- Outputs: hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.md, hallucinate_app/docs/MCP_DAEMON_ARCHITECTURE.md, swissknife, data/hallucinate_multimodal_control/discovery, tests
+- Validation: PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py; rg -n "HAO-674|ipfs_accelerate_py|ipfs_datasets_py|ipfs_kit_py|MCP server|MCP\\+\\+|Swissknife|control surface" hallucinate_app/docs swissknife tests data/hallucinate_multimodal_control/discovery
+- Acceptance: Hallucinate App launch docs and tests cover starting or supervising the ipfs_accelerate_py, ipfs_datasets_py, and ipfs_kit_py MCP server features, advertising their MCP++-compatible capabilities to Swissknife applications, and routing service invocations through the multimodal control-surface mediation path.
+
+## HAO-675 Add Swissknife and Hallucinate App Playwright launch replay coverage
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: validation
+- Depends on: HAO-674
+- Outputs: hallucinate_app, swissknife, tests, data/hallucinate_multimodal_control/discovery
+- Validation: PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py; rg -n "HAO-675|Playwright|Swissknife|Hallucinate App|MCP\\+\\+|Meta glasses|desktop peer offload" hallucinate_app swissknife tests data/hallucinate_multimodal_control/discovery
+- Acceptance: Add or specify Playwright-ready launch replay coverage proving Swissknife can invoke Hallucinate App mediation, discover MCP++ service capabilities, exercise a simulated Meta glasses interaction, and capture pass/fail receipts for desktop peer offload and production launch readiness.
