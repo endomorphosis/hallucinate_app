@@ -5932,3 +5932,36 @@ UI-plane participants and runtime-plane targets.
 - Outputs: data/hallucinate_multimodal_control/discovery, swissknife/cleanup-archive/scripts/run_improved_mcp_tests.sh
 - Validation: test -f swissknife/cleanup-archive/scripts/run_improved_mcp_tests.sh
 - Acceptance: Codebase scan filed this finding from swissknife/cleanup-archive/scripts/run_improved_mcp_tests.sh:207. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-511-codebase-scan-51d9b67233ec.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-512 Resolve code annotation in swissknife/docs/DEVELOPER_GUIDE.md:876
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/docs/DEVELOPER_GUIDE.md
+- Validation: test -f swissknife/docs/DEVELOPER_GUIDE.md
+- Acceptance: Codebase scan filed this finding from swissknife/docs/DEVELOPER_GUIDE.md:876. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-512-codebase-scan-048e4b68a3bf.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-513 Resolve code annotation in swissknife/docs/validation/APPLICATION-VALIDATION-REPORT.md:115
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/docs/validation/APPLICATION-VALIDATION-REPORT.md
+- Validation: test -f swissknife/docs/validation/APPLICATION-VALIDATION-REPORT.md
+- Acceptance: Codebase scan filed this finding from swissknife/docs/validation/APPLICATION-VALIDATION-REPORT.md:115. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-513-codebase-scan-8a90ee3d1910.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-514 Resolve code annotation in swissknife/docs/validation/INVESTIGATION-SUMMARY.md:32
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: docs
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/docs/validation/INVESTIGATION-SUMMARY.md
+- Validation: test -f swissknife/docs/validation/INVESTIGATION-SUMMARY.md
+- Acceptance: Codebase scan filed this finding from swissknife/docs/validation/INVESTIGATION-SUMMARY.md:32. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-514-codebase-scan-5f03b35712f2.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
