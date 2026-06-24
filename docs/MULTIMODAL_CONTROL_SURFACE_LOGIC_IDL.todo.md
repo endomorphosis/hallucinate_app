@@ -5101,8 +5101,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-443 Expose MCP server capabilities to Swissknife applications
 
-- Status: completed
-- Completion: manual 2026-06-24: replaced the broad Docker error-reporting initializer catch with targeted integer parsing errors and propagated initialization failures; validation passed with `python3 -m py_compile swissknife/examples/docker_error_reporting_integration.py`.
+- Status: todo
+- Completion: manual
 - Priority: P0
 - Track: launch
 - Depends on: HAO-441
