@@ -5932,3 +5932,36 @@ UI-plane participants and runtime-plane targets.
 - Outputs: data/hallucinate_multimodal_control/discovery, swissknife/cleanup-archive/scripts/run_improved_mcp_tests.sh
 - Validation: test -f swissknife/cleanup-archive/scripts/run_improved_mcp_tests.sh
 - Acceptance: Codebase scan filed this finding from swissknife/cleanup-archive/scripts/run_improved_mcp_tests.sh:207. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-23-hao-511-codebase-scan-51d9b67233ec.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-512 Review swallowed exception path in swissknife/examples/docker_error_reporting_integration.py:57
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: runtime
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/examples/docker_error_reporting_integration.py
+- Validation: python3 -m py_compile swissknife/examples/docker_error_reporting_integration.py
+- Acceptance: Codebase scan filed this finding from swissknife/examples/docker_error_reporting_integration.py:57. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-512-codebase-scan-a2ebdbd7d3ef.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-513 Resolve code annotation in swissknife/ipfs_accelerate_js/src/p2p/network-manager.ts:491
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: ops
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/src/p2p/network-manager.ts
+- Validation: test -f swissknife/ipfs_accelerate_js/src/p2p/network-manager.ts
+- Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/src/p2p/network-manager.ts:491. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-513-codebase-scan-1686cc07333a.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-514 Resolve code annotation in swissknife/ipfs_accelerate_js/src/p2p/network-manager.ts:492
+
+- Status: todo
+- Completion: manual
+- Priority: P3
+- Track: ops
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/src/p2p/network-manager.ts
+- Validation: test -f swissknife/ipfs_accelerate_js/src/p2p/network-manager.ts
+- Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/src/p2p/network-manager.ts:492. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-514-codebase-scan-920db277b5d6.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
