@@ -7061,7 +7061,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-614 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_bridgetower.ts:1
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P2
 - Track: quality
