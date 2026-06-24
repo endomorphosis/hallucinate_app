@@ -601,9 +601,8 @@ class IPFSEmbeddingsPy:
             finally:
                 try:
                     os.unlink(temp_path)
-                except OSError:
-                    pass
-                raise e
+                except OSError as cleanup_error:
+                    logger.debug(f"Could not remove temporary embeddings file {temp_path}: {cleanup_error}")
                 
         except Exception as e:
             logger.error(f"Error loading embeddings from IPFS: {e}")
