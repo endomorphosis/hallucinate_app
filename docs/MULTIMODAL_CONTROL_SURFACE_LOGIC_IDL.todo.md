@@ -6002,3 +6002,36 @@ UI-plane participants and runtime-plane targets.
 - Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/src/p2p/network-manager.ts
 - Validation: test -f swissknife/ipfs_accelerate_js/src/p2p/network-manager.ts
 - Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/src/p2p/network-manager.ts:575. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-517-codebase-scan-849612e9edb6.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-518 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_browser_performance_optimizer.ts:1
+
+- Status: todo
+- Completion: manual
+- Priority: P2
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/browser/test_browser_performance_optimizer.ts
+- Validation: test -f swissknife/ipfs_accelerate_js/test/browser/test_browser_performance_optimizer.ts
+- Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/browser/test_browser_performance_optimizer.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-518-codebase-scan-f87c59c9852e.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-519 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_cross_browser_model_sharding.ts:1
+
+- Status: todo
+- Completion: manual
+- Priority: P2
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/browser/test_cross_browser_model_sharding.ts
+- Validation: test -f swissknife/ipfs_accelerate_js/test/browser/test_cross_browser_model_sharding.ts
+- Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/browser/test_cross_browser_model_sharding.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-519-codebase-scan-1e5666ee8879.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-520 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_fault_tolerant_cross_browser_model_sharding.ts:1
+
+- Status: todo
+- Completion: manual
+- Priority: P2
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/browser/test_fault_tolerant_cross_browser_model_sharding.ts
+- Validation: test -f swissknife/ipfs_accelerate_js/test/browser/test_fault_tolerant_cross_browser_model_sharding.ts
+- Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/browser/test_fault_tolerant_cross_browser_model_sharding.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-520-codebase-scan-d5e80576db69.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
