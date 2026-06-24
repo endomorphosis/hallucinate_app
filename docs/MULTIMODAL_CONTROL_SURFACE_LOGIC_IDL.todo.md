@@ -6174,7 +6174,7 @@ UI-plane participants and runtime-plane targets.
 - Completion: manual
 - Priority: P2
 - Track: quality
-- Depends on: HAO-013
+- Depends on: 
 - Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/browser/test_webgpu_4bit_llm_inference.ts
 - Validation: test -f swissknife/ipfs_accelerate_js/test/browser/test_webgpu_4bit_llm_inference.ts
 - Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/browser/test_webgpu_4bit_llm_inference.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-533-codebase-scan-f38469457e95.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -6185,7 +6185,7 @@ UI-plane participants and runtime-plane targets.
 - Completion: manual
 - Priority: P2
 - Track: quality
-- Depends on: HAO-013
+- Depends on: 
 - Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/browser/test_webgpu_4bit_model_coverage.ts
 - Validation: test -f swissknife/ipfs_accelerate_js/test/browser/test_webgpu_4bit_model_coverage.ts
 - Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/browser/test_webgpu_4bit_model_coverage.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-534-codebase-scan-1e2d44aa227a.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -6196,7 +6196,7 @@ UI-plane participants and runtime-plane targets.
 - Completion: manual
 - Priority: P2
 - Track: quality
-- Depends on: HAO-013
+- Depends on: 
 - Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/browser/test_webgpu_browsers_comparison.ts
 - Validation: test -f swissknife/ipfs_accelerate_js/test/browser/test_webgpu_browsers_comparison.ts
 - Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/browser/test_webgpu_browsers_comparison.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-535-codebase-scan-1d39953b62c2.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
