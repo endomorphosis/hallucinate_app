@@ -7263,7 +7263,7 @@ UI-plane participants and runtime-plane targets.
 - Completion: manual
 - Priority: P2
 - Track: quality
-- Depends on: HAO-013
+- Depends on: 
 - Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/unit/test_hf_claude3_haiku.ts
 - Validation: test -f swissknife/ipfs_accelerate_js/test/unit/test_hf_claude3_haiku.ts
 - Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/unit/test_hf_claude3_haiku.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-632-codebase-scan-ef24d56686d4.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -7274,7 +7274,7 @@ UI-plane participants and runtime-plane targets.
 - Completion: manual
 - Priority: P2
 - Track: quality
-- Depends on: HAO-013
+- Depends on: 
 - Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/unit/test_hf_clvp.ts
 - Validation: test -f swissknife/ipfs_accelerate_js/test/unit/test_hf_clvp.ts
 - Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/unit/test_hf_clvp.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-633-codebase-scan-cbf59dd145d8.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -7285,7 +7285,7 @@ UI-plane participants and runtime-plane targets.
 - Completion: manual
 - Priority: P2
 - Track: quality
-- Depends on: HAO-013
+- Depends on: 
 - Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/unit/test_hf_cm3.ts
 - Validation: test -f swissknife/ipfs_accelerate_js/test/unit/test_hf_cm3.ts
 - Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/unit/test_hf_cm3.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-634-codebase-scan-95c78eeaccd0.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
