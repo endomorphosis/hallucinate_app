@@ -7864,7 +7864,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-674 Integrate MCP server launch contracts with Swissknife control surfaces
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: integration
