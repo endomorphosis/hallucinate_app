@@ -6434,7 +6434,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-557 Review swallowed exception path in /home/barberb/lift_coding/swissknife/ipfs_accelerate_js/test/performance/webgpu_optimizer/run_benchmarks.py:232
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: quality
