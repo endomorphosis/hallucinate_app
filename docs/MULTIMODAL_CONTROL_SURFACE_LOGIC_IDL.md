@@ -297,6 +297,61 @@ gesture helpers use `gesture` event names, and agent helpers use
 control-surface metadata so ORB-backed UI launches and agent-originated actions
 flow through one policy-aware mediation path.
 
+### HAO-674 supervised MCP server launch contract
+
+`HAO-674` integrates the Python MCP server launch contracts with the Swissknife
+control surface instead of letting Swissknife treat MCP tools as unmanaged
+remote endpoints. Hallucinate App remains the launch and policy authority;
+Swissknife remains the application/control-surface authority; the Python
+packages remain the execution authority.
+
+The supervised contract covers all launch-critical server families:
+
+| Package | Daemon id | Launch command | Swissknife capability family | MCP++ advertisement |
+| --- | --- | --- | --- | --- |
+| `ipfs_kit_py` | `ipfs-kit` | `python -m ipfs_kit_py.cli mcp start` | storage, pinning, backend health | concrete IPFS tool descriptors and Profile A/C/E metadata |
+| `ipfs_datasets_py` | `ipfs-datasets` | `python -m ipfs_datasets_py.mcp_server --http --port 3002` | datasets, IPFS content, indexes, provenance, background tasks | `tools_dispatch` category descriptors and Profile A/C/E metadata |
+| `ipfs_accelerate_py` | `ipfs-accelerate` | `python -m ipfs_accelerate_py.cli mcp start --port 3003` | hardware profile, inference jobs, job status, telemetry | `tools_dispatch`, `tools_runtime_metrics`, and Profile A/C/E metadata |
+
+Swissknife publishes the launch-facing capability contracts in
+`swissknife/src/services/swissknife-mcp-capability-registry.ts`. Each entry now
+contains:
+
+- `launch_contract.source == "HAO-674"` so tests and launch receipts can bind
+  the registry entry to this integration task.
+- `launch_owner == "hallucinate_app.mcp_daemon_manager"` and the daemon
+  entrypoint, port, health path, RPC path, and startup order managed by
+  Hallucinate App.
+- `mcp_plus_plus_advertisement` with MCP++ compatibility, Profile A/C/E
+  descriptors, descriptor refs, and advertised operations for Swissknife app
+  generation and discovery.
+- `control_surface_route` naming
+  `hallucinate_app.node.control_surface_invocation.ControlSurfaceInvocationGate.beforeInvoke`
+  as the only route from Swissknife command intent to daemon transport.
+
+The runtime invocation path is fixed:
+
+`Swissknife command intent -> MCP++ capability descriptor -> Hallucinate App
+interaction_envelope -> control_surface policy_decision -> mediation_receipt ->
+supervised MCP server transport`.
+
+1. Swissknife resolves a command intent such as `dataset.browse`,
+   `storage.pin_content`, or `compute.run_inference` through its MCP++
+   capability registry.
+2. The MCP++ capability descriptor identifies the supervised daemon and MCP tool
+   (`tools_dispatch`, `ipfs_pin_add`, or `tools_runtime_metrics`) but does not
+   call the daemon directly.
+3. Hallucinate App builds the canonical `interaction_envelope`, evaluates the
+   `control_surface` policy decision, and emits a `mediation_receipt`.
+4. Only an executable policy outcome may continue to the supervised
+   `MCPDaemonManager.invokeManagedService` transport callback.
+5. The service invocation receipt links the MCP++ descriptor, daemon id,
+   policy decision, mediation receipt, argument hash, upstream status, and
+   parent receipt CID.
+
+This makes MCP server supervision visible to Swissknife applications while
+keeping all service calls inside the multimodal control-surface mediation path.
+
 ### VAIOS-G030 objective proof: interface descriptor language
 
 This document is the scanner-visible interface descriptor language proof for the

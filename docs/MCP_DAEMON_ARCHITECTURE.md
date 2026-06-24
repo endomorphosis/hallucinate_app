@@ -118,6 +118,53 @@ launch receipts never include raw payload bodies, credentials, media, prompts,
 transcripts, or bearer tokens; they carry CIDs, hashes, schema ids, status,
 redacted auth context, and a tool receipt lineage.
 
+### HAO-674 Swissknife Launch Contract Integration
+
+`HAO-674` connects the HAO-441 feature inventory, HAO-442 daemon supervision,
+HAO-443 Swissknife capability registry, HAO-444 app invocation route, and
+HAO-445 MCP++ compatibility contract into one launch path.
+
+The Swissknife-facing registry in
+`swissknife/src/services/swissknife-mcp-capability-registry.ts` now advertises
+three launch contracts:
+
+| Server package | Supervised daemon | Startup order | Swissknife app/control surface | MCP++ capability advertisement |
+| --- | --- | --- | --- | --- |
+| `ipfs_kit_py` | `ipfs-kit` | 10 | storage console, pin controls, backend health dashboard | concrete `ipfs_add`, `ipfs_cat`, `ipfs_pin_add`, `list_pins`, and health tools |
+| `ipfs_datasets_py` | `ipfs-datasets` | 20 | dataset explorer, index jobs, provenance and background task views | `tools_dispatch` categories for dataset, IPFS, index, provenance, and background task tools |
+| `ipfs_accelerate_py` | `ipfs-accelerate` | 30 | hardware summary, inference job console, telemetry dashboard | `tools_dispatch` compute operations and `tools_runtime_metrics` telemetry |
+
+Each launch contract records:
+
+- `launch_owner: hallucinate_app.mcp_daemon_manager`
+- the supervised daemon entrypoint, cwd, port, RPC path, health path, and
+  startup order
+- the renderer-safe supervision APIs exposed to Swissknife:
+  `getLaunchPlan`, `getLaunchReceipts`, `checkHealth`, `startAll`, and
+  `stopAll`
+- `mcp_plus_plus_advertisement.compatibility: MCP++` with Profile A MCP-IDL,
+  Profile C capability vocabulary, and Profile E transport/session receipt
+  metadata
+- `control_surface_route.before_invoke_hook:
+  hallucinate_app.node.control_surface_invocation.ControlSurfaceInvocationGate.beforeInvoke`
+
+Swissknife applications may render daemon state and choose MCP++ operations from
+these descriptors, but they must route service invocation through Hallucinate
+App mediation. The required invocation chain is:
+
+`Swissknife command intent -> MCP++ capability descriptor -> Hallucinate App
+interaction_envelope -> control_surface policy_decision -> mediation_receipt ->
+supervised MCP server transport`.
+
+The helper
+`buildSwissknifeMCPMediatedInvocationPlan(serverPackage, intent)` returns the
+daemon id, MCP tool name, normalized method, descriptor ref, receipt field
+requirements, and control-surface route for a Swissknife command. It is a
+planning contract only; actual execution still goes through
+`MCPDaemonManager.invokeManagedService` so `deny`, `require_confirmation`,
+`defer`, `rate_limit`, and `fallback_surface` outcomes cannot bypass the
+multimodal control surface.
+
 ### 1. IPFS Kit MCP (Port 3001)
 **Command:** `python -m ipfs_kit_py.cli mcp start`
 **Directory:** `ipfs_kit_py/`
