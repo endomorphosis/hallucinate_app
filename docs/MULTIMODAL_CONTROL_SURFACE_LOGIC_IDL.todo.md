@@ -6537,7 +6537,7 @@ UI-plane participants and runtime-plane targets.
 - Completion: manual
 - Priority: P2
 - Track: quality
-- Depends on: HAO-013
+- Depends on: 
 - Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/unit/test_automated_hardware_compatibility.ts
 - Validation: test -f swissknife/ipfs_accelerate_js/test/unit/test_automated_hardware_compatibility.ts
 - Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/unit/test_automated_hardware_compatibility.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-566-codebase-scan-8c17c2df11b1.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -6548,7 +6548,7 @@ UI-plane participants and runtime-plane targets.
 - Completion: manual
 - Priority: P2
 - Track: quality
-- Depends on: HAO-013
+- Depends on: 
 - Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/unit/test_batch_generator.ts
 - Validation: test -f swissknife/ipfs_accelerate_js/test/unit/test_batch_generator.ts
 - Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/unit/test_batch_generator.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-567-codebase-scan-593be57237f0.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
@@ -6559,7 +6559,7 @@ UI-plane participants and runtime-plane targets.
 - Completion: manual
 - Priority: P2
 - Track: quality
-- Depends on: HAO-013
+- Depends on: 
 - Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/unit/test_batch_generator_minimal.ts
 - Validation: test -f swissknife/ipfs_accelerate_js/test/unit/test_batch_generator_minimal.ts
 - Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/unit/test_batch_generator_minimal.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-568-codebase-scan-7ff199b75d27.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
