@@ -7875,7 +7875,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-675 Add Swissknife and Hallucinate App Playwright launch replay coverage
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: validation
