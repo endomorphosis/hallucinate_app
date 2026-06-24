@@ -618,6 +618,89 @@ Rollout order:
 5. Enable remote clients in `enforce` only after their raw payload redaction and
    fallback-surface behavior pass security review.
 
+### MGW-416 Meta-glasses remote I/O privacy extension
+
+Meta glasses are a constrained remote client of the same
+`control_surface_contract`; they do not get a separate policy bypass. Camera,
+microphone, speaker, headphone, display, phone GPS, motion/orientation, Meta
+Neural Band, and captouch events must normalize into `interaction_envelope`
+records before any interface method, model call, MCP tool, IPFS persistence, or
+peer relay executes.
+
+The descriptor extension for Meta glasses I/O uses these additional fields:
+
+```json
+{
+  "meta_glasses_io_privacy": {
+    "version": "0.1.0",
+    "default_outcome": "deny",
+    "app_binding_id": "meta-glasses.widget.primary.capture",
+    "control_plane_route": {
+      "route_id": "meta-glasses.route.camera-photo.primary",
+      "selected_surface": "dat-native|display-webapp|bluetooth-audio|phone-os|mobile-fallback|mcp-bridge",
+      "policy_decision_ref": "cid-or-inline-policy-decision",
+      "libp2p_peer_id": "scoped-or-hashed-peer-id",
+      "libp2p_session_id": "session-id",
+      "mcp_session_id": "mcp-session-id",
+      "route_generation": 1,
+      "replay_nonce": "nonce-or-challenge-hash"
+    },
+    "consent": {
+      "required_scopes": [
+        "meta_glasses.camera.photo",
+        "meta_glasses.microphone.capture",
+        "meta_glasses.audio.playback",
+        "meta_glasses.display.render",
+        "meta_glasses.phone_gps.context",
+        "meta_glasses.motion.orientation",
+        "meta_glasses.neural_band.input",
+        "meta_glasses.captouch.input",
+        "meta_glasses.control.route"
+      ],
+      "grant_ref": "consent-receipt-cid",
+      "expires_at": "2026-06-24T00:00:00Z"
+    },
+    "payload_policy": {
+      "redaction": "metadata_only|privacy_filtered",
+      "retention": "ephemeral|session|policy_controlled|pinned",
+      "ipfs_persistence": "disabled|policy_controlled",
+      "payload_refs_are_required": true
+    },
+    "audit": {
+      "mcp_receipt_kind": "mcp++/policy-decision|mcp++/control-route|mcp++/capability-readiness",
+      "correlation_id_field": "interaction_id",
+      "parent_receipt_cids": []
+    }
+  }
+}
+```
+
+Required mediation behavior:
+
+- A policy decision is evaluated before camera capture, microphone
+  route/capture, speaker/headphone playback, display content render, phone GPS
+  lookup, motion/orientation sampling, Meta Neural Band input handling, or
+  captouch activation reaches an interface method.
+- Consent is scope-specific and purpose-bound. Missing, expired, or mismatched
+  consent returns `deny` or `require_confirmation` and produces only a redacted
+  MCP++ receipt.
+- Redaction precedes persistence, replay fixture creation, libp2p relay, MCP
+  daemon invocation, and agent/model access. Display content, transcripts, GPS
+  coordinates, camera media, and sensor samples must not appear in denial
+  receipts.
+- Retention is explicit on every payload reference. IPFS persistence is disabled
+  unless the policy decision allows `policy_controlled` or `pinned` retention
+  for the named purpose.
+- libp2p peer/session metadata is treated as private session metadata. It is
+  required for auditability and replay protection, but exports should use scoped
+  or hashed identifiers unless full local diagnostics are explicitly allowed.
+- Replay protection rejects duplicate interaction ids, replay nonces,
+  correlation ids, stale route generations, expired consent grants, and parent
+  receipt CID mismatches before dispatch.
+- Denial paths never call the target method and never emit raw user data. They
+  return the policy decision, denial reason, app binding ID, route id, and
+  redacted MCP++ receipt needed for auditability.
+
 ### Observability and audit metrics
 
 The required metrics are deliberately low-cardinality:
