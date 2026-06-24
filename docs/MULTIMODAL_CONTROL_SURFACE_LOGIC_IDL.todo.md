@@ -3497,7 +3497,7 @@ UI-plane participants and runtime-plane targets.
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Fingerprint: 713954612e282af27ea3eca660f58eed64d053bc
+- Fingerprint: 3167f74866f028bfd1c955f930a18954fb5585ce
 - Dedupe key: reconciliation_guardrail:main_checkout_dirty
 - Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
@@ -7292,7 +7292,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-635 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_codegen.ts:1
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -7303,7 +7303,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-636 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_cogvlm2.ts:1
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P2
 - Track: quality
