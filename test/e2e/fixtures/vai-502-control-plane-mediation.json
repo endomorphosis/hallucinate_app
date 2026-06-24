@@ -1,0 +1,43 @@
+{
+  "schema": "hallucinate_app_control_plane_mediation_replay_v1",
+  "task_id": "VAI-502",
+  "lineage_id": "VAIOS-G697:launch-readiness:phone-desktop-glasses",
+  "playwright_command": "npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts --grep @vai-502",
+  "requires_hardware": false,
+  "mediator": "Hallucinate App mediation",
+  "interaction_envelope": {
+    "session_id": "vai-502-cross-device-session",
+    "source_surface": "phone-hosted",
+    "source_participant_id": "phone:operator-simulator",
+    "target_surface": "Swissknife virtual desktop",
+    "control_plane_command": "desktop.request_handoff",
+    "correlation_id": "corr-vai-502-cross-device-replay"
+  },
+  "policy_decision": {
+    "outcome": "allow",
+    "policy_receipt_id": "sha256:vai502-policy-receipt",
+    "reason": "hardware-free Playwright replay permits mediated desktop peer selection"
+  },
+  "mediation_receipt": {
+    "receipt_id": "sha256:vai502-mediation-receipt",
+    "must_precede": [
+      "sha256:vai502-desktop-peer-timeout",
+      "sha256:vai502-phone-fallback-receipt",
+      "sha256:vai502-meta-glasses-render-receipt"
+    ]
+  },
+  "desktop_peer": {
+    "participant_id": "desktop peer:simulated-workstation",
+    "offload_policy": "try_desktop_peer_then_phone_local",
+    "fallback_receipt_id": "sha256:vai502-phone-fallback-receipt"
+  },
+  "meta_glasses_status_output": {
+    "participant_id": "meta_glasses:terminal",
+    "status_text": "Meta glasses status: control plane mediated; phone-hosted fallback active.",
+    "render_receipt_id": "sha256:vai502-meta-glasses-render-receipt"
+  },
+  "proof_artifacts": [
+    "test-results/vai-502/control-plane-ledger.json",
+    "test-results/vai-502/meta-glasses-status.json"
+  ]
+}
