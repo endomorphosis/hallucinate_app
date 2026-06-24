@@ -91,6 +91,8 @@ export const mcpServers = [
   }
 ];
 
+export const dashboardMcpServers = mcpServers.filter(server => server.dashboardPath);
+
 /**
  * Dashboard Configuration
  * Organized by category for logical menu structure
@@ -105,7 +107,7 @@ export const dashboards = {
   
   mcpServers: {
     label: 'IPFS MCP Servers',
-    items: mcpServers.map(server => ({
+    items: dashboardMcpServers.map(server => ({
       label: `${server.displayName} Dashboard`,
       path: server.dashboardPath,
       serverId: server.id,

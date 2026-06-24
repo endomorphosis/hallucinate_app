@@ -7883,3 +7883,131 @@ UI-plane participants and runtime-plane targets.
 - Outputs: hallucinate_app, swissknife, tests, data/hallucinate_multimodal_control/discovery
 - Validation: PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py; rg -n "HAO-675|Playwright|Swissknife|Hallucinate App|MCP\\+\\+|Meta glasses|desktop peer offload" hallucinate_app swissknife tests data/hallucinate_multimodal_control/discovery
 - Acceptance: Add or specify Playwright-ready launch replay coverage proving Swissknife can invoke Hallucinate App mediation, discover MCP++ service capabilities, exercise a simulated Meta glasses interaction, and capture pass/fail receipts for desktop peer offload and production launch readiness.
+
+## HAO-676 Review Hallucinate App MCP menus and dashboards for launch interoperability
+
+- Status: completed
+- Completion: manual
+- Priority: P0
+- Track: launch
+- Depends on: HAO-674, HAO-675
+- Goal id: VAIOS-G723
+- Graph parents: VAIOS-G697, VAIOS-G040
+- Bundle: objective/launch/hallucinate-mcp-dashboard
+- Parallel lane: hallucinate-mcp-dashboard-menu-review
+- Missing evidence: reviewed Hallucinate App menus and dashboards aligned to ipfs_kit_py, ipfs_datasets_py, and ipfs_accelerate_py MCP servers
+- Outputs: data/hallucinate_multimodal_control/discovery/2026-06-24-hao-676-hallucinate-mcp-dashboard-review.md, hallucinate_app/hallucinate_app/node/menu_config.js, hallucinate_app/hallucinate_app/node/menu_generator.js, hallucinate_app/test/test_programmatic_menu.js
+- Validation: node --test hallucinate_app/test/test_programmatic_menu.js; PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q
+- Acceptance: Review the Hallucinate App Dashboards, MCP Servers, and Tools menus against the launch plan for `ipfs_kit_py`, `ipfs_datasets_py`, and `ipfs_accelerate_py`; fix the broken IPFS dashboard menu inclusion and SwissKnife app deep-link helper; record the remaining dashboard capability catalog, tools/list, tools/call, MCP++ telemetry, launch receipt, and Playwright interoperability gaps for the supervisor.
+
+## HAO-677 Normalize the Hallucinate App MCP dashboard capability catalog
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: integration
+- Depends on: HAO-676
+- Goal id: VAIOS-G723
+- Graph parents: VAIOS-G697, VAIOS-G040
+- Bundle: objective/launch/hallucinate-mcp-dashboard
+- Parallel lane: hallucinate-mcp-dashboard-capability-catalog
+- Missing evidence: shared dashboard capability catalog across menu_config, launch plan, native package dashboards, tools/list, tools/call, and MCP++ telemetry
+- Outputs: hallucinate_app/hallucinate_app/node/mcp_daemon_manager.js, hallucinate_app/hallucinate_app/node/menu_config.js, hallucinate_app/hallucinate_app/node/views, hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts, data/hallucinate_multimodal_control/discovery
+- Validation: node --test hallucinate_app/test/test_programmatic_menu.js; npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts; PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q
+- Acceptance: Add one shared dashboard capability catalog, readable by the daemon and UI, for `ipfs_kit_py`, `ipfs_datasets_py`, and `ipfs_accelerate_py` that includes daemon id, package name, endpoint, health path, native dashboard URL, menu dashboard URL, advertised tools/list support, safe tools/call probe shape, MCP++ profile telemetry, Swissknife consumer, and control_surface mediation contract; reconcile the IPFS Kit port 8004 launch-plan truth with older HAO-674 evidence.
+
+## HAO-678 Wire all IPFS MCP dashboards to daemon health and catalog-backed tool surfaces
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: launch
+- Depends on: HAO-677
+- Goal id: VAIOS-G723
+- Graph parents: VAIOS-G697, VAIOS-G040
+- Bundle: objective/launch/hallucinate-mcp-dashboard
+- Parallel lane: hallucinate-mcp-dashboard-ui-wiring
+- Missing evidence: dashboard cards and actions backed by the shared catalog and live daemon health for all three Python MCP servers
+- Outputs: hallucinate_app/hallucinate_app/node/views/ipfs_kit_dashboard.html, hallucinate_app/hallucinate_app/node/views/ipfs_datasets_dashboard.html, hallucinate_app/hallucinate_app/node/views/ipfs_accelerate_dashboard.html, hallucinate_app/preload.cjs, hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts
+- Validation: npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts; rg -n "dashboard capability catalog|tools/list|tools/call|ipfs-kit|ipfs-datasets|ipfs-accelerate" hallucinate_app/hallucinate_app/node hallucinate_app/test/e2e data/hallucinate_multimodal_control/discovery
+- Acceptance: The IPFS Kit, IPFS Datasets, and IPFS Accelerate dashboards render catalog-backed daemon health, endpoint, MCP++ status, native dashboard, tools/list, and safe tools/call controls; dashboard buttons use the preload daemon/navigation bridge and fail closed with visible receipts when a daemon is down.
+
+## HAO-679 Add a Hallucinate App MCP dashboard interoperability Playwright matrix
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: validation
+- Depends on: HAO-678
+- Goal id: VAIOS-G723
+- Graph parents: VAIOS-G697, VAIOS-G040
+- Bundle: objective/launch/hallucinate-mcp-dashboard
+- Parallel lane: hallucinate-mcp-dashboard-playwright
+- Missing evidence: Playwright matrix proving menu-to-dashboard-to-tool interoperability for ipfs_kit_py, ipfs_datasets_py, and ipfs_accelerate_py
+- Outputs: hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts, hallucinate_app/test/e2e/fixtures, data/hallucinate_multimodal_control/discovery
+- Validation: npm --prefix hallucinate_app run test:e2e -- mcp-dashboard-interoperability.spec.ts; PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q
+- Acceptance: Add Playwright coverage that opens each dashboard from the Dashboards menu, opens each live dashboard URL from the MCP Servers menu, observes daemon health, reads the shared catalog, executes a hardware-free tools/list and safe tools/call probe per backend through the dashboard UI, and captures pass/fail receipts for launch readiness.
+
+## HAO-680 Add MCP++ and control_surface receipts for dashboard tool invocations
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: integration
+- Depends on: HAO-677
+- Goal id: VAIOS-G723
+- Graph parents: VAIOS-G697, VAIOS-G030
+- Bundle: objective/launch/hallucinate-mcp-dashboard
+- Parallel lane: hallucinate-mcp-dashboard-receipts
+- Missing evidence: dashboard-originated tools/list and tools/call invocations produce MCP++ and control_surface receipts before daemon transport dispatch
+- Outputs: hallucinate_app/hallucinate_app/node/control_surface_invocation.js, hallucinate_app/hallucinate_app/node/mcp_daemon_manager.js, hallucinate_app/hallucinate_app/node/views, hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts, data/hallucinate_multimodal_control/discovery
+- Validation: npm --prefix hallucinate_app run test:e2e -- mcp-dashboard-interoperability.spec.ts; rg -n "interaction_envelope|policy_decision|mediation_receipt|MCP\\+\\+|tools/list|tools/call|HAO-680" hallucinate_app swissknife tests data/hallucinate_multimodal_control/discovery
+- Acceptance: Dashboard tool probes enter the same `interaction_envelope -> policy_decision -> mediation_receipt -> supervised MCP server transport` path used by Swissknife, include MCP++ descriptor/profile evidence where available, and expose receipt ids that can be consumed by Hallucinate App, Swissknife, and the launch-readiness packet.
+
+## HAO-681 Prove Swissknife applications consume the Hallucinate MCP dashboard catalog
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: integration
+- Depends on: HAO-677, HAO-680
+- Goal id: VAIOS-G723
+- Graph parents: VAIOS-G697, VAIOS-G040
+- Bundle: objective/launch/hallucinate-mcp-dashboard
+- Parallel lane: swissknife-dashboard-catalog-consumer
+- Missing evidence: Swissknife applications use the same Hallucinate App MCP dashboard capability catalog and receipts as the Hallucinate dashboards
+- Outputs: swissknife, hallucinate_app/hallucinate_app/node/mcp_daemon_manager.js, hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts, swissknife/test/e2e, data/hallucinate_multimodal_control/discovery
+- Validation: npm --prefix swissknife run test:e2e:mcp; npm --prefix hallucinate_app run test:e2e -- mcp-dashboard-interoperability.spec.ts; rg -n "Hallucinate App MCP dashboard catalog|ipfs_kit_py|ipfs_datasets_py|ipfs_accelerate_py|Swissknife applications" swissknife hallucinate_app data/hallucinate_multimodal_control/discovery
+- Acceptance: Swissknife storage, dataset, and compute applications consume the catalog entries and receipt schema that Hallucinate dashboards expose, so a backend feature proved from Hallucinate App is the same backend feature Swissknife can invoke under MCP++ and control_surface mediation.
+
+## HAO-682 Aggregate MCP dashboard interoperability into the launch-readiness receipt
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: launch
+- Depends on: HAO-679, HAO-681
+- Goal id: VAIOS-G723
+- Graph parents: VAIOS-G697
+- Bundle: objective/launch/hallucinate-mcp-dashboard
+- Parallel lane: hallucinate-mcp-dashboard-launch-receipt
+- Missing evidence: aggregate launch-readiness receipt for Hallucinate dashboard, Python MCP servers, Swissknife consumers, MCP++ telemetry, and Playwright results
+- Outputs: docs/launch/phone_desktop_glasses_readiness.md, data/hallucinate_multimodal_control/discovery, hallucinate_app/test/e2e/fixtures, swissknife/test/e2e/fixtures
+- Validation: PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py tests/test_virtual_ai_os_launch_readiness_gate.py -q; rg -n "HAO-682|dashboard interoperability|launch-readiness receipt|tools/list|tools/call|MCP\\+\\+|Swissknife" docs data hallucinate_app swissknife tests
+- Acceptance: Extend the launch-readiness packet so VAIOS-G723 cannot close until Hallucinate App menu navigation, dashboard catalog, daemon health, MCP++ telemetry, dashboard tools/list and tools/call probes, Swissknife consumption, and Playwright pass/fail receipts share one traceable session and daemon lineage.
+
+## HAO-683 Keep Hallucinate dashboard gaps auto-generated by the supervisor objective loop
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: ops
+- Depends on: HAO-676
+- Goal id: VAIOS-G723
+- Graph parents: VAIOS-G010, VAIOS-G697
+- Bundle: objective/launch/hallucinate-mcp-dashboard
+- Parallel lane: supervisor-dashboard-objective-refill
+- Missing evidence: supervisor mission terms and objective refill tests prove Hallucinate dashboard MCP gaps stay eligible for generated tasks, subgoals, and bundle shards
+- Outputs: scripts/run_vai_mgw_hao_supervisors.py, scripts/hallucinate_multimodal_control_todo_supervisor.py, tests/test_virtual_ai_os_todo_queue.py, tests/test_hallucinate_multimodal_control_todo_queue.py, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md
+- Validation: PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_virtual_ai_os_todo_queue.py tests/test_hallucinate_multimodal_control_todo_queue.py -q
+- Acceptance: The supervisor launch mission terms include Hallucinate App menus, dashboards, dashboard capability catalog, daemon health, tools/list, tools/call, and the three Python MCP package names; objective-scan/refinement keeps VAIOS-G723 and its generated tasks mission-aligned, avoids retiring them as off-mission work, and can add follow-up subtasks or subgoals when validation fails.

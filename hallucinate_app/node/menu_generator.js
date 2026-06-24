@@ -506,6 +506,22 @@ export class MenuGenerator {
   }
 
   /**
+   * Open a specific SwissKnife virtual desktop app from a menu action.
+   */
+  openSwissKnifeApp(item = {}) {
+    const appName = typeof item?.app === 'string' ? item.app.trim() : '';
+
+    if (!appName) {
+      console.warn('SwissKnife app menu item is missing an app id.');
+      return;
+    }
+
+    if (this.createSwissKnifeWindow) {
+      this.createSwissKnifeWindow(appName);
+    }
+  }
+
+  /**
    * Handle custom actions
    */
   async handleAction(action, item) {

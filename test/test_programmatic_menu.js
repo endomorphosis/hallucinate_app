@@ -11,7 +11,7 @@ import { existsSync, readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { runMenuStructureTests, getAllTestableItems } from './menu_test_framework.js';
-import { mcpServers } from '../hallucinate_app/node/menu_config.js';
+import { dashboardMcpServers, dashboards, mcpServers } from '../hallucinate_app/node/menu_config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -74,7 +74,7 @@ describe('Programmatic Menu Structure Tests', () => {
   it('should pass SwissKnife app IDs through menu actions', () => {
     assert.ok(menuGeneratorContent.includes("case 'openSwissKnifeApp':"),
       'openSwissKnifeApp action should exist');
-    assert.ok(menuGeneratorContent.includes("const appName = typeof item?.app === 'string' ? item.app : undefined"),
+    assert.ok(menuGeneratorContent.includes("const appName = typeof item?.app === 'string' ? item.app.trim() : ''"),
       'openSwissKnifeApp should validate the configured app ID');
     assert.ok(menuGeneratorContent.includes('this.createSwissKnifeWindow(appName)'),
       'openSwissKnifeApp should forward the configured app ID');
@@ -126,7 +126,7 @@ describe('SwissKnife App Menu Action Tests', () => {
       'openSwissKnifeApp action should delegate through the app-aware launcher'
     );
     assert.ok(
-      /openSwissKnifeApp\(item\)[\s\S]*const appName[\s\S]*item\.app[\s\S]*this\.createSwissKnifeWindow\(appName\);/.test(menuGeneratorContent),
+      /openSwissKnifeApp\(item(?: = \{\})?\)[\s\S]*const appName[\s\S]*item\.app[\s\S]*this\.createSwissKnifeWindow\(appName\);/.test(menuGeneratorContent),
       'app-aware launcher should pass the selected app id to createSwissKnifeWindow'
     );
   });
@@ -173,6 +173,23 @@ describe('Menu Configuration Tests', () => {
     assert.ok(sections.has('Security & Authentication'), 'Should have Security & Authentication section');
     assert.ok(sections.has('Database & Storage'), 'Should have Database & Storage section');
     assert.ok(sections.has('System Management'), 'Should have System Management section');
+  });
+
+  it('should only expose real IPFS MCP dashboard paths in the dashboard menu', () => {
+    assert.deepStrictEqual(
+      dashboardMcpServers.map(server => server.id),
+      ['ipfs-kit', 'ipfs-datasets', 'ipfs-accelerate'],
+      'Only IPFS MCP servers with concrete dashboard HTML files should appear in the dashboard section'
+    );
+    assert.deepStrictEqual(
+      dashboards.mcpServers.items.map(item => item.serverId),
+      ['ipfs-kit', 'ipfs-datasets', 'ipfs-accelerate'],
+      'SwissKnife remains a virtual desktop/tool surface rather than a broken IPFS dashboard item'
+    );
+    dashboards.mcpServers.items.forEach(item => {
+      assert.equal(typeof item.path, 'string', `${item.label} should have a concrete dashboard path`);
+      assert.ok(item.path.endsWith('.html'), `${item.label} dashboard path should be HTML`);
+    });
   });
 
   it('should have keyboard shortcuts for main actions', () => {
