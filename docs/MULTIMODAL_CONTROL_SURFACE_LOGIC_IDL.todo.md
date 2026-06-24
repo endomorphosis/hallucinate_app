@@ -5969,7 +5969,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-515 Resolve code annotation in swissknife/ipfs_accelerate_js/src/p2p/network-manager.ts:573
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; P3 network metric telemetry needs a concrete measurement contract before implementation.
 - Completion: manual
 - Priority: P3
 - Track: ops
@@ -5980,7 +5981,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-516 Resolve code annotation in swissknife/ipfs_accelerate_js/src/p2p/network-manager.ts:574
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; P3 network metric telemetry needs a concrete measurement contract before implementation.
 - Completion: manual
 - Priority: P3
 - Track: ops
@@ -5991,7 +5993,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-517 Resolve code annotation in swissknife/ipfs_accelerate_js/src/p2p/network-manager.ts:575
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; P3 network metric telemetry needs a concrete measurement contract before implementation.
 - Completion: manual
 - Priority: P3
 - Track: ops
