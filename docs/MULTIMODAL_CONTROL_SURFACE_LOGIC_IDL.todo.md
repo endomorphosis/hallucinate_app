@@ -6431,3 +6431,36 @@ UI-plane participants and runtime-plane targets.
 - Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/performance/test_time_series_performance.ts
 - Validation: test -f swissknife/ipfs_accelerate_js/test/performance/test_time_series_performance.ts
 - Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/performance/test_time_series_performance.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-556-codebase-scan-189bc4a84a14.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-557 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webnn_implementation.ts:1
+
+- Status: todo
+- Completion: manual
+- Priority: P2
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/browser/test_webnn_implementation.ts
+- Validation: test -f swissknife/ipfs_accelerate_js/test/browser/test_webnn_implementation.ts
+- Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/browser/test_webnn_implementation.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-557-codebase-scan-69a234bf9d55.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-558 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webnn_minimal.ts:1
+
+- Status: todo
+- Completion: manual
+- Priority: P2
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/browser/test_webnn_minimal.ts
+- Validation: test -f swissknife/ipfs_accelerate_js/test/browser/test_webnn_minimal.ts
+- Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/browser/test_webnn_minimal.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-558-codebase-scan-07a35e081f65.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-559 Resolve code annotation in swissknife/ipfs_accelerate_js/test/browser/test_webnn_webgpu_integration.ts:1
+
+- Status: todo
+- Completion: manual
+- Priority: P2
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/browser/test_webnn_webgpu_integration.ts
+- Validation: test -f swissknife/ipfs_accelerate_js/test/browser/test_webnn_webgpu_integration.ts
+- Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/browser/test_webnn_webgpu_integration.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-24-hao-559-codebase-scan-2907c83d600b.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
