@@ -248,6 +248,10 @@ ipcMain.handle('daemon:getLaunchPlan', async () => {
   return daemonManager.getLaunchPlan();
 });
 
+ipcMain.handle('daemon:getDashboardCapabilityCatalog', async () => {
+  return daemonManager.getDashboardCapabilityCatalog();
+});
+
 ipcMain.handle('daemon:getLaunchReceipts', async (event, limit) => {
   return daemonManager.getLaunchReceipts(limit);
 });

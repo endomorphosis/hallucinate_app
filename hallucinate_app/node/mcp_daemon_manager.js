@@ -11,6 +11,7 @@ import url from 'url';
 import crypto from 'crypto';
 import { getReporter, ErrorSource, ErrorLevel } from './github_issue_reporter.js';
 import { ControlSurfaceInvocationGate } from './control_surface_invocation.js';
+import { mcpServers } from './menu_config.js';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 const DEFAULT_HEALTH_INTERVAL_MS = 30000;
@@ -33,6 +34,72 @@ const ACCELERATE_MCPPLUSPLUS_PROFILES = [
   'mcp++/profile-d-temporal-policy',
   'mcp++/profile-e-mcp-p2p'
 ];
+const DASHBOARD_CATALOG_SCHEMA = 'hallucinate_app.mcp_dashboard_capability_catalog.v1';
+const DASHBOARD_CATALOG_TASK_ID = 'HAO-677';
+const DASHBOARD_CATALOG_GOAL_ID = 'VAIOS-G723';
+
+const DASHBOARD_TOOL_PROTOCOLS = {
+  'ipfs-kit': {
+    toolsList: {
+      operation: 'tools/list',
+      transport: 'http',
+      method: 'GET',
+      path: '/mcp/tools/list'
+    },
+    toolsCall: {
+      operation: 'tools/call',
+      transport: 'http',
+      method: 'POST',
+      path: '/mcp/tools/call',
+      safeProbe: {
+        tool_name: 'ipfs_status',
+        arguments: {},
+        mutation: false,
+        expected_receipt: 'ipfs_kit_status_probe'
+      }
+    }
+  },
+  'ipfs-datasets': {
+    toolsList: {
+      operation: 'tools/list',
+      transport: 'http',
+      method: 'GET',
+      path: '/datasets/list'
+    },
+    toolsCall: {
+      operation: 'tools/call',
+      transport: 'http',
+      method: 'POST',
+      path: '/datasets/load',
+      safeProbe: {
+        tool_name: 'datasets_list',
+        arguments: { limit: 1 },
+        mutation: false,
+        expected_receipt: 'ipfs_datasets_list_probe'
+      }
+    }
+  },
+  'ipfs-accelerate': {
+    toolsList: {
+      operation: 'tools/list',
+      transport: 'http',
+      method: 'GET',
+      path: '/models/list'
+    },
+    toolsCall: {
+      operation: 'tools/call',
+      transport: 'http',
+      method: 'POST',
+      path: '/inference',
+      safeProbe: {
+        tool_name: 'hardware_profile',
+        arguments: { dry_run: true },
+        mutation: false,
+        expected_receipt: 'ipfs_accelerate_hardware_profile_probe'
+      }
+    }
+  }
+};
 
 function stableReceiptCid(value) {
   const canonical = JSON.stringify(value);
@@ -560,6 +627,26 @@ class MCPDaemonManager extends EventEmitter {
       }));
   }
 
+  getDashboardCapabilityCatalog() {
+    return {
+      schema: DASHBOARD_CATALOG_SCHEMA,
+      task_id: DASHBOARD_CATALOG_TASK_ID,
+      goal_id: DASHBOARD_CATALOG_GOAL_ID,
+      generated_by: 'hallucinate_app.node.mcp_daemon_manager',
+      control_surface_route: [
+        'Hallucinate App dashboard action',
+        'dashboard capability catalog',
+        'interaction_envelope',
+        'policy_decision',
+        'mediation_receipt',
+        'supervised MCP server transport'
+      ],
+      servers: [...this.daemonConfigs]
+        .sort((a, b) => a.launchOrder - b.launchOrder)
+        .map((config) => this._dashboardCapabilityEntry(config))
+    };
+  }
+
   async checkDaemonHealth(daemonId) {
     const config = this._requireDaemonConfig(daemonId);
     const daemon = this.daemons.get(daemonId);
@@ -718,6 +805,101 @@ class MCPDaemonManager extends EventEmitter {
       healthUrl: sidecar.healthUrl,
       catalogUrl: sidecar.catalogUrl,
       status: sidecar.status
+    };
+  }
+
+  _nativeDashboardUrl(config) {
+    if (!config.nativeDashboard) {
+      return null;
+    }
+    return `http://127.0.0.1:${config.nativeDashboard.port}${config.nativeDashboard.path}`;
+  }
+
+  _nativeDashboardCatalogUrl(config) {
+    if (!config.nativeDashboard?.catalogPath) {
+      return null;
+    }
+    return `http://127.0.0.1:${config.nativeDashboard.port}${config.nativeDashboard.catalogPath}`;
+  }
+
+  _dashboardToolProtocol(config) {
+    const protocol = DASHBOARD_TOOL_PROTOCOLS[config.id] || {};
+    const endpoint = this._daemonEndpoint(config);
+    const withUrl = (value) => {
+      if (!value) {
+        return null;
+      }
+      return {
+        ...value,
+        url: `${endpoint}${value.path}`
+      };
+    };
+
+    return {
+      tools_list: withUrl(protocol.toolsList),
+      tools_call: withUrl(protocol.toolsCall)
+    };
+  }
+
+  _normalizedMcpPlusPlusStatus(config) {
+    return this._mcpPlusPlusStatus(config.id) || this._launchPlanMcpPlusPlus(config) || {
+      available: false,
+      state: 'not_advertised',
+      mode: 'not_advertised',
+      supports_profile_negotiation: false,
+      profiles: [],
+      message: `${config.packageName} does not currently advertise MCP++ profiles through the dashboard catalog.`
+    };
+  }
+
+  _dashboardCapabilityEntry(config) {
+    const menuServer = mcpServers.find((server) => server.id === config.id) || {};
+    const endpoint = this._daemonEndpoint(config);
+    const nativeDashboardUrl = this._nativeDashboardUrl(config);
+    const nativeDashboardCatalogUrl = this._nativeDashboardCatalogUrl(config);
+
+    return {
+      schema: `${DASHBOARD_CATALOG_SCHEMA}.server`,
+      task_id: DASHBOARD_CATALOG_TASK_ID,
+      goal_id: DASHBOARD_CATALOG_GOAL_ID,
+      daemon_id: config.id,
+      server_package: config.packageName,
+      display_name: menuServer.displayName || config.name,
+      menu_label: menuServer.name || config.name,
+      startup_order: config.launchOrder,
+      port: config.port,
+      endpoint,
+      transport: config.transport,
+      rpc_path: config.rpcPath,
+      health_path: config.healthPath,
+      health_url: `${endpoint}${config.healthPath}`,
+      menu_dashboard_path: menuServer.dashboardPath || null,
+      menu_dashboard_url: menuServer.webDashboardUrl || nativeDashboardUrl || `${endpoint}/dashboard`,
+      native_dashboard_url: nativeDashboardUrl,
+      native_dashboard_health_path: config.nativeDashboard?.healthPath || null,
+      native_dashboard_catalog_url: nativeDashboardCatalogUrl,
+      menu_tools: (menuServer.tools || [])
+        .filter((tool) => tool && tool.type !== 'separator')
+        .map((tool) => ({
+          label: tool.label,
+          url: tool.url || null,
+          action: tool.action || null,
+          app: tool.app || null
+        })),
+      tool_protocols: this._dashboardToolProtocol(config),
+      mcpplusplus: this._normalizedMcpPlusPlusStatus(config),
+      swissknife_consumer: config.swissknifeConsumer,
+      control_surface_mediation_contract: config.mediationContractRef,
+      control_surface_receipt_requirements: [
+        'interaction_envelope',
+        'policy_decision',
+        'mediation_receipt',
+        'daemon_id',
+        'server_package',
+        'tool_protocol',
+        'safe_probe',
+        'receipt_cid'
+      ]
     };
   }
 

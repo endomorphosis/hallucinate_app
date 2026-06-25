@@ -7902,7 +7902,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-677 Normalize the Hallucinate App MCP dashboard capability catalog
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: integration
@@ -7912,8 +7912,8 @@ UI-plane participants and runtime-plane targets.
 - Bundle: objective/launch/hallucinate-mcp-dashboard
 - Parallel lane: hallucinate-mcp-dashboard-capability-catalog
 - Missing evidence: shared dashboard capability catalog across menu_config, launch plan, native package dashboards, tools/list, tools/call, and MCP++ telemetry
-- Outputs: hallucinate_app/hallucinate_app/node/mcp_daemon_manager.js, hallucinate_app/hallucinate_app/node/menu_config.js, hallucinate_app/hallucinate_app/node/views, hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts, data/hallucinate_multimodal_control/discovery
-- Validation: node --test hallucinate_app/test/test_programmatic_menu.js; npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts; PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q
+- Outputs: hallucinate_app/hallucinate_app/node/mcp_daemon_manager.js, hallucinate_app/hallucinate_app/node/menu_config.js, hallucinate_app/index.js, hallucinate_app/preload.cjs, hallucinate_app/preload.js, hallucinate_app/test/js/test_mcp_daemon_manager.js, hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts, data/hallucinate_multimodal_control/discovery/2026-06-25-hao-677-dashboard-capability-catalog.md
+- Validation: npm --prefix hallucinate_app run test:daemon-manager; node --test hallucinate_app/test/test_programmatic_menu.js; npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts; PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q
 - Acceptance: Add one shared dashboard capability catalog, readable by the daemon and UI, for `ipfs_kit_py`, `ipfs_datasets_py`, and `ipfs_accelerate_py` that includes daemon id, package name, endpoint, health path, native dashboard URL, menu dashboard URL, advertised tools/list support, safe tools/call probe shape, MCP++ profile telemetry, Swissknife consumer, and control_surface mediation contract; reconcile the IPFS Kit port 8004 launch-plan truth with older HAO-674 evidence.
 
 ## HAO-678 Wire all IPFS MCP dashboards to daemon health and catalog-backed tool surfaces

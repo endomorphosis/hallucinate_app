@@ -314,6 +314,40 @@ test.describe('MCP Feature Exposure - Hallucinate Dashboard', () => {
     });
   });
 
+  test('dashboard capability catalog reconciles menu URLs, safe probes, and MCP++ telemetry', async () => {
+    const catalog = await window.evaluate(async () => {
+      return window?.electronAPI?.daemon?.getDashboardCapabilityCatalog?.();
+    });
+
+    expect(catalog?.schema).toBe('hallucinate_app.mcp_dashboard_capability_catalog.v1');
+    expect(catalog?.task_id).toBe('HAO-677');
+    expect(catalog?.goal_id).toBe('VAIOS-G723');
+    expect(catalog?.control_surface_route).toContain('mediation_receipt');
+    expect(catalog?.servers).toHaveLength(3);
+
+    const byId = new Map((catalog?.servers || []).map((entry: any) => [entry.daemon_id, entry]));
+    const menuById = new Map(mcpServers.map((server: any) => [server.id, server]));
+
+    for (const daemonId of ['ipfs-kit', 'ipfs-datasets', 'ipfs-accelerate']) {
+      const entry = byId.get(daemonId) as any;
+      const menuEntry = menuById.get(daemonId) as any;
+      expect(entry).toBeTruthy();
+      expect(entry.menu_dashboard_url).toBe(menuEntry.webDashboardUrl);
+      expect(entry.tool_protocols.tools_list.operation).toBe('tools/list');
+      expect(entry.tool_protocols.tools_call.operation).toBe('tools/call');
+      expect(entry.tool_protocols.tools_call.safeProbe.mutation).toBe(false);
+      expect(entry.control_surface_mediation_contract).toContain(`mcp-daemon:${daemonId}`);
+      expect(entry.control_surface_receipt_requirements).toContain('receipt_cid');
+    }
+
+    expect((byId.get('ipfs-kit') as any)?.port).toBe(8004);
+    expect((byId.get('ipfs-datasets') as any)?.native_dashboard_catalog_url).toBe(
+      'http://127.0.0.1:8899/api/hallucinate/dashboard-catalog'
+    );
+    expect((byId.get('ipfs-datasets') as any)?.mcpplusplus.mode).toBe('optional_bridge');
+    expect((byId.get('ipfs-accelerate') as any)?.mcpplusplus.profiles).toContain('mcp++/profile-e-mcp-p2p');
+  });
+
   test('daemon status payload exposes MCP++ capability telemetry for accelerate and datasets', async () => {
     await waitForDaemonHealthy(window, 'ipfs-datasets');
     await waitForDaemonHealthy(window, 'ipfs-accelerate');

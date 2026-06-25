@@ -98,7 +98,7 @@ async function runTests() {
   
   // Test 7: Ports configured
   console.log('\nTest 7: Port assignments');
-  const expectedPorts = [3001, 3002, 3003];
+  const expectedPorts = [8004, 3002, 3003];
   const actualPorts = manager.daemonConfigs.map(c => c.port);
   const portsMatch = expectedPorts.every(port => actualPorts.includes(port));
   
@@ -110,6 +110,63 @@ async function runTests() {
     testsPassed++;
   } else {
     console.log('❌ Port assignments incorrect');
+    testsFailed++;
+  }
+
+  // Test 8: Launch plan exposes current endpoint contracts
+  console.log('\nTest 8: Launch plan endpoint contracts');
+  const launchPlan = manager.getLaunchPlan();
+  const launchPlanById = new Map(launchPlan.map(entry => [entry.daemon_id, entry]));
+  const launchPlanOk =
+    launchPlan.length === 3 &&
+    launchPlanById.get('ipfs-kit')?.endpoint === 'http://127.0.0.1:8004' &&
+    launchPlanById.get('ipfs-kit')?.health_path === '/api/mcp/status' &&
+    launchPlanById.get('ipfs-kit')?.rpc_path === '/mcp/tools/call' &&
+    launchPlanById.get('ipfs-datasets')?.endpoint === 'http://127.0.0.1:3002' &&
+    launchPlanById.get('ipfs-accelerate')?.endpoint === 'http://127.0.0.1:3003';
+
+  if (launchPlanOk) {
+    console.log('✅ Launch plan endpoint contracts current');
+    testsPassed++;
+  } else {
+    console.log('❌ Launch plan endpoint contracts stale');
+    console.log('   Launch plan:', launchPlan);
+    testsFailed++;
+  }
+
+  // Test 9: Dashboard capability catalog reconciles menus, daemon transport, and MCP++
+  console.log('\nTest 9: Dashboard capability catalog');
+  const catalog = manager.getDashboardCapabilityCatalog();
+  const catalogById = new Map((catalog.servers || []).map(entry => [entry.daemon_id, entry]));
+  const requiredIds = ['ipfs-kit', 'ipfs-datasets', 'ipfs-accelerate'];
+  const catalogBaseOk =
+    catalog.schema === 'hallucinate_app.mcp_dashboard_capability_catalog.v1' &&
+    catalog.task_id === 'HAO-677' &&
+    catalog.goal_id === 'VAIOS-G723' &&
+    requiredIds.every(id => catalogById.has(id));
+  const catalogEntriesOk = requiredIds.every(id => {
+    const entry = catalogById.get(id);
+    return (
+      entry.tool_protocols?.tools_list?.operation === 'tools/list' &&
+      entry.tool_protocols?.tools_call?.operation === 'tools/call' &&
+      entry.tool_protocols?.tools_call?.safeProbe?.mutation === false &&
+      entry.control_surface_mediation_contract?.startsWith('control_surface_contract:mcp-daemon:') &&
+      entry.menu_dashboard_url?.startsWith('http://127.0.0.1:')
+    );
+  });
+  const catalogSpecificsOk =
+    catalogById.get('ipfs-kit')?.port === 8004 &&
+    catalogById.get('ipfs-kit')?.menu_dashboard_url === 'http://127.0.0.1:8004/dashboard' &&
+    catalogById.get('ipfs-datasets')?.native_dashboard_catalog_url === 'http://127.0.0.1:8899/api/hallucinate/dashboard-catalog' &&
+    catalogById.get('ipfs-datasets')?.mcpplusplus?.mode === 'optional_bridge' &&
+    catalogById.get('ipfs-accelerate')?.mcpplusplus?.profiles?.includes('mcp++/profile-e-mcp-p2p');
+
+  if (catalogBaseOk && catalogEntriesOk && catalogSpecificsOk) {
+    console.log('✅ Dashboard capability catalog reconciles all MCP servers');
+    testsPassed++;
+  } else {
+    console.log('❌ Dashboard capability catalog incomplete');
+    console.log('   Catalog:', catalog);
     testsFailed++;
   }
   
