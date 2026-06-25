@@ -3518,18 +3518,18 @@ UI-plane participants and runtime-plane targets.
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-310-reconciliation-ab689090ed4d.md
 - Acceptance: Reconciliation guardrail filed this because 2 branch or worktree cleanup candidates are blocked by unsupported_status. Use evidence and the machine-readable reconciliation plan in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-310-reconciliation-ab689090ed4d.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
 
-## HAO-311 Resolve 31 preflight-conflicting backlogged worktree merges
+## HAO-311 Resolve 1 preflight-conflicting backlogged worktree merges
 
 - Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Fingerprint: da7a2006fdc15e7b5585315ec1daaec109cecda5
+- Fingerprint: 22dd5f9a823b17b170af314ad38875641852e3cf
 - Dedupe key: reconciliation_guardrail:preflight_merge_conflict
 - Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-311-reconciliation-534cc45af3d6.md
-- Acceptance: Reconciliation guardrail filed this because 31 branch or worktree cleanup candidates are blocked by preflight_merge_conflict. Use evidence and the machine-readable reconciliation plan in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-311-reconciliation-534cc45af3d6.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
+- Acceptance: Reconciliation guardrail filed this because 1 branch or worktree cleanup candidates are blocked by preflight_merge_conflict. Use evidence and the machine-readable reconciliation plan in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-311-reconciliation-534cc45af3d6.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
 
 ## HAO-312 Resolve validation retry-budget failure for HAO-306
 
@@ -8091,7 +8091,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-690 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_ernie_m.ts:1
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -8100,6 +8100,7 @@ UI-plane participants and runtime-plane targets.
 - Validation: test -f swissknife/ipfs_accelerate_js/test/unit/test_hf_ernie_m.ts
 - Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/unit/test_hf_ernie_m.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-25-hao-690-codebase-scan-f0a4973611e9.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
 
+- Blocked reason: Deferred by objective-task janitor during launch steering because off_mission_codebase_scan_task; this keeps lanes focused on Swissknife, Hallucinate App, MCP++, Meta glasses, and Playwright launch readiness.
 ## HAO-691 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_esm.ts:1
 
 - Status: completed
@@ -8113,7 +8114,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-692 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_falcon.ts:1
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -8121,3 +8122,15 @@ UI-plane participants and runtime-plane targets.
 - Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/unit/test_hf_falcon.ts
 - Validation: test -f swissknife/ipfs_accelerate_js/test/unit/test_hf_falcon.ts
 - Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/unit/test_hf_falcon.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-25-hao-692-codebase-scan-07dfabac283e.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+- Blocked reason: Deferred by objective-task janitor during launch steering because off_mission_codebase_scan_task; this keeps lanes focused on Swissknife, Hallucinate App, MCP++, Meta glasses, and Playwright launch readiness.
+
+## HAO-693 Resolve validation retry-budget failure for HAO-678
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: HAO-013
+- Outputs: hallucinate_app/hallucinate_app/node/views/ipfs_kit_dashboard.html, hallucinate_app/hallucinate_app/node/views/ipfs_datasets_dashboard.html, hallucinate_app/hallucinate_app/node/views/ipfs_accelerate_dashboard.html, hallucinate_app/preload.cjs, hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts, data/hallucinate_multimodal_control/discovery
+- Validation: npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts
+- Acceptance: Retry-budget guardrail filed this from repeated validation failures in HAO-678. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-25-hao-693-hao-678-retry-budget.md to fix the validation blocker, then mark this repair task completed so the supervisor can release HAO-678 from strategy blocked_tasks.
