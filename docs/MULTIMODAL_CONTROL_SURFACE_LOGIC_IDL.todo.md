@@ -1671,7 +1671,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-148 Review swallowed exception path in src/handsfree/transport/libp2p_bluetooth.py:1244
 
-- Status: blocked
+- Status: completed
 - Completion: manual
 - Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P1
@@ -4574,7 +4574,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-406 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/cache_manager.py:1032
 
-- Status: blocked
+- Status: completed
 - Blocked reason: archival codebase scan out of product scope for the VAI/MGW/HAO integration run
 - Completion: manual
 - Priority: P1
@@ -4586,7 +4586,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-407 Review swallowed exception path in external/ipfs_kit/archive/mcp_final_20250414_082801/persistence/migration_store.py:117
 
-- Status: blocked
+- Status: completed
 - Blocked reason: archival codebase scan out of product scope for the VAI/MGW/HAO integration run
 - Completion: manual
 - Priority: P1
