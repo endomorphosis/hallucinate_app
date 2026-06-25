@@ -3497,7 +3497,7 @@ UI-plane participants and runtime-plane targets.
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Fingerprint: 02ea31465b4fc277801714ed621cddbc8324477b
+- Fingerprint: f9aa81f3b299e6f4a56daf86b901fa0ef0ab4896
 - Dedupe key: reconciliation_guardrail:main_checkout_dirty
 - Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
