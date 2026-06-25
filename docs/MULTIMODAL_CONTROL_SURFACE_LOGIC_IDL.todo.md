@@ -8170,3 +8170,31 @@ UI-plane participants and runtime-plane targets.
 - Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/browser/test_safari_webgpu_support.ts
 - Validation: test -f swissknife/ipfs_accelerate_js/test/browser/test_safari_webgpu_support.ts
 - Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/browser/test_safari_webgpu_support.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-25-hao-696-codebase-scan-025dd1a14a04.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-697 Make Hallucinate Electron Playwright validation headless-aware
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: validation
+- Depends on: HAO-678, HAO-679
+- Outputs: hallucinate_app/scripts/run_playwright_test.mjs, hallucinate_app/test/e2e, tests/test_virtual_ai_os_launch_readiness_gate.py, data/hallucinate_multimodal_control/discovery
+- Validation: PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_virtual_ai_os_launch_readiness_gate.py -q; cd hallucinate_app && (env -u DISPLAY -u WAYLAND_DISPLAY HALLUCINATE_APP_E2E_NO_BOOTSTRAP=true node scripts/run_playwright_test.mjs --help || test $? -eq 78)
+- Bundle: objective/launch/hallucinate-mcp-dashboard
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G723
+- Graph depth: 1
+- Parallel lane: hallucinate-playwright-headless
+- Conflict policy: keep Electron UI coverage real; use xvfb-run when present, and surface missing_xvfb_for_electron_playwright as a launch-environment repair instead of skipping dashboard tests.
+- Goal id: VAIOS-G723
+- Missing evidence: headless-safe Hallucinate MCP dashboard Playwright launch gate
+- Embedding query: Hallucinate App Electron Playwright xvfb-run missing display MCP dashboard validation VAIOS-G723
+- AST query: run_playwright_test, xvfb-run, missing_xvfb_for_electron_playwright, mcp-feature-exposure, electron.launch
+- Surplus group: objective/VAIOS-G723
+- Merge key: vaios-g723-hallucinate-playwright-headless
+- Merge family: objective/VAIOS-G723
+- Merge role: validation_environment_repair
+- Work item count: 1
+- Work scope: launch_validation_environment
+- Candidate kind: validation_gate
+- Acceptance: Make the Hallucinate App e2e runner automatically use xvfb-run on headless Linux hosts when it is available, fail with the stable missing_xvfb_for_electron_playwright diagnostic when it is not, and keep the supervisor from treating skipped Electron UI tests as a passed MCP dashboard launch gate.
