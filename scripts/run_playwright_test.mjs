@@ -12,6 +12,7 @@ const playwrightCli = path.join(projectRoot, 'node_modules', '@playwright', 'tes
 const electronPackage = path.join(projectRoot, 'node_modules', 'electron', 'package.json');
 const commandArgs = process.argv.slice(2);
 const args = commandArgs.length > 0 ? commandArgs : ['test'];
+const missingDisplayDiagnostic = 'missing_xvfb_for_electron_playwright';
 
 ensureE2EDependencies();
 runPlaywright(args);
@@ -55,8 +56,61 @@ function hasE2EDependencies() {
 }
 
 function runPlaywright(playwrightArgs) {
-  const status = run(process.execPath, [playwrightCli, ...playwrightArgs]);
+  const command = playwrightCommand(playwrightArgs);
+  if (command.diagnostic) {
+    console.error(`[${command.diagnostic}] ${command.message}`);
+    process.exit(78);
+  }
+
+  if (command.usesXvfb) {
+    console.warn('No graphical display detected; running Hallucinate Electron Playwright tests under xvfb-run.');
+  }
+
+  const status = run(command.binary, command.args);
   process.exit(status);
+}
+
+function playwrightCommand(playwrightArgs) {
+  const baseArgs = [playwrightCli, ...playwrightArgs];
+  if (!needsVirtualDisplay()) {
+    return { binary: process.execPath, args: baseArgs };
+  }
+
+  if (commandExists('xvfb-run')) {
+    return {
+      binary: 'xvfb-run',
+      args: [
+        '--auto-servernum',
+        '--server-args=-screen 0 1280x960x24 -nolisten tcp',
+        process.execPath,
+        ...baseArgs,
+      ],
+      usesXvfb: true,
+    };
+  }
+
+  return {
+    binary: process.execPath,
+    args: baseArgs,
+    diagnostic: missingDisplayDiagnostic,
+    message: 'Hallucinate Electron Playwright tests need DISPLAY, WAYLAND_DISPLAY, or xvfb-run. Install xvfb on the host or run the supervisor in an environment with a graphical display so launch validation can execute instead of burning retry-budget attempts.',
+  };
+}
+
+function needsVirtualDisplay() {
+  if (process.env.HALLUCINATE_APP_E2E_DISABLE_XVFB === 'true') {
+    return false;
+  }
+  return process.platform === 'linux' && !process.env.DISPLAY && !process.env.WAYLAND_DISPLAY;
+}
+
+function commandExists(command) {
+  const result = spawnSync('sh', ['-lc', `command -v ${command}`], {
+    cwd: projectRoot,
+    stdio: 'ignore',
+    env: process.env,
+  });
+  return result.status === 0;
 }
 
 function run(command, runArgs, extraEnv = {}) {
