@@ -5101,7 +5101,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-443 Expose MCP server capabilities to Swissknife applications
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P0
 - Track: launch
@@ -5125,9 +5125,10 @@ UI-plane participants and runtime-plane targets.
 - Candidate kind: launch_integration
 - Acceptance: Add a Swissknife-facing capability registry that maps `ipfs_accelerate_py`, `ipfs_datasets_py`, and `ipfs_kit_py` MCP tools into app-visible descriptors, normalized command intents, permission scopes, UI affordances, and Hallucinate App mediation receipt aliases.
 
+- Blocked reason: Retired by objective-task janitor during launch steering because goal_completed.
 ## HAO-444 Prove Swissknife apps can invoke the Python MCP server features
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P0
 - Track: launch
@@ -5151,9 +5152,10 @@ UI-plane participants and runtime-plane targets.
 - Candidate kind: launch_integration
 - Acceptance: Add app-level proof that Swissknife applications can invoke representative `ipfs_accelerate_py`, `ipfs_datasets_py`, and `ipfs_kit_py` MCP features through the capability registry, receive deterministic results or fail-closed errors, and expose the same invocation receipts to Hallucinate App and the launch evidence packet.
 
+- Blocked reason: Retired by objective-task janitor during launch steering because goal_completed.
 ## HAO-445 Validate Mcp-Plus-Plus protocol compatibility
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P0
 - Track: launch
@@ -5177,9 +5179,10 @@ UI-plane participants and runtime-plane targets.
 - Candidate kind: launch_integration
 - Acceptance: Verify and document how Hallucinate App and Swissknife negotiate Mcp-Plus-Plus-compatible capability descriptors, transports, tool calls, errors, receipts, and lifecycle events while preserving the same policy and command contract used by the Python MCP daemons.
 
+- Blocked reason: Retired by objective-task janitor during launch steering because goal_completed.
 ## HAO-446 Add HAO and Swissknife Playwright coverage for MCP integration
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P0
 - Track: launch
@@ -5203,9 +5206,10 @@ UI-plane participants and runtime-plane targets.
 - Candidate kind: validation_gate
 - Acceptance: Add Playwright tests that launch the Hallucinate App MCP integration surface, verify the Python MCP daemons are reachable or fail closed with health receipts, open Swissknife applications that consume those features, exercise representative tool calls, and assert Mcp-Plus-Plus-compatible receipts are visible in the UI.
 
+- Blocked reason: Retired by objective-task janitor during launch steering because goal_completed.
 ## HAO-447 Aggregate MCP server and Swissknife evidence into launch readiness
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P0
 - Track: launch
@@ -5229,6 +5233,7 @@ UI-plane participants and runtime-plane targets.
 - Candidate kind: validation_gate
 - Acceptance: Extend the launch-readiness packet so `VAIOS-G697` remains open until Hallucinate App daemon launch, Swissknife app feature invocation, Mcp-Plus-Plus compatibility, and HAO/Swissknife Playwright results are all present with the same session, daemon, command, policy, and tool receipt lineage.
 
+- Blocked reason: Retired by objective-task janitor during launch steering because goal_completed.
 ## HAO-448 Resolve code annotation in implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.md:184
 
 - Status: completed
@@ -8011,3 +8016,36 @@ UI-plane participants and runtime-plane targets.
 - Outputs: scripts/run_vai_mgw_hao_supervisors.py, scripts/hallucinate_multimodal_control_todo_supervisor.py, tests/test_virtual_ai_os_todo_queue.py, tests/test_hallucinate_multimodal_control_todo_queue.py, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md
 - Validation: PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_virtual_ai_os_todo_queue.py tests/test_hallucinate_multimodal_control_todo_queue.py -q
 - Acceptance: The supervisor launch mission terms include Hallucinate App menus, dashboards, dashboard capability catalog, daemon health, tools/list, tools/call, and the three Python MCP package names; objective-scan/refinement keeps VAIOS-G723 and its generated tasks mission-aligned, avoids retiring them as off-mission work, and can add follow-up subtasks or subgoals when validation fails.
+
+## HAO-684 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_encodec.ts:1
+
+- Status: todo
+- Completion: manual
+- Priority: P2
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/unit/test_hf_encodec.ts
+- Validation: test -f swissknife/ipfs_accelerate_js/test/unit/test_hf_encodec.ts
+- Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/unit/test_hf_encodec.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-25-hao-684-codebase-scan-bb55dbe9b248.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-685 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_encoder_decoder.ts:1
+
+- Status: todo
+- Completion: manual
+- Priority: P2
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/unit/test_hf_encoder_decoder.ts
+- Validation: test -f swissknife/ipfs_accelerate_js/test/unit/test_hf_encoder_decoder.ts
+- Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/unit/test_hf_encoder_decoder.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-25-hao-685-codebase-scan-a27be388332d.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-686 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_ernie.ts:1
+
+- Status: todo
+- Completion: manual
+- Priority: P2
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/unit/test_hf_ernie.ts
+- Validation: test -f swissknife/ipfs_accelerate_js/test/unit/test_hf_ernie.ts
+- Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/unit/test_hf_ernie.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-25-hao-686-codebase-scan-b7dc19d3103a.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
