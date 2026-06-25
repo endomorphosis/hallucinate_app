@@ -8019,7 +8019,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-684 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_electra.ts:1
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -8028,9 +8028,10 @@ UI-plane participants and runtime-plane targets.
 - Validation: test -f swissknife/ipfs_accelerate_js/test/unit/test_hf_electra.ts
 - Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/unit/test_hf_electra.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-25-hao-684-codebase-scan-4643a0f331bf.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
 
+- Blocked reason: Deferred by objective-task janitor during launch steering because off_mission_codebase_scan_task; this keeps lanes focused on Swissknife, Hallucinate App, MCP++, Meta glasses, and Playwright launch readiness.
 ## HAO-685 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_encodec.ts:1
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -8039,9 +8040,10 @@ UI-plane participants and runtime-plane targets.
 - Validation: test -f swissknife/ipfs_accelerate_js/test/unit/test_hf_encodec.ts
 - Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/unit/test_hf_encodec.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-25-hao-685-codebase-scan-bb55dbe9b248.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
 
+- Blocked reason: Deferred by objective-task janitor during launch steering because off_mission_codebase_scan_task; this keeps lanes focused on Swissknife, Hallucinate App, MCP++, Meta glasses, and Playwright launch readiness.
 ## HAO-686 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_encoder_decoder.ts:1
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P2
 - Track: quality
@@ -8049,3 +8051,4 @@ UI-plane participants and runtime-plane targets.
 - Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/unit/test_hf_encoder_decoder.ts
 - Validation: test -f swissknife/ipfs_accelerate_js/test/unit/test_hf_encoder_decoder.ts
 - Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/unit/test_hf_encoder_decoder.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-25-hao-686-codebase-scan-a27be388332d.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+- Blocked reason: Deferred by objective-task janitor during launch steering because off_mission_codebase_scan_task; this keeps lanes focused on Swissknife, Hallucinate App, MCP++, Meta glasses, and Playwright launch readiness.
