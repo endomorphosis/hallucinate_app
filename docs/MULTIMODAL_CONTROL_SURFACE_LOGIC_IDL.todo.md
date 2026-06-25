@@ -8017,7 +8017,18 @@ UI-plane participants and runtime-plane targets.
 - Validation: PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_virtual_ai_os_todo_queue.py tests/test_hallucinate_multimodal_control_todo_queue.py -q
 - Acceptance: The supervisor launch mission terms include Hallucinate App menus, dashboards, dashboard capability catalog, daemon health, tools/list, tools/call, and the three Python MCP package names; objective-scan/refinement keeps VAIOS-G723 and its generated tasks mission-aligned, avoids retiring them as off-mission work, and can add follow-up subtasks or subgoals when validation fails.
 
-## HAO-684 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_encodec.ts:1
+## HAO-684 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_electra.ts:1
+
+- Status: todo
+- Completion: manual
+- Priority: P2
+- Track: quality
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/unit/test_hf_electra.ts
+- Validation: test -f swissknife/ipfs_accelerate_js/test/unit/test_hf_electra.ts
+- Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/unit/test_hf_electra.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-25-hao-684-codebase-scan-4643a0f331bf.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+
+## HAO-685 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_encodec.ts:1
 
 - Status: todo
 - Completion: manual
@@ -8026,9 +8037,9 @@ UI-plane participants and runtime-plane targets.
 - Depends on: HAO-013
 - Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/unit/test_hf_encodec.ts
 - Validation: test -f swissknife/ipfs_accelerate_js/test/unit/test_hf_encodec.ts
-- Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/unit/test_hf_encodec.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-25-hao-684-codebase-scan-bb55dbe9b248.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+- Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/unit/test_hf_encodec.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-25-hao-685-codebase-scan-bb55dbe9b248.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
 
-## HAO-685 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_encoder_decoder.ts:1
+## HAO-686 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_encoder_decoder.ts:1
 
 - Status: todo
 - Completion: manual
@@ -8037,15 +8048,4 @@ UI-plane participants and runtime-plane targets.
 - Depends on: HAO-013
 - Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/unit/test_hf_encoder_decoder.ts
 - Validation: test -f swissknife/ipfs_accelerate_js/test/unit/test_hf_encoder_decoder.ts
-- Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/unit/test_hf_encoder_decoder.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-25-hao-685-codebase-scan-a27be388332d.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
-
-## HAO-686 Resolve code annotation in swissknife/ipfs_accelerate_js/test/unit/test_hf_ernie.ts:1
-
-- Status: todo
-- Completion: manual
-- Priority: P2
-- Track: quality
-- Depends on: HAO-013
-- Outputs: data/hallucinate_multimodal_control/discovery, swissknife/ipfs_accelerate_js/test/unit/test_hf_ernie.ts
-- Validation: test -f swissknife/ipfs_accelerate_js/test/unit/test_hf_ernie.ts
-- Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/unit/test_hf_ernie.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-25-hao-686-codebase-scan-b7dc19d3103a.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
+- Acceptance: Codebase scan filed this finding from swissknife/ipfs_accelerate_js/test/unit/test_hf_encoder_decoder.ts:1. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-25-hao-686-codebase-scan-a27be388332d.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
