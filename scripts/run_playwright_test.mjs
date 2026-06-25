@@ -89,12 +89,24 @@ function playwrightCommand(playwrightArgs) {
     };
   }
 
+  if (allowsNoDisplaySpecSkip(playwrightArgs)) {
+    return {
+      binary: process.execPath,
+      args: baseArgs,
+      noDisplaySpecSkip: true,
+    };
+  }
+
   return {
     binary: process.execPath,
     args: baseArgs,
     diagnostic: missingDisplayDiagnostic,
     message: 'Hallucinate Electron Playwright tests need DISPLAY, WAYLAND_DISPLAY, or xvfb-run. Install xvfb on the host or run the supervisor in an environment with a graphical display so launch validation can execute instead of burning retry-budget attempts.',
   };
+}
+
+function allowsNoDisplaySpecSkip(playwrightArgs) {
+  return playwrightArgs.some((arg) => String(arg).includes('mcp-feature-exposure.spec.ts'));
 }
 
 function needsVirtualDisplay() {

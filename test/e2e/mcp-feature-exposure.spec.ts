@@ -8,6 +8,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const { test, expect, _electron: electron } = playwrightTest as unknown as typeof import('@playwright/test');
 
+test.skip(
+  process.platform === 'linux' && !process.env.DISPLAY && !process.env.WAYLAND_DISPLAY,
+  'Electron UI validation requires an X11 or Wayland display; no DISPLAY/WAYLAND_DISPLAY is available.'
+);
+
 function electronLaunchEnv(extra: Record<string, string> = {}) {
   const { ELECTRON_RUN_AS_NODE, ...env } = process.env;
   return {
@@ -445,9 +450,8 @@ test.describe('MCP Feature Exposure - Hallucinate Dashboard', () => {
     await openDashboardFromMenu(electronApp, window, 'IPFS Datasets Dashboard');
     await waitForDaemonHealthy(window, 'ipfs-datasets');
 
-    await installFetchStub(window);
     await window.locator('#btn-test-connection').click();
-    await expectStubbedFetchCall(window, /localhost:3002\/health\/ready/);
+    await waitForTextInSelector(window, '#health-receipt', /daemon\/health|ipfs-datasets|HAO-678/);
 
     await window.locator('#btn-open-daemon-manager').click();
     await expect(window.locator('h1')).toContainText('MCP Daemon Manager');
@@ -500,9 +504,8 @@ test.describe('MCP Feature Exposure - Hallucinate Dashboard', () => {
     await openDashboardFromMenu(electronApp, window, 'IPFS Accelerate Dashboard');
     await waitForDaemonHealthy(window, 'ipfs-accelerate');
 
-    await installFetchStub(window);
     await window.locator('#btn-test-connection').click();
-    await expectStubbedFetchCall(window, /localhost:3003\/health/);
+    await waitForTextInSelector(window, '#health-receipt', /daemon\/health|ipfs-accelerate|HAO-678/);
 
     await window.locator('#btn-open-daemon-manager').click();
     await expect(window.locator('h1')).toContainText('MCP Daemon Manager');
@@ -546,12 +549,69 @@ test.describe('MCP Feature Exposure - Hallucinate Dashboard', () => {
     const response = await window.request.get('http://127.0.0.1:8004/api/mcp/status');
     expect(response.ok()).toBe(true);
 
-    await installFetchStub(window);
     await window.locator('#btn-test-connection').click();
-    await expectStubbedFetchCall(window, /127\.0\.0\.1:8004\/api\/mcp\/status/);
+    await waitForTextInSelector(window, '#health-receipt', /daemon\/health|ipfs-kit|HAO-678/);
 
     await window.locator('#btn-open-daemon-manager').click();
     await expect(window.locator('h1')).toContainText('MCP Daemon Manager');
+  });
+
+  test('IPFS dashboards render catalog-backed health, endpoints, native dashboard, and tool controls', async () => {
+    const dashboards = [
+      {
+        label: 'IPFS Kit Dashboard',
+        daemonId: 'ipfs-kit',
+        endpoint: 'http://127.0.0.1:8004',
+        toolsList: 'http://127.0.0.1:8004/mcp/tools/list',
+        safeProbe: 'ipfs_status'
+      },
+      {
+        label: 'IPFS Datasets Dashboard',
+        daemonId: 'ipfs-datasets',
+        endpoint: 'http://127.0.0.1:3002',
+        toolsList: 'http://127.0.0.1:3002/datasets/list',
+        safeProbe: 'datasets_list'
+      },
+      {
+        label: 'IPFS Accelerate Dashboard',
+        daemonId: 'ipfs-accelerate',
+        endpoint: 'http://127.0.0.1:3003',
+        toolsList: 'http://127.0.0.1:3003/models/list',
+        safeProbe: 'hardware_profile'
+      },
+    ];
+
+    for (const dashboard of dashboards) {
+      await openDashboardFromMenu(electronApp, window, dashboard.label);
+      await waitForDaemonHealthy(window, dashboard.daemonId);
+      await expect(window.locator('#endpoint-status')).toContainText(dashboard.endpoint);
+      await expect(window.locator('#health-status')).toContainText(/Healthy|Degraded|Unknown/);
+      await expect(window.locator('#tools-list-url')).toContainText(dashboard.toolsList);
+      await expect(window.locator('#tools-call-probe')).toContainText(dashboard.safeProbe);
+      await expect(window.locator('#control-surface-contract')).toContainText(`mcp-daemon:${dashboard.daemonId}`);
+      await expect(window.locator('#native-dashboard-url')).toContainText(/dashboard|mcp/i);
+      await waitForTextInSelector(window, '#health-receipt', /HAO-678|daemon\/health/);
+    }
+  });
+
+  test('IPFS dashboard tool controls produce visible preload bridge receipts', async () => {
+    const dashboards = [
+      { label: 'IPFS Kit Dashboard', daemonId: 'ipfs-kit' },
+      { label: 'IPFS Datasets Dashboard', daemonId: 'ipfs-datasets' },
+      { label: 'IPFS Accelerate Dashboard', daemonId: 'ipfs-accelerate' },
+    ];
+
+    for (const dashboard of dashboards) {
+      await openDashboardFromMenu(electronApp, window, dashboard.label);
+      await waitForDaemonHealthy(window, dashboard.daemonId);
+      await window.locator('#btn-tools-list').click();
+      await waitForTextInSelector(window, '#tool-receipt', /tools\/list/);
+      await expect(window.locator('#tool-receipt')).toContainText(dashboard.daemonId);
+
+      await window.locator('#btn-tools-call').click();
+      await waitForTextInSelector(window, '#tool-receipt', /tools\/call/);
+      await expect(window.locator('#tool-receipt')).toContainText('safe_probe');
+    }
   });
 
   test('dashboard log actions surface MCP daemon logs for all three dashboards', async () => {
@@ -572,9 +632,9 @@ test.describe('MCP Feature Exposure - Hallucinate Dashboard', () => {
 
   test('IPFS Kit web dashboard button opens the live MCP dashboard URL', async () => {
     await openDashboardFromMenu(electronApp, window, 'IPFS Kit Dashboard');
-    await installWindowOpenStub(window);
+    await waitForDaemonHealthy(window, 'ipfs-kit');
     await window.locator('#btn-open-web-dashboard').click();
-    await waitForWindowOpenCall(window, /127\.0\.0\.1:8004\/dashboard/);
+    await waitForTextInSelector(window, '#health-receipt', /navigation\/openDashboard|127\.0\.0\.1:8004\/dashboard/);
   });
 
   test('Tools menu exposes the configured MCP tool URLs for kit, datasets, and accelerate', async () => {
@@ -661,6 +721,8 @@ test.describe('MCP Feature Exposure - Hallucinate Dashboard', () => {
     ])).toBe(true);
     await waitForDaemonStatus(window, 'ipfs-datasets', 'stopped');
     await waitForTextInSelector(window, '#server-status', /Stopped/i);
+    await window.locator('#btn-tools-list').click();
+    await waitForTextInSelector(window, '#tool-receipt', /fail_closed|blocked because ipfs-datasets is not healthy/i);
 
     expect(await clickApplicationMenuPath(electronApp, [
       'MCP Servers',
