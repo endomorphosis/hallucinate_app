@@ -3497,7 +3497,7 @@ UI-plane participants and runtime-plane targets.
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Fingerprint: dbe2f0279d3b5e9cb7ed278f76d4f71fed63792b
+- Fingerprint: b81b11762f59354649b566588ea3e609d39bb2ca
 - Dedupe key: reconciliation_guardrail:main_checkout_dirty
 - Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
@@ -8198,3 +8198,14 @@ UI-plane participants and runtime-plane targets.
 - Work scope: launch_validation_environment
 - Candidate kind: validation_gate
 - Acceptance: Make the Hallucinate App e2e runner automatically use xvfb-run on headless Linux hosts when it is available, fail with the stable missing_xvfb_for_electron_playwright diagnostic when it is not, and keep the supervisor from treating skipped Electron UI tests as a passed MCP dashboard launch gate.
+
+## HAO-698 Resolve validation retry-budget failure for HAO-680
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: HAO-013
+- Outputs: hallucinate_app/hallucinate_app/node/control_surface_invocation.js, hallucinate_app/hallucinate_app/node/mcp_daemon_manager.js, hallucinate_app/hallucinate_app/node/views, hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts, data/hallucinate_multimodal_control/discovery
+- Validation: npm --prefix hallucinate_app run test:e2e -- mcp-dashboard-interoperability.spec.ts
+- Acceptance: Retry-budget guardrail filed this from repeated validation failures in HAO-680. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-25-hao-698-hao-680-retry-budget.md to fix the validation blocker, then mark this repair task completed so the supervisor can release HAO-680 from strategy blocked_tasks.
