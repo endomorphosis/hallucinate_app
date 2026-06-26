@@ -8434,7 +8434,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-706 Resolve implementation retry-budget failure for HAO-701
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -8445,7 +8445,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-707 Resolve implementation retry-budget failure for HAO-700
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -8456,7 +8456,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-708 Resolve implementation retry-budget failure for HAO-703
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -8467,7 +8467,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-709 Resolve implementation retry-budget failure for HAO-702
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -8478,7 +8478,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-710 Resolve implementation retry-budget failure for HAO-705
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -8489,7 +8489,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-711 Resolve implementation retry-budget failure for HAO-704
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
