@@ -106,7 +106,11 @@ function playwrightCommand(playwrightArgs) {
 }
 
 function allowsNoDisplaySpecSkip(playwrightArgs) {
-  return playwrightArgs.some((arg) => String(arg).includes('mcp-feature-exposure.spec.ts'));
+  const noDisplaySafeSpecs = [
+    'mcp-feature-exposure.spec.ts',
+    'multimodal-control-surface.spec.ts',
+  ];
+  return playwrightArgs.some((arg) => noDisplaySafeSpecs.some((spec) => String(arg).includes(spec)));
 }
 
 function needsVirtualDisplay() {
