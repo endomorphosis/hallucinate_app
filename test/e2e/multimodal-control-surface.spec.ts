@@ -16,6 +16,13 @@ const HAO_675_LAUNCH_REPLAY_FIXTURE = path.join(
   'fixtures',
   'hao-675-launch-replay.json'
 );
+const HAO_705_CROSS_DEVICE_LAUNCH_GATE_FIXTURE = path.join(
+  APP_ROOT,
+  'test',
+  'e2e',
+  'fixtures',
+  'hao-705-cross-device-launch-gate.json'
+);
 const HAO_039_POLICY_USER_ID = 'hao-039-operator';
 const HAO_039_POLICY_PROFILE_ID = 'multimodal-control-surface-e2e';
 const ALLOW_POLICY_ID = 'policy:hao-039-allow-display-activation';
@@ -487,6 +494,10 @@ async function loadHao675LaunchReplayFixture(): Promise<JsonMap> {
   return JSON.parse(await fs.readFile(HAO_675_LAUNCH_REPLAY_FIXTURE, 'utf-8'));
 }
 
+async function loadHao705CrossDeviceLaunchGateFixture(): Promise<JsonMap> {
+  return JSON.parse(await fs.readFile(HAO_705_CROSS_DEVICE_LAUNCH_GATE_FIXTURE, 'utf-8'));
+}
+
 function expectHao675LaunchReplayFixture(fixture: JsonMap) {
   expect(fixture.task_id).toBe('HAO-675');
   expect(fixture.artifact_id).toBe('swissknife_hallucinate_app_playwright_launch_replay');
@@ -527,6 +538,59 @@ function expectHao675LaunchReplayFixture(fixture: JsonMap) {
   });
 }
 
+function expectHao705CrossDeviceLaunchGateFixture(fixture: JsonMap) {
+  expect(fixture.task_id).toBe('HAO-705');
+  expect(fixture.goal_id).toBe('VAIOS-G726');
+  expect(fixture.schema).toBe('hao_cross_device_launch_playwright_gate_v1');
+  expect(fixture.evidence_term).toBe('launch Playwright validation gate');
+  expect(fixture.playwright_commands.hallucinate_app).toBe(
+    'npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
+  );
+  expect(fixture.playwright_commands.swissknife).toBe('npm --prefix swissknife run test:e2e:meta-glasses');
+  expect(fixture.route).toEqual([
+    'phone-hosted Swissknife virtual desktop',
+    'mobile phone',
+    'desktop peer discovery',
+    'desktop peer offload',
+    'IPFS',
+    'libp2p',
+    'MCP++',
+    'Hallucinate App mediation',
+    'Meta glasses terminal',
+    'launch readiness receipt'
+  ]);
+  expect(fixture.mission_terms).toEqual(expect.arrayContaining([
+    'cross-device e2e validation',
+    'Playwright launch replay',
+    'launch Playwright validation gate'
+  ]));
+  expect(fixture.required_backends).toEqual([
+    'ipfs_kit_py',
+    'ipfs_datasets_py',
+    'ipfs_accelerate_py'
+  ]);
+  expect(fixture.replay_assertions).toMatchObject({
+    phone_hosted_mode: 'phone-hosted',
+    control_plane_command: 'desktop.request_handoff',
+    selected_runtime: 'desktop_peer',
+    fallback_runtime: 'phone_local',
+    launch_readiness_lineage: 'VAIOS-G697:launch-readiness:phone-desktop-glasses'
+  });
+  expect(fixture.pass_fail_receipts).toMatchObject({
+    phone_hosted_swissknife_virtual_desktop: 'passed',
+    desktop_peer_offload: 'passed',
+    hallucinate_app_mediation: 'passed',
+    ipfs_libp2p_mcpplusplus_route: 'passed',
+    launch_readiness_receipt: 'passed',
+    playwright_launch_replay: 'passed'
+  });
+  expect(fixture.supervisor_alignment).toMatchObject({
+    objective_heap_goal: 'VAIOS-G726',
+    backlog_task: 'HAO-705',
+    keeps_supervisor_fed_backlog_aligned: true
+  });
+}
+
 function receiptEvidence(result: JsonMap) {
   return {
     client: result.client,
@@ -551,6 +615,10 @@ function receiptEvidence(result: JsonMap) {
 test.describe('multimodal control_surface end-to-end mediation', () => {
   test('HAO-675 Playwright launch replay fixture covers Swissknife mediation, MCP++ discovery, Meta glasses, and desktop peer offload', async () => {
     expectHao675LaunchReplayFixture(await loadHao675LaunchReplayFixture());
+  });
+
+  test('HAO-705 cross-device launch gate fixture covers phone-hosted desktop offload replay', async () => {
+    expectHao705CrossDeviceLaunchGateFixture(await loadHao705CrossDeviceLaunchGateFixture());
   });
 
   test('voice, gesture, mouse, agent, and remote clients share persisted policy_bundle mediation receipts', async () => {
