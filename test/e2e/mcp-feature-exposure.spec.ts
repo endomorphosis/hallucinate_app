@@ -630,11 +630,20 @@ test.describe('MCP Feature Exposure - Hallucinate Dashboard', () => {
     }
   });
 
-  test('IPFS Kit web dashboard button opens the live MCP dashboard URL', async () => {
-    await openDashboardFromMenu(electronApp, window, 'IPFS Kit Dashboard');
-    await waitForDaemonHealthy(window, 'ipfs-kit');
-    await window.locator('#btn-open-web-dashboard').click();
-    await waitForTextInSelector(window, '#health-receipt', /navigation\/openDashboard|127\.0\.0\.1:8004\/dashboard/);
+  test('IPFS dashboard web buttons open catalog-backed native dashboard URLs', async () => {
+    const dashboards = [
+      { label: 'IPFS Kit Dashboard', daemonId: 'ipfs-kit', urlPattern: /127\.0\.0\.1:8004\/dashboard/ },
+      { label: 'IPFS Datasets Dashboard', daemonId: 'ipfs-datasets', urlPattern: /127\.0\.0\.1:8899\/mcp/ },
+      { label: 'IPFS Accelerate Dashboard', daemonId: 'ipfs-accelerate', urlPattern: /127\.0\.0\.1:3003\/dashboard/ },
+    ];
+
+    for (const dashboard of dashboards) {
+      await openDashboardFromMenu(electronApp, window, dashboard.label);
+      await waitForDaemonHealthy(window, dashboard.daemonId);
+      await window.locator('#btn-open-web-dashboard').click();
+      await waitForTextInSelector(window, '#health-receipt', /navigation\/openDashboard/);
+      await expect(window.locator('#health-receipt')).toContainText(dashboard.urlPattern);
+    }
   });
 
   test('Tools menu exposes the configured MCP tool URLs for kit, datasets, and accelerate', async () => {

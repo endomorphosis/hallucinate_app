@@ -347,6 +347,9 @@
         <button class="btn btn-secondary" id="btn-view-logs">
           <i class="fas fa-file-alt"></i> View Server Logs
         </button>
+        <button class="btn btn-secondary" id="btn-open-web-dashboard">
+          <i class="fas fa-external-link-alt"></i> Open Web Dashboard
+        </button>
         <button class="btn btn-secondary" id="btn-open-daemon-manager">
           <i class="fas fa-server"></i> Open Daemon Manager
         </button>
@@ -661,6 +664,13 @@
         }
       } catch (error) {
         alert('Failed to retrieve logs: ' + error.message);
+      }
+    });
+
+    document.getElementById('btn-open-web-dashboard').addEventListener('click', async () => {
+      const receipt = await navigationApi?.openDashboard?.(DAEMON_ID);
+      if (receipt) {
+        renderReceipt('health-receipt', receipt);
       }
     });
     

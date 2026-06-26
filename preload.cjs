@@ -179,7 +179,7 @@ async function dashboardToolsCall(daemonId) {
 
 async function openCatalogDashboard(daemonId) {
   const healthState = await dashboardHealth(daemonId);
-  const url = healthState.entry?.menu_dashboard_url || healthState.entry?.native_dashboard_url;
+  const url = healthState.entry?.native_dashboard_url || healthState.entry?.menu_dashboard_url;
   if (healthState.receipt.fail_closed) {
     return dashboardReceipt(healthState.entry, 'navigation/openDashboard', 'fail_closed', {
       message: `Dashboard navigation blocked because ${daemonId} is not healthy.`,
