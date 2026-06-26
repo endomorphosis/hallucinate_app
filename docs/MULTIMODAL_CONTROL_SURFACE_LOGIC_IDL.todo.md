@@ -3497,7 +3497,7 @@ UI-plane participants and runtime-plane targets.
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Fingerprint: 800206562375407475a74ab9a609a0c113647575
+- Fingerprint: 40a1b6deb6c5466d02f39d0b2f0ec7b11e679c2c
 - Dedupe key: reconciliation_guardrail:main_checkout_dirty
 - Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
@@ -8213,7 +8213,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-699 Resolve merge retry-budget failure for HAO-678
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
