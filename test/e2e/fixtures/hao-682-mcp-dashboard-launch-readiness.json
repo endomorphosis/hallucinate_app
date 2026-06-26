@@ -1,0 +1,68 @@
+{
+  "schema": "launch_readiness_receipt_v1",
+  "task_id": "HAO-682",
+  "vai_task_id": "VAI-503",
+  "goal_id": "VAIOS-G723",
+  "lineage_id": "VAIOS-G723:mcp-dashboard-interoperability",
+  "evidence_term": "launch Playwright validation gate",
+  "gate_state": "gate_open_until_playwright_passes",
+  "playwright_specs": [
+    "hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts",
+    "hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts"
+  ],
+  "validation_commands": [
+    "npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts",
+    "npm --prefix swissknife run test:e2e:mcp"
+  ],
+  "required_backends": [
+    "ipfs_kit_py",
+    "ipfs_datasets_py",
+    "ipfs_accelerate_py"
+  ],
+  "required_evidence": [
+    "catalog normalization",
+    "dashboard UI wiring",
+    "mediated tool-call receipts",
+    "Swissknife consumers",
+    "Playwright coverage",
+    "supervisor-generated follow-up subtasks"
+  ],
+  "catalog_schema": "hallucinate_app.mcp_dashboard_capability_catalog.v1",
+  "receipt_route": [
+    "Hallucinate App dashboard action",
+    "dashboard capability catalog",
+    "interaction_envelope",
+    "policy_decision",
+    "mediation_receipt",
+    "supervised MCP server transport"
+  ],
+  "dashboard_servers": [
+    {
+      "daemon_id": "ipfs-kit",
+      "server_package": "ipfs_kit_py",
+      "safe_probe_receipt": "ipfs_kit_status_probe",
+      "swissknife_consumer": "Swissknife IPFS storage, pin dashboard, and backend health surfaces"
+    },
+    {
+      "daemon_id": "ipfs-datasets",
+      "server_package": "ipfs_datasets_py",
+      "safe_probe_receipt": "ipfs_datasets_list_probe",
+      "swissknife_consumer": "Swissknife dataset, content, index, provenance, and background task surfaces"
+    },
+    {
+      "daemon_id": "ipfs-accelerate",
+      "server_package": "ipfs_accelerate_py",
+      "safe_probe_receipt": "ipfs_accelerate_hardware_profile_probe",
+      "swissknife_consumer": "Swissknife hardware profile, inference job, job status, and telemetry surfaces"
+    }
+  ],
+  "follow_up_subtasks": [
+    "HAO-678",
+    "HAO-679",
+    "HAO-680",
+    "HAO-681",
+    "HAO-682",
+    "HAO-683"
+  ],
+  "failure_rule": "Any dashboard, backend, receipt, Swissknife consumer, or Playwright validation failure remains supervisor-generated follow-up work for VAIOS-G723."
+}

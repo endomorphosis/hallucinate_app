@@ -1,5 +1,6 @@
 import playwrightTest from '@playwright/test';
 import type { ElectronApplication, Page } from '@playwright/test';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import MCPDaemonManager from '../../hallucinate_app/node/mcp_daemon_manager.js';
@@ -10,6 +11,7 @@ const __dirname = path.dirname(__filename);
 const { test, expect, _electron: electron } = playwrightTest as unknown as typeof import('@playwright/test');
 const hasElectronDisplay = Boolean(process.env.DISPLAY || process.env.WAYLAND_DISPLAY);
 const electronDescribe = hasElectronDisplay ? test.describe : test.describe.skip;
+const LAUNCH_READINESS_FIXTURE = path.join(__dirname, 'fixtures', 'hao-682-mcp-dashboard-launch-readiness.json');
 
 const DASHBOARD_SERVER_IDS = ['ipfs-kit', 'ipfs-datasets', 'ipfs-accelerate'] as const;
 const FOLLOW_UP_TASKS = ['HAO-678', 'HAO-679', 'HAO-680', 'HAO-681', 'HAO-682', 'HAO-683'];
@@ -217,6 +219,25 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       'supervisor-generated follow-up subtasks'
     ]);
     expect(FOLLOW_UP_TASKS).toEqual(['HAO-678', 'HAO-679', 'HAO-680', 'HAO-681', 'HAO-682', 'HAO-683']);
+  });
+
+  test('binds the launch Playwright validation gate to the readiness receipt', () => {
+    const receipt = JSON.parse(fs.readFileSync(LAUNCH_READINESS_FIXTURE, 'utf8'));
+
+    expect(receipt.schema).toBe('launch_readiness_receipt_v1');
+    expect(receipt.task_id).toBe('HAO-682');
+    expect(receipt.vai_task_id).toBe('VAI-503');
+    expect(receipt.goal_id).toBe('VAIOS-G723');
+    expect(receipt.evidence_term).toBe('launch Playwright validation gate');
+    expect(receipt.playwright_specs).toEqual(expect.arrayContaining([
+      'hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts',
+      'hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts'
+    ]));
+    expect(receipt.required_backends).toEqual(['ipfs_kit_py', 'ipfs_datasets_py', 'ipfs_accelerate_py']);
+    expect(receipt.required_evidence).toEqual(VAI_503_EVIDENCE_TERMS);
+    expect(receipt.receipt_route).toContain('mediation_receipt');
+    expect(receipt.follow_up_subtasks).toEqual(FOLLOW_UP_TASKS);
+    expect(receipt.failure_rule).toContain('supervisor-generated follow-up');
   });
 });
 
