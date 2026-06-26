@@ -1,8 +1,8 @@
 {
-  "schema": "hallucinate_app.daemon_launch_validation_gate.v1",
+  "schema": "virtual_ai_os.daemon_launch_validation_gate.v1",
   "receipt_schema": "launch_readiness_receipt_v1",
-  "task_id": "MGW-535",
-  "vai_task_id": "VAI-519",
+  "task_id": "VAI-519",
+  "daemon_gate_task_id": "MGW-535",
   "goal_id": "VAIOS-G728",
   "goal_packet": "goal_packet/launch/hallucinate_app/44dceea6bc53",
   "packet_goals": [
@@ -11,11 +11,6 @@
   ],
   "evidence_term": "launch Playwright validation gate",
   "launch_key": "hallucinate-daemon-launch-orchestration",
-  "gate_state": "gate_open_until_playwright_passes",
-  "discovery_receipts": [
-    "data/virtual_ai_os/discovery/2026-06-26-vai-519-daemon-launch-health-gate.md",
-    "data/meta_glasses_display_widgets/discovery/2026-06-26-mgw-535-daemon-launch-health-gate.md"
-  ],
   "objective_gap_receipt": "data/virtual_ai_os/discovery/2026-06-26-vai-519-objective-gap-b023c8de5b69.md",
   "validation_commands": [
     "npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts",
