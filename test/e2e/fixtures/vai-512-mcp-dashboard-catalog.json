@@ -3,6 +3,27 @@
   "task_id": "HAO-677",
   "validation_task_id": "VAI-512",
   "goal_id": "VAIOS-G723",
+  "launch_objective_ids": [
+    "VAIOS-G723",
+    "VAIOS-G724",
+    "VAIOS-G728"
+  ],
+  "launch_validation_gate": {
+    "task_id": "MGW-533",
+    "goal_id": "VAIOS-G724",
+    "goal_packet": "goal_packet/launch/hallucinate_app/44dceea6bc53",
+    "packet_goal_ids": [
+      "VAIOS-G724",
+      "VAIOS-G728"
+    ],
+    "evidence_term": "launch Playwright validation gate",
+    "playwright_specs": [
+      "hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts",
+      "hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts"
+    ],
+    "validation_command": "npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts",
+    "supervisor_gap_receipt": "data/meta_glasses_display_widgets/discovery/2026-06-26-mgw-533-objective-gap-3e00ad2a0074.md"
+  },
   "generated_by": "hallucinate_app.node.mcp_daemon_manager.getDashboardCapabilityCatalog",
   "dashboard_only_mocks": false,
   "control_surface_route": [
@@ -18,6 +39,11 @@
       "schema": "hallucinate_app.mcp_dashboard_capability_catalog.v1.server",
       "task_id": "HAO-677",
       "goal_id": "VAIOS-G723",
+      "launch_objective_ids": [
+        "VAIOS-G723",
+        "VAIOS-G724",
+        "VAIOS-G728"
+      ],
       "daemon_id": "ipfs-kit",
       "server_package": "ipfs_kit_py",
       "display_name": "IPFS Kit",
@@ -128,6 +154,8 @@
         "hallucinate_app.electron.dashboard",
         "hallucinate_app.swissknife.mcp_capability_registry",
         "launch_readiness_packet:VAIOS-G723",
+        "launch_readiness_packet:VAIOS-G724",
+        "launch_readiness_packet:VAIOS-G728",
         "mcp_daemon:ipfs-kit"
       ]
     },
@@ -135,6 +163,11 @@
       "schema": "hallucinate_app.mcp_dashboard_capability_catalog.v1.server",
       "task_id": "HAO-677",
       "goal_id": "VAIOS-G723",
+      "launch_objective_ids": [
+        "VAIOS-G723",
+        "VAIOS-G724",
+        "VAIOS-G728"
+      ],
       "daemon_id": "ipfs-datasets",
       "server_package": "ipfs_datasets_py",
       "display_name": "IPFS Datasets",
@@ -252,6 +285,8 @@
         "hallucinate_app.electron.dashboard",
         "hallucinate_app.swissknife.mcp_capability_registry",
         "launch_readiness_packet:VAIOS-G723",
+        "launch_readiness_packet:VAIOS-G724",
+        "launch_readiness_packet:VAIOS-G728",
         "mcp_daemon:ipfs-datasets"
       ]
     },
@@ -259,6 +294,11 @@
       "schema": "hallucinate_app.mcp_dashboard_capability_catalog.v1.server",
       "task_id": "HAO-677",
       "goal_id": "VAIOS-G723",
+      "launch_objective_ids": [
+        "VAIOS-G723",
+        "VAIOS-G724",
+        "VAIOS-G728"
+      ],
       "daemon_id": "ipfs-accelerate",
       "server_package": "ipfs_accelerate_py",
       "display_name": "IPFS Accelerate",
@@ -381,6 +421,8 @@
         "hallucinate_app.electron.dashboard",
         "hallucinate_app.swissknife.mcp_capability_registry",
         "launch_readiness_packet:VAIOS-G723",
+        "launch_readiness_packet:VAIOS-G724",
+        "launch_readiness_packet:VAIOS-G728",
         "mcp_daemon:ipfs-accelerate"
       ]
     }

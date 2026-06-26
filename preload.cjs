@@ -245,6 +245,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   daemon: {
     getAll: () => ipcRenderer.invoke('daemon:getAll'),
     getLaunchPlan: () => ipcRenderer.invoke('daemon:getLaunchPlan'),
+    getDaemonLaunchValidationGate: () => ipcRenderer.invoke('daemon:getDaemonLaunchValidationGate'),
     getDashboardCapabilityCatalog: () => ipcRenderer.invoke('daemon:getDashboardCapabilityCatalog'),
     getDashboardCapability: (daemonId) => getDashboardCapability(daemonId),
     dashboardHealth: (daemonId) => dashboardHealth(daemonId),

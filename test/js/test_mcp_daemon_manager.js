@@ -169,6 +169,30 @@ async function runTests() {
     console.log('   Catalog:', catalog);
     testsFailed++;
   }
+
+  // Test 10: MGW-535 daemon launch validation gate
+  console.log('\nTest 10: MGW-535 daemon launch validation gate');
+  const launchGate = manager.getDaemonLaunchValidationGate();
+  const launchGateOk =
+    launchGate.schema === 'hallucinate_app.daemon_launch_validation_gate.v1' &&
+    launchGate.task_id === 'MGW-535' &&
+    launchGate.goal_id === 'VAIOS-G728' &&
+    launchGate.evidence_term === 'launch Playwright validation gate' &&
+    launchGate.packet_goals?.includes('VAIOS-G724') &&
+    launchGate.packet_goals?.includes('VAIOS-G728') &&
+    launchGate.playwright_specs?.includes('hallucinate_app/test/e2e/daemon-launch-health.spec.ts') &&
+    launchGate.required_backends?.join(',') === 'ipfs_kit_py,ipfs_datasets_py,ipfs_accelerate_py' &&
+    launchGate.daemon_health_paths?.length === 3 &&
+    launchGate.swissknife_handoff?.every(entry => entry.swissknife_consumer?.includes('Swissknife'));
+
+  if (launchGateOk) {
+    console.log('✅ MGW-535 daemon launch validation gate is scanner-visible');
+    testsPassed++;
+  } else {
+    console.log('❌ MGW-535 daemon launch validation gate incomplete');
+    console.log('   Launch gate:', launchGate);
+    testsFailed++;
+  }
   
   // Summary
   console.log('\n' + '='.repeat(50));

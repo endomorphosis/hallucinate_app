@@ -14,6 +14,7 @@ const commandArgs = process.argv.slice(2);
 const args = commandArgs.length > 0 ? commandArgs : ['test'];
 const missingDisplayDiagnostic = 'missing_xvfb_for_electron_playwright';
 const noDisplayHeadlessGateSpecs = new Set([
+  'daemon-launch-health.spec.ts',
   'mcp-dashboard-interoperability.spec.ts',
   'mcp-feature-exposure.spec.ts',
   'multimodal-control-surface.spec.ts',

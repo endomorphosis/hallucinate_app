@@ -248,6 +248,10 @@ ipcMain.handle('daemon:getLaunchPlan', async () => {
   return daemonManager.getLaunchPlan();
 });
 
+ipcMain.handle('daemon:getDaemonLaunchValidationGate', async () => {
+  return daemonManager.getDaemonLaunchValidationGate();
+});
+
 ipcMain.handle('daemon:getDashboardCapabilityCatalog', async () => {
   return daemonManager.getDashboardCapabilityCatalog();
 });

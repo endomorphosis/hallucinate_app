@@ -358,6 +358,14 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
     expect(catalog?.schema).toBe('hallucinate_app.mcp_dashboard_capability_catalog.v1');
     expect(catalog?.task_id).toBe('HAO-677');
     expect(catalog?.goal_id).toBe('VAIOS-G723');
+    expect(catalog?.launch_objective_ids).toEqual(['VAIOS-G723', 'VAIOS-G724', 'VAIOS-G728']);
+    expect(catalog?.launch_validation_gate).toMatchObject({
+      task_id: 'MGW-533',
+      goal_id: 'VAIOS-G724',
+      goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
+      packet_goal_ids: ['VAIOS-G724', 'VAIOS-G728'],
+      evidence_term: 'launch Playwright validation gate'
+    });
     expect(catalog?.control_surface_route).toContain('mediation_receipt');
     expect(catalog?.servers).toHaveLength(3);
 
@@ -368,6 +376,7 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
       const entry = byId.get(daemonId) as any;
       const menuEntry = menuById.get(daemonId) as any;
       expect(entry).toBeTruthy();
+      expect(entry.launch_objective_ids).toEqual(['VAIOS-G723', 'VAIOS-G724', 'VAIOS-G728']);
       expect(entry.menu_dashboard_url).toBe(menuEntry.webDashboardUrl);
       expect(entry.tool_protocols.tools_list.operation).toBe('tools/list');
       expect(entry.tool_protocols.tools_call.operation).toBe('tools/call');

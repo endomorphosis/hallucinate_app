@@ -38,6 +38,29 @@ const DASHBOARD_CATALOG_SCHEMA = 'hallucinate_app.mcp_dashboard_capability_catal
 const DASHBOARD_CATALOG_TASK_ID = 'HAO-677';
 const DASHBOARD_RECEIPT_TASK_ID = 'HAO-680';
 const DASHBOARD_CATALOG_GOAL_ID = 'VAIOS-G723';
+const DASHBOARD_LAUNCH_OBJECTIVE_IDS = ['VAIOS-G723', 'VAIOS-G724', 'VAIOS-G728'];
+const MGW_533_LAUNCH_VALIDATION_GATE = {
+  task_id: 'MGW-533',
+  goal_id: 'VAIOS-G724',
+  goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
+  packet_goal_ids: ['VAIOS-G724', 'VAIOS-G728'],
+  evidence_term: 'launch Playwright validation gate',
+  playwright_specs: [
+    'hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts',
+    'hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts'
+  ],
+  validation_command: 'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
+  supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-26-mgw-533-objective-gap-3e00ad2a0074.md'
+};
+const DAEMON_LAUNCH_GATE_TASK_ID = 'MGW-535';
+const DAEMON_LAUNCH_GATE_GOAL_ID = 'VAIOS-G728';
+const DAEMON_LAUNCH_GATE_PACKET_ID = 'goal_packet/launch/hallucinate_app/44dceea6bc53';
+const DAEMON_LAUNCH_GATE_PACKET_GOALS = ['VAIOS-G724', 'VAIOS-G728'];
+const DAEMON_LAUNCH_GATE_SPECS = [
+  'hallucinate_app/test/e2e/daemon-launch-health.spec.ts',
+  'hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts',
+  'hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts'
+];
 
 const DASHBOARD_TOOL_PROTOCOLS = {
   'ipfs-kit': {
@@ -608,6 +631,13 @@ class MCPDaemonManager extends EventEmitter {
       .sort((a, b) => a.launchOrder - b.launchOrder)
       .map((config) => ({
         task_id: LAUNCH_TASK_ID,
+        launch_objective_ids: DAEMON_LAUNCH_GATE_PACKET_GOALS,
+        launch_validation_gate: {
+          task_id: DAEMON_LAUNCH_GATE_TASK_ID,
+          goal_id: DAEMON_LAUNCH_GATE_GOAL_ID,
+          evidence_term: 'launch Playwright validation gate',
+          playwright_spec: 'hallucinate_app/test/e2e/daemon-launch-health.spec.ts'
+        },
         daemon_id: config.id,
         server_package: config.packageName,
         startup_order: config.launchOrder,
@@ -628,12 +658,64 @@ class MCPDaemonManager extends EventEmitter {
       }));
   }
 
+  getDaemonLaunchValidationGate() {
+    const launchPlan = this.getLaunchPlan();
+    return {
+      schema: 'hallucinate_app.daemon_launch_validation_gate.v1',
+      receipt_schema: 'launch_readiness_receipt_v1',
+      task_id: DAEMON_LAUNCH_GATE_TASK_ID,
+      goal_id: DAEMON_LAUNCH_GATE_GOAL_ID,
+      goal_packet: DAEMON_LAUNCH_GATE_PACKET_ID,
+      packet_goals: [...DAEMON_LAUNCH_GATE_PACKET_GOALS],
+      evidence_term: 'launch Playwright validation gate',
+      launch_key: 'hallucinate-daemon-launch-orchestration',
+      gate_state: 'gate_open_until_playwright_passes',
+      validation_commands: [
+        'npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts',
+        'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
+        'npm --prefix swissknife run test:e2e:meta-glasses',
+        'npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
+      ],
+      playwright_specs: [...DAEMON_LAUNCH_GATE_SPECS],
+      required_backends: launchPlan.map((entry) => entry.server_package),
+      daemon_health_paths: launchPlan.map((entry) => ({
+        daemon_id: entry.daemon_id,
+        server_package: entry.server_package,
+        endpoint: entry.endpoint,
+        health_path: entry.health_path,
+        rpc_path: entry.rpc_path,
+        startup_order: entry.startup_order
+      })),
+      required_evidence: [
+        'Hallucinate App daemon health',
+        'daemon launcher',
+        'MCP server',
+        'MCP dashboard',
+        'ipfs_accelerate_py',
+        'ipfs_datasets_py',
+        'ipfs_kit_py',
+        'dashboard capability catalog',
+        'Swissknife applications',
+        'launch Playwright validation gate'
+      ],
+      swissknife_handoff: launchPlan.map((entry) => ({
+        daemon_id: entry.daemon_id,
+        server_package: entry.server_package,
+        swissknife_consumer: entry.swissknife_consumer,
+        mediation_contract_ref: entry.mediation_contract_ref
+      })),
+      failure_rule: 'Any daemon launch, health, dashboard catalog, Swissknife handoff, or Playwright validation failure remains supervisor-generated follow-up work for VAIOS-G728.'
+    };
+  }
+
   getDashboardCapabilityCatalog() {
     return {
       schema: DASHBOARD_CATALOG_SCHEMA,
       task_id: DASHBOARD_CATALOG_TASK_ID,
       validation_task_id: 'VAI-512',
       goal_id: DASHBOARD_CATALOG_GOAL_ID,
+      launch_objective_ids: DASHBOARD_LAUNCH_OBJECTIVE_IDS,
+      launch_validation_gate: MGW_533_LAUNCH_VALIDATION_GATE,
       generated_by: 'hallucinate_app.node.mcp_daemon_manager.getDashboardCapabilityCatalog',
       dashboard_only_mocks: false,
       control_surface_route: [
@@ -933,6 +1015,7 @@ class MCPDaemonManager extends EventEmitter {
       schema: `${DASHBOARD_CATALOG_SCHEMA}.server`,
       task_id: DASHBOARD_CATALOG_TASK_ID,
       goal_id: DASHBOARD_CATALOG_GOAL_ID,
+      launch_objective_ids: DASHBOARD_LAUNCH_OBJECTIVE_IDS,
       daemon_id: config.id,
       server_package: config.packageName,
       display_name: menuServer.displayName || config.name,
@@ -983,6 +1066,8 @@ class MCPDaemonManager extends EventEmitter {
       'hallucinate_app.electron.dashboard',
       'hallucinate_app.swissknife.mcp_capability_registry',
       'launch_readiness_packet:VAIOS-G723',
+      'launch_readiness_packet:VAIOS-G724',
+      'launch_readiness_packet:VAIOS-G728',
       `mcp_daemon:${config.id}`
     ];
   }
