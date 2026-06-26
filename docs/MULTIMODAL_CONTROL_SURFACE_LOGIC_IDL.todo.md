@@ -8259,7 +8259,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-701 Close virtual AI OS launch objective gap: Meta glasses control-plane input routing
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: launch
