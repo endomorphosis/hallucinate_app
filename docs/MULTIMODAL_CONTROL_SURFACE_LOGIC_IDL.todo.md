@@ -8224,7 +8224,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-700 Close virtual AI OS launch objective gap: Hallucinate App MCP dashboard capability catalog
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: launch
