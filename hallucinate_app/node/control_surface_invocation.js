@@ -348,7 +348,7 @@ export function buildMediationReceipt(policy_decision, request, source = 'halluc
     request.interaction_envelope.interaction_id,
     policy_decision.outcome
   );
-  return {
+  const receipt = {
     receipt_id,
     emitted_at: new Date().toISOString(),
     control_surface_contract_ref: request.control_surface_contract_ref,
@@ -372,10 +372,26 @@ export function buildMediationReceipt(policy_decision, request, source = 'halluc
       source,
       transport: request.transport,
       service_id: request.service_id,
+      receipt_route: [
+        'interaction_envelope',
+        'policy_decision',
+        'mediation_receipt',
+        'supervised MCP server transport'
+      ],
+      receipt_ids: {
+        interaction_id: request.interaction_envelope.interaction_id,
+        decision_id: policy_decision.decision_id,
+        receipt_id
+      },
+      mcpplusplus: objectPayload(request.invocation_payload.mcpplusplus || request.interaction_envelope.context?.mcpplusplus),
+      dashboard_receipt_consumer_refs: arrayPayload(request.invocation_payload.dashboard_receipt_consumer_refs),
       before_invoke_hook: 'hallucinate_app.node.control_surface_invocation',
       schema_refs: ['control_surface_contract', 'interaction_envelope', 'policy_decision', 'mediation_receipt']
     }
   };
+  receipt.receipt_cid = stableReceiptCid(receipt);
+  receipt.metadata.receipt_ids.receipt_cid = receipt.receipt_cid;
+  return receipt;
 }
 
 export function mediationDeniedResponse(mediation) {
@@ -451,7 +467,9 @@ function contextPayload(payload, controlSurface, defaults) {
     device_mode: text(context.device_mode || payload.device_mode),
     platform: text(context.platform) || 'hallucinate_app',
     location_context: objectPayload(context.location_context),
-    device_context: deviceContext
+    device_context: deviceContext,
+    mcpplusplus: objectPayload(payload.mcpplusplus || context.mcpplusplus),
+    dashboard_receipt_consumer_refs: arrayPayload(payload.dashboard_receipt_consumer_refs || context.dashboard_receipt_consumer_refs)
   };
 }
 
@@ -539,6 +557,12 @@ function stableControlSurfaceId(prefix, ...parts) {
     .join('|');
   const digest = createHash('sha1').update(normalized).digest('hex').slice(0, 16);
   return `${prefix}:${digest}`;
+}
+
+function stableReceiptCid(value) {
+  const canonical = JSON.stringify(value);
+  const digest = createHash('sha256').update(canonical).digest('hex');
+  return `sha256:mediation_receipt:${digest}`;
 }
 
 function objectPayload(value) {

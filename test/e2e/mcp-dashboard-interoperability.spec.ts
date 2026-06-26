@@ -116,11 +116,20 @@ electronDescribe('MCP Dashboard Interoperability - VAIOS-G723 Electron UI wiring
       expect(server.tool_protocols.tools_list.operation).toBe('tools/list');
       expect(server.tool_protocols.tools_call.operation).toBe('tools/call');
       expect(server.tool_protocols.tools_call.safeProbe.mutation).toBe(false);
+      expect(server.mcpplusplus_descriptor_evidence.evidence_label).toBe('MCP++ descriptor/profile evidence');
+      expect(server.mcpplusplus_descriptor_evidence.daemon_id).toBe(daemonId);
       expect(server.control_surface_receipt_requirements).toEqual(expect.arrayContaining([
         'interaction_envelope',
         'policy_decision',
         'mediation_receipt',
+        'receipt_ids',
+        'mcpplusplus_descriptor_evidence',
         'receipt_cid'
+      ]));
+      expect(server.dashboard_receipt_consumer_refs).toEqual(expect.arrayContaining([
+        'hallucinate_app.electron.dashboard',
+        'hallucinate_app.swissknife.mcp_capability_registry',
+        'launch_readiness_packet:VAIOS-G723'
       ]));
       expect(server.swissknife_consumer).toContain('Swissknife');
     }
@@ -149,7 +158,7 @@ electronDescribe('MCP Dashboard Interoperability - VAIOS-G723 Electron UI wiring
 
   test('emits mediated safe-probe tool-call receipts before daemon transport', async () => {
     const { receipts } = await validateMediatedSafeProbeReceipts();
-    expect(new Set(receipts).size).toBe(DASHBOARD_SERVER_IDS.length);
+    expect(new Set(receipts).size).toBe(DASHBOARD_SERVER_IDS.length * 2);
   });
 
   test('keeps supervisor follow-up subtasks attached to dashboard validation failures', async () => {
@@ -200,13 +209,14 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       expect(server.tool_protocols.tools_list.operation).toBe('tools/list');
       expect(server.tool_protocols.tools_call.operation).toBe('tools/call');
       expect(server.tool_protocols.tools_call.safeProbe.mutation).toBe(false);
+      expect(server.mcpplusplus_descriptor_evidence.evidence_label).toBe('MCP++ descriptor/profile evidence');
       expect(server.swissknife_consumer).toContain('Swissknife');
     }
   });
 
   test('emits mediated safe-probe tool-call receipts without daemon transport', async () => {
     const { receipts } = await validateMediatedSafeProbeReceipts();
-    expect(new Set(receipts).size).toBe(DASHBOARD_SERVER_IDS.length);
+    expect(new Set(receipts).size).toBe(DASHBOARD_SERVER_IDS.length * 2);
   });
 
   test('records supervisor follow-up subtasks for failed dashboard validation', () => {
@@ -257,25 +267,62 @@ async function validateMediatedSafeProbeReceipts() {
   const receipts = [];
 
   for (const server of catalog.servers) {
-    const safeProbe = server.tool_protocols.tools_call.safeProbe;
-    const result = await manager.invokeManagedService(server.daemon_id, {
-      method: server.tool_protocols.tools_call.operation,
-      tool_name: safeProbe.tool_name,
-      arguments: safeProbe.arguments,
-      tool_protocol: server.tool_protocols.tools_call,
-      safe_probe: safeProbe,
-      surface: 'dashboard',
-      intent: `dashboard.safe_probe.${server.daemon_id}`
-    }, async (_payload: any, mediation: any) => ({
+    const listResult = await manager.dashboardToolsList(server.daemon_id, async (_payload: any, mediation: any) => ({
       ok: true,
       daemon_id: server.daemon_id,
+      operation: server.tool_protocols.tools_list.operation,
+      receipt_id: mediation.mediation_receipt.receipt_id
+    }));
+
+    expect(listResult.ok).toBe(true);
+    expect(listResult.method).toBe('tools/list');
+    expect(listResult.interaction_envelope.normalized_intent.method).toBe('tools/list');
+    expect(listResult.mediation_receipt.control_surface_contract_ref).toBe(server.control_surface_mediation_contract);
+    expect(listResult.mediation_receipt.receipt_id).toMatch(/^receipt:/);
+    expect(listResult.mediation_receipt.receipt_cid).toMatch(/^sha256:mediation_receipt:/);
+    expect(listResult.mediation_receipt.metadata.receipt_ids).toMatchObject({
+      interaction_id: listResult.interaction_envelope.interaction_id,
+      decision_id: listResult.policy_decision.decision_id,
+      receipt_id: listResult.mediation_receipt.receipt_id,
+      receipt_cid: listResult.mediation_receipt.receipt_cid
+    });
+    expect(listResult.mediation_receipt.metadata.receipt_route).toEqual([
+      'interaction_envelope',
+      'policy_decision',
+      'mediation_receipt',
+      'supervised MCP server transport'
+    ]);
+    expect(listResult.mediation_receipt.metadata.mcpplusplus).toMatchObject({
+      evidence_label: 'MCP++ descriptor/profile evidence',
+      daemon_id: server.daemon_id
+    });
+    expect(listResult.mediation_receipt.metadata.dashboard_receipt_consumer_refs).toEqual(expect.arrayContaining([
+      'hallucinate_app.electron.dashboard',
+      'hallucinate_app.swissknife.mcp_capability_registry',
+      'launch_readiness_packet:VAIOS-G723'
+    ]));
+    receipts.push(listResult.mediation_receipt.receipt_id);
+
+    const safeProbe = server.tool_protocols.tools_call.safeProbe;
+    const result = await manager.dashboardToolsCall(server.daemon_id, async (_payload: any, mediation: any) => ({
+      ok: true,
+      daemon_id: server.daemon_id,
+      operation: server.tool_protocols.tools_call.operation,
       receipt_id: mediation.mediation_receipt.receipt_id,
       expected_receipt: safeProbe.expected_receipt
     }));
 
     expect(result.ok).toBe(true);
+    expect(result.method).toBe('tools/call');
+    expect(result.interaction_envelope.normalized_intent.method).toBe('tools/call');
     expect(result.mediation_receipt.control_surface_contract_ref).toBe(server.control_surface_mediation_contract);
     expect(result.mediation_receipt.mediation_result.invoked).toBe(true);
+    expect(result.mediation_receipt.receipt_id).toMatch(/^receipt:/);
+    expect(result.mediation_receipt.receipt_cid).toMatch(/^sha256:mediation_receipt:/);
+    expect(result.mediation_receipt.metadata.mcpplusplus).toMatchObject({
+      evidence_label: 'MCP++ descriptor/profile evidence',
+      daemon_id: server.daemon_id
+    });
     expect(result.policy_decision.outcome).toBe('allow');
     expect(result.output.expected_receipt).toBe(safeProbe.expected_receipt);
     receipts.push(result.mediation_receipt.receipt_id);
