@@ -8364,7 +8364,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-704 Close virtual AI OS launch objective gap: Swissknife MCP++ server dashboard interoperability
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: launch
