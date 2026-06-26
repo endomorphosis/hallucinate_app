@@ -18,6 +18,19 @@ const LAUNCH_READINESS_FIXTURE = path.join(__dirname, 'fixtures', 'hao-682-mcp-d
 const VAI_512_CATALOG_FIXTURE = path.join(__dirname, 'fixtures', 'vai-512-mcp-dashboard-catalog.json');
 const VAI_517_LAUNCH_READINESS_FIXTURE = path.join(__dirname, 'fixtures', 'vai-517-mcp-dashboard-launch-readiness.json');
 const MGW_533_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-533-mcp-dashboard-launch-gate.json');
+const MGW_533_OBJECTIVE_GAP_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'meta_glasses_display_widgets',
+  'discovery',
+  '2026-06-26-mgw-533-objective-gap-3e00ad2a0074.md'
+);
+const MGW_OBJECTIVE_HEAP = path.join(
+  REPO_ROOT,
+  'implementation_plan',
+  'docs',
+  '23-virtual-ai-os-objective-goal-heap.md'
+);
 
 const DASHBOARD_SERVER_IDS = ['ipfs-kit', 'ipfs-datasets', 'ipfs-accelerate'] as const;
 const DASHBOARD_LAUNCH_OBJECTIVE_IDS = ['VAIOS-G723', 'VAIOS-G724', 'VAIOS-G728'];
@@ -365,6 +378,8 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
   test('binds MGW-533 launch objective coverage to the dashboard Playwright gate', () => {
     const receipt = JSON.parse(fs.readFileSync(MGW_533_LAUNCH_GATE_FIXTURE, 'utf8'));
     const catalog = new MCPDaemonManager().getDashboardCapabilityCatalog();
+    const objectiveGap = fs.readFileSync(MGW_533_OBJECTIVE_GAP_RECEIPT, 'utf8');
+    const objectiveHeap = fs.readFileSync(MGW_OBJECTIVE_HEAP, 'utf8');
 
     expect(receipt.schema).toBe('launch_readiness_receipt_v1');
     expect(receipt.task_id).toBe('MGW-533');
@@ -382,6 +397,9 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     ]));
     expect(receipt.required_backends).toEqual(['ipfs_kit_py', 'ipfs_datasets_py', 'ipfs_accelerate_py']);
     expect(receipt.receipt_route).toContain('mediation_receipt');
+    expect(receipt.supervisor_gap_receipt).toBe(
+      'data/meta_glasses_display_widgets/discovery/2026-06-26-mgw-533-objective-gap-3e00ad2a0074.md'
+    );
 
     expect(catalog.launch_objective_ids).toEqual(DASHBOARD_LAUNCH_OBJECTIVE_IDS);
     expect(catalog.launch_validation_gate).toMatchObject({
@@ -396,6 +414,26 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       'ipfs_datasets_py',
       'ipfs_kit_py'
     ]);
+
+    for (const term of [
+      'Hallucinate App MCP dashboard capability catalog',
+      'Missing Evidence',
+      'launch Playwright validation gate',
+      'tools/list',
+      'tools/call',
+      'ipfs_accelerate_py MCP server',
+      'ipfs_datasets_py MCP server',
+      'ipfs_kit_py MCP server',
+      'Swissknife applications'
+    ]) {
+      expect(objectiveGap).toContain(term);
+    }
+
+    expect(objectiveHeap).toContain('## VAIOS-G724 Hallucinate App MCP dashboard capability catalog');
+    expect(objectiveHeap).toContain('MGW-533 proof');
+    expect(objectiveHeap).toContain('hallucinate_app/test/e2e/fixtures/mgw-533-mcp-dashboard-launch-gate.json');
+    expect(objectiveHeap).toContain('launch Playwright validation gate');
+    expect(objectiveHeap).toContain('VAIOS-G728');
   });
 
   test('binds VAI-517 objective gap evidence to the shared dashboard launch gate', () => {
