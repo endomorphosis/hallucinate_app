@@ -1,0 +1,82 @@
+{
+  "schema": "launch_readiness_receipt_v1",
+  "task_id": "VAI-517",
+  "goal_id": "VAIOS-G724",
+  "goal_packet": "goal_packet/launch/hallucinate_app/44dceea6bc53",
+  "packet_goal_ids": [
+    "VAIOS-G724",
+    "VAIOS-G728"
+  ],
+  "lineage_id": "VAIOS-G724:hallucinate-mcp-dashboard-capability-catalog",
+  "evidence_term": "launch Playwright validation gate",
+  "gate_state": "gate_open_until_playwright_passes",
+  "objective_gap_receipt": "data/virtual_ai_os/discovery/2026-06-26-vai-517-objective-gap-3e00ad2a0074.md",
+  "playwright_specs": [
+    "hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts",
+    "hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts"
+  ],
+  "validation_commands": [
+    "npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts",
+    "test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses",
+    "test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts"
+  ],
+  "required_backends": [
+    "ipfs_kit_py",
+    "ipfs_datasets_py",
+    "ipfs_accelerate_py"
+  ],
+  "required_evidence": [
+    "hallucinate_app menus",
+    "Hallucinate App MCP dashboard",
+    "dashboard capability catalog",
+    "daemon health",
+    "tools/list",
+    "tools/call",
+    "ipfs_accelerate_py MCP server",
+    "ipfs_datasets_py MCP server",
+    "ipfs_kit_py MCP server",
+    "Swissknife applications",
+    "Playwright MCP dashboard interoperability",
+    "launch Playwright validation gate"
+  ],
+  "catalog_schema": "hallucinate_app.mcp_dashboard_capability_catalog.v1",
+  "catalog_generated_by": "hallucinate_app.node.mcp_daemon_manager.getDashboardCapabilityCatalog",
+  "catalog_fixture": "hallucinate_app/test/e2e/fixtures/vai-512-mcp-dashboard-catalog.json",
+  "catalog_launch_objective_ids": [
+    "VAIOS-G723",
+    "VAIOS-G724",
+    "VAIOS-G728"
+  ],
+  "receipt_route": [
+    "Hallucinate App dashboard action",
+    "dashboard capability catalog",
+    "interaction_envelope",
+    "policy_decision",
+    "mediation_receipt",
+    "supervised MCP server transport"
+  ],
+  "dashboard_servers": [
+    {
+      "daemon_id": "ipfs-kit",
+      "server_package": "ipfs_kit_py",
+      "health_path": "/api/mcp/status",
+      "safe_probe_receipt": "ipfs_kit_status_probe",
+      "swissknife_consumer": "Swissknife IPFS storage, pin dashboard, and backend health surfaces"
+    },
+    {
+      "daemon_id": "ipfs-datasets",
+      "server_package": "ipfs_datasets_py",
+      "health_path": "/health/ready",
+      "safe_probe_receipt": "ipfs_datasets_list_probe",
+      "swissknife_consumer": "Swissknife dataset, content, index, provenance, and background task surfaces"
+    },
+    {
+      "daemon_id": "ipfs-accelerate",
+      "server_package": "ipfs_accelerate_py",
+      "health_path": "/api/mcp/status",
+      "safe_probe_receipt": "ipfs_accelerate_hardware_profile_probe",
+      "swissknife_consumer": "Swissknife hardware profile, inference job, job status, and telemetry surfaces"
+    }
+  ],
+  "failure_rule": "Any missing catalog, daemon health, tools/list, tools/call, Swissknife consumer, or Playwright proof remains supervisor-fed launch work for VAIOS-G724 and packet sibling VAIOS-G728."
+}

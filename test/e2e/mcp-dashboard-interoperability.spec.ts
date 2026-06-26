@@ -16,6 +16,7 @@ const APP_ROOT = path.join(__dirname, '..', '..');
 const REPO_ROOT = path.resolve(APP_ROOT, '..');
 const LAUNCH_READINESS_FIXTURE = path.join(__dirname, 'fixtures', 'hao-682-mcp-dashboard-launch-readiness.json');
 const VAI_512_CATALOG_FIXTURE = path.join(__dirname, 'fixtures', 'vai-512-mcp-dashboard-catalog.json');
+const VAI_517_LAUNCH_READINESS_FIXTURE = path.join(__dirname, 'fixtures', 'vai-517-mcp-dashboard-launch-readiness.json');
 const MGW_533_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-533-mcp-dashboard-launch-gate.json');
 
 const DASHBOARD_SERVER_IDS = ['ipfs-kit', 'ipfs-datasets', 'ipfs-accelerate'] as const;
@@ -395,6 +396,52 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       'ipfs_datasets_py',
       'ipfs_kit_py'
     ]);
+  });
+
+  test('binds VAI-517 objective gap evidence to the shared dashboard launch gate', () => {
+    const receipt = JSON.parse(fs.readFileSync(VAI_517_LAUNCH_READINESS_FIXTURE, 'utf8'));
+    const catalog = new MCPDaemonManager().getDashboardCapabilityCatalog();
+    const servers = new Map(catalog.servers.map((server: any) => [server.server_package, server]));
+
+    expect(receipt.schema).toBe('launch_readiness_receipt_v1');
+    expect(receipt.task_id).toBe('VAI-517');
+    expect(receipt.goal_id).toBe('VAIOS-G724');
+    expect(receipt.goal_packet).toBe('goal_packet/launch/hallucinate_app/44dceea6bc53');
+    expect(receipt.packet_goal_ids).toEqual(['VAIOS-G724', 'VAIOS-G728']);
+    expect(receipt.evidence_term).toBe('launch Playwright validation gate');
+    expect(receipt.objective_gap_receipt).toBe(
+      'data/virtual_ai_os/discovery/2026-06-26-vai-517-objective-gap-3e00ad2a0074.md'
+    );
+    expect(receipt.catalog_schema).toBe(catalog.schema);
+    expect(receipt.catalog_generated_by).toBe(catalog.generated_by);
+    expect(receipt.catalog_launch_objective_ids).toEqual(catalog.launch_objective_ids);
+    expect(receipt.playwright_specs).toEqual(expect.arrayContaining([
+      'hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts',
+      'hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts'
+    ]));
+    expect(receipt.validation_commands).toContain(
+      'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts'
+    );
+    expect(receipt.required_backends.sort()).toEqual([
+      'ipfs_accelerate_py',
+      'ipfs_datasets_py',
+      'ipfs_kit_py'
+    ]);
+
+    for (const backend of receipt.required_backends) {
+      const server = servers.get(backend) as any;
+      expect(server, backend).toBeTruthy();
+      expect(server.launch_objective_ids).toEqual(DASHBOARD_LAUNCH_OBJECTIVE_IDS);
+      expect(server.tool_protocols.tools_list.operation).toBe('tools/list');
+      expect(server.tool_protocols.tools_call.operation).toBe('tools/call');
+      expect(server.health_path).toBeTruthy();
+      expect(server.dashboard_receipt_consumer_refs).toEqual(expect.arrayContaining([
+        'hallucinate_app.swissknife.mcp_capability_registry',
+        'launch_readiness_packet:VAIOS-G724',
+        'launch_readiness_packet:VAIOS-G728'
+      ]));
+      expect(server.swissknife_consumer).toContain('Swissknife');
+    }
   });
 });
 
