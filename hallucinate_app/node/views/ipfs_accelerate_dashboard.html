@@ -187,6 +187,20 @@
       font-weight: bold;
       margin: 0;
     }
+
+    .receipt-box {
+      margin-top: 0.75rem;
+      padding: 0.85rem;
+      border: 1px solid #cbd5e0;
+      border-radius: 6px;
+      background: #f8fafc;
+      color: #2d3748;
+      white-space: pre-wrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 0.82rem;
+      max-height: 220px;
+      overflow: auto;
+    }
   </style>
 </head>
 <body>
@@ -248,6 +262,14 @@
             <span class="status-label">Uptime:</span>
             <span class="status-value" id="server-uptime">--</span>
           </div>
+          <div class="status-item">
+            <span class="status-label">Endpoint:</span>
+            <span class="status-value" id="endpoint-status">http://127.0.0.1:3003</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Health:</span>
+            <span class="status-value" id="health-status">Unknown</span>
+          </div>
         </div>
         
         <div class="alert alert-info">
@@ -282,6 +304,40 @@
             Waiting for daemon telemetry...
           </div>
         </div>
+      </div>
+
+      <div class="card">
+        <h2><i class="fas fa-terminal"></i> Catalog-backed MCP Tool Surface</h2>
+        <div class="status-grid">
+          <div class="status-item">
+            <span class="status-label">Package:</span>
+            <span class="status-value" id="package-status">ipfs_accelerate_py</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">tools/list:</span>
+            <span class="status-value" id="tools-list-url">Loading...</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">tools/call Safe Probe:</span>
+            <span class="status-value" id="tools-call-probe">Loading...</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Control Surface:</span>
+            <span class="status-value" id="control-surface-contract">Loading...</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Native Dashboard:</span>
+            <span class="status-value" id="native-dashboard-url">Loading...</span>
+          </div>
+        </div>
+        <button class="btn btn-primary" id="btn-tools-list">
+          <i class="fas fa-list"></i> Run tools/list
+        </button>
+        <button class="btn btn-primary" id="btn-tools-call">
+          <i class="fas fa-shield-alt"></i> Run safe tools/call
+        </button>
+        <div id="health-receipt" class="receipt-box">Waiting for daemon health receipt...</div>
+        <div id="tool-receipt" class="receipt-box">No tool receipt yet.</div>
       </div>
       
       <div class="card">
@@ -342,18 +398,56 @@
   </div>
   
   <script type="module">
+    const DAEMON_ID = 'ipfs-accelerate';
     const daemonApi = window?.electronAPI?.daemon;
     const navigationApi = window?.electronAPI?.navigation;
+    let dashboardCapability = null;
 
     if (!daemonApi) {
       console.error('Daemon API bridge is unavailable.');
+    }
+
+    function renderReceipt(targetId, receipt) {
+      document.getElementById(targetId).textContent = JSON.stringify(receipt, null, 2);
+    }
+
+    function setButtonBusy(buttonId, busy, label) {
+      const button = document.getElementById(buttonId);
+      button.disabled = busy;
+      button.innerHTML = busy ? '<i class="fas fa-spinner fa-spin"></i> Working...' : label;
+    }
+
+    function renderDashboardCapability(entry) {
+      if (!entry) {
+        return;
+      }
+      dashboardCapability = entry;
+      document.getElementById('package-status').textContent = entry.server_package;
+      document.getElementById('endpoint-status').textContent = entry.endpoint;
+      document.getElementById('tools-list-url').textContent = entry.tool_protocols?.tools_list?.url || 'Not advertised';
+      document.getElementById('tools-call-probe').textContent = entry.tool_protocols?.tools_call?.safeProbe?.tool_name || 'Not advertised';
+      document.getElementById('control-surface-contract').textContent = entry.control_surface_mediation_contract || 'Not advertised';
+      document.getElementById('native-dashboard-url').textContent = entry.native_dashboard_url || entry.menu_dashboard_url || 'Not advertised';
+    }
+
+    async function loadDashboardCapability() {
+      try {
+        renderDashboardCapability(await daemonApi.getDashboardCapability(DAEMON_ID));
+      } catch (error) {
+        renderReceipt('tool-receipt', {
+          task_id: 'HAO-678',
+          daemon_id: DAEMON_ID,
+          status: 'fail_closed',
+          message: error.message
+        });
+      }
     }
     
     // Update server status
     async function updateServerStatus() {
       try {
         const status = await daemonApi.getAll();
-        const accelerateStatus = status['ipfs-accelerate'];
+        const accelerateStatus = status[DAEMON_ID];
         
         const statusElement = document.getElementById('server-status');
         const uptimeElement = document.getElementById('server-uptime');
@@ -366,6 +460,13 @@
           statusElement.innerHTML = '<span style="color: #ef4444; font-weight: 600;"><i class="fas fa-times-circle"></i> Stopped</span>';
           uptimeElement.textContent = '--';
         }
+
+        const healthState = await daemonApi.dashboardHealth(DAEMON_ID);
+        renderDashboardCapability(healthState?.entry);
+        document.getElementById('health-status').innerHTML = healthState?.health?.healthy
+          ? '<span style="color: #10b981; font-weight: 600;"><i class="fas fa-check-circle"></i> Healthy</span>'
+          : '<span style="color: #ef4444; font-weight: 600;"><i class="fas fa-times-circle"></i> Degraded</span>';
+        renderReceipt('health-receipt', healthState?.receipt);
 
         renderMcpPlusPlusStatus(accelerateStatus?.mcpPlusPlus || null);
       } catch (error) {
@@ -417,14 +518,12 @@
       button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing...';
       
       try {
-        // Test connection to MCP server
-        const response = await fetch('http://localhost:3003/health').catch(() => null);
-        
-        if (response && response.ok) {
-          alert('✅ Connection successful! IPFS Accelerate MCP server is responding.');
-        } else {
-          alert('❌ Connection failed. Please start the IPFS Accelerate MCP server from the Daemons menu.');
-        }
+        const healthState = await daemonApi.dashboardHealth(DAEMON_ID);
+        renderDashboardCapability(healthState?.entry);
+        renderReceipt('health-receipt', healthState?.receipt);
+        alert(healthState?.receipt?.fail_closed
+          ? 'Connection failed closed. Please start the IPFS Accelerate MCP server from the Daemons menu.'
+          : 'Connection successful. IPFS Accelerate MCP server is responding.');
       } catch (error) {
         alert('❌ Connection test failed: ' + error.message);
       } finally {
@@ -441,7 +540,7 @@
     // View server logs
     document.getElementById('btn-view-logs').addEventListener('click', async () => {
       try {
-        const logs = await daemonApi.getLogs('ipfs-accelerate');
+        const logs = await daemonApi.getLogs(DAEMON_ID);
         if (logs && logs.length > 0) {
           const logText = logs.map(log => `[${new Date(log.time).toLocaleTimeString()}] ${log.message}`).join('\n');
           alert('Recent Logs:\n\n' + logText);
@@ -462,8 +561,27 @@
       const frame = document.getElementById('package-dashboard-frame');
       frame.src = frame.src;
     });
+
+    document.getElementById('btn-tools-list').addEventListener('click', async () => {
+      setButtonBusy('btn-tools-list', true, '<i class="fas fa-list"></i> Run tools/list');
+      try {
+        renderReceipt('tool-receipt', await daemonApi.dashboardToolsList(DAEMON_ID));
+      } finally {
+        setButtonBusy('btn-tools-list', false, '<i class="fas fa-list"></i> Run tools/list');
+      }
+    });
+
+    document.getElementById('btn-tools-call').addEventListener('click', async () => {
+      setButtonBusy('btn-tools-call', true, '<i class="fas fa-shield-alt"></i> Run safe tools/call');
+      try {
+        renderReceipt('tool-receipt', await daemonApi.dashboardToolsCall(DAEMON_ID));
+      } finally {
+        setButtonBusy('btn-tools-call', false, '<i class="fas fa-shield-alt"></i> Run safe tools/call');
+      }
+    });
     
     // Initial status update and periodic refresh
+    loadDashboardCapability();
     updateServerStatus();
     setInterval(updateServerStatus, 5000);
     

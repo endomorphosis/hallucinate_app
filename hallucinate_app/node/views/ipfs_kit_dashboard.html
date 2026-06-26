@@ -56,6 +56,20 @@
       color: #718096;
       font-size: 1.125rem;
     }
+
+    .receipt-box {
+      margin-top: 0.75rem;
+      padding: 0.85rem;
+      border: 1px solid #cbd5e0;
+      border-radius: 6px;
+      background: #f8fafc;
+      color: #2d3748;
+      white-space: pre-wrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 0.82rem;
+      max-height: 220px;
+      overflow: auto;
+    }
   </style>
 </head>
 <body>
@@ -73,6 +87,8 @@
           <div><strong>Port:</strong> 8004</div>
           <div><strong>Health:</strong> <span id="health-status">Unknown</span></div>
           <div><strong>Endpoint:</strong> <span id="endpoint-status">http://127.0.0.1:8004</span></div>
+          <div><strong>Package:</strong> <span id="package-status">ipfs_kit_py</span></div>
+          <div><strong>MCP++:</strong> <span id="mcpplusplus-status">Checking...</span></div>
         </div>
       </div>
 
@@ -84,6 +100,22 @@
           <button id="btn-open-web-dashboard" style="padding: 0.5rem 0.75rem;">Open Web Dashboard</button>
           <button id="btn-open-daemon-manager" style="padding: 0.5rem 0.75rem;">Open Daemon Manager</button>
         </div>
+        <div id="health-receipt" class="receipt-box">Waiting for daemon health receipt...</div>
+      </div>
+
+      <div class="tools-panel" style="padding: 1.25rem; border-bottom: 1px solid #e2e8f0;">
+        <h2 style="margin: 0 0 0.75rem 0; font-size: 1.2rem; color: #2d3748;">Catalog-backed MCP Tool Surface</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0.75rem; margin-bottom: 0.75rem;">
+          <div><strong>tools/list:</strong> <code id="tools-list-url">Loading...</code></div>
+          <div><strong>tools/call safe probe:</strong> <code id="tools-call-probe">Loading...</code></div>
+          <div><strong>Control Surface:</strong> <code id="control-surface-contract">Loading...</code></div>
+          <div><strong>Native Dashboard:</strong> <code id="native-dashboard-url">Loading...</code></div>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+          <button id="btn-tools-list" style="padding: 0.5rem 0.75rem;">Run tools/list</button>
+          <button id="btn-tools-call" style="padding: 0.5rem 0.75rem;">Run safe tools/call</button>
+        </div>
+        <div id="tool-receipt" class="receipt-box">No tool receipt yet.</div>
       </div>
 
       <div class="features-panel" style="padding: 1.25rem;">
@@ -116,11 +148,51 @@
   </div>
   
   <script>
+    const DAEMON_ID = 'ipfs-kit';
     const daemonApi = window?.electronAPI?.daemon;
     const navigationApi = window?.electronAPI?.navigation;
+    let dashboardCapability = null;
 
     if (!daemonApi) {
       console.error('Daemon API bridge is unavailable.');
+    }
+
+    function renderReceipt(targetId, receipt) {
+      document.getElementById(targetId).textContent = JSON.stringify(receipt, null, 2);
+    }
+
+    function setButtonBusy(buttonId, busy, label) {
+      const button = document.getElementById(buttonId);
+      button.disabled = busy;
+      button.textContent = busy ? 'Working...' : label;
+    }
+
+    function renderCatalog(entry) {
+      if (!entry) {
+        return;
+      }
+      dashboardCapability = entry;
+      document.getElementById('endpoint-status').textContent = entry.endpoint;
+      document.getElementById('package-status').textContent = entry.server_package;
+      document.getElementById('tools-list-url').textContent = entry.tool_protocols?.tools_list?.url || 'Not advertised';
+      document.getElementById('tools-call-probe').textContent = entry.tool_protocols?.tools_call?.safeProbe?.tool_name || 'Not advertised';
+      document.getElementById('control-surface-contract').textContent = entry.control_surface_mediation_contract || 'Not advertised';
+      document.getElementById('native-dashboard-url').textContent = entry.native_dashboard_url || entry.menu_dashboard_url || 'Not advertised';
+      const mcp = entry.mcpplusplus || {};
+      document.getElementById('mcpplusplus-status').textContent = mcp.available ? 'Available' : (mcp.mode || 'Not advertised');
+    }
+
+    async function loadCatalog() {
+      try {
+        renderCatalog(await daemonApi.getDashboardCapability(DAEMON_ID));
+      } catch (error) {
+        renderReceipt('tool-receipt', {
+          task_id: 'HAO-678',
+          daemon_id: DAEMON_ID,
+          status: 'fail_closed',
+          message: error.message
+        });
+      }
     }
 
     async function updateServerStatus() {
@@ -130,21 +202,23 @@
 
       try {
         const status = await daemonApi.getAll();
-        const kitStatus = status['ipfs-kit'];
+        const kitStatus = status[DAEMON_ID];
 
         if (kitStatus && kitStatus.status === 'running') {
           serverStatus.textContent = 'Running';
           serverStatus.style.color = '#2f855a';
-          endpointStatus.textContent = kitStatus.endpoint || 'http://127.0.0.1:8004';
+          endpointStatus.textContent = kitStatus.endpoint || dashboardCapability?.endpoint || 'http://127.0.0.1:8004';
         } else {
           serverStatus.textContent = 'Stopped';
           serverStatus.style.color = '#c53030';
-          endpointStatus.textContent = 'http://127.0.0.1:8004';
+          endpointStatus.textContent = dashboardCapability?.endpoint || 'http://127.0.0.1:8004';
         }
 
-        const health = await daemonApi.checkHealth('ipfs-kit');
-        healthStatus.textContent = health?.healthy ? 'Healthy' : 'Degraded';
-        healthStatus.style.color = health?.healthy ? '#2f855a' : '#c53030';
+        const healthState = await daemonApi.dashboardHealth(DAEMON_ID);
+        healthStatus.textContent = healthState?.health?.healthy ? 'Healthy' : 'Degraded';
+        healthStatus.style.color = healthState?.health?.healthy ? '#2f855a' : '#c53030';
+        renderCatalog(healthState?.entry);
+        renderReceipt('health-receipt', healthState?.receipt);
       } catch (error) {
         serverStatus.textContent = 'Unknown';
         serverStatus.style.color = '#b7791f';
@@ -159,12 +233,12 @@
       button.disabled = true;
       button.textContent = 'Testing...';
       try {
-        const response = await fetch('http://127.0.0.1:8004/api/mcp/status').catch(() => null);
-        if (response && response.ok) {
-          alert('Connection successful! IPFS Kit MCP service is responding.');
-        } else {
-          alert('Connection failed. Start IPFS Kit MCP from Daemon Manager and retry.');
-        }
+        const healthState = await daemonApi.dashboardHealth(DAEMON_ID);
+        renderCatalog(healthState?.entry);
+        renderReceipt('health-receipt', healthState?.receipt);
+        alert(healthState?.receipt?.fail_closed
+          ? 'Connection failed closed. Start IPFS Kit MCP from Daemon Manager and retry.'
+          : 'Connection successful. IPFS Kit MCP service is responding.');
       } finally {
         button.disabled = false;
         button.textContent = original;
@@ -173,7 +247,7 @@
 
     document.getElementById('btn-view-logs').addEventListener('click', async () => {
       try {
-        const logs = await daemonApi.getLogs('ipfs-kit');
+        const logs = await daemonApi.getLogs(DAEMON_ID);
         if (logs && logs.length > 0) {
           const text = logs
             .slice(-20)
@@ -188,8 +262,11 @@
       }
     });
 
-    document.getElementById('btn-open-web-dashboard').addEventListener('click', () => {
-      window.open('http://127.0.0.1:8004/dashboard', '_blank', 'noopener,noreferrer');
+    document.getElementById('btn-open-web-dashboard').addEventListener('click', async () => {
+      const receipt = await navigationApi?.openDashboard?.(DAEMON_ID);
+      if (receipt) {
+        renderReceipt('health-receipt', receipt);
+      }
     });
 
     document.getElementById('btn-open-daemon-manager').addEventListener('click', () => {
@@ -201,6 +278,25 @@
       frame.src = frame.src;
     });
 
+    document.getElementById('btn-tools-list').addEventListener('click', async () => {
+      setButtonBusy('btn-tools-list', true, 'Run tools/list');
+      try {
+        renderReceipt('tool-receipt', await daemonApi.dashboardToolsList(DAEMON_ID));
+      } finally {
+        setButtonBusy('btn-tools-list', false, 'Run tools/list');
+      }
+    });
+
+    document.getElementById('btn-tools-call').addEventListener('click', async () => {
+      setButtonBusy('btn-tools-call', true, 'Run safe tools/call');
+      try {
+        renderReceipt('tool-receipt', await daemonApi.dashboardToolsCall(DAEMON_ID));
+      } finally {
+        setButtonBusy('btn-tools-call', false, 'Run safe tools/call');
+      }
+    });
+
+    loadCatalog();
     updateServerStatus();
     setInterval(updateServerStatus, 5000);
   </script>
