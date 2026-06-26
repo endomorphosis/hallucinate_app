@@ -7,6 +7,8 @@ import { mcpServers } from '../../hallucinate_app/node/menu_config.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const { test, expect, _electron: electron } = playwrightTest as unknown as typeof import('@playwright/test');
+const hasElectronDisplay = Boolean(process.env.DISPLAY || process.env.WAYLAND_DISPLAY);
+const electronDescribe = hasElectronDisplay ? test.describe : test.describe.skip;
 
 test.skip(
   process.platform === 'linux' && !process.env.DISPLAY && !process.env.WAYLAND_DISPLAY,
@@ -266,7 +268,7 @@ async function getOpenExternalCalls(electronApp: ElectronApplication) {
   });
 }
 
-test.describe('MCP Feature Exposure - Hallucinate Dashboard', () => {
+electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
   let electronApp: ElectronApplication;
   let window: Page;
 
