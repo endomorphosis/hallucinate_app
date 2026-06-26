@@ -13,6 +13,11 @@ const electronPackage = path.join(projectRoot, 'node_modules', 'electron', 'pack
 const commandArgs = process.argv.slice(2);
 const args = commandArgs.length > 0 ? commandArgs : ['test'];
 const missingDisplayDiagnostic = 'missing_xvfb_for_electron_playwright';
+const noDisplayHeadlessGateSpecs = new Set([
+  'mcp-dashboard-interoperability.spec.ts',
+  'mcp-feature-exposure.spec.ts',
+  'multimodal-control-surface.spec.ts',
+]);
 
 ensureE2EDependencies();
 runPlaywright(args);
@@ -89,6 +94,13 @@ function playwrightCommand(playwrightArgs) {
     };
   }
 
+  if (canRunWithoutVirtualDisplay(playwrightArgs)) {
+    console.warn(
+      'No graphical display or xvfb-run detected; running selected headless-compatible launch gate specs without a virtual display.',
+    );
+    return { binary: process.execPath, args: baseArgs };
+  }
+
   return {
     binary: process.execPath,
     args: baseArgs,
@@ -102,6 +114,14 @@ function needsVirtualDisplay() {
     return false;
   }
   return process.platform === 'linux' && !process.env.DISPLAY && !process.env.WAYLAND_DISPLAY;
+}
+
+function canRunWithoutVirtualDisplay(playwrightArgs) {
+  const selectedSpecs = playwrightArgs
+    .filter((arg) => !arg.startsWith('-') && arg !== 'test')
+    .map((arg) => path.basename(arg));
+
+  return selectedSpecs.length > 0 && selectedSpecs.every((spec) => noDisplayHeadlessGateSpecs.has(spec));
 }
 
 function commandExists(command) {
