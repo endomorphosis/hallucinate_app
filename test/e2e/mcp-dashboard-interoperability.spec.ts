@@ -341,8 +341,10 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     const payload = JSON.parse(match![0]);
     expect(payload).toMatchObject({
       status: 'ok',
-      task_id: 'VAI-512',
+      task_id: 'HAO-704',
+      catalog_task_id: 'VAI-512',
       launch_task_id: 'MGW-533',
+      swissknife_launch_task_id: 'HAO-704',
       launch_goal_ids: ['VAIOS-G723', 'VAIOS-G724', 'VAIOS-G728'],
       catalog_schema: 'hallucinate_app.mcp_dashboard_capability_catalog.v1'
     });
