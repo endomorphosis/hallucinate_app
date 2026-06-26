@@ -632,8 +632,10 @@ class MCPDaemonManager extends EventEmitter {
     return {
       schema: DASHBOARD_CATALOG_SCHEMA,
       task_id: DASHBOARD_CATALOG_TASK_ID,
+      validation_task_id: 'VAI-512',
       goal_id: DASHBOARD_CATALOG_GOAL_ID,
-      generated_by: 'hallucinate_app.node.mcp_daemon_manager',
+      generated_by: 'hallucinate_app.node.mcp_daemon_manager.getDashboardCapabilityCatalog',
+      dashboard_only_mocks: false,
       control_surface_route: [
         'Hallucinate App dashboard action',
         'dashboard capability catalog',
