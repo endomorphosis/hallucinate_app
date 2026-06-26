@@ -8221,3 +8221,213 @@ UI-plane participants and runtime-plane targets.
 - Outputs: hallucinate_app/hallucinate_app/node/views/ipfs_kit_dashboard.html, hallucinate_app/hallucinate_app/node/views/ipfs_datasets_dashboard.html, hallucinate_app/hallucinate_app/node/views/ipfs_accelerate_dashboard.html, hallucinate_app/preload.cjs, hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts, data/hallucinate_multimodal_control/discovery
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-26-hao-699-hao-678-merge-retry-budget.md
 - Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-678. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-26-hao-699-hao-678-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-678 from strategy blocked_tasks.
+
+## HAO-700 Close virtual AI OS launch objective gap: Hallucinate App MCP dashboard capability catalog
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: launch
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, hallucinate_app, swissknife, external/ipfs_accelerate, external/ipfs_datasets, external/ipfs_kit, hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts, hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts
+- Validation: npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts && (test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses) && (test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts)
+- Bundle: objective/launch/hallucinate-mcp-dashboard-capability-catalog
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-launch-hallucinate-mcp-dashboard-capability-catalog.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G000
+- Graph depth: 1
+- Parallel lane: objective/launch/hallucinate-mcp-dashboard-capability-catalog
+- Conflict policy: prefer launch-critical integration evidence; use the LLM merge resolver when dashboard, daemon, or mobile control-plane edits conflict
+- Goal id: VAIOS-G724
+- Missing evidence: launch Playwright validation gate
+- Embedding query: Hallucinate App MCP dashboard dashboard capability catalog tools/list tools/call ipfs_accelerate_py ipfs_datasets_py ipfs_kit_py Swissknife Playwright
+- AST query: hallucinate_app, swissknife, ipfs_accelerate_py, ipfs_datasets_py, ipfs_kit_py, tools/list, tools/call, daemon health, MCP dashboard
+- Surplus group: objective/VAIOS-G724
+- Merge key: 9a625fd9f839651a
+- Merge family: goal_packet/launch/hallucinate_app/44dceea6bc53
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: launch_validation_gate; goal_subgoal_packet
+- Goal packet: goal_packet/launch/hallucinate_app/44dceea6bc53
+- Goal packet role: packet_anchor
+- Goal packet goals: VAIOS-G724, VAIOS-G728
+- Goal packet task count: 2
+- Goal packet work item count: 2
+- Candidate kind: validation_gate
+- Todo vector key: 573509f5885861c3
+- Acceptance: Objective scan filed this gap for VAIOS-G724. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-26-hao-700-objective-gap-3e00ad2a0074.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (launch Playwright validation gate), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/launch/hallucinate_app/44dceea6bc53; when practical, make one cohesive change that advances the packet goals (VAIOS-G724, VAIOS-G728) and covers the shared packet evidence without expanding the prompt. Refine the objective heap if the gap needs smaller child goals.
+
+## HAO-701 Close virtual AI OS launch objective gap: Meta glasses control-plane input routing
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: launch
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, external/meta-wearables-dat-android, external/meta-wearables-dat-ios, mobile, swissknife, hallucinate_app, tests/test_hallucinate_multimodal_control_todo_queue.py, tests/test_virtual_ai_os_launch_readiness_gate.py
+- Validation: PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py tests/test_virtual_ai_os_launch_readiness_gate.py -q && (test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses) && (test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts)
+- Bundle: objective/launch/meta-glasses-control-plane-input-routing
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-launch-meta-glasses-control-plane-input-routing.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G000
+- Graph depth: 1
+- Parallel lane: objective/launch/meta-glasses-control-plane-input-routing
+- Conflict policy: prefer launch-critical integration evidence; use the LLM merge resolver when dashboard, daemon, or mobile control-plane edits conflict
+- Goal id: VAIOS-G727
+- Missing evidence: launch Playwright validation gate
+- Embedding query: Meta glasses camera microphone headphones Neural Band captouch Bluetooth Wi-Fi Swissknife control plane IPFS libp2p MCP++
+- AST query: Meta Wearables DAT, camera, microphone, headphones, Neural Band, captouch, Bluetooth, Wi-Fi, Swissknife, control plane
+- Surplus group: objective/VAIOS-G727
+- Merge key: d40a3d3f5fd702f0
+- Merge family: goal_packet/launch/external/ec964340486b
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: launch_validation_gate; goal_subgoal_packet
+- Goal packet: goal_packet/launch/external/ec964340486b
+- Goal packet role: packet_anchor
+- Goal packet goals: VAIOS-G727, VAIOS-G729
+- Goal packet task count: 2
+- Goal packet work item count: 2
+- Candidate kind: validation_gate
+- Todo vector key: 2ac1fa3810e3a6b9
+- Acceptance: Objective scan filed this gap for VAIOS-G727. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-26-hao-701-objective-gap-2f00e48f3541.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (launch Playwright validation gate), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/launch/external/ec964340486b; when practical, make one cohesive change that advances the packet goals (VAIOS-G727, VAIOS-G729) and covers the shared packet evidence without expanding the prompt. Refine the objective heap if the gap needs smaller child goals.
+
+## HAO-702 Close virtual AI OS launch objective gap: Hallucinate App daemon launch orchestration
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: launch
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, hallucinate_app, swissknife, external/ipfs_accelerate, external/ipfs_datasets, external/ipfs_kit, hallucinate_app/test/e2e/daemon-launch-health.spec.ts
+- Validation: PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q && (test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses) && (test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts)
+- Bundle: objective/launch/hallucinate-daemon-launch-orchestration
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-launch-hallucinate-daemon-launch-orchestration.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G000
+- Graph depth: 1
+- Parallel lane: objective/launch/hallucinate-daemon-launch-orchestration
+- Conflict policy: prefer launch-critical integration evidence; use the LLM merge resolver when dashboard, daemon, or mobile control-plane edits conflict
+- Goal id: VAIOS-G728
+- Missing evidence: launch Playwright validation gate
+- Embedding query: Hallucinate App daemon launch health MCP server dashboard ipfs_accelerate_py ipfs_datasets_py ipfs_kit_py Swissknife
+- AST query: hallucinate_app, daemon health, MCP server, MCP dashboard, ipfs_accelerate_py, ipfs_datasets_py, ipfs_kit_py
+- Surplus group: objective/VAIOS-G728
+- Merge key: 7e544b4df4e28611
+- Merge family: goal_packet/launch/hallucinate_app/44dceea6bc53
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: launch_validation_gate; goal_subgoal_packet
+- Goal packet: goal_packet/launch/hallucinate_app/44dceea6bc53
+- Goal packet role: packet_member
+- Goal packet goals: VAIOS-G724, VAIOS-G728
+- Goal packet task count: 2
+- Goal packet work item count: 2
+- Candidate kind: validation_gate
+- Todo vector key: e514497464ba6ea4
+- Acceptance: Objective scan filed this gap for VAIOS-G728. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-26-hao-702-objective-gap-b023c8de5b69.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (launch Playwright validation gate), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/launch/hallucinate_app/44dceea6bc53; when practical, make one cohesive change that advances the packet goals (VAIOS-G724, VAIOS-G728) and covers the shared packet evidence without expanding the prompt. Refine the objective heap if the gap needs smaller child goals.
+
+## HAO-703 Close virtual AI OS launch objective gap: Objective heap active steering and validation repair
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: launch
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, external/ipfs_accelerate/ipfs_accelerate_py/agent_supervisor, tests/test_supervisor_objective_task_janitor.py, tests/test_reconciliation_guardrail_refresh.py
+- Validation: PYTHONPATH=external/ipfs_accelerate pytest tests/test_supervisor_objective_task_janitor.py tests/test_reconciliation_guardrail_refresh.py -q && (test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses) && (test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts)
+- Bundle: objective/launch/objective-heap-autosteer-validation-repair
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-launch-objective-heap-autosteer-validation-repair.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G000
+- Graph depth: 1
+- Parallel lane: objective/launch/objective-heap-autosteer-validation-repair
+- Conflict policy: prefer launch-critical integration evidence; use the LLM merge resolver when dashboard, daemon, or mobile control-plane edits conflict
+- Goal id: VAIOS-G729
+- Missing evidence: launch Playwright validation gate
+- Embedding query: objective heap fibonacci priority supervisor active management failed validation repair Playwright VAI MGW HAO production readiness
+- AST query: objective heap, supervisor, validation repair, Playwright, VAI, MGW, HAO
+- Surplus group: objective/VAIOS-G729
+- Merge key: a5e079ff4b5db8d6
+- Merge family: goal_packet/launch/external/ec964340486b
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: launch_validation_gate; goal_subgoal_packet
+- Goal packet: goal_packet/launch/external/ec964340486b
+- Goal packet role: packet_member
+- Goal packet goals: VAIOS-G727, VAIOS-G729
+- Goal packet task count: 2
+- Goal packet work item count: 2
+- Candidate kind: validation_gate
+- Todo vector key: d39b2c2a61955cdf
+- Acceptance: Objective scan filed this gap for VAIOS-G729. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-26-hao-703-objective-gap-9f377c75e074.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (launch Playwright validation gate), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/launch/external/ec964340486b; when practical, make one cohesive change that advances the packet goals (VAIOS-G727, VAIOS-G729) and covers the shared packet evidence without expanding the prompt. Refine the objective heap if the gap needs smaller child goals.
+
+## HAO-704 Close virtual AI OS launch objective gap: Swissknife MCP++ server dashboard interoperability
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: launch
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, swissknife, Mcp-Plus-Plus, hallucinate_app, external/ipfs_accelerate, external/ipfs_datasets, external/ipfs_kit, swissknife/test/e2e/mcp-dashboard.spec.ts
+- Validation: npm --prefix swissknife run test:e2e:mcp && (test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses) && (test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts)
+- Bundle: objective/launch/swissknife-mcp-plus-plus-server-dashboard-interop
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-launch-swissknife-mcp-plus-plus-server-dashboard-interop.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G000
+- Graph depth: 1
+- Parallel lane: objective/launch/swissknife-mcp-plus-plus-server-dashboard-interop
+- Conflict policy: prefer launch-critical integration evidence; use the LLM merge resolver when dashboard, daemon, or mobile control-plane edits conflict
+- Goal id: VAIOS-G725
+- Missing evidence: launch Playwright validation gate
+- Embedding query: Swissknife MCP++ MCP server dashboard control plane tools/list tools/call ipfs_accelerate_py ipfs_datasets_py ipfs_kit_py
+- AST query: swissknife, Mcp-Plus-Plus, MCP++, MCP server, tools/list, tools/call, control plane
+- Surplus group: objective/VAIOS-G725
+- Merge key: 519b37a2b9cdc0fa
+- Merge family: objective/VAIOS-G725
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: launch_validation_gate
+- Goal packet: 
+- Goal packet role: 
+- Goal packet goals: 
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Candidate kind: validation_gate
+- Todo vector key: ecc1cf6efb3e5be5
+- Acceptance: Objective scan filed this gap for VAIOS-G725. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-26-hao-704-objective-gap-1d0c6a56cf6c.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (launch Playwright validation gate), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## HAO-705 Close virtual AI OS launch objective gap: Cross-device virtual desktop offload launch replay
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: launch
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, mobile, swissknife, hallucinate_app, external/ipfs_accelerate, external/ipfs_datasets, external/ipfs_kit, tests/test_virtual_ai_os_launch_readiness_gate.py
+- Validation: PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_virtual_ai_os_launch_readiness_gate.py -q && (test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses) && (test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts)
+- Bundle: objective/launch/cross-device-virtual-desktop-offload-replay
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-launch-cross-device-virtual-desktop-offload-replay.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G000
+- Graph depth: 1
+- Parallel lane: objective/launch/cross-device-virtual-desktop-offload-replay
+- Conflict policy: prefer launch-critical integration evidence; use the LLM merge resolver when dashboard, daemon, or mobile control-plane edits conflict
+- Goal id: VAIOS-G726
+- Missing evidence: launch Playwright validation gate
+- Embedding query: phone hosted Swissknife virtual desktop desktop peer offload mobile IPFS libp2p MCP++ launch readiness receipt Playwright
+- AST query: mobile, swissknife, hallucinate_app, desktop peer offload, launch readiness, Playwright
+- Surplus group: objective/VAIOS-G726
+- Merge key: 7d9425a3e3360384
+- Merge family: objective/VAIOS-G726
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: launch_validation_gate
+- Goal packet: 
+- Goal packet role: 
+- Goal packet goals: 
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Candidate kind: validation_gate
+- Todo vector key: 12be0e10facbf533
+- Acceptance: Objective scan filed this gap for VAIOS-G726. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-26-hao-705-objective-gap-4ca32c914d33.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (launch Playwright validation gate), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
