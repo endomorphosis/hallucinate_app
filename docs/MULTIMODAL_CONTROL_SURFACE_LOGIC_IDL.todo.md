@@ -3518,18 +3518,18 @@ UI-plane participants and runtime-plane targets.
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-310-reconciliation-ab689090ed4d.md
 - Acceptance: Reconciliation guardrail filed this because 1 branch or worktree cleanup candidates are blocked by unsupported_status. Use evidence and the machine-readable reconciliation plan in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-310-reconciliation-ab689090ed4d.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
 
-## HAO-311 Resolve 6 preflight-conflicting backlogged worktree merges
+## HAO-311 Resolve 7 preflight-conflicting backlogged worktree merges
 
 - Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Fingerprint: c553caff0ffb905e1d320ba803eef094b19ea243
+- Fingerprint: 014ec350586ed9ef2162639633053cca8324e16e
 - Dedupe key: reconciliation_guardrail:preflight_merge_conflict
 - Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-311-reconciliation-534cc45af3d6.md
-- Acceptance: Reconciliation guardrail filed this because 6 branch or worktree cleanup candidates are blocked by preflight_merge_conflict. Use evidence and the machine-readable reconciliation plan in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-311-reconciliation-534cc45af3d6.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
+- Acceptance: Reconciliation guardrail filed this because 7 branch or worktree cleanup candidates are blocked by preflight_merge_conflict. Use evidence and the machine-readable reconciliation plan in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-311-reconciliation-534cc45af3d6.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
 
 ## HAO-312 Resolve validation retry-budget failure for HAO-306
 
@@ -7923,7 +7923,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-678 Wire all IPFS MCP dashboards to daemon health and catalog-backed tool surfaces
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P0
 - Track: launch
@@ -7937,9 +7937,10 @@ UI-plane participants and runtime-plane targets.
 - Validation: npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts; rg -n "dashboard capability catalog|tools/list|tools/call|ipfs-kit|ipfs-datasets|ipfs-accelerate" hallucinate_app/hallucinate_app/node hallucinate_app/test/e2e data/hallucinate_multimodal_control/discovery
 - Acceptance: The IPFS Kit, IPFS Datasets, and IPFS Accelerate dashboards render catalog-backed daemon health, endpoint, MCP++ status, native dashboard, tools/list, and safe tools/call controls; dashboard buttons use the preload daemon/navigation bridge and fail closed with visible receipts when a daemon is down.
 
+- Blocked reason: Retired by objective-task janitor during launch steering because goal_completed.
 ## HAO-679 Add a Hallucinate App MCP dashboard interoperability Playwright matrix
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P0
 - Track: validation
@@ -7953,9 +7954,10 @@ UI-plane participants and runtime-plane targets.
 - Validation: npm --prefix hallucinate_app run test:e2e -- mcp-dashboard-interoperability.spec.ts; PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q
 - Acceptance: Add Playwright coverage that opens each dashboard from the Dashboards menu, opens each live dashboard URL from the MCP Servers menu, observes daemon health, reads the shared catalog, executes a hardware-free tools/list and safe tools/call probe per backend through the dashboard UI, and captures pass/fail receipts for launch readiness.
 
+- Blocked reason: Retired by objective-task janitor during launch steering because goal_completed.
 ## HAO-680 Add MCP++ and control_surface receipts for dashboard tool invocations
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P0
 - Track: integration
@@ -7969,9 +7971,10 @@ UI-plane participants and runtime-plane targets.
 - Validation: npm --prefix hallucinate_app run test:e2e -- mcp-dashboard-interoperability.spec.ts; rg -n "interaction_envelope|policy_decision|mediation_receipt|MCP\\+\\+|tools/list|tools/call|HAO-680" hallucinate_app swissknife tests data/hallucinate_multimodal_control/discovery
 - Acceptance: Dashboard tool probes enter the same `interaction_envelope -> policy_decision -> mediation_receipt -> supervised MCP server transport` path used by Swissknife, include MCP++ descriptor/profile evidence where available, and expose receipt ids that can be consumed by Hallucinate App, Swissknife, and the launch-readiness packet.
 
+- Blocked reason: Retired by objective-task janitor during launch steering because goal_completed.
 ## HAO-681 Prove Swissknife applications consume the Hallucinate MCP dashboard catalog
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P0
 - Track: integration
@@ -7985,9 +7988,10 @@ UI-plane participants and runtime-plane targets.
 - Validation: npm --prefix swissknife run test:e2e:mcp; npm --prefix hallucinate_app run test:e2e -- mcp-dashboard-interoperability.spec.ts; rg -n "Hallucinate App MCP dashboard catalog|ipfs_kit_py|ipfs_datasets_py|ipfs_accelerate_py|Swissknife applications" swissknife hallucinate_app data/hallucinate_multimodal_control/discovery
 - Acceptance: Swissknife storage, dataset, and compute applications consume the catalog entries and receipt schema that Hallucinate dashboards expose, so a backend feature proved from Hallucinate App is the same backend feature Swissknife can invoke under MCP++ and control_surface mediation.
 
+- Blocked reason: Retired by objective-task janitor during launch steering because goal_completed.
 ## HAO-682 Aggregate MCP dashboard interoperability into the launch-readiness receipt
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P0
 - Track: launch
@@ -8001,6 +8005,7 @@ UI-plane participants and runtime-plane targets.
 - Validation: PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py tests/test_virtual_ai_os_launch_readiness_gate.py -q; rg -n "HAO-682|dashboard interoperability|launch-readiness receipt|tools/list|tools/call|MCP\\+\\+|Swissknife" docs data hallucinate_app swissknife tests
 - Acceptance: Extend the launch-readiness packet so VAIOS-G723 cannot close until Hallucinate App menu navigation, dashboard catalog, daemon health, MCP++ telemetry, dashboard tools/list and tools/call probes, Swissknife consumption, and Playwright pass/fail receipts share one traceable session and daemon lineage.
 
+- Blocked reason: Retired by objective-task janitor during launch steering because goal_completed.
 ## HAO-683 Keep Hallucinate dashboard gaps auto-generated by the supervisor objective loop
 
 - Status: completed
@@ -8173,7 +8178,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-697 Make Hallucinate Electron Playwright validation headless-aware
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P0
 - Track: validation
@@ -8199,6 +8204,7 @@ UI-plane participants and runtime-plane targets.
 - Candidate kind: validation_gate
 - Acceptance: Make the Hallucinate App e2e runner automatically use xvfb-run on headless Linux hosts when it is available, fail with the stable missing_xvfb_for_electron_playwright diagnostic when it is not, and keep the supervisor from treating skipped Electron UI tests as a passed MCP dashboard launch gate.
 
+- Blocked reason: Retired by objective-task janitor during launch steering because goal_completed.
 ## HAO-698 Resolve validation retry-budget failure for HAO-680
 
 - Status: completed
