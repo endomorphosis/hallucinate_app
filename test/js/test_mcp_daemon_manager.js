@@ -176,7 +176,11 @@ async function runTests() {
   const launchGateOk =
     launchGate.schema === 'hallucinate_app.daemon_launch_validation_gate.v1' &&
     launchGate.task_id === 'MGW-535' &&
+    launchGate.backlog_task_id === 'HAO-702' &&
+    launchGate.shared_packet_task_id === 'MGW-535' &&
     launchGate.goal_id === 'VAIOS-G728' &&
+    launchGate.supervisor_gap_receipt === 'data/hallucinate_multimodal_control/discovery/2026-06-26-hao-702-objective-gap-b023c8de5b69.md' &&
+    launchGate.hallucinate_backlog_receipt === 'data/hallucinate_multimodal_control/discovery/2026-06-26-hao-702-daemon-launch-health-gate.md' &&
     launchGate.evidence_term === 'launch Playwright validation gate' &&
     launchGate.packet_goals?.includes('VAIOS-G724') &&
     launchGate.packet_goals?.includes('VAIOS-G728') &&

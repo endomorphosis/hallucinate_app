@@ -20,10 +20,18 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
 
     expect(gate).toEqual(fixture);
     expect(gate.task_id).toBe('MGW-535');
+    expect(gate.backlog_task_id).toBe('HAO-702');
+    expect(gate.shared_packet_task_id).toBe('MGW-535');
     expect(gate.goal_id).toBe('VAIOS-G728');
     expect(gate.goal_packet).toBe('goal_packet/launch/hallucinate_app/44dceea6bc53');
     expect(gate.packet_goals).toEqual(['VAIOS-G724', 'VAIOS-G728']);
     expect(gate.evidence_term).toBe('launch Playwright validation gate');
+    expect(gate.supervisor_gap_receipt).toBe(
+      'data/hallucinate_multimodal_control/discovery/2026-06-26-hao-702-objective-gap-b023c8de5b69.md'
+    );
+    expect(gate.hallucinate_backlog_receipt).toBe(
+      'data/hallucinate_multimodal_control/discovery/2026-06-26-hao-702-daemon-launch-health-gate.md'
+    );
     expect(gate.playwright_specs).toContain('hallucinate_app/test/e2e/daemon-launch-health.spec.ts');
     expect(gate.validation_commands).toContain('npm --prefix swissknife run test:e2e:meta-glasses');
     expect(gate.validation_commands).toContain('npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts');
@@ -55,6 +63,7 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
       expect(entry.launch_objective_ids).toEqual(['VAIOS-G724', 'VAIOS-G728']);
       expect(entry.launch_validation_gate).toMatchObject({
         task_id: 'MGW-535',
+        backlog_task_id: 'HAO-702',
         goal_id: 'VAIOS-G728',
         evidence_term: 'launch Playwright validation gate',
         playwright_spec: 'hallucinate_app/test/e2e/daemon-launch-health.spec.ts'

@@ -53,6 +53,7 @@ const MGW_533_LAUNCH_VALIDATION_GATE = {
   supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-26-mgw-533-objective-gap-3e00ad2a0074.md'
 };
 const DAEMON_LAUNCH_GATE_TASK_ID = 'MGW-535';
+const DAEMON_LAUNCH_GATE_BACKLOG_TASK_ID = 'HAO-702';
 const DAEMON_LAUNCH_GATE_GOAL_ID = 'VAIOS-G728';
 const DAEMON_LAUNCH_GATE_PACKET_ID = 'goal_packet/launch/hallucinate_app/44dceea6bc53';
 const DAEMON_LAUNCH_GATE_PACKET_GOALS = ['VAIOS-G724', 'VAIOS-G728'];
@@ -634,6 +635,7 @@ class MCPDaemonManager extends EventEmitter {
         launch_objective_ids: DAEMON_LAUNCH_GATE_PACKET_GOALS,
         launch_validation_gate: {
           task_id: DAEMON_LAUNCH_GATE_TASK_ID,
+          backlog_task_id: DAEMON_LAUNCH_GATE_BACKLOG_TASK_ID,
           goal_id: DAEMON_LAUNCH_GATE_GOAL_ID,
           evidence_term: 'launch Playwright validation gate',
           playwright_spec: 'hallucinate_app/test/e2e/daemon-launch-health.spec.ts'
@@ -664,12 +666,16 @@ class MCPDaemonManager extends EventEmitter {
       schema: 'hallucinate_app.daemon_launch_validation_gate.v1',
       receipt_schema: 'launch_readiness_receipt_v1',
       task_id: DAEMON_LAUNCH_GATE_TASK_ID,
+      backlog_task_id: DAEMON_LAUNCH_GATE_BACKLOG_TASK_ID,
+      shared_packet_task_id: DAEMON_LAUNCH_GATE_TASK_ID,
       goal_id: DAEMON_LAUNCH_GATE_GOAL_ID,
       goal_packet: DAEMON_LAUNCH_GATE_PACKET_ID,
       packet_goals: [...DAEMON_LAUNCH_GATE_PACKET_GOALS],
       evidence_term: 'launch Playwright validation gate',
       launch_key: 'hallucinate-daemon-launch-orchestration',
       gate_state: 'gate_open_until_playwright_passes',
+      supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-26-hao-702-objective-gap-b023c8de5b69.md',
+      hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-26-hao-702-daemon-launch-health-gate.md',
       validation_commands: [
         'npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts',
         'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
