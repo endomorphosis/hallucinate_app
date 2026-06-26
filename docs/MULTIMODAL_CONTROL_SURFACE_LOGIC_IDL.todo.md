@@ -3511,7 +3511,7 @@ UI-plane participants and runtime-plane targets.
 - Blocked reason: Deferred for current virtual AI desktop/mobile/glasses integration run; historical scan or reconciliation task is not launch-critical.
 - Priority: P1
 - Track: ops
-- Fingerprint: 190e23b151652108033a92592695f14d170d6c5a
+- Fingerprint: 7c61dcb0c3ebff858208009d241cf27baa5c7dde
 - Dedupe key: reconciliation_guardrail:dirty_backlogged_worktree:unsupported_status
 - Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
@@ -3524,7 +3524,7 @@ UI-plane participants and runtime-plane targets.
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Fingerprint: b598d29471d79cf23d8d4cb881eb115d1d366c4d
+- Fingerprint: 94efe8549522a81110856366aa8dc8de6e615ea4
 - Dedupe key: reconciliation_guardrail:preflight_merge_conflict
 - Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
