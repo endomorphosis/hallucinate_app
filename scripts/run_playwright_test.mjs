@@ -89,29 +89,12 @@ function playwrightCommand(playwrightArgs) {
     };
   }
 
-  if (allowsNoDisplaySpecSkip(playwrightArgs)) {
-    return {
-      binary: process.execPath,
-      args: baseArgs,
-      noDisplaySpecSkip: true,
-    };
-  }
-
   return {
     binary: process.execPath,
     args: baseArgs,
     diagnostic: missingDisplayDiagnostic,
-    message: 'Hallucinate Electron Playwright tests need DISPLAY, WAYLAND_DISPLAY, or xvfb-run. Install xvfb on the host or run the supervisor in an environment with a graphical display so launch validation can execute instead of burning retry-budget attempts.',
+    message: 'Hallucinate Electron Playwright tests need DISPLAY, WAYLAND_DISPLAY, or xvfb-run. This is a repairable launch-environment blocker, not a Meta glasses MCP dashboard contract failure. Install xvfb on the host or run the supervisor in an environment with a graphical display so launch validation can execute instead of burning retry-budget attempts.',
   };
-}
-
-function allowsNoDisplaySpecSkip(playwrightArgs) {
-  const noDisplaySafeSpecs = [
-    'mcp-feature-exposure.spec.ts',
-    'mcp-dashboard-interoperability.spec.ts',
-    'multimodal-control-surface.spec.ts',
-  ];
-  return playwrightArgs.some((arg) => noDisplaySafeSpecs.some((spec) => String(arg).includes(spec)));
 }
 
 function needsVirtualDisplay() {
