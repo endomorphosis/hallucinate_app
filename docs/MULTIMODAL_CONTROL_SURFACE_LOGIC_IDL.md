@@ -737,6 +737,44 @@ mediation and audit. It is not a general telemetry channel.
   compiled policy artifacts and policy decision explanations must not embed raw
   secrets, transcripts, media bytes, or exact location traces.
 
+### MGW-419 Hallucinate App Meta-glasses I/O policy gate
+
+`python/hallucinate_app/meta_glasses_io_policy.py` is the Hallucinate-owned
+pre-route policy gate for expanded Meta glasses I/O. Swissknife and mobile
+bridge adapters must call it before routing any camera, microphone,
+speaker/headphone, display, Meta Neural Band, captouch, motion/orientation,
+phone GPS, IPFS persistence, libp2p relay, or MCP++ tool/event handoff into the
+control plane.
+
+The gate accepts a normalized `MetaGlassesIORequest` with:
+
+- `interaction_id`, `app_binding_id`, `route_id`, `route_generation`, and
+  `replay_nonce` for audit and replay protection.
+- `capabilities` drawn from `camera`, `microphone`, `speaker_headphone`,
+  `display`, `neural_band`, `captouch`, `motion_orientation`, `phone_gps`,
+  `ipfs_persistence`, `libp2p_relay`, and `mcp_handoff`.
+- Scope-specific consent using the `meta_glasses.*` consent names defined by
+  the MGW-416 privacy extension.
+- `payload_refs` for sensitive capture evidence and a `payload` field that is
+  always sanitized before appearing in the decision or MCP++ receipt.
+
+The policy emits a `MetaGlassesPolicyDecision` with one of three route-facing
+outcomes:
+
+- `allow`: consent, hardware support, replay checks, and payload-reference
+  requirements passed; Swissknife may continue routing the sanitized envelope.
+- `deny`: consent is missing, the capability is explicitly denied, replay
+  evidence is duplicated, route generation is stale, the capability is unknown,
+  or sensitive capture attempted to carry raw data without a payload reference.
+- `fallback_surface`: the capability is understood but the requested hardware
+  is unavailable; Swissknife must use the returned fallback route instead of
+  dispatching to the unavailable surface.
+
+All outcomes include an `mcp++/policy-decision` receipt with the app binding ID,
+route ID, normalized capabilities, reasons, redaction labels, and a stable local
+receipt CID. Denial and fallback receipts must not contain raw camera frames,
+audio, transcripts, display text, coordinates, session tokens, or raw peer IDs.
+
 ### Security review gates
 
 Before any adapter, schema version, policy compiler lane, or daemon mediation
