@@ -679,7 +679,13 @@
       navigationApi?.openDaemonManager?.();
     });
 
-    document.getElementById('btn-reload-native-dashboard').addEventListener('click', () => {
+    document.getElementById('btn-reload-native-dashboard').addEventListener('click', async () => {
+      const healthState = await daemonApi.dashboardHealth(DAEMON_ID);
+      renderDashboardCapability(healthState?.entry);
+      renderReceipt('health-receipt', healthState?.receipt);
+      if (healthState?.receipt?.fail_closed) {
+        return;
+      }
       const frame = document.getElementById('package-dashboard-frame');
       frame.src = frame.src;
     });

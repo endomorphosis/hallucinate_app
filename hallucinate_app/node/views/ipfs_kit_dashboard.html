@@ -273,9 +273,15 @@
       navigationApi?.openDaemonManager?.();
     });
 
-    document.getElementById('btn-reload-native-dashboard').addEventListener('click', () => {
+    document.getElementById('btn-reload-native-dashboard').addEventListener('click', async () => {
+      const healthState = await daemonApi.dashboardHealth(DAEMON_ID);
+      renderCatalog(healthState?.entry);
+      renderReceipt('health-receipt', healthState?.receipt);
+      if (healthState?.receipt?.fail_closed) {
+        return;
+      }
       const frame = document.getElementById('package-dashboard-frame');
-      frame.src = frame.src;
+      frame.src = healthState?.entry?.native_dashboard_url || healthState?.entry?.menu_dashboard_url || frame.src;
     });
 
     document.getElementById('btn-tools-list').addEventListener('click', async () => {

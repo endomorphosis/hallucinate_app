@@ -8,6 +8,14 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 const DASHBOARD_ACTION_TIMEOUT_MS = 5000;
+let dashboardHealthOverride = null;
+let dashboardBridgeCallLog = [];
+
+function recordDashboardBridgeCall(method, daemonId) {
+  if (process.env.NODE_ENV === 'test') {
+    dashboardBridgeCallLog.push(`${method}:${daemonId}`);
+  }
+}
 
 async function getDashboardCapability(daemonId) {
   const catalog = await ipcRenderer.invoke('daemon:getDashboardCapabilityCatalog');
@@ -52,7 +60,26 @@ async function fetchWithTimeout(url, options = {}) {
 }
 
 async function dashboardHealth(daemonId) {
+  recordDashboardBridgeCall('daemon.dashboardHealth', daemonId);
   const entry = await getDashboardCapability(daemonId);
+  if (process.env.NODE_ENV === 'test' && dashboardHealthOverride?.daemon_id === daemonId) {
+    const daemonStatus = dashboardHealthOverride.daemonStatus || { status: 'stopped' };
+    const health = dashboardHealthOverride.health || { healthy: false };
+    const status = health?.healthy ? 'ok' : 'fail_closed';
+    return {
+      entry,
+      daemonStatus,
+      health,
+      receipt: dashboardReceipt(entry, 'daemon/health', status, {
+        message: dashboardHealthOverride.message || `${entry.display_name || daemonId} daemon is not healthy; catalog-backed dashboard actions are disabled.`,
+        response: {
+          daemon_status: daemonStatus.status || 'unknown',
+          health
+        }
+      })
+    };
+  }
+
   const [allStatus, health] = await Promise.all([
     ipcRenderer.invoke('daemon:getAll').catch(() => ({})),
     ipcRenderer.invoke('daemon:checkHealth', daemonId).catch((error) => ({ healthy: false, error: error.message }))
@@ -92,12 +119,17 @@ async function ensureDashboardActionAllowed(daemonId, operation) {
 }
 
 async function dashboardToolsList(daemonId) {
+  recordDashboardBridgeCall('daemon.dashboardToolsList', daemonId);
   const allowed = await ensureDashboardActionAllowed(daemonId, 'tools/list');
+  const protocol = allowed.entry?.tool_protocols?.tools_list;
   if (!allowed.allowed) {
-    return allowed.receipt;
+    return dashboardReceipt(allowed.entry, 'tools/list', 'fail_closed', {
+      tool_protocol: protocol || null,
+      message: allowed.receipt.message,
+      response: allowed.receipt.response
+    });
   }
 
-  const protocol = allowed.entry.tool_protocols?.tools_list;
   if (!protocol?.url) {
     return dashboardReceipt(allowed.entry, 'tools/list', 'fail_closed', {
       message: `${daemonId} does not advertise a tools/list URL in the dashboard capability catalog.`
@@ -126,13 +158,19 @@ async function dashboardToolsList(daemonId) {
 }
 
 async function dashboardToolsCall(daemonId) {
+  recordDashboardBridgeCall('daemon.dashboardToolsCall', daemonId);
   const allowed = await ensureDashboardActionAllowed(daemonId, 'tools/call');
+  const protocol = allowed.entry?.tool_protocols?.tools_call;
+  const safeProbe = protocol?.safeProbe;
   if (!allowed.allowed) {
-    return allowed.receipt;
+    return dashboardReceipt(allowed.entry, 'tools/call', 'fail_closed', {
+      tool_protocol: protocol || null,
+      safe_probe: safeProbe || null,
+      message: allowed.receipt.message,
+      response: allowed.receipt.response
+    });
   }
 
-  const protocol = allowed.entry.tool_protocols?.tools_call;
-  const safeProbe = protocol?.safeProbe;
   if (!protocol?.url || !safeProbe || safeProbe.mutation !== false) {
     return dashboardReceipt(allowed.entry, 'tools/call', 'fail_closed', {
       tool_protocol: protocol || null,
@@ -178,6 +216,7 @@ async function dashboardToolsCall(daemonId) {
 }
 
 async function openCatalogDashboard(daemonId) {
+  recordDashboardBridgeCall('navigation.openDashboard', daemonId);
   const healthState = await dashboardHealth(daemonId);
   const url = healthState.entry?.native_dashboard_url || healthState.entry?.menu_dashboard_url;
   if (healthState.receipt.fail_closed) {
@@ -231,6 +270,23 @@ contextBridge.exposeInMainWorld('electronAPI', {
   test: {
     run: (testConfig) => ipcRenderer.invoke('test:run', testConfig),
     getResults: () => ipcRenderer.invoke('test:getResults'),
+    setDashboardBridgeHealthOverride: (override) => {
+      if (process.env.NODE_ENV !== 'test') {
+        return false;
+      }
+      dashboardHealthOverride = override || null;
+      return true;
+    },
+    resetDashboardBridgeCallLog: () => {
+      if (process.env.NODE_ENV !== 'test') {
+        return false;
+      }
+      dashboardBridgeCallLog = [];
+      return true;
+    },
+    getDashboardBridgeCallLog: () => (
+      process.env.NODE_ENV === 'test' ? [...dashboardBridgeCallLog] : []
+    ),
   },
   benchmark: {
     run: (benchmarkConfig) => ipcRenderer.invoke('benchmark:run', benchmarkConfig),

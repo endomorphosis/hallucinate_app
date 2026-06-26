@@ -252,6 +252,35 @@ async function waitForWindowOpenCall(window: Page, matcher: RegExp, attempts = 2
   throw new Error(`Expected window.open call matching ${matcher} was not observed`);
 }
 
+async function installFailClosedDashboardBridgeStub(window: Page, daemonId: string) {
+  await window.evaluate((id) => {
+    const api = window?.electronAPI;
+    if (!api?.test?.setDashboardBridgeHealthOverride || !api?.test?.resetDashboardBridgeCallLog) {
+      throw new Error('electronAPI dashboard bridge is unavailable');
+    }
+
+    api.test.setDashboardBridgeHealthOverride({
+      daemon_id: id,
+      daemonStatus: { status: 'stopped' },
+      health: { healthy: false },
+      message: `${id} daemon is down for fail-closed dashboard validation.`
+    });
+    api.test.resetDashboardBridgeCallLog();
+  }, daemonId);
+}
+
+async function expectDashboardBridgeCall(window: Page, matcher: RegExp, attempts = 20, delayMs = 250) {
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    const calls = await window.evaluate(() => window?.electronAPI?.test?.getDashboardBridgeCallLog?.() || []);
+    if (calls.some((call: string) => matcher.test(call))) {
+      return;
+    }
+    await window.waitForTimeout(delayMs);
+  }
+
+  throw new Error(`Expected dashboard bridge call matching ${matcher} was not observed`);
+}
+
 async function installOpenExternalSpy(electronApp: ElectronApplication) {
   await electronApp.evaluate(({ shell }) => {
     (globalThis as any).__openExternalCalls = [];
@@ -646,6 +675,41 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
       await waitForTextInSelector(window, '#health-receipt', /navigation\/openDashboard/);
       await expect(window.locator('#health-receipt')).toContainText(dashboard.urlPattern);
     }
+  });
+
+  test('IPFS dashboard controls fail closed with visible receipts when daemon bridge reports down', async () => {
+    const dashboards = [
+      { label: 'IPFS Kit Dashboard', daemonId: 'ipfs-kit' },
+      { label: 'IPFS Datasets Dashboard', daemonId: 'ipfs-datasets' },
+      { label: 'IPFS Accelerate Dashboard', daemonId: 'ipfs-accelerate' },
+    ];
+
+    for (const dashboard of dashboards) {
+      await openDashboardFromMenu(electronApp, window, dashboard.label);
+      await installFailClosedDashboardBridgeStub(window, dashboard.daemonId);
+
+      await window.locator('#btn-tools-list').click();
+      await waitForTextInSelector(window, '#tool-receipt', /tools\/list[\s\S]*fail_closed/);
+      await expectDashboardBridgeCall(window, new RegExp(`daemon\\.dashboardToolsList:${dashboard.daemonId}`));
+
+      await window.locator('#btn-tools-call').click();
+      await waitForTextInSelector(window, '#tool-receipt', /tools\/call[\s\S]*fail_closed/);
+      await expect(window.locator('#tool-receipt')).toContainText('safe_probe');
+      await expectDashboardBridgeCall(window, new RegExp(`daemon\\.dashboardToolsCall:${dashboard.daemonId}`));
+
+      await window.locator('#btn-open-web-dashboard').click();
+      await waitForTextInSelector(window, '#health-receipt', /navigation\/openDashboard[\s\S]*fail_closed/);
+      await expectDashboardBridgeCall(window, new RegExp(`navigation\\.openDashboard:${dashboard.daemonId}`));
+
+      await window.locator('#btn-reload-native-dashboard').click();
+      await waitForTextInSelector(window, '#health-receipt', /daemon\/health[\s\S]*fail_closed/);
+      await expectDashboardBridgeCall(window, new RegExp(`daemon\\.dashboardHealth:${dashboard.daemonId}`));
+    }
+
+    await window.evaluate(() => {
+      window?.electronAPI?.test?.setDashboardBridgeHealthOverride?.(null);
+      window?.electronAPI?.test?.resetDashboardBridgeCallLog?.();
+    });
   });
 
   test('Tools menu exposes the configured MCP tool URLs for kit, datasets, and accelerate', async () => {
