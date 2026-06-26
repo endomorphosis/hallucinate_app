@@ -1,8 +1,10 @@
 {
   "schema": "hallucinate_app.mcp_dashboard_capability_catalog.v1",
-  "task_id": "VAI-512",
+  "task_id": "HAO-677",
+  "validation_task_id": "VAI-512",
   "goal_id": "VAIOS-G723",
   "generated_by": "hallucinate_app.node.mcp_daemon_manager.getDashboardCapabilityCatalog",
+  "dashboard_only_mocks": false,
   "control_surface_route": [
     "Hallucinate App dashboard action",
     "dashboard capability catalog",
@@ -13,66 +15,193 @@
   ],
   "servers": [
     {
+      "schema": "hallucinate_app.mcp_dashboard_capability_catalog.v1.server",
+      "task_id": "HAO-677",
+      "goal_id": "VAIOS-G723",
       "daemon_id": "ipfs-kit",
       "server_package": "ipfs_kit_py",
+      "display_name": "IPFS Kit",
+      "menu_label": "IPFS Kit MCP",
+      "startup_order": 10,
+      "port": 8004,
       "endpoint": "http://127.0.0.1:8004",
       "transport": "http",
       "rpc_path": "/mcp/tools/call",
       "health_path": "/api/mcp/status",
+      "health_url": "http://127.0.0.1:8004/api/mcp/status",
+      "menu_dashboard_path": "views/ipfs_kit_dashboard.html",
       "menu_dashboard_url": "http://127.0.0.1:8004/dashboard",
       "native_dashboard_url": null,
+      "native_dashboard_health_path": null,
       "native_dashboard_catalog_url": null,
+      "menu_tools": [
+        {
+          "label": "Add to IPFS",
+          "url": "http://127.0.0.1:8004/tools/add",
+          "action": null,
+          "app": null
+        },
+        {
+          "label": "Get from IPFS",
+          "url": "http://127.0.0.1:8004/tools/get",
+          "action": null,
+          "app": null
+        },
+        {
+          "label": "Pin Content",
+          "url": "http://127.0.0.1:8004/tools/pin",
+          "action": null,
+          "app": null
+        },
+        {
+          "label": "IPFS Status",
+          "url": "http://127.0.0.1:8004/status",
+          "action": null,
+          "app": null
+        },
+        {
+          "label": "Configure IPFS Node",
+          "url": "http://127.0.0.1:8004/config",
+          "action": null,
+          "app": null
+        }
+      ],
       "tool_protocols": {
         "tools_list": {
           "operation": "tools/list",
+          "transport": "http",
           "method": "GET",
+          "path": "/mcp/tools/list",
           "url": "http://127.0.0.1:8004/mcp/tools/list"
         },
         "tools_call": {
           "operation": "tools/call",
+          "transport": "http",
           "method": "POST",
-          "url": "http://127.0.0.1:8004/mcp/tools/call",
+          "path": "/mcp/tools/call",
           "safeProbe": {
             "tool_name": "ipfs_status",
             "arguments": {},
             "mutation": false,
             "expected_receipt": "ipfs_kit_status_probe"
-          }
+          },
+          "url": "http://127.0.0.1:8004/mcp/tools/call"
         }
       },
+      "mcpplusplus": {
+        "available": false,
+        "state": "not_advertised",
+        "mode": "not_advertised",
+        "supports_profile_negotiation": false,
+        "profiles": [],
+        "message": "ipfs_kit_py does not currently advertise MCP++ profiles through the dashboard catalog."
+      },
+      "mcpplusplus_descriptor_evidence": {
+        "evidence_label": "MCP++ descriptor/profile evidence",
+        "daemon_id": "ipfs-kit",
+        "server_package": "ipfs_kit_py",
+        "descriptor_ref": "ipfs_kit_py:mcpplusplus:not_advertised",
+        "mode": "not_advertised",
+        "available": false,
+        "supports_profile_negotiation": false,
+        "profiles": [],
+        "active_profile": null,
+        "bridge_to": null,
+        "state": "not_advertised",
+        "message": "ipfs_kit_py does not currently advertise MCP++ profiles through the dashboard catalog."
+      },
+      "swissknife_consumer": "Swissknife IPFS storage, pin dashboard, and backend health surfaces",
       "control_surface_mediation_contract": "control_surface_contract:mcp-daemon:ipfs-kit",
       "control_surface_receipt_requirements": [
         "interaction_envelope",
         "policy_decision",
         "mediation_receipt",
+        "receipt_ids",
         "daemon_id",
         "server_package",
         "tool_protocol",
         "safe_probe",
+        "mcpplusplus_descriptor_evidence",
         "receipt_cid"
       ],
-      "swissknife_consumer": "Swissknife IPFS storage, pin dashboard, and backend health surfaces"
+      "dashboard_receipt_consumer_refs": [
+        "hallucinate_app.electron.dashboard",
+        "hallucinate_app.swissknife.mcp_capability_registry",
+        "launch_readiness_packet:VAIOS-G723",
+        "mcp_daemon:ipfs-kit"
+      ]
     },
     {
+      "schema": "hallucinate_app.mcp_dashboard_capability_catalog.v1.server",
+      "task_id": "HAO-677",
+      "goal_id": "VAIOS-G723",
       "daemon_id": "ipfs-datasets",
       "server_package": "ipfs_datasets_py",
+      "display_name": "IPFS Datasets",
+      "menu_label": "IPFS Datasets MCP",
+      "startup_order": 20,
+      "port": 3002,
       "endpoint": "http://127.0.0.1:3002",
       "transport": "http",
       "rpc_path": "/datasets/load",
       "health_path": "/health/ready",
+      "health_url": "http://127.0.0.1:3002/health/ready",
+      "menu_dashboard_path": "views/ipfs_datasets_dashboard.html",
       "menu_dashboard_url": "http://127.0.0.1:8899/mcp",
       "native_dashboard_url": "http://127.0.0.1:8899/mcp",
+      "native_dashboard_health_path": "/api/mcp/status",
       "native_dashboard_catalog_url": "http://127.0.0.1:8899/api/hallucinate/dashboard-catalog",
+      "menu_tools": [
+        {
+          "label": "Load HuggingFace Dataset",
+          "url": "http://127.0.0.1:3002/tools/load",
+          "action": null,
+          "app": null
+        },
+        {
+          "label": "Create Custom Dataset",
+          "url": "http://127.0.0.1:3002/tools/create",
+          "action": null,
+          "app": null
+        },
+        {
+          "label": "Transform Dataset",
+          "url": "http://127.0.0.1:3002/tools/transform",
+          "action": null,
+          "app": null
+        },
+        {
+          "label": "Export Dataset",
+          "url": "http://127.0.0.1:3002/tools/export",
+          "action": null,
+          "app": null
+        },
+        {
+          "label": "GraphRAG PDF Processing",
+          "url": "http://127.0.0.1:3002/tools/graphrag",
+          "action": null,
+          "app": null
+        },
+        {
+          "label": "Legal Dataset Scraper",
+          "url": "http://127.0.0.1:3002/tools/scraper",
+          "action": null,
+          "app": null
+        }
+      ],
       "tool_protocols": {
         "tools_list": {
           "operation": "tools/list",
+          "transport": "http",
           "method": "GET",
+          "path": "/datasets/list",
           "url": "http://127.0.0.1:3002/datasets/list"
         },
         "tools_call": {
           "operation": "tools/call",
+          "transport": "http",
           "method": "POST",
-          "url": "http://127.0.0.1:3002/datasets/load",
+          "path": "/datasets/load",
           "safeProbe": {
             "tool_name": "datasets_list",
             "arguments": {
@@ -80,42 +209,117 @@
             },
             "mutation": false,
             "expected_receipt": "ipfs_datasets_list_probe"
-          }
+          },
+          "url": "http://127.0.0.1:3002/datasets/load"
         }
       },
+      "mcpplusplus": {
+        "provider": "ipfs_datasets_py.mcp_server.mcplusplus",
+        "bridge_to": "ipfs_accelerate_py.mcplusplus_module",
+        "supports_profile_negotiation": false,
+        "mode": "optional_bridge",
+        "profiles": []
+      },
+      "mcpplusplus_descriptor_evidence": {
+        "evidence_label": "MCP++ descriptor/profile evidence",
+        "daemon_id": "ipfs-datasets",
+        "server_package": "ipfs_datasets_py",
+        "descriptor_ref": "ipfs_datasets_py.mcp_server.mcplusplus",
+        "mode": "optional_bridge",
+        "available": false,
+        "supports_profile_negotiation": false,
+        "profiles": [],
+        "active_profile": null,
+        "bridge_to": "ipfs_accelerate_py.mcplusplus_module",
+        "state": "catalog_advertised",
+        "message": "ipfs_datasets_py has no advertised MCP++ profile descriptor in the dashboard catalog."
+      },
+      "swissknife_consumer": "Swissknife dataset, content, index, provenance, and background task surfaces",
       "control_surface_mediation_contract": "control_surface_contract:mcp-daemon:ipfs-datasets",
       "control_surface_receipt_requirements": [
         "interaction_envelope",
         "policy_decision",
         "mediation_receipt",
+        "receipt_ids",
         "daemon_id",
         "server_package",
         "tool_protocol",
         "safe_probe",
+        "mcpplusplus_descriptor_evidence",
         "receipt_cid"
       ],
-      "swissknife_consumer": "Swissknife dataset, content, index, provenance, and background task surfaces"
+      "dashboard_receipt_consumer_refs": [
+        "hallucinate_app.electron.dashboard",
+        "hallucinate_app.swissknife.mcp_capability_registry",
+        "launch_readiness_packet:VAIOS-G723",
+        "mcp_daemon:ipfs-datasets"
+      ]
     },
     {
+      "schema": "hallucinate_app.mcp_dashboard_capability_catalog.v1.server",
+      "task_id": "HAO-677",
+      "goal_id": "VAIOS-G723",
       "daemon_id": "ipfs-accelerate",
       "server_package": "ipfs_accelerate_py",
+      "display_name": "IPFS Accelerate",
+      "menu_label": "IPFS Accelerate MCP",
+      "startup_order": 30,
+      "port": 3003,
       "endpoint": "http://127.0.0.1:3003",
       "transport": "http",
       "rpc_path": "/mcp",
       "health_path": "/api/mcp/status",
+      "health_url": "http://127.0.0.1:3003/api/mcp/status",
+      "menu_dashboard_path": "views/ipfs_accelerate_dashboard.html",
       "menu_dashboard_url": "http://127.0.0.1:3003/dashboard",
       "native_dashboard_url": null,
+      "native_dashboard_health_path": null,
       "native_dashboard_catalog_url": null,
+      "menu_tools": [
+        {
+          "label": "Model Inference",
+          "url": "http://127.0.0.1:3003/tools/inference",
+          "action": null,
+          "app": null
+        },
+        {
+          "label": "Batch Processing",
+          "url": "http://127.0.0.1:3003/tools/batch",
+          "action": null,
+          "app": null
+        },
+        {
+          "label": "Distributed Training",
+          "url": "http://127.0.0.1:3003/tools/training",
+          "action": null,
+          "app": null
+        },
+        {
+          "label": "GPU Monitor",
+          "url": "http://127.0.0.1:3003/tools/gpu",
+          "action": null,
+          "app": null
+        },
+        {
+          "label": "Performance Metrics",
+          "url": "http://127.0.0.1:3003/metrics",
+          "action": null,
+          "app": null
+        }
+      ],
       "tool_protocols": {
         "tools_list": {
           "operation": "tools/list",
+          "transport": "http",
           "method": "GET",
+          "path": "/models/list",
           "url": "http://127.0.0.1:3003/models/list"
         },
         "tools_call": {
           "operation": "tools/call",
+          "transport": "http",
           "method": "POST",
-          "url": "http://127.0.0.1:3003/inference",
+          "path": "/inference",
           "safeProbe": {
             "tool_name": "hardware_profile",
             "arguments": {
@@ -123,21 +327,62 @@
             },
             "mutation": false,
             "expected_receipt": "ipfs_accelerate_hardware_profile_probe"
-          }
+          },
+          "url": "http://127.0.0.1:3003/inference"
         }
       },
+      "mcpplusplus": {
+        "available": true,
+        "supports_profile_negotiation": true,
+        "mode": "optional_additive",
+        "profiles": [
+          "mcp++/profile-a-idl",
+          "mcp++/profile-b-cid-artifacts",
+          "mcp++/profile-c-ucan",
+          "mcp++/profile-d-temporal-policy",
+          "mcp++/profile-e-mcp-p2p"
+        ]
+      },
+      "mcpplusplus_descriptor_evidence": {
+        "evidence_label": "MCP++ descriptor/profile evidence",
+        "daemon_id": "ipfs-accelerate",
+        "server_package": "ipfs_accelerate_py",
+        "descriptor_ref": "ipfs_accelerate_py:mcpplusplus:not_advertised",
+        "mode": "optional_additive",
+        "available": true,
+        "supports_profile_negotiation": true,
+        "profiles": [
+          "mcp++/profile-a-idl",
+          "mcp++/profile-b-cid-artifacts",
+          "mcp++/profile-c-ucan",
+          "mcp++/profile-d-temporal-policy",
+          "mcp++/profile-e-mcp-p2p"
+        ],
+        "active_profile": null,
+        "bridge_to": null,
+        "state": "catalog_advertised",
+        "message": "ipfs_accelerate_py has no advertised MCP++ profile descriptor in the dashboard catalog."
+      },
+      "swissknife_consumer": "Swissknife hardware profile, inference job, job status, and telemetry surfaces",
       "control_surface_mediation_contract": "control_surface_contract:mcp-daemon:ipfs-accelerate",
       "control_surface_receipt_requirements": [
         "interaction_envelope",
         "policy_decision",
         "mediation_receipt",
+        "receipt_ids",
         "daemon_id",
         "server_package",
         "tool_protocol",
         "safe_probe",
+        "mcpplusplus_descriptor_evidence",
         "receipt_cid"
       ],
-      "swissknife_consumer": "Swissknife hardware profile, inference job, job status, and telemetry surfaces"
+      "dashboard_receipt_consumer_refs": [
+        "hallucinate_app.electron.dashboard",
+        "hallucinate_app.swissknife.mcp_capability_registry",
+        "launch_readiness_packet:VAIOS-G723",
+        "mcp_daemon:ipfs-accelerate"
+      ]
     }
   ]
 }
