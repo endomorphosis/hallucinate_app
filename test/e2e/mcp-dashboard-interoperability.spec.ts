@@ -98,6 +98,8 @@ electronDescribe('MCP Dashboard Interoperability - VAIOS-G723 Electron UI wiring
 
     expect(catalog?.schema).toBe('hallucinate_app.mcp_dashboard_capability_catalog.v1');
     expect(catalog?.goal_id).toBe('VAIOS-G723');
+    expect(catalog?.validation_task_id).toBe('VAI-512');
+    expect(catalog?.dashboard_only_mocks).toBe(false);
     expect(catalog?.control_surface_route).toEqual([
       'Hallucinate App dashboard action',
       'dashboard capability catalog',
@@ -148,8 +150,16 @@ electronDescribe('MCP Dashboard Interoperability - VAIOS-G723 Electron UI wiring
   });
 
   test('emits mediated safe-probe tool-call receipts before daemon transport', async () => {
-    const { receipts } = await validateMediatedSafeProbeReceipts();
+    const { receipts, operations } = await validateMediatedDashboardToolReceipts();
     expect(new Set(receipts).size).toBe(DASHBOARD_SERVER_IDS.length);
+    expect(operations).toEqual(expect.arrayContaining([
+      'ipfs-kit:tools/list',
+      'ipfs-kit:tools/call',
+      'ipfs-datasets:tools/list',
+      'ipfs-datasets:tools/call',
+      'ipfs-accelerate:tools/list',
+      'ipfs-accelerate:tools/call'
+    ]));
   });
 
   test('keeps supervisor follow-up subtasks attached to dashboard validation failures', async () => {
@@ -191,6 +201,8 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
 
     expect(catalog.schema).toBe('hallucinate_app.mcp_dashboard_capability_catalog.v1');
     expect(catalog.goal_id).toBe('VAIOS-G723');
+    expect(catalog.validation_task_id).toBe('VAI-512');
+    expect(catalog.dashboard_only_mocks).toBe(false);
     expect(catalog.control_surface_route).toContain('mediation_receipt');
 
     for (const daemonId of DASHBOARD_SERVER_IDS) {
@@ -205,8 +217,16 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
   });
 
   test('emits mediated safe-probe tool-call receipts without daemon transport', async () => {
-    const { receipts } = await validateMediatedSafeProbeReceipts();
+    const { receipts, operations } = await validateMediatedDashboardToolReceipts();
     expect(new Set(receipts).size).toBe(DASHBOARD_SERVER_IDS.length);
+    expect(operations).toEqual(expect.arrayContaining([
+      'ipfs-kit:tools/list',
+      'ipfs-kit:tools/call',
+      'ipfs-datasets:tools/list',
+      'ipfs-datasets:tools/call',
+      'ipfs-accelerate:tools/list',
+      'ipfs-accelerate:tools/call'
+    ]));
   });
 
   test('records supervisor follow-up subtasks for failed dashboard validation', () => {
@@ -241,11 +261,11 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
   });
 });
 
-async function validateMediatedSafeProbeReceipts() {
+async function validateMediatedDashboardToolReceipts() {
   const manager = new MCPDaemonManager();
   manager.setControlSurfaceRuntimePolicyEvaluator((request: any) => ({
     outcome: 'allow',
-    reasons: ['VAI-503 launch Playwright validation gate safe probe'],
+    reasons: ['VAI-512 launch Playwright validation gate dashboard MCP operation'],
     metadata: {
       gate: 'mcp-dashboard-interoperability',
       daemon_id: request.service_id,
@@ -255,8 +275,28 @@ async function validateMediatedSafeProbeReceipts() {
 
   const catalog = manager.getDashboardCapabilityCatalog();
   const receipts = [];
+  const operations = [];
 
   for (const server of catalog.servers) {
+    const listResult = await manager.invokeManagedService(server.daemon_id, {
+      method: server.tool_protocols.tools_list.operation,
+      tool_protocol: server.tool_protocols.tools_list,
+      surface: 'dashboard',
+      intent: `dashboard.tools_list.${server.daemon_id}`
+    }, async (_payload: any, mediation: any) => ({
+      ok: true,
+      daemon_id: server.daemon_id,
+      operation: server.tool_protocols.tools_list.operation,
+      receipt_id: mediation.mediation_receipt.receipt_id
+    }));
+
+    expect(listResult.ok).toBe(true);
+    expect(listResult.mediation_receipt.control_surface_contract_ref).toBe(server.control_surface_mediation_contract);
+    expect(listResult.mediation_receipt.mediation_result.invoked).toBe(true);
+    expect(listResult.policy_decision.outcome).toBe('allow');
+    expect(listResult.output.operation).toBe('tools/list');
+    operations.push(`${server.daemon_id}:${listResult.output.operation}`);
+
     const safeProbe = server.tool_protocols.tools_call.safeProbe;
     const result = await manager.invokeManagedService(server.daemon_id, {
       method: server.tool_protocols.tools_call.operation,
@@ -279,7 +319,8 @@ async function validateMediatedSafeProbeReceipts() {
     expect(result.policy_decision.outcome).toBe('allow');
     expect(result.output.expected_receipt).toBe(safeProbe.expected_receipt);
     receipts.push(result.mediation_receipt.receipt_id);
+    operations.push(`${server.daemon_id}:${result.method}`);
   }
 
-  return { receipts };
+  return { receipts, operations };
 }
