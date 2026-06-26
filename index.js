@@ -252,12 +252,28 @@ ipcMain.handle('daemon:getDashboardCapabilityCatalog', async () => {
   return daemonManager.getDashboardCapabilityCatalog();
 });
 
+ipcMain.handle('daemon:getDashboardCapability', async (event, daemonId) => {
+  return daemonManager.getDashboardCapability(daemonId);
+});
+
 ipcMain.handle('daemon:getLaunchReceipts', async (event, limit) => {
   return daemonManager.getLaunchReceipts(limit);
 });
 
 ipcMain.handle('daemon:checkHealth', async (event, daemonId) => {
   return await daemonManager.checkDaemonHealth(daemonId);
+});
+
+ipcMain.handle('daemon:dashboardHealth', async (event, daemonId) => {
+  return await daemonManager.dashboardHealth(daemonId);
+});
+
+ipcMain.handle('daemon:dashboardToolsList', async (event, daemonId) => {
+  return await daemonManager.dashboardToolsList(daemonId);
+});
+
+ipcMain.handle('daemon:dashboardToolsCall', async (event, daemonId) => {
+  return await daemonManager.dashboardToolsCall(daemonId);
 });
 
 ipcMain.handle('daemon:start', async (event, daemonId) => {

@@ -108,6 +108,7 @@ function playwrightCommand(playwrightArgs) {
 function allowsNoDisplaySpecSkip(playwrightArgs) {
   const noDisplaySafeSpecs = [
     'mcp-feature-exposure.spec.ts',
+    'mcp-dashboard-interoperability.spec.ts',
     'multimodal-control-surface.spec.ts',
   ];
   return playwrightArgs.some((arg) => noDisplaySafeSpecs.some((spec) => String(arg).includes(spec)));

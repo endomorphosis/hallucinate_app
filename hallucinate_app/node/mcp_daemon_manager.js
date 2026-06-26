@@ -36,6 +36,7 @@ const ACCELERATE_MCPPLUSPLUS_PROFILES = [
 ];
 const DASHBOARD_CATALOG_SCHEMA = 'hallucinate_app.mcp_dashboard_capability_catalog.v1';
 const DASHBOARD_CATALOG_TASK_ID = 'HAO-677';
+const DASHBOARD_RECEIPT_TASK_ID = 'HAO-680';
 const DASHBOARD_CATALOG_GOAL_ID = 'VAIOS-G723';
 
 const DASHBOARD_TOOL_PROTOCOLS = {
@@ -647,6 +648,74 @@ class MCPDaemonManager extends EventEmitter {
     };
   }
 
+  getDashboardCapability(daemonId) {
+    return this._dashboardCapabilityEntry(this._requireDaemonConfig(daemonId));
+  }
+
+  async dashboardHealth(daemonId) {
+    const config = this._requireDaemonConfig(daemonId);
+    const health = await this.checkDaemonHealth(daemonId);
+    const entry = this._dashboardCapabilityEntry(config);
+    const receipt = {
+      receipt_schema: 'mcp_dashboard_health_receipt_v1',
+      task_id: DASHBOARD_RECEIPT_TASK_ID,
+      goal_id: DASHBOARD_CATALOG_GOAL_ID,
+      daemon_id: config.id,
+      server_package: config.packageName,
+      emitted_at: new Date().toISOString(),
+      status: health.healthy ? 'ok' : 'fail_closed',
+      fail_closed: !health.healthy,
+      health,
+      receipt_route: [
+        'dashboard health probe',
+        'dashboard capability catalog',
+        'control_surface readiness check',
+        'supervised MCP server transport'
+      ],
+      mcpplusplus_descriptor_evidence: this._mcpPlusPlusDescriptorEvidence(config),
+      control_surface_contract_ref: config.mediationContractRef,
+      dashboard_receipt_consumer_refs: this._dashboardReceiptConsumerRefs(config)
+    };
+    receipt.receipt_cid = stableReceiptCid(receipt);
+    return { entry, health, receipt };
+  }
+
+  async dashboardToolsList(daemonId, invoker = null) {
+    const config = this._requireDaemonConfig(daemonId);
+    const entry = this._dashboardCapabilityEntry(config);
+    const toolProtocol = entry.tool_protocols.tools_list;
+    return this.invokeManagedService(daemonId, {
+      method: toolProtocol.operation,
+      target_ref: toolProtocol.url,
+      tool_protocol: toolProtocol,
+      surface: 'dashboard',
+      surface_event: 'tools_list_probe',
+      intent: `dashboard.tools_list.${daemonId}`,
+      mcpplusplus: entry.mcpplusplus_descriptor_evidence,
+      dashboard_receipt_consumer_refs: this._dashboardReceiptConsumerRefs(config)
+    }, invoker || (async (_payload, mediation) => this._dashboardTransportProbe(config, toolProtocol, mediation)));
+  }
+
+  async dashboardToolsCall(daemonId, invoker = null) {
+    const config = this._requireDaemonConfig(daemonId);
+    const entry = this._dashboardCapabilityEntry(config);
+    const toolProtocol = entry.tool_protocols.tools_call;
+    const safeProbe = toolProtocol.safeProbe || {};
+    return this.invokeManagedService(daemonId, {
+      method: toolProtocol.operation,
+      target_ref: toolProtocol.url,
+      tool_name: safeProbe.tool_name,
+      arguments: safeProbe.arguments || {},
+      tool_protocol: toolProtocol,
+      safe_probe: safeProbe,
+      surface: 'dashboard',
+      surface_event: 'safe_tools_call_probe',
+      intent: `dashboard.safe_probe.${daemonId}`,
+      mcpplusplus: entry.mcpplusplus_descriptor_evidence,
+      dashboard_receipt_consumer_refs: this._dashboardReceiptConsumerRefs(config)
+    }, invoker || (async (_payload, mediation) => this._dashboardTransportProbe(config, toolProtocol, mediation)));
+  }
+
   async checkDaemonHealth(daemonId) {
     const config = this._requireDaemonConfig(daemonId);
     const daemon = this.daemons.get(daemonId);
@@ -888,18 +957,67 @@ class MCPDaemonManager extends EventEmitter {
         })),
       tool_protocols: this._dashboardToolProtocol(config),
       mcpplusplus: this._normalizedMcpPlusPlusStatus(config),
+      mcpplusplus_descriptor_evidence: this._mcpPlusPlusDescriptorEvidence(config),
       swissknife_consumer: config.swissknifeConsumer,
       control_surface_mediation_contract: config.mediationContractRef,
       control_surface_receipt_requirements: [
         'interaction_envelope',
         'policy_decision',
         'mediation_receipt',
+        'receipt_ids',
         'daemon_id',
         'server_package',
         'tool_protocol',
         'safe_probe',
+        'mcpplusplus_descriptor_evidence',
         'receipt_cid'
-      ]
+      ],
+      dashboard_receipt_consumer_refs: this._dashboardReceiptConsumerRefs(config)
+    };
+  }
+
+  _dashboardReceiptConsumerRefs(config) {
+    return [
+      'hallucinate_app.electron.dashboard',
+      'hallucinate_app.swissknife.mcp_capability_registry',
+      'launch_readiness_packet:VAIOS-G723',
+      `mcp_daemon:${config.id}`
+    ];
+  }
+
+  _mcpPlusPlusDescriptorEvidence(config) {
+    const status = this._normalizedMcpPlusPlusStatus(config);
+    return {
+      evidence_label: 'MCP++ descriptor/profile evidence',
+      daemon_id: config.id,
+      server_package: config.packageName,
+      descriptor_ref: status?.provider || status?.descriptor_ref || `${config.packageName}:mcpplusplus:not_advertised`,
+      mode: status?.mode || 'not_advertised',
+      available: Boolean(status?.available),
+      supports_profile_negotiation: Boolean(status?.supports_profile_negotiation),
+      profiles: Array.isArray(status?.profiles) ? [...status.profiles] : [],
+      active_profile: status?.active_profile || null,
+      bridge_to: status?.bridge_to || null,
+      state: status?.state || (status ? 'catalog_advertised' : 'not_advertised'),
+      message: status?.message || `${config.packageName} has no advertised MCP++ profile descriptor in the dashboard catalog.`
+    };
+  }
+
+  async _dashboardTransportProbe(config, toolProtocol, mediation) {
+    const health = await this.checkDaemonHealth(config.id);
+    return {
+      ok: health.healthy,
+      fail_closed: !health.healthy,
+      daemon_id: config.id,
+      server_package: config.packageName,
+      operation: toolProtocol.operation,
+      transport: config.transport,
+      endpoint: this._daemonEndpoint(config),
+      url: toolProtocol.url,
+      health,
+      expected_receipt: toolProtocol.safeProbe?.expected_receipt || `${config.id}_${toolProtocol.operation.replace('/', '_')}_probe`,
+      mediation_receipt_id: mediation.mediation_receipt.receipt_id,
+      mediation_receipt_cid: mediation.mediation_receipt.receipt_cid
     };
   }
 
