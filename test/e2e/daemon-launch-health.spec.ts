@@ -9,6 +9,7 @@ const __dirname = path.dirname(__filename);
 const { test, expect } = playwrightTest as unknown as typeof import('@playwright/test');
 
 const GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-535-daemon-launch-health-gate.json');
+const VAI_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-519-daemon-launch-health-gate.json');
 const DAEMON_IDS = ['ipfs-kit', 'ipfs-datasets', 'ipfs-accelerate'];
 const BACKEND_PACKAGES = ['ipfs_kit_py', 'ipfs_datasets_py', 'ipfs_accelerate_py'];
 
@@ -20,10 +21,13 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
 
     expect(gate).toEqual(fixture);
     expect(gate.task_id).toBe('MGW-535');
+    expect(gate.vai_task_id).toBe('VAI-519');
     expect(gate.goal_id).toBe('VAIOS-G728');
     expect(gate.goal_packet).toBe('goal_packet/launch/hallucinate_app/44dceea6bc53');
     expect(gate.packet_goals).toEqual(['VAIOS-G724', 'VAIOS-G728']);
     expect(gate.evidence_term).toBe('launch Playwright validation gate');
+    expect(gate.objective_gap_receipt).toBe('data/virtual_ai_os/discovery/2026-06-26-vai-519-objective-gap-b023c8de5b69.md');
+    expect(gate.discovery_receipts).toContain('data/virtual_ai_os/discovery/2026-06-26-vai-519-daemon-launch-health-gate.md');
     expect(gate.playwright_specs).toContain('hallucinate_app/test/e2e/daemon-launch-health.spec.ts');
     expect(gate.validation_commands).toContain('npm --prefix swissknife run test:e2e:meta-glasses');
     expect(gate.validation_commands).toContain('npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts');
@@ -73,5 +77,26 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
       });
       expect(handoff.swissknife_consumer).toContain('Swissknife');
     }
+  });
+
+  test('binds the VAI-519 objective gap receipt to the daemon launch health gate', () => {
+    const manager = new MCPDaemonManager();
+    const gate = manager.getDaemonLaunchValidationGate();
+    const receipt = JSON.parse(fs.readFileSync(VAI_GATE_FIXTURE, 'utf8'));
+
+    expect(receipt.schema).toBe('virtual_ai_os.daemon_launch_validation_gate.v1');
+    expect(receipt.task_id).toBe('VAI-519');
+    expect(receipt.goal_id).toBe('VAIOS-G728');
+    expect(receipt.goal_packet).toBe(gate.goal_packet);
+    expect(receipt.packet_goals).toEqual(gate.packet_goals);
+    expect(receipt.evidence_term).toBe(gate.evidence_term);
+    expect(receipt.objective_gap_receipt).toBe(gate.objective_gap_receipt);
+    expect(receipt.daemon_gate_task_id).toBe(gate.task_id);
+    expect(receipt.playwright_specs).toEqual(gate.playwright_specs);
+    expect(receipt.validation_commands).toEqual(gate.validation_commands);
+    expect(receipt.required_backends).toEqual(gate.required_backends);
+    expect(receipt.required_evidence).toEqual(gate.required_evidence);
+    expect(receipt.daemon_health_paths).toEqual(gate.daemon_health_paths);
+    expect(receipt.swissknife_handoff).toEqual(gate.swissknife_handoff);
   });
 });

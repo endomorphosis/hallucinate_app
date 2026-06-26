@@ -53,6 +53,7 @@ const MGW_533_LAUNCH_VALIDATION_GATE = {
   supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-26-mgw-533-objective-gap-3e00ad2a0074.md'
 };
 const DAEMON_LAUNCH_GATE_TASK_ID = 'MGW-535';
+const DAEMON_LAUNCH_GATE_VAI_TASK_ID = 'VAI-519';
 const DAEMON_LAUNCH_GATE_GOAL_ID = 'VAIOS-G728';
 const DAEMON_LAUNCH_GATE_PACKET_ID = 'goal_packet/launch/hallucinate_app/44dceea6bc53';
 const DAEMON_LAUNCH_GATE_PACKET_GOALS = ['VAIOS-G724', 'VAIOS-G728'];
@@ -60,6 +61,10 @@ const DAEMON_LAUNCH_GATE_SPECS = [
   'hallucinate_app/test/e2e/daemon-launch-health.spec.ts',
   'hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts',
   'hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts'
+];
+const DAEMON_LAUNCH_GATE_DISCOVERY_RECEIPTS = [
+  'data/virtual_ai_os/discovery/2026-06-26-vai-519-daemon-launch-health-gate.md',
+  'data/meta_glasses_display_widgets/discovery/2026-06-26-mgw-535-daemon-launch-health-gate.md'
 ];
 
 const DASHBOARD_TOOL_PROTOCOLS = {
@@ -664,12 +669,15 @@ class MCPDaemonManager extends EventEmitter {
       schema: 'hallucinate_app.daemon_launch_validation_gate.v1',
       receipt_schema: 'launch_readiness_receipt_v1',
       task_id: DAEMON_LAUNCH_GATE_TASK_ID,
+      vai_task_id: DAEMON_LAUNCH_GATE_VAI_TASK_ID,
       goal_id: DAEMON_LAUNCH_GATE_GOAL_ID,
       goal_packet: DAEMON_LAUNCH_GATE_PACKET_ID,
       packet_goals: [...DAEMON_LAUNCH_GATE_PACKET_GOALS],
       evidence_term: 'launch Playwright validation gate',
       launch_key: 'hallucinate-daemon-launch-orchestration',
       gate_state: 'gate_open_until_playwright_passes',
+      discovery_receipts: [...DAEMON_LAUNCH_GATE_DISCOVERY_RECEIPTS],
+      objective_gap_receipt: 'data/virtual_ai_os/discovery/2026-06-26-vai-519-objective-gap-b023c8de5b69.md',
       validation_commands: [
         'npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts',
         'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
