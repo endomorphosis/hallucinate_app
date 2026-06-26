@@ -1,5 +1,6 @@
 import playwrightTest from '@playwright/test';
 import type { ElectronApplication, Page } from '@playwright/test';
+import { spawnSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -11,7 +12,10 @@ const __dirname = path.dirname(__filename);
 const { test, expect, _electron: electron } = playwrightTest as unknown as typeof import('@playwright/test');
 const hasElectronDisplay = Boolean(process.env.DISPLAY || process.env.WAYLAND_DISPLAY);
 const electronDescribe = hasElectronDisplay ? test.describe : test.describe.skip;
+const APP_ROOT = path.join(__dirname, '..', '..');
+const REPO_ROOT = path.resolve(APP_ROOT, '..');
 const LAUNCH_READINESS_FIXTURE = path.join(__dirname, 'fixtures', 'hao-682-mcp-dashboard-launch-readiness.json');
+const VAI_512_CATALOG_FIXTURE = path.join(__dirname, 'fixtures', 'vai-512-mcp-dashboard-catalog.json');
 
 const DASHBOARD_SERVER_IDS = ['ipfs-kit', 'ipfs-datasets', 'ipfs-accelerate'] as const;
 const FOLLOW_UP_TASKS = ['HAO-678', 'HAO-679', 'HAO-680', 'HAO-681', 'HAO-682', 'HAO-683'];
@@ -202,6 +206,22 @@ electronDescribe('MCP Dashboard Interoperability - VAIOS-G723 Electron UI wiring
 });
 
 test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate', () => {
+  test('keeps the shared VAI-512 catalog fixture in parity with the Hallucinate manager', () => {
+    const manager = new MCPDaemonManager();
+    const catalog = manager.getDashboardCapabilityCatalog();
+    const fixture = JSON.parse(fs.readFileSync(VAI_512_CATALOG_FIXTURE, 'utf8'));
+
+    expect(fixture).toEqual(catalog);
+    expect(fixture.validation_task_id).toBe('VAI-512');
+    expect(fixture.dashboard_only_mocks).toBe(false);
+    expect(fixture.generated_by).toBe('hallucinate_app.node.mcp_daemon_manager.getDashboardCapabilityCatalog');
+    expect(fixture.servers.map((server: any) => server.server_package).sort()).toEqual([
+      'ipfs_accelerate_py',
+      'ipfs_datasets_py',
+      'ipfs_kit_py'
+    ]);
+  });
+
   test('normalizes the dashboard capability catalog without a display server', () => {
     const manager = new MCPDaemonManager();
     const catalog = manager.getDashboardCapabilityCatalog();
@@ -249,6 +269,36 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       'supervisor-generated follow-up subtasks'
     ]);
     expect(FOLLOW_UP_TASKS).toEqual(['HAO-678', 'HAO-679', 'HAO-680', 'HAO-681', 'HAO-682', 'HAO-683']);
+  });
+
+  test('lets Swissknife consume the same dashboard catalog without duplicate schemas or mocks', () => {
+    const result = spawnSync('npm', ['--prefix', 'swissknife', 'run', 'test:e2e:mcp'], {
+      cwd: REPO_ROOT,
+      encoding: 'utf8',
+      env: {
+        ...process.env,
+        HALLUCINATE_APP_E2E_NO_BOOTSTRAP: 'true'
+      }
+    });
+
+    expect(result.status, `${result.stdout}\n${result.stderr}`).toBe(0);
+    const match = String(result.stdout || '').match(/\{\s*"status"[\s\S]*\}\s*$/);
+    expect(match, result.stdout).toBeTruthy();
+    const payload = JSON.parse(match![0]);
+    expect(payload).toMatchObject({
+      status: 'ok',
+      task_id: 'VAI-512',
+      catalog_schema: 'hallucinate_app.mcp_dashboard_capability_catalog.v1'
+    });
+    expect(payload.packages).toEqual(['ipfs_accelerate_py', 'ipfs_datasets_py', 'ipfs_kit_py']);
+    expect(payload.operations).toEqual(expect.arrayContaining([
+      'ipfs_kit_py:tools/list',
+      'ipfs_kit_py:tools/call',
+      'ipfs_datasets_py:tools/list',
+      'ipfs_datasets_py:tools/call',
+      'ipfs_accelerate_py:tools/list',
+      'ipfs_accelerate_py:tools/call'
+    ]));
   });
 
   test('binds the launch Playwright validation gate to the readiness receipt', () => {
