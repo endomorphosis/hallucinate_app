@@ -3491,18 +3491,18 @@ UI-plane participants and runtime-plane targets.
 - Validation: python3 -m py_compile external/ipfs_kit/archive/applied_patches/advanced_filecoin.py
 - Acceptance: Codebase scan filed this finding from external/ipfs_kit/archive/applied_patches/advanced_filecoin.py:984. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-308-codebase-scan-f223d9e5d048.md, fix the bug or improvement, add or update focused validation when appropriate, and keep the supervisor-fed backlog parseable.
 
-## HAO-309 Resolve dirty main checkout blocking 7 worktree merges
+## HAO-309 Resolve dirty main checkout blocking 8 worktree merges
 
 - Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Fingerprint: 5d1f65eddb7a4d632de3e366948998a0430afd0a
+- Fingerprint: 800206562375407475a74ab9a609a0c113647575
 - Dedupe key: reconciliation_guardrail:main_checkout_dirty
 - Depends on:
 - Outputs: data/hallucinate_multimodal_control/discovery, hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-309-reconciliation-c05f71151a70.md
-- Acceptance: Reconciliation guardrail filed this because 7 branch or worktree cleanup candidates are blocked by main_checkout_dirty. Use evidence and the machine-readable reconciliation plan in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-309-reconciliation-c05f71151a70.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
+- Acceptance: Reconciliation guardrail filed this because 8 branch or worktree cleanup candidates are blocked by main_checkout_dirty. Use evidence and the machine-readable reconciliation plan in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-07-hao-309-reconciliation-c05f71151a70.md, reconcile the dirty checkout or dirty worktree group deliberately, then rerun the supervisor cleanup/reconciliation pass and confirm that the blocked candidate count decreases.
 
 ## HAO-310 Resolve 1 dirty backlogged worktrees blocked by unsupported_status
 
@@ -8210,3 +8210,14 @@ UI-plane participants and runtime-plane targets.
 - Outputs: hallucinate_app/hallucinate_app/node/control_surface_invocation.js, hallucinate_app/hallucinate_app/node/mcp_daemon_manager.js, hallucinate_app/hallucinate_app/node/views, hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts, data/hallucinate_multimodal_control/discovery
 - Validation: npm --prefix hallucinate_app run test:e2e -- mcp-dashboard-interoperability.spec.ts
 - Acceptance: Retry-budget guardrail filed this from repeated validation failures in HAO-680. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-25-hao-698-hao-680-retry-budget.md to fix the validation blocker, then mark this repair task completed so the supervisor can release HAO-680 from strategy blocked_tasks.
+
+## HAO-699 Resolve merge retry-budget failure for HAO-678
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: HAO-677
+- Outputs: hallucinate_app/hallucinate_app/node/views/ipfs_kit_dashboard.html, hallucinate_app/hallucinate_app/node/views/ipfs_datasets_dashboard.html, hallucinate_app/hallucinate_app/node/views/ipfs_accelerate_dashboard.html, hallucinate_app/preload.cjs, hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts, data/hallucinate_multimodal_control/discovery
+- Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-26-hao-699-hao-678-merge-retry-budget.md
+- Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-678. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-26-hao-699-hao-678-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-678 from strategy blocked_tasks.
