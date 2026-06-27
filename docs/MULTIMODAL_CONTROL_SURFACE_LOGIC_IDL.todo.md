@@ -7987,7 +7987,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-682 Aggregate MCP dashboard interoperability into the launch-readiness receipt
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: launch
