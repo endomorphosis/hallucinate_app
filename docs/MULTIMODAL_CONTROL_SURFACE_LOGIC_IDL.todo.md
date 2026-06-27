@@ -7939,7 +7939,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-679 Add a Hallucinate App MCP dashboard interoperability Playwright matrix
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: validation
