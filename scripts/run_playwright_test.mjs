@@ -13,6 +13,11 @@ const electronPackage = path.join(projectRoot, 'node_modules', 'electron', 'pack
 const commandArgs = process.argv.slice(2);
 const args = commandArgs.length > 0 ? commandArgs : ['test'];
 const missingDisplayDiagnostic = 'missing_xvfb_for_electron_playwright';
+const NO_DISPLAY_RUNNABLE_SPEC_FILES = new Set([
+  'mcp-dashboard-interoperability.spec.ts',
+  'mcp-feature-exposure.spec.ts',
+  'multimodal-control-surface.spec.ts'
+]);
 
 runPlaywright(args);
 
@@ -77,6 +82,10 @@ function playwrightCommand(playwrightArgs) {
     return { binary: process.execPath, args: baseArgs };
   }
 
+  if (isNoDisplayRunnableRequest(playwrightArgs)) {
+    return { binary: process.execPath, args: baseArgs };
+  }
+
   if (commandExists('xvfb-run')) {
     return {
       binary: 'xvfb-run',
@@ -96,6 +105,15 @@ function playwrightCommand(playwrightArgs) {
     diagnostic: missingDisplayDiagnostic,
     message: 'Hallucinate Electron Playwright tests need DISPLAY, WAYLAND_DISPLAY, or xvfb-run. This is a repairable launch-environment blocker, not a Meta glasses MCP dashboard contract failure. Install xvfb on the host or run the supervisor in an environment with a graphical display so launch validation can execute instead of burning retry-budget attempts.',
   };
+}
+
+function isNoDisplayRunnableRequest(playwrightArgs) {
+  const selectedSpecs = playwrightArgs
+    .filter((arg) => !arg.startsWith('-') && arg.endsWith('.spec.ts'))
+    .map((arg) => path.basename(arg));
+
+  return selectedSpecs.length > 0 &&
+    selectedSpecs.every((spec) => NO_DISPLAY_RUNNABLE_SPEC_FILES.has(spec));
 }
 
 function needsVirtualDisplay() {
