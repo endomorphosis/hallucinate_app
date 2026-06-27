@@ -10,6 +10,7 @@ const { test, expect } = playwrightTest as unknown as typeof import('@playwright
 
 const GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-535-daemon-launch-health-gate.json');
 const VAI_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-519-daemon-launch-health-gate.json');
+const HAO_713_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-713-daemon-launch-health-gate.json');
 const DAEMON_IDS = ['ipfs-kit', 'ipfs-datasets', 'ipfs-accelerate'];
 const BACKEND_PACKAGES = ['ipfs_kit_py', 'ipfs_datasets_py', 'ipfs_accelerate_py'];
 
@@ -25,9 +26,12 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
     expect(gate.goal_id).toBe('VAIOS-G728');
     expect(gate.goal_packet).toBe('goal_packet/launch/hallucinate_app/44dceea6bc53');
     expect(gate.packet_goals).toEqual(['VAIOS-G724', 'VAIOS-G728']);
+    expect(gate.backlog_task_ids).toEqual(['HAO-702', 'HAO-713']);
     expect(gate.evidence_term).toBe('launch Playwright validation gate');
     expect(gate.objective_gap_receipt).toBe('data/virtual_ai_os/discovery/2026-06-26-vai-519-objective-gap-b023c8de5b69.md');
     expect(gate.discovery_receipts).toContain('data/virtual_ai_os/discovery/2026-06-26-vai-519-daemon-launch-health-gate.md');
+    expect(gate.supervisor_gap_receipts).toContain('data/hallucinate_multimodal_control/discovery/2026-06-27-hao-713-objective-gap-b023c8de5b69.md');
+    expect(gate.hallucinate_backlog_receipts).toContain('data/hallucinate_multimodal_control/discovery/2026-06-27-hao-713-daemon-launch-health-gate.md');
     expect(gate.playwright_specs).toContain('hallucinate_app/test/e2e/daemon-launch-health.spec.ts');
     expect(gate.validation_commands).toContain('npm --prefix swissknife run test:e2e:meta-glasses');
     expect(gate.validation_commands).toContain('npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts');
@@ -98,5 +102,42 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
     expect(receipt.required_evidence).toEqual(gate.required_evidence);
     expect(receipt.daemon_health_paths).toEqual(gate.daemon_health_paths);
     expect(receipt.swissknife_handoff).toEqual(gate.swissknife_handoff);
+  });
+
+  test('closes the HAO-713 objective gap with the daemon launch Playwright gate', () => {
+    const manager = new MCPDaemonManager();
+    const gate = manager.getDaemonLaunchValidationGate();
+    const receipt = JSON.parse(fs.readFileSync(HAO_713_GATE_FIXTURE, 'utf8'));
+
+    expect(receipt.schema).toBe('hao_daemon_launch_health_gate_v1');
+    expect(receipt.task_id).toBe('HAO-713');
+    expect(receipt.shared_packet_task_id).toBe(gate.task_id);
+    expect(receipt.goal_id).toBe(gate.goal_id);
+    expect(receipt.goal_packet).toBe(gate.goal_packet);
+    expect(receipt.packet_goals).toEqual(gate.packet_goals);
+    expect(receipt.evidence_term).toBe(gate.evidence_term);
+    expect(receipt.missing_evidence_source).toBe('data/hallucinate_multimodal_control/discovery/2026-06-27-hao-713-objective-gap-b023c8de5b69.md');
+    expect(receipt.receipt_path).toBe('data/hallucinate_multimodal_control/discovery/2026-06-27-hao-713-daemon-launch-health-gate.md');
+    expect(gate.backlog_task_ids).toContain(receipt.task_id);
+    expect(gate.supervisor_gap_receipts).toContain(receipt.missing_evidence_source);
+    expect(gate.hallucinate_backlog_receipts).toContain(receipt.receipt_path);
+    expect(receipt.playwright_gate).toMatchObject({
+      surface: 'hallucinate_app',
+      command: 'npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts',
+      spec: 'hallucinate_app/test/e2e/daemon-launch-health.spec.ts'
+    });
+    expect(receipt.playwright_specs).toEqual(gate.playwright_specs);
+    expect(receipt.validation_commands).toEqual(gate.validation_commands);
+    expect(receipt.required_backends).toEqual(gate.required_backends);
+    expect(receipt.required_evidence).toEqual(gate.required_evidence);
+    expect(receipt.daemon_health_paths).toEqual(gate.daemon_health_paths);
+    expect(receipt.swissknife_handoff).toEqual(gate.swissknife_handoff);
+    expect(receipt.supervisor_alignment).toMatchObject({
+      objective_heap_goal: 'VAIOS-G728',
+      packet_sibling_goal: 'VAIOS-G724',
+      backlog_task: 'HAO-713',
+      shared_packet_task: 'MGW-535',
+      keeps_supervisor_fed_backlog_aligned: true
+    });
   });
 });
