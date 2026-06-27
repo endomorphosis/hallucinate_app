@@ -17,6 +17,11 @@ const REPO_ROOT = path.resolve(APP_ROOT, '..');
 const HAO_679_INTEROP_FIXTURE = path.join(__dirname, 'fixtures', 'hao-679-mcp-dashboard-interoperability.json');
 const LAUNCH_READINESS_FIXTURE = path.join(__dirname, 'fixtures', 'hao-682-mcp-dashboard-launch-readiness.json');
 const VAI_512_CATALOG_FIXTURE = path.join(__dirname, 'fixtures', 'vai-512-mcp-dashboard-catalog.json');
+const VAI_512_CONSUMPTION_RECEIPT = path.join(
+  __dirname,
+  'fixtures',
+  'vai-512-hallucinate-swissknife-mcp-dashboard-consumption.json'
+);
 const VAI_517_LAUNCH_READINESS_FIXTURE = path.join(__dirname, 'fixtures', 'vai-517-mcp-dashboard-launch-readiness.json');
 const MGW_533_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-533-mcp-dashboard-launch-gate.json');
 const HAO_700_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-700-mcp-dashboard-launch-gate.json');
@@ -422,6 +427,7 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
   });
 
   test('lets Swissknife consume the same dashboard catalog without duplicate schemas or mocks', () => {
+    const receipt = JSON.parse(fs.readFileSync(VAI_512_CONSUMPTION_RECEIPT, 'utf8'));
     const result = spawnSync('npm', ['--prefix', 'swissknife', 'run', 'test:e2e:mcp'], {
       cwd: REPO_ROOT,
       encoding: 'utf8',
@@ -444,6 +450,42 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       launch_goal_ids: ['VAIOS-G723', 'VAIOS-G724', 'VAIOS-G728'],
       catalog_schema: 'hallucinate_app.mcp_dashboard_capability_catalog.v1'
     });
+    expect(receipt).toMatchObject({
+      schema: 'launch_readiness_receipt_v1',
+      task_id: 'VAI-512',
+      goal_id: 'VAIOS-G723',
+      evidence_term: 'Hallucinate dashboard to Swissknife MCP consumer launch receipt',
+      catalog_schema: payload.catalog_schema,
+      catalog_fixture: 'hallucinate_app/test/e2e/fixtures/vai-512-mcp-dashboard-catalog.json',
+      dashboard_only_mocks: false,
+      shared_receipt_schema: 'mcp_server_invocation_receipt_v1'
+    });
+    expect(receipt.validation_commands).toEqual(expect.arrayContaining([
+      'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
+      'npm --prefix swissknife run test:e2e:mcp',
+      'npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
+    ]));
+    expect(receipt.receipt_route).toEqual([
+      'Hallucinate App MCP dashboard',
+      'dashboard capability catalog',
+      'Swissknife MCP dashboard capability registry',
+      'interaction_envelope',
+      'policy_decision',
+      'mediation_receipt',
+      'supervised MCP server transport'
+    ]);
+    expect(receipt.required_evidence).toEqual(expect.arrayContaining([
+      'Hallucinate App exposes MCP server dashboards',
+      'tools/list mediated through control plane',
+      'tools/call mediated through control plane',
+      'Swissknife applications consume the same catalog',
+      'no duplicate catalog schemas',
+      'no dashboard-only mocks',
+      'hardware-free Playwright evidence'
+    ]));
+    expect(receipt.required_backends.sort()).toEqual(payload.packages);
+    expect(receipt.required_operations).toEqual(expect.arrayContaining(payload.operations));
+    expect(receipt.dashboard_servers.map((server: any) => server.server_package).sort()).toEqual(payload.packages);
     expect(payload.packages).toEqual(['ipfs_accelerate_py', 'ipfs_datasets_py', 'ipfs_kit_py']);
     expect(payload.operations).toEqual(expect.arrayContaining([
       'ipfs_kit_py:tools/list',
