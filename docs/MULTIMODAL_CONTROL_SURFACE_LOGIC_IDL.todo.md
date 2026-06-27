@@ -8567,3 +8567,38 @@ UI-plane participants and runtime-plane targets.
 - Candidate kind: validation_gate
 - Todo vector key: e514497464ba6ea4
 - Acceptance: Objective scan filed this gap for VAIOS-G728. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-27-hao-713-objective-gap-b023c8de5b69.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (launch Playwright validation gate), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/launch/hallucinate_app/44dceea6bc53; when practical, make one cohesive change that advances the packet goals (VAIOS-G724, VAIOS-G728) and covers the shared packet evidence without expanding the prompt. Refine the objective heap if the gap needs smaller child goals.
+
+## HAO-714 Close objective gap: Hallucinate MCP dashboard interoperability console
+
+- Status: todo
+- Completion: manual
+- Priority: P0
+- Track: launch
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, hallucinate_app, swissknife, docs/launch/phone_desktop_glasses_readiness.md, tests
+- Validation: PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py tests/test_virtual_ai_os_todo_queue.py -q; npm --prefix hallucinate_app run test:daemon-manager; npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts; cd hallucinate_app && (env -u DISPLAY -u WAYLAND_DISPLAY HALLUCINATE_APP_E2E_NO_BOOTSTRAP=true node scripts/run_playwright_test.mjs --help || test $? -eq 78); npm --prefix swissknife run test:e2e:mcp && (test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses) && (test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts)
+- Bundle: objective/launch/hallucinate-mcp-dashboard
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-launch-hallucinate-mcp-dashboard.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G697
+- Graph depth: 1
+- Parallel lane: hallucinate-mcp-dashboard
+- Conflict policy: keep Hallucinate App dashboard, daemon manager, and Swissknife catalog edits additive; preserve one shared catalog and one receipt schema when resolving parallel UI/test changes
+- Goal id: VAIOS-G723
+- Missing evidence: launch Playwright validation gate
+- Embedding query: Hallucinate App menus dashboards MCP dashboard capability catalog daemon health tools/list tools/call ipfs_kit_py ipfs_datasets_py ipfs_accelerate_py Swissknife MCP++ Playwright launch interoperability
+- AST query: MenuGenerator, mcpServers, dashboardMcpServers, getLaunchPlan, getDashboardCapabilityCatalog, mcp_daemon_manager, mcp-feature-exposure, mcp-dashboard-interoperability, ControlSurfaceInvocationGate
+- Surplus group: objective/VAIOS-G723
+- Merge key: 3997b2fdaa13d4a4
+- Merge family: objective/VAIOS-G723
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: launch_validation_gate
+- Goal packet: 
+- Goal packet role: 
+- Goal packet goals: 
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Candidate kind: validation_gate
+- Todo vector key: 423c5c08373fafe1
+- Acceptance: Objective scan filed this gap for VAIOS-G723. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-27-hao-714-objective-gap-7ea369464239.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (launch Playwright validation gate), and keep the supervisor-fed backlog aligned with the objective heap.  Add child goals for catalog normalization, dashboard UI wiring, mediated tool-call receipts, Swissknife consumers, Playwright coverage, and supervisor-generated follow-up subtasks if any dashboard or backend validation fails.
