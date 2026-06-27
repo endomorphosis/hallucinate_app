@@ -7971,8 +7971,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-681 Prove Swissknife applications consume the Hallucinate MCP dashboard catalog
 
-- Status: todo
-- Completion: manual
+- Status: completed
+- Completion: manual 2026-06-27: merged the Hallucinate App catalog producer and Swissknife consumer proof through hallucinate_app 8046bd8 and swissknife 2a23229, including shared HAO-681 receipts, fixtures, and MCP dashboard consumer tests.
 - Priority: P0
 - Track: integration
 - Depends on: HAO-677, HAO-680
