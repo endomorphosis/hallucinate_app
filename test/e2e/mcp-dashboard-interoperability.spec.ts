@@ -14,6 +14,7 @@ const hasElectronDisplay = Boolean(process.env.DISPLAY || process.env.WAYLAND_DI
 const electronDescribe = hasElectronDisplay ? test.describe : test.describe.skip;
 const APP_ROOT = path.join(__dirname, '..', '..');
 const REPO_ROOT = path.resolve(APP_ROOT, '..');
+const HAO_679_INTEROP_FIXTURE = path.join(__dirname, 'fixtures', 'hao-679-mcp-dashboard-interoperability.json');
 const LAUNCH_READINESS_FIXTURE = path.join(__dirname, 'fixtures', 'hao-682-mcp-dashboard-launch-readiness.json');
 const VAI_512_CATALOG_FIXTURE = path.join(__dirname, 'fixtures', 'vai-512-mcp-dashboard-catalog.json');
 const VAI_517_LAUNCH_READINESS_FIXTURE = path.join(__dirname, 'fixtures', 'vai-517-mcp-dashboard-launch-readiness.json');
@@ -97,8 +98,52 @@ async function clickApplicationMenuItem(electronApp: ElectronApplication, target
   }, targetLabel);
 }
 
+async function clickApplicationMenuPath(electronApp: ElectronApplication, labels: string[]) {
+  return electronApp.evaluate(({ Menu }, labelPath) => {
+    const normalize = (value: unknown) =>
+      String(value || '').replace(/[^\x20-\x7E]/g, '').trim();
+    const matches = (value: unknown, expected: string) => {
+      const normalizedValue = normalize(value);
+      const normalizedExpected = normalize(expected);
+      return normalizedValue === normalizedExpected || normalizedValue.includes(normalizedExpected);
+    };
+
+    let currentItems = Menu.getApplicationMenu()?.items || [];
+    let found = null;
+
+    for (const label of labelPath) {
+      found = (currentItems || []).find((item: any) => matches(item.label, label));
+      if (!found) {
+        return false;
+      }
+      currentItems = found.submenu?.items || [];
+    }
+
+    if (!found) {
+      return false;
+    }
+
+    found.click();
+    return true;
+  }, labels);
+}
+
 async function dashboardCatalog(window: Page) {
   return window.evaluate(async () => window?.electronAPI?.daemon?.getDashboardCapabilityCatalog?.());
+}
+
+async function waitForWindowUrl(electronApp: ElectronApplication, matcher: RegExp, attempts = 20, delayMs = 500) {
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    const windows = electronApp.windows();
+    for (const candidate of windows) {
+      if (matcher.test(candidate.url())) {
+        return candidate;
+      }
+    }
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
+  }
+
+  throw new Error(`No window URL matched ${matcher}`);
 }
 
 electronDescribe('MCP Dashboard Interoperability - VAIOS-G723 Electron UI wiring', () => {
@@ -205,6 +250,34 @@ electronDescribe('MCP Dashboard Interoperability - VAIOS-G723 Electron UI wiring
       await expect(window.locator('h1')).toContainText(dashboard.heading);
       await expect(window.locator('#package-dashboard-frame')).toHaveAttribute('title', dashboard.nativeTitle);
       await expect(window.locator('#btn-open-daemon-manager')).toBeVisible();
+    }
+  });
+
+  test('opens each live dashboard URL from the MCP Servers menu', async () => {
+    const catalog = await dashboardCatalog(window);
+    const serversById = new Map((catalog?.servers || []).map((server: any) => [server.daemon_id, server]));
+
+    for (const menuServer of mcpServers.filter((server: any) => DASHBOARD_SERVER_IDS.includes(server.id))) {
+      const catalogServer = serversById.get(menuServer.id) as any;
+      const liveDashboardUrl = catalogServer.native_dashboard_url || catalogServer.menu_dashboard_url;
+      const menuPath = [
+        'MCP Servers',
+        `${menuServer.displayName} MCP (Port ${menuServer.port})`,
+        'Open Web Dashboard'
+      ];
+
+      expect(liveDashboardUrl).toBe(menuServer.webDashboardUrl);
+      expect(await clickApplicationMenuPath(electronApp, menuPath)).toBe(true);
+
+      const dashboardWindow = await waitForWindowUrl(
+        electronApp,
+        new RegExp(`^${liveDashboardUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`)
+      );
+      expect(dashboardWindow.url()).toContain(liveDashboardUrl);
+
+      if (dashboardWindow !== window) {
+        await dashboardWindow.close();
+      }
     }
   });
 
@@ -376,6 +449,56 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     expect(receipt.receipt_route).toContain('mediation_receipt');
     expect(receipt.follow_up_subtasks).toEqual(FOLLOW_UP_TASKS);
     expect(receipt.failure_rule).toContain('supervisor-generated follow-up');
+  });
+
+  test('captures the HAO-679 dashboard interoperability receipt matrix', () => {
+    const receipt = JSON.parse(fs.readFileSync(HAO_679_INTEROP_FIXTURE, 'utf8'));
+    const catalog = new MCPDaemonManager().getDashboardCapabilityCatalog();
+    const serversById = new Map(catalog.servers.map((server: any) => [server.daemon_id, server]));
+
+    expect(receipt.schema).toBe('mcp_dashboard_interoperability_receipt_v1');
+    expect(receipt.task_id).toBe('HAO-679');
+    expect(receipt.goal_id).toBe('VAIOS-G723');
+    expect(receipt.depends_on).toBe('HAO-678');
+    expect(receipt.playwright_spec).toBe('hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts');
+    expect(receipt.validation_commands).toEqual(expect.arrayContaining([
+      'npm --prefix hallucinate_app run test:e2e -- mcp-dashboard-interoperability.spec.ts',
+      'PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q'
+    ]));
+    expect(receipt.catalog_fixture).toBe('hallucinate_app/test/e2e/fixtures/vai-512-mcp-dashboard-catalog.json');
+    expect(receipt.shared_catalog_schema).toBe(catalog.schema);
+    expect(receipt.acceptance_matrix).toEqual([
+      'dashboards_menu_to_catalog_dashboard',
+      'mcp_servers_menu_to_live_dashboard_url',
+      'daemon_health_observed',
+      'shared_catalog_read',
+      'hardware_free_tools_list',
+      'safe_tools_call_probe',
+      'pass_fail_launch_receipts'
+    ]);
+
+    for (const row of receipt.dashboard_menu_matrix) {
+      const server = serversById.get(row.daemon_id) as any;
+      expect(server).toBeTruthy();
+      expect(row.status).toBe('pass');
+      expect(row.dashboard_menu_label).toBe(`${server.display_name} Dashboard`);
+      expect(row.mcp_servers_menu_path).toEqual([
+        'MCP Servers',
+        `${server.display_name} MCP (Port ${server.port})`,
+        'Open Web Dashboard'
+      ]);
+      expect(row.live_dashboard_url).toBe(server.native_dashboard_url || server.menu_dashboard_url);
+      expect(row.health_path).toBe(server.health_path);
+      expect(row.tools_list.operation).toBe('tools/list');
+      expect(row.tools_call.operation).toBe('tools/call');
+      expect(row.tools_call.safe_probe.mutation).toBe(false);
+      expect(row.receipt_refs).toEqual(expect.arrayContaining([
+        'interaction_envelope',
+        'policy_decision',
+        'mediation_receipt',
+        'receipt_cid'
+      ]));
+    }
   });
 
   test('binds MGW-533 launch objective coverage to the dashboard Playwright gate', () => {

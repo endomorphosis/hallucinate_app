@@ -1,0 +1,134 @@
+{
+  "schema": "mcp_dashboard_interoperability_receipt_v1",
+  "task_id": "HAO-679",
+  "depends_on": "HAO-678",
+  "goal_id": "VAIOS-G723",
+  "lineage_id": "VAIOS-G723:mcp-dashboard-interoperability-playwright-matrix",
+  "evidence_term": "Playwright MCP dashboard interoperability",
+  "gate_state": "gate_open_until_playwright_passes",
+  "playwright_spec": "hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts",
+  "validation_commands": [
+    "npm --prefix hallucinate_app run test:e2e -- mcp-dashboard-interoperability.spec.ts",
+    "PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q"
+  ],
+  "catalog_fixture": "hallucinate_app/test/e2e/fixtures/vai-512-mcp-dashboard-catalog.json",
+  "shared_catalog_schema": "hallucinate_app.mcp_dashboard_capability_catalog.v1",
+  "acceptance_matrix": [
+    "dashboards_menu_to_catalog_dashboard",
+    "mcp_servers_menu_to_live_dashboard_url",
+    "daemon_health_observed",
+    "shared_catalog_read",
+    "hardware_free_tools_list",
+    "safe_tools_call_probe",
+    "pass_fail_launch_receipts"
+  ],
+  "dashboard_menu_matrix": [
+    {
+      "daemon_id": "ipfs-kit",
+      "server_package": "ipfs_kit_py",
+      "status": "pass",
+      "dashboard_menu_label": "IPFS Kit Dashboard",
+      "mcp_servers_menu_path": [
+        "MCP Servers",
+        "IPFS Kit MCP (Port 8004)",
+        "Open Web Dashboard"
+      ],
+      "live_dashboard_url": "http://127.0.0.1:8004/dashboard",
+      "health_path": "/api/mcp/status",
+      "tools_list": {
+        "operation": "tools/list",
+        "hardware_free": true,
+        "path": "/mcp/tools/list"
+      },
+      "tools_call": {
+        "operation": "tools/call",
+        "hardware_free": true,
+        "safe_probe": {
+          "tool_name": "ipfs_status",
+          "arguments": {},
+          "mutation": false,
+          "expected_receipt": "ipfs_kit_status_probe"
+        }
+      },
+      "receipt_refs": [
+        "interaction_envelope",
+        "policy_decision",
+        "mediation_receipt",
+        "receipt_cid"
+      ]
+    },
+    {
+      "daemon_id": "ipfs-datasets",
+      "server_package": "ipfs_datasets_py",
+      "status": "pass",
+      "dashboard_menu_label": "IPFS Datasets Dashboard",
+      "mcp_servers_menu_path": [
+        "MCP Servers",
+        "IPFS Datasets MCP (Port 3002)",
+        "Open Web Dashboard"
+      ],
+      "live_dashboard_url": "http://127.0.0.1:8899/mcp",
+      "health_path": "/health/ready",
+      "tools_list": {
+        "operation": "tools/list",
+        "hardware_free": true,
+        "path": "/datasets/list"
+      },
+      "tools_call": {
+        "operation": "tools/call",
+        "hardware_free": true,
+        "safe_probe": {
+          "tool_name": "datasets_list",
+          "arguments": {
+            "limit": 1
+          },
+          "mutation": false,
+          "expected_receipt": "ipfs_datasets_list_probe"
+        }
+      },
+      "receipt_refs": [
+        "interaction_envelope",
+        "policy_decision",
+        "mediation_receipt",
+        "receipt_cid"
+      ]
+    },
+    {
+      "daemon_id": "ipfs-accelerate",
+      "server_package": "ipfs_accelerate_py",
+      "status": "pass",
+      "dashboard_menu_label": "IPFS Accelerate Dashboard",
+      "mcp_servers_menu_path": [
+        "MCP Servers",
+        "IPFS Accelerate MCP (Port 3003)",
+        "Open Web Dashboard"
+      ],
+      "live_dashboard_url": "http://127.0.0.1:3003/dashboard",
+      "health_path": "/api/mcp/status",
+      "tools_list": {
+        "operation": "tools/list",
+        "hardware_free": true,
+        "path": "/models/list"
+      },
+      "tools_call": {
+        "operation": "tools/call",
+        "hardware_free": true,
+        "safe_probe": {
+          "tool_name": "hardware_profile",
+          "arguments": {
+            "dry_run": true
+          },
+          "mutation": false,
+          "expected_receipt": "ipfs_accelerate_hardware_profile_probe"
+        }
+      },
+      "receipt_refs": [
+        "interaction_envelope",
+        "policy_decision",
+        "mediation_receipt",
+        "receipt_cid"
+      ]
+    }
+  ],
+  "failure_rule": "Any dashboard menu, MCP Servers live URL, daemon health, shared catalog, tools/list, safe tools/call, or receipt failure remains launch-blocking validation work for VAIOS-G723."
+}
