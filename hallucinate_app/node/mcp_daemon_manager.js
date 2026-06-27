@@ -83,6 +83,17 @@ const MGW_533_LAUNCH_VALIDATION_GATE = {
   validation_command: 'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
   supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-26-mgw-533-objective-gap-3e00ad2a0074.md'
 };
+const MGW_550_LAUNCH_VALIDATION_GATE = {
+  ...MGW_533_LAUNCH_VALIDATION_GATE,
+  task_id: 'MGW-550',
+  supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-27-mgw-550-objective-gap-3e00ad2a0074.md',
+  launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-27-mgw-550-launch-playwright-validation-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-550-mcp-dashboard-launch-gate.json'
+};
+const DASHBOARD_LAUNCH_VALIDATION_GATES = [
+  MGW_533_LAUNCH_VALIDATION_GATE,
+  MGW_550_LAUNCH_VALIDATION_GATE
+];
 const DAEMON_LAUNCH_GATE_TASK_ID = 'MGW-535';
 const DAEMON_LAUNCH_GATE_VAI_TASK_ID = 'VAI-519';
 const DAEMON_LAUNCH_GATE_BACKLOG_TASK_ID = 'HAO-702';
@@ -760,6 +771,7 @@ class MCPDaemonManager extends EventEmitter {
       goal_id: DASHBOARD_CATALOG_GOAL_ID,
       launch_objective_ids: DASHBOARD_LAUNCH_OBJECTIVE_IDS,
       launch_validation_gate: MGW_533_LAUNCH_VALIDATION_GATE,
+      launch_validation_gates: DASHBOARD_LAUNCH_VALIDATION_GATES,
       swissknife_catalog_consumer_proof: SWISSKNIFE_DASHBOARD_CONSUMER_PROOF,
       generated_by: 'hallucinate_app.node.mcp_daemon_manager.getDashboardCapabilityCatalog',
       dashboard_only_mocks: false,
