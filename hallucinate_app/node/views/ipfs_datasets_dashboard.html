@@ -449,11 +449,12 @@
       if (!entry) {
         return;
       }
+      const safeProbe = entry.tool_protocols?.tools_call?.safeProbe || entry.tool_protocols?.tools_call?.safe_probe;
       dashboardCapability = entry;
       document.getElementById('package-status').textContent = entry.server_package;
       document.getElementById('endpoint-status').textContent = entry.endpoint;
       document.getElementById('tools-list-url').textContent = entry.tool_protocols?.tools_list?.url || 'Not advertised';
-      document.getElementById('tools-call-probe').textContent = entry.tool_protocols?.tools_call?.safeProbe?.tool_name || 'Not advertised';
+      document.getElementById('tools-call-probe').textContent = safeProbe?.tool_name || 'Not advertised';
       document.getElementById('control-surface-contract').textContent = entry.control_surface_mediation_contract || 'Not advertised';
       document.getElementById('native-dashboard-url').textContent = entry.native_dashboard_url || entry.menu_dashboard_url || 'Not advertised';
       if (entry.native_dashboard_url) {
@@ -687,7 +688,7 @@
         return;
       }
       const frame = document.getElementById('package-dashboard-frame');
-      frame.src = frame.src;
+      frame.src = buildDatasetsDashboardUrl(selectedDatasetDashboardPath);
     });
 
     document.getElementById('btn-tools-list').addEventListener('click', async () => {

@@ -46,6 +46,10 @@ function dashboardReceipt(entry, operation, status, details = {}) {
   };
 }
 
+function catalogSafeProbe(protocol = {}) {
+  return protocol.safeProbe || protocol.safe_probe || null;
+}
+
 async function fetchWithTimeout(url, options = {}) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), DASHBOARD_ACTION_TIMEOUT_MS);
@@ -137,16 +141,14 @@ async function dashboardToolsList(daemonId) {
   }
 
   try {
-    const response = await fetchWithTimeout(protocol.url, { method: protocol.method || 'GET' });
-    const text = await response.text();
-    return dashboardReceipt(allowed.entry, 'tools/list', response.ok ? 'ok' : 'error', {
+    const response = await ipcRenderer.invoke('daemon:dashboardToolsList', daemonId);
+    const failedClosed = response?.fail_closed === true || response?.denied === true || response?.ok === false;
+    return dashboardReceipt(allowed.entry, 'tools/list', failedClosed ? 'fail_closed' : 'ok', {
       tool_protocol: protocol,
-      message: response.ok ? 'tools/list completed through the preload daemon bridge.' : `tools/list returned HTTP ${response.status}.`,
-      response: {
-        ok: response.ok,
-        status: response.status,
-        body_preview: text.slice(0, 500)
-      }
+      message: failedClosed
+        ? 'tools/list was blocked by daemon manager mediation before transport invocation.'
+        : 'tools/list completed through the preload daemon bridge.',
+      response
     });
   } catch (error) {
     return dashboardReceipt(allowed.entry, 'tools/list', 'error', {
@@ -161,7 +163,7 @@ async function dashboardToolsCall(daemonId) {
   recordDashboardBridgeCall('daemon.dashboardToolsCall', daemonId);
   const allowed = await ensureDashboardActionAllowed(daemonId, 'tools/call');
   const protocol = allowed.entry?.tool_protocols?.tools_call;
-  const safeProbe = protocol?.safeProbe;
+  const safeProbe = catalogSafeProbe(protocol);
   if (!allowed.allowed) {
     return dashboardReceipt(allowed.entry, 'tools/call', 'fail_closed', {
       tool_protocol: protocol || null,
@@ -180,30 +182,15 @@ async function dashboardToolsCall(daemonId) {
   }
 
   try {
-    const response = await fetchWithTimeout(protocol.url, {
-      method: protocol.method || 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        name: safeProbe.tool_name,
-        arguments: safeProbe.arguments || {},
-        metadata: {
-          task_id: 'HAO-678',
-          source: 'hallucinate_app.dashboard',
-          expected_receipt: safeProbe.expected_receipt,
-          mutation: false
-        }
-      })
-    });
-    const text = await response.text();
-    return dashboardReceipt(allowed.entry, 'tools/call', response.ok ? 'ok' : 'error', {
+    const response = await ipcRenderer.invoke('daemon:dashboardToolsCall', daemonId);
+    const failedClosed = response?.fail_closed === true || response?.denied === true || response?.ok === false;
+    return dashboardReceipt(allowed.entry, 'tools/call', failedClosed ? 'fail_closed' : 'ok', {
       tool_protocol: protocol,
       safe_probe: safeProbe,
-      message: response.ok ? 'Safe tools/call probe completed through the preload daemon bridge.' : `Safe tools/call probe returned HTTP ${response.status}.`,
-      response: {
-        ok: response.ok,
-        status: response.status,
-        body_preview: text.slice(0, 500)
-      }
+      message: failedClosed
+        ? 'Safe tools/call probe was blocked by daemon manager mediation before transport invocation.'
+        : 'Safe tools/call probe completed through the preload daemon bridge.',
+      response
     });
   } catch (error) {
     return dashboardReceipt(allowed.entry, 'tools/call', 'error', {

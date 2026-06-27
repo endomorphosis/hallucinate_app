@@ -647,10 +647,12 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
       await window.locator('#btn-tools-list').click();
       await waitForTextInSelector(window, '#tool-receipt', /tools\/list/);
       await expect(window.locator('#tool-receipt')).toContainText(dashboard.daemonId);
+      await expect(window.locator('#tool-receipt')).toContainText(/mediation_receipt|policy_decision|control_surface/i);
 
       await window.locator('#btn-tools-call').click();
       await waitForTextInSelector(window, '#tool-receipt', /tools\/call/);
       await expect(window.locator('#tool-receipt')).toContainText('safe_probe');
+      await expect(window.locator('#tool-receipt')).toContainText(/mediation_receipt|policy_decision|control_surface/i);
     }
   });
 
