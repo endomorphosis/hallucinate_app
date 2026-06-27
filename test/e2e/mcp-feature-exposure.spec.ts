@@ -2,6 +2,7 @@ import playwrightTest from '@playwright/test';
 import type { ElectronApplication, Page } from '@playwright/test';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import MCPDaemonManager from '../../hallucinate_app/node/mcp_daemon_manager.js';
 import { mcpServers } from '../../hallucinate_app/node/menu_config.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -9,11 +10,6 @@ const __dirname = path.dirname(__filename);
 const { test, expect, _electron: electron } = playwrightTest as unknown as typeof import('@playwright/test');
 const hasElectronDisplay = Boolean(process.env.DISPLAY || process.env.WAYLAND_DISPLAY);
 const electronDescribe = hasElectronDisplay ? test.describe : test.describe.skip;
-
-test.skip(
-  process.platform === 'linux' && !process.env.DISPLAY && !process.env.WAYLAND_DISPLAY,
-  'Electron UI validation requires an X11 or Wayland display; no DISPLAY/WAYLAND_DISPLAY is available.'
-);
 
 function electronLaunchEnv(extra: Record<string, string> = {}) {
   const { ELECTRON_RUN_AS_NODE, ...env } = process.env;
@@ -838,5 +834,79 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
     ])).toBe(true);
     await waitForDaemonHealthy(window, 'ipfs-accelerate');
     await waitForTextInSelector(window, '#server-status', /Running/i);
+  });
+});
+
+test.describe('MCP Feature Exposure - headless backend gate', () => {
+  test('launch plan exposes all MCP daemons with expected endpoints and health paths without Electron', () => {
+    const manager = new MCPDaemonManager();
+    const launchPlan = manager.getLaunchPlan();
+    const byId = new Map((launchPlan || []).map((entry: any) => [entry.daemon_id, entry]));
+
+    expect(Array.isArray(launchPlan)).toBe(true);
+    expect(launchPlan).toHaveLength(3);
+    expect(byId.get('ipfs-kit')).toMatchObject({
+      endpoint: 'http://127.0.0.1:8004',
+      health_path: '/api/mcp/status',
+      rpc_path: '/mcp/tools/call'
+    });
+    expect(byId.get('ipfs-datasets')).toMatchObject({
+      endpoint: 'http://127.0.0.1:3002',
+      health_path: '/health/ready',
+      rpc_path: '/datasets/load'
+    });
+    expect(byId.get('ipfs-accelerate')).toMatchObject({
+      endpoint: 'http://127.0.0.1:3003',
+      health_path: '/api/mcp/status',
+      rpc_path: '/mcp'
+    });
+
+    for (const entry of launchPlan) {
+      expect(entry.launch_validation_gate).toMatchObject({
+        task_id: 'MGW-535',
+        goal_id: 'VAIOS-G728',
+        evidence_term: 'launch Playwright validation gate'
+      });
+      expect(entry.mediation_contract_ref).toContain(`mcp-daemon:${entry.daemon_id}`);
+      expect(entry.swissknife_consumer).toContain('Swissknife');
+    }
+  });
+
+  test('dashboard capability catalog reconciles menu URLs, safe probes, and MCP++ telemetry without Electron', () => {
+    const manager = new MCPDaemonManager();
+    const catalog = manager.getDashboardCapabilityCatalog();
+    const byId = new Map((catalog?.servers || []).map((entry: any) => [entry.daemon_id, entry]));
+    const menuById = new Map(mcpServers.map((server: any) => [server.id, server]));
+
+    expect(catalog?.schema).toBe('hallucinate_app.mcp_dashboard_capability_catalog.v1');
+    expect(catalog?.task_id).toBe('HAO-677');
+    expect(catalog?.goal_id).toBe('VAIOS-G723');
+    expect(catalog?.launch_objective_ids).toEqual(['VAIOS-G723', 'VAIOS-G724', 'VAIOS-G728']);
+    expect(catalog?.launch_validation_gate).toMatchObject({
+      task_id: 'MGW-533',
+      goal_id: 'VAIOS-G724',
+      evidence_term: 'launch Playwright validation gate'
+    });
+    expect(catalog?.control_surface_route).toContain('mediation_receipt');
+    expect(catalog?.servers).toHaveLength(3);
+
+    for (const daemonId of ['ipfs-kit', 'ipfs-datasets', 'ipfs-accelerate']) {
+      const entry = byId.get(daemonId) as any;
+      const menuEntry = menuById.get(daemonId) as any;
+      expect(entry).toBeTruthy();
+      expect(entry.menu_dashboard_url).toBe(menuEntry.webDashboardUrl);
+      expect(entry.tool_protocols.tools_list.operation).toBe('tools/list');
+      expect(entry.tool_protocols.tools_call.operation).toBe('tools/call');
+      expect(entry.tool_protocols.tools_call.safeProbe.mutation).toBe(false);
+      expect(entry.control_surface_mediation_contract).toContain(`mcp-daemon:${daemonId}`);
+      expect(entry.control_surface_receipt_requirements).toContain('receipt_cid');
+    }
+
+    expect((byId.get('ipfs-kit') as any)?.port).toBe(8004);
+    expect((byId.get('ipfs-datasets') as any)?.native_dashboard_catalog_url).toBe(
+      'http://127.0.0.1:8899/api/hallucinate/dashboard-catalog'
+    );
+    expect((byId.get('ipfs-datasets') as any)?.mcpplusplus.mode).toBe('optional_bridge');
+    expect((byId.get('ipfs-accelerate') as any)?.mcpplusplus.profiles).toContain('mcp++/profile-e-mcp-p2p');
   });
 });

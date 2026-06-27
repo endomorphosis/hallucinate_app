@@ -571,16 +571,28 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     expect(receipt.task_id).toBe('HAO-682');
     expect(receipt.vai_task_id).toBe('VAI-503');
     expect(receipt.goal_id).toBe('VAIOS-G723');
-    expect(receipt.evidence_term).toBe('launch Playwright validation gate');
+    expect(receipt.evidence_term).toBe('dashboard interoperability launch-readiness receipt');
     expect(receipt.playwright_specs).toEqual(expect.arrayContaining([
       'hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts',
       'hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts'
     ]));
+    expect(receipt.validation_commands).toContain(
+      'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts'
+    );
     expect(receipt.required_backends).toEqual(['ipfs_kit_py', 'ipfs_datasets_py', 'ipfs_accelerate_py']);
-    expect(receipt.required_evidence).toEqual(VAI_503_EVIDENCE_TERMS);
+    expect(receipt.required_evidence).toEqual(expect.arrayContaining([
+      'Hallucinate App menu navigation',
+      'dashboard capability catalog',
+      'daemon health',
+      'MCP++ telemetry',
+      'dashboard tools/list probes',
+      'dashboard tools/call probes',
+      'Swissknife consumption',
+      'Playwright pass/fail receipts'
+    ]));
     expect(receipt.receipt_route).toContain('mediation_receipt');
     expect(receipt.follow_up_subtasks).toEqual(FOLLOW_UP_TASKS);
-    expect(receipt.failure_rule).toContain('supervisor-generated follow-up');
+    expect(receipt.failure_rule).toContain('VAIOS-G723 cannot close');
   });
 
   test('captures the HAO-679 dashboard interoperability receipt matrix', () => {
