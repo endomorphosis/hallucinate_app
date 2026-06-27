@@ -1,0 +1,96 @@
+{
+  "schema": "launch_readiness_receipt_v1",
+  "task_id": "VAI-512",
+  "title": "Prove Hallucinate and Swissknife can consume MCP dashboard tools end to end",
+  "goal_id": "VAIOS-G723",
+  "bundle": "objective/launch/mcp-dashboard-consumption",
+  "merge_key": "vaios-g723-mcp-dashboard-consumption",
+  "evidence_term": "Hallucinate dashboard to Swissknife MCP consumer launch receipt",
+  "catalog_schema": "hallucinate_app.mcp_dashboard_capability_catalog.v1",
+  "catalog_fixture": "hallucinate_app/test/e2e/fixtures/vai-512-mcp-dashboard-catalog.json",
+  "catalog_generated_by": "hallucinate_app.node.mcp_daemon_manager.getDashboardCapabilityCatalog",
+  "dashboard_only_mocks": false,
+  "shared_receipt_schema": "mcp_server_invocation_receipt_v1",
+  "consumer": {
+    "name": "Swissknife MCP dashboard capability registry",
+    "module": "swissknife/src/services/swissknife-mcp-capability-registry.ts",
+    "validator": "swissknife/scripts/test-mcp-dashboard-consumer.cjs"
+  },
+  "playwright_specs": [
+    "hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts",
+    "hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts",
+    "swissknife/test/e2e/mcp-dashboard.spec.ts",
+    "hallucinate_app/test/e2e/multimodal-control-surface.spec.ts"
+  ],
+  "validation_commands": [
+    "npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts",
+    "npm --prefix swissknife run test:e2e:mcp",
+    "npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts"
+  ],
+  "required_backends": [
+    "ipfs_kit_py",
+    "ipfs_datasets_py",
+    "ipfs_accelerate_py"
+  ],
+  "required_operations": [
+    "ipfs_kit_py:tools/list",
+    "ipfs_kit_py:tools/call",
+    "ipfs_datasets_py:tools/list",
+    "ipfs_datasets_py:tools/call",
+    "ipfs_accelerate_py:tools/list",
+    "ipfs_accelerate_py:tools/call"
+  ],
+  "required_evidence": [
+    "Hallucinate App exposes MCP server dashboards",
+    "ipfs_accelerate_py MCP server dashboard",
+    "ipfs_datasets_py MCP server dashboard",
+    "ipfs_kit_py MCP server dashboard",
+    "dashboard capability catalog",
+    "tools/list mediated through control plane",
+    "tools/call mediated through control plane",
+    "interaction_envelope",
+    "policy_decision",
+    "mediation_receipt",
+    "receipt_cid",
+    "Swissknife applications consume the same catalog",
+    "no duplicate catalog schemas",
+    "no dashboard-only mocks",
+    "hardware-free Playwright evidence"
+  ],
+  "receipt_route": [
+    "Hallucinate App MCP dashboard",
+    "dashboard capability catalog",
+    "Swissknife MCP dashboard capability registry",
+    "interaction_envelope",
+    "policy_decision",
+    "mediation_receipt",
+    "supervised MCP server transport"
+  ],
+  "dashboard_servers": [
+    {
+      "daemon_id": "ipfs-kit",
+      "server_package": "ipfs_kit_py",
+      "dashboard_url": "http://127.0.0.1:8004/dashboard",
+      "tools_list": "http://127.0.0.1:8004/mcp/tools/list",
+      "tools_call": "http://127.0.0.1:8004/mcp/tools/call",
+      "safe_probe_receipt": "ipfs_kit_status_probe"
+    },
+    {
+      "daemon_id": "ipfs-datasets",
+      "server_package": "ipfs_datasets_py",
+      "dashboard_url": "http://127.0.0.1:8899/mcp",
+      "tools_list": "http://127.0.0.1:3002/datasets/list",
+      "tools_call": "http://127.0.0.1:3002/datasets/load",
+      "safe_probe_receipt": "ipfs_datasets_list_probe"
+    },
+    {
+      "daemon_id": "ipfs-accelerate",
+      "server_package": "ipfs_accelerate_py",
+      "dashboard_url": "http://127.0.0.1:3003/dashboard",
+      "tools_list": "http://127.0.0.1:3003/mcp/tools/list",
+      "tools_call": "http://127.0.0.1:3003/mcp/tools/call",
+      "safe_probe_receipt": "ipfs_accelerate_hardware_profile_probe"
+    }
+  ],
+  "failure_rule": "Any missing Hallucinate dashboard catalog field, mediated tools/list or tools/call receipt, Swissknife consumer plan, schema parity assertion, or dashboard-only mock rejection remains launch validation work for VAIOS-G723."
+}
