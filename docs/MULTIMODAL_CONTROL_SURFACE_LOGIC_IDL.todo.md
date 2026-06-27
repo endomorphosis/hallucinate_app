@@ -7955,7 +7955,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-680 Add MCP++ and control_surface receipts for dashboard tool invocations
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: integration
