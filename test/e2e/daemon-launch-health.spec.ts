@@ -6,12 +6,28 @@ import MCPDaemonManager from '../../hallucinate_app/node/mcp_daemon_manager.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const repoRoot = path.resolve(__dirname, '..', '..', '..');
 const { test, expect } = playwrightTest as unknown as typeof import('@playwright/test');
 
 const GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-535-daemon-launch-health-gate.json');
 const VAI_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-519-daemon-launch-health-gate.json');
+const HAO_715_REPAIR_RECEIPT = path.join(
+  repoRoot,
+  'data',
+  'hallucinate_multimodal_control',
+  'discovery',
+  '2026-06-27-hao-715-hao-713-retry-budget-repair.md'
+);
 const DAEMON_IDS = ['ipfs-kit', 'ipfs-datasets', 'ipfs-accelerate'];
 const BACKEND_PACKAGES = ['ipfs_kit_py', 'ipfs_datasets_py', 'ipfs_accelerate_py'];
+
+function jsonBlockAfter(source: string, marker: string) {
+  const start = source.indexOf(marker);
+  const fenceStart = source.indexOf('```json', start);
+  const payloadStart = source.indexOf('\n', fenceStart) + 1;
+  const payloadEnd = source.indexOf('\n```', payloadStart);
+  return JSON.parse(source.slice(payloadStart, payloadEnd));
+}
 
 test.describe('MGW-535 daemon launch health Playwright gate', () => {
   test('keeps the daemon launch validation gate fixture in parity with the manager', () => {
@@ -98,5 +114,22 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
     expect(receipt.required_evidence).toEqual(gate.required_evidence);
     expect(receipt.daemon_health_paths).toEqual(gate.daemon_health_paths);
     expect(receipt.swissknife_handoff).toEqual(gate.swissknife_handoff);
+  });
+
+  test('keeps HAO-715 retry-budget repair aligned with headless-safe launch specs', () => {
+    const receiptSource = fs.readFileSync(HAO_715_REPAIR_RECEIPT, 'utf8');
+    const receipt = jsonBlockAfter(receiptSource, '## Repair Fixture');
+
+    expect(receipt.task_id).toBe('HAO-715');
+    expect(receipt.source_task_id).toBe('HAO-713');
+    expect(receipt.blocked_validation_diagnostic).toBe('missing_xvfb_for_electron_playwright');
+    expect(receipt.blocked_validation_exit_code).toBe(78);
+    expect(receipt.preserves_launch_playwright_validation_gate).toBe(true);
+    expect(receipt.headless_safe_specs).toContain(
+      'hallucinate_app/test/e2e/multimodal-control-surface.spec.ts'
+    );
+    expect(receipt.headless_safe_specs).toContain(
+      'hallucinate_app/test/e2e/daemon-launch-health.spec.ts'
+    );
   });
 });

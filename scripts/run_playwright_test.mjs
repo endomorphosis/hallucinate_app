@@ -13,11 +13,11 @@ const electronPackage = path.join(projectRoot, 'node_modules', 'electron', 'pack
 const commandArgs = process.argv.slice(2);
 const args = commandArgs.length > 0 ? commandArgs : ['test'];
 const missingDisplayDiagnostic = 'missing_xvfb_for_electron_playwright';
-const NO_DISPLAY_RUNNABLE_SPEC_FILES = new Set([
-  'mcp-dashboard-interoperability.spec.ts',
-  'mcp-feature-exposure.spec.ts',
-  'multimodal-control-surface.spec.ts'
-]);
+const specSourceDisplayPatterns = [
+  '_electron:',
+  'electron.launch(',
+  'ElectronApplication',
+];
 
 runPlaywright(args);
 
@@ -82,10 +82,6 @@ function playwrightCommand(playwrightArgs) {
     return { binary: process.execPath, args: baseArgs };
   }
 
-  if (isNoDisplayRunnableRequest(playwrightArgs)) {
-    return { binary: process.execPath, args: baseArgs };
-  }
-
   if (commandExists('xvfb-run')) {
     return {
       binary: 'xvfb-run',
@@ -107,20 +103,55 @@ function playwrightCommand(playwrightArgs) {
   };
 }
 
-function isNoDisplayRunnableRequest(playwrightArgs) {
-  const selectedSpecs = playwrightArgs
-    .filter((arg) => !arg.startsWith('-') && arg.endsWith('.spec.ts'))
-    .map((arg) => path.basename(arg));
-
-  return selectedSpecs.length > 0 &&
-    selectedSpecs.every((spec) => NO_DISPLAY_RUNNABLE_SPEC_FILES.has(spec));
-}
-
 function needsVirtualDisplay() {
   if (process.env.HALLUCINATE_APP_E2E_DISABLE_XVFB === 'true') {
     return false;
   }
-  return process.platform === 'linux' && !process.env.DISPLAY && !process.env.WAYLAND_DISPLAY;
+  return (
+    process.platform === 'linux' &&
+    !process.env.DISPLAY &&
+    !process.env.WAYLAND_DISPLAY &&
+    selectedTestsNeedDisplay(args)
+  );
+}
+
+function selectedTestsNeedDisplay(playwrightArgs) {
+  if (playwrightArgs.some((arg) => arg === '--headed' || arg === '--debug' || arg === '--ui')) {
+    return true;
+  }
+
+  const specPaths = selectedSpecPaths(playwrightArgs);
+  if (specPaths.length === 0) {
+    return true;
+  }
+
+  return specPaths.some(specNeedsDisplay);
+}
+
+function selectedSpecPaths(playwrightArgs) {
+  return playwrightArgs
+    .filter((arg) => !arg.startsWith('-') && /\.(spec|test)\.[cm]?[jt]sx?$/.test(arg))
+    .map((arg) => {
+      if (path.isAbsolute(arg)) {
+        return arg;
+      }
+
+      const directPath = path.resolve(projectRoot, arg);
+      if (fs.existsSync(directPath)) {
+        return directPath;
+      }
+
+      return path.resolve(projectRoot, 'test', 'e2e', arg);
+    });
+}
+
+function specNeedsDisplay(specPath) {
+  if (!fs.existsSync(specPath)) {
+    return true;
+  }
+
+  const source = fs.readFileSync(specPath, 'utf8');
+  return specSourceDisplayPatterns.some((pattern) => source.includes(pattern));
 }
 
 function commandExists(command) {
