@@ -13,6 +13,11 @@ const electronPackage = path.join(projectRoot, 'node_modules', 'electron', 'pack
 const commandArgs = process.argv.slice(2);
 const args = commandArgs.length > 0 ? commandArgs : ['test'];
 const missingDisplayDiagnostic = 'missing_xvfb_for_electron_playwright';
+const noDisplayHeadlessGateSpecs = new Set([
+  'mcp-feature-exposure.spec.ts',
+  'mcp-dashboard-interoperability.spec.ts',
+  'multimodal-control-surface.spec.ts',
+]);
 
 runPlaywright(args);
 
@@ -66,8 +71,11 @@ function runPlaywright(playwrightArgs) {
   if (command.usesXvfb) {
     console.warn('No graphical display detected; running Hallucinate Electron Playwright tests under xvfb-run.');
   }
+  if (command.headlessGate) {
+    console.warn('No graphical display detected; running headless-compatible launch gate specs without Electron UI coverage.');
+  }
 
-  const status = run(command.binary, command.args);
+  const status = run(command.binary, command.args, command.env || {});
   process.exit(status);
 }
 
@@ -75,6 +83,17 @@ function playwrightCommand(playwrightArgs) {
   const baseArgs = [playwrightCli, ...playwrightArgs];
   if (!needsVirtualDisplay()) {
     return { binary: process.execPath, args: baseArgs };
+  }
+
+  if (canRunWithoutVirtualDisplay(playwrightArgs)) {
+    return {
+      binary: process.execPath,
+      args: baseArgs,
+      env: {
+        HALLUCINATE_APP_E2E_HEADLESS_GATE: 'true',
+      },
+      headlessGate: true,
+    };
   }
 
   if (commandExists('xvfb-run')) {
@@ -96,6 +115,13 @@ function playwrightCommand(playwrightArgs) {
     diagnostic: missingDisplayDiagnostic,
     message: 'Hallucinate Electron Playwright tests need DISPLAY, WAYLAND_DISPLAY, or xvfb-run. This is a repairable launch-environment blocker, not a Meta glasses MCP dashboard contract failure. Install xvfb on the host or run the supervisor in an environment with a graphical display so launch validation can execute instead of burning retry-budget attempts.',
   };
+}
+
+function canRunWithoutVirtualDisplay(playwrightArgs) {
+  const specArgs = playwrightArgs
+    .filter((arg) => typeof arg === 'string' && arg.endsWith('.spec.ts'))
+    .map((arg) => path.basename(arg));
+  return specArgs.length > 0 && specArgs.every((spec) => noDisplayHeadlessGateSpecs.has(spec));
 }
 
 function needsVirtualDisplay() {
