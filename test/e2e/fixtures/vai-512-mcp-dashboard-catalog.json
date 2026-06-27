@@ -24,6 +24,39 @@
     "validation_command": "npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts",
     "supervisor_gap_receipt": "data/meta_glasses_display_widgets/discovery/2026-06-26-mgw-533-objective-gap-3e00ad2a0074.md"
   },
+  "swissknife_catalog_consumer_proof": {
+    "task_id": "HAO-681",
+    "depends_on": [
+      "HAO-677",
+      "HAO-680"
+    ],
+    "evidence_term": "Hallucinate App MCP dashboard catalog consumed by Swissknife applications",
+    "consumer_registry": "hallucinate_app.swissknife.mcp_capability_registry",
+    "playwright_spec": "swissknife/test/e2e/mcp-dashboard.spec.ts",
+    "validation_command": "npm --prefix swissknife run test:e2e:mcp",
+    "discovery_receipt": "data/hallucinate_multimodal_control/discovery/2026-06-27-hao-681-swissknife-dashboard-catalog-consumer.md",
+    "receipt_fixture": "swissknife/test/e2e/fixtures/hao-681-mcp-dashboard-catalog-consumer.json",
+    "applications": [
+      {
+        "app_id": "ipfs-kit-storage-console",
+        "role": "storage",
+        "server_package": "ipfs_kit_py",
+        "daemon_id": "ipfs-kit"
+      },
+      {
+        "app_id": "ipfs-datasets-workbench",
+        "role": "dataset",
+        "server_package": "ipfs_datasets_py",
+        "daemon_id": "ipfs-datasets"
+      },
+      {
+        "app_id": "ipfs-accelerate-console",
+        "role": "compute",
+        "server_package": "ipfs_accelerate_py",
+        "daemon_id": "ipfs-accelerate"
+      }
+    ]
+  },
   "generated_by": "hallucinate_app.node.mcp_daemon_manager.getDashboardCapabilityCatalog",
   "dashboard_only_mocks": false,
   "control_surface_route": [

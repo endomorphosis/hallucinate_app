@@ -37,8 +37,39 @@ const ACCELERATE_MCPPLUSPLUS_PROFILES = [
 const DASHBOARD_CATALOG_SCHEMA = 'hallucinate_app.mcp_dashboard_capability_catalog.v1';
 const DASHBOARD_CATALOG_TASK_ID = 'HAO-677';
 const DASHBOARD_RECEIPT_TASK_ID = 'HAO-680';
+const SWISSKNIFE_DASHBOARD_CONSUMER_TASK_ID = 'HAO-681';
 const DASHBOARD_CATALOG_GOAL_ID = 'VAIOS-G723';
 const DASHBOARD_LAUNCH_OBJECTIVE_IDS = ['VAIOS-G723', 'VAIOS-G724', 'VAIOS-G728'];
+const SWISSKNIFE_DASHBOARD_CONSUMER_PROOF = {
+  task_id: SWISSKNIFE_DASHBOARD_CONSUMER_TASK_ID,
+  depends_on: ['HAO-677', 'HAO-680'],
+  evidence_term: 'Hallucinate App MCP dashboard catalog consumed by Swissknife applications',
+  consumer_registry: 'hallucinate_app.swissknife.mcp_capability_registry',
+  playwright_spec: 'swissknife/test/e2e/mcp-dashboard.spec.ts',
+  validation_command: 'npm --prefix swissknife run test:e2e:mcp',
+  discovery_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-27-hao-681-swissknife-dashboard-catalog-consumer.md',
+  receipt_fixture: 'swissknife/test/e2e/fixtures/hao-681-mcp-dashboard-catalog-consumer.json',
+  applications: [
+    {
+      app_id: 'ipfs-kit-storage-console',
+      role: 'storage',
+      server_package: 'ipfs_kit_py',
+      daemon_id: 'ipfs-kit'
+    },
+    {
+      app_id: 'ipfs-datasets-workbench',
+      role: 'dataset',
+      server_package: 'ipfs_datasets_py',
+      daemon_id: 'ipfs-datasets'
+    },
+    {
+      app_id: 'ipfs-accelerate-console',
+      role: 'compute',
+      server_package: 'ipfs_accelerate_py',
+      daemon_id: 'ipfs-accelerate'
+    }
+  ]
+};
 const MGW_533_LAUNCH_VALIDATION_GATE = {
   task_id: 'MGW-533',
   goal_id: 'VAIOS-G724',
@@ -729,6 +760,7 @@ class MCPDaemonManager extends EventEmitter {
       goal_id: DASHBOARD_CATALOG_GOAL_ID,
       launch_objective_ids: DASHBOARD_LAUNCH_OBJECTIVE_IDS,
       launch_validation_gate: MGW_533_LAUNCH_VALIDATION_GATE,
+      swissknife_catalog_consumer_proof: SWISSKNIFE_DASHBOARD_CONSUMER_PROOF,
       generated_by: 'hallucinate_app.node.mcp_daemon_manager.getDashboardCapabilityCatalog',
       dashboard_only_mocks: false,
       control_surface_route: [
