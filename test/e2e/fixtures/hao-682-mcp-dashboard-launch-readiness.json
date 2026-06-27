@@ -4,15 +4,29 @@
   "vai_task_id": "VAI-503",
   "goal_id": "VAIOS-G723",
   "lineage_id": "VAIOS-G723:mcp-dashboard-interoperability",
-  "evidence_term": "launch Playwright validation gate",
+  "session_id": "vaios-g723-hallucinate-mcp-dashboard-session",
+  "daemon_lineage_id": "vaios-g723-daemon-lineage-ipfs-kit-datasets-accelerate",
+  "evidence_term": "dashboard interoperability launch-readiness receipt",
   "gate_state": "gate_open_until_playwright_passes",
+  "readiness_doc": "docs/launch/phone_desktop_glasses_readiness.md",
+  "discovery_receipt": "data/hallucinate_multimodal_control/discovery/2026-06-25-hao-682-mcp-dashboard-launch-readiness.md",
   "playwright_specs": [
     "hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts",
-    "hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts"
+    "hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts",
+    "swissknife/test/e2e/mcp-dashboard.spec.ts"
   ],
   "validation_commands": [
     "npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts",
-    "npm --prefix swissknife run test:e2e:mcp"
+    "npm --prefix swissknife run test:e2e:mcp",
+    "PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py tests/test_virtual_ai_os_launch_readiness_gate.py -q"
+  ],
+  "catalog_schema": "hallucinate_app.mcp_dashboard_capability_catalog.v1",
+  "catalog_fixture": "hallucinate_app/test/e2e/fixtures/vai-512-mcp-dashboard-catalog.json",
+  "hallucinate_fixture": "hallucinate_app/test/e2e/fixtures/hao-682-mcp-dashboard-launch-readiness.json",
+  "swissknife_fixture": "swissknife/test/e2e/fixtures/hao-682-mcp-dashboard-launch-readiness.json",
+  "depends_on_receipts": [
+    "hallucinate_app/test/e2e/fixtures/hao-679-mcp-dashboard-interoperability.json",
+    "swissknife/test/e2e/fixtures/hao-681-mcp-dashboard-catalog-consumer.json"
   ],
   "required_backends": [
     "ipfs_kit_py",
@@ -20,42 +34,141 @@
     "ipfs_accelerate_py"
   ],
   "required_evidence": [
-    "catalog normalization",
-    "dashboard UI wiring",
-    "mediated tool-call receipts",
-    "Swissknife consumers",
-    "Playwright coverage",
-    "supervisor-generated follow-up subtasks"
-  ],
-  "catalog_schema": "hallucinate_app.mcp_dashboard_capability_catalog.v1",
-  "receipt_route": [
-    "Hallucinate App dashboard action",
+    "Hallucinate App menu navigation",
     "dashboard capability catalog",
+    "daemon health",
+    "MCP++ telemetry",
+    "dashboard tools/list probes",
+    "dashboard tools/call probes",
+    "Swissknife consumption",
+    "Playwright pass/fail receipts",
+    "one traceable session",
+    "shared daemon lineage"
+  ],
+  "receipt_route": [
+    "Hallucinate App menu navigation",
+    "dashboard capability catalog",
+    "daemon health",
+    "MCP++ telemetry",
+    "dashboard tools/list",
+    "dashboard tools/call",
     "interaction_envelope",
     "policy_decision",
     "mediation_receipt",
-    "supervised MCP server transport"
+    "supervised MCP server transport",
+    "Swissknife application consumption",
+    "Playwright pass/fail receipt"
   ],
+  "session_trace": {
+    "session_id": "vaios-g723-hallucinate-mcp-dashboard-session",
+    "correlation_id": "corr-vaios-g723-dashboard-interop",
+    "request_id": "req-hao-682-launch-readiness",
+    "menu_navigation_receipt_id": "hao-682-menu-navigation-receipt",
+    "catalog_receipt_id": "hao-682-dashboard-catalog-receipt",
+    "daemon_lineage_id": "vaios-g723-daemon-lineage-ipfs-kit-datasets-accelerate",
+    "mcpplusplus_telemetry_receipt_id": "hao-682-mcpplusplus-telemetry-receipt",
+    "swissknife_consumption_receipt_id": "hao-681-swissknife-dashboard-catalog-consumer"
+  },
   "dashboard_servers": [
     {
       "daemon_id": "ipfs-kit",
       "server_package": "ipfs_kit_py",
-      "safe_probe_receipt": "ipfs_kit_status_probe",
+      "daemon_lineage_id": "vaios-g723-daemon-lineage-ipfs-kit-datasets-accelerate",
+      "dashboard_menu_label": "IPFS Kit Dashboard",
+      "dashboard_url": "http://127.0.0.1:8004/dashboard",
+      "health_path": "/api/mcp/status",
+      "mcpplusplus_descriptor_evidence": "mcp++/profile-e-mcp-p2p",
+      "tools_list_probe": {
+        "operation": "tools/list",
+        "receipt_id": "hao-682-ipfs-kit-tools-list",
+        "receipt_cid": "cid-hao-682-ipfs-kit-tools-list",
+        "session_id": "vaios-g723-hallucinate-mcp-dashboard-session"
+      },
+      "tools_call_probe": {
+        "operation": "tools/call",
+        "tool_name": "ipfs_status",
+        "mutation": false,
+        "receipt_id": "ipfs_kit_status_probe",
+        "receipt_cid": "cid-hao-682-ipfs-kit-tools-call",
+        "session_id": "vaios-g723-hallucinate-mcp-dashboard-session"
+      },
       "swissknife_consumer": "Swissknife IPFS storage, pin dashboard, and backend health surfaces"
     },
     {
       "daemon_id": "ipfs-datasets",
       "server_package": "ipfs_datasets_py",
-      "safe_probe_receipt": "ipfs_datasets_list_probe",
+      "daemon_lineage_id": "vaios-g723-daemon-lineage-ipfs-kit-datasets-accelerate",
+      "dashboard_menu_label": "IPFS Datasets Dashboard",
+      "dashboard_url": "http://127.0.0.1:8899/mcp",
+      "health_path": "/health/ready",
+      "mcpplusplus_descriptor_evidence": "mcp++/descriptor:not_advertised",
+      "tools_list_probe": {
+        "operation": "tools/list",
+        "receipt_id": "hao-682-ipfs-datasets-tools-list",
+        "receipt_cid": "cid-hao-682-ipfs-datasets-tools-list",
+        "session_id": "vaios-g723-hallucinate-mcp-dashboard-session"
+      },
+      "tools_call_probe": {
+        "operation": "tools/call",
+        "tool_name": "datasets_list",
+        "mutation": false,
+        "receipt_id": "ipfs_datasets_list_probe",
+        "receipt_cid": "cid-hao-682-ipfs-datasets-tools-call",
+        "session_id": "vaios-g723-hallucinate-mcp-dashboard-session"
+      },
       "swissknife_consumer": "Swissknife dataset, content, index, provenance, and background task surfaces"
     },
     {
       "daemon_id": "ipfs-accelerate",
       "server_package": "ipfs_accelerate_py",
-      "safe_probe_receipt": "ipfs_accelerate_hardware_profile_probe",
+      "daemon_lineage_id": "vaios-g723-daemon-lineage-ipfs-kit-datasets-accelerate",
+      "dashboard_menu_label": "IPFS Accelerate Dashboard",
+      "dashboard_url": "http://127.0.0.1:3003/dashboard",
+      "health_path": "/api/mcp/status",
+      "mcpplusplus_descriptor_evidence": "mcp++/profile-e-mcp-p2p",
+      "tools_list_probe": {
+        "operation": "tools/list",
+        "receipt_id": "hao-682-ipfs-accelerate-tools-list",
+        "receipt_cid": "cid-hao-682-ipfs-accelerate-tools-list",
+        "session_id": "vaios-g723-hallucinate-mcp-dashboard-session"
+      },
+      "tools_call_probe": {
+        "operation": "tools/call",
+        "tool_name": "hardware_profile",
+        "mutation": false,
+        "receipt_id": "ipfs_accelerate_hardware_profile_probe",
+        "receipt_cid": "cid-hao-682-ipfs-accelerate-tools-call",
+        "session_id": "vaios-g723-hallucinate-mcp-dashboard-session"
+      },
       "swissknife_consumer": "Swissknife hardware profile, inference job, job status, and telemetry surfaces"
     }
   ],
+  "playwright_receipts": [
+    {
+      "command": "npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts",
+      "receipt_id": "hao-682-hallucinate-playwright-pass-fail",
+      "status": "required_pass"
+    },
+    {
+      "command": "npm --prefix swissknife run test:e2e:mcp",
+      "receipt_id": "hao-682-swissknife-playwright-pass-fail",
+      "status": "required_pass"
+    }
+  ],
+  "pass_together_rule": {
+    "same_session_id": "vaios-g723-hallucinate-mcp-dashboard-session",
+    "same_daemon_lineage_id": "vaios-g723-daemon-lineage-ipfs-kit-datasets-accelerate",
+    "requires_hallucinate_app_menu_navigation": true,
+    "requires_dashboard_catalog": true,
+    "requires_daemon_health": true,
+    "requires_mcpplusplus_telemetry": true,
+    "requires_dashboard_tools_list": true,
+    "requires_dashboard_tools_call": true,
+    "requires_swissknife_consumption": true,
+    "requires_playwright_pass_fail_receipts": true,
+    "gate_state_before_all_pass": "open",
+    "gate_state_after_all_pass": "launch_ready"
+  },
   "follow_up_subtasks": [
     "HAO-678",
     "HAO-679",
@@ -64,5 +177,5 @@
     "HAO-682",
     "HAO-683"
   ],
-  "failure_rule": "Any dashboard, backend, receipt, Swissknife consumer, or Playwright validation failure remains supervisor-generated follow-up work for VAIOS-G723."
+  "failure_rule": "VAIOS-G723 cannot close until Hallucinate App menu navigation, dashboard catalog, daemon health, MCP++ telemetry, dashboard tools/list and tools/call probes, Swissknife consumption, and Playwright pass/fail receipts share one traceable session and daemon lineage."
 }
