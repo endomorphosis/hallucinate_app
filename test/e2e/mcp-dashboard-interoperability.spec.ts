@@ -20,6 +20,13 @@ const VAI_512_CATALOG_FIXTURE = path.join(__dirname, 'fixtures', 'vai-512-mcp-da
 const VAI_517_LAUNCH_READINESS_FIXTURE = path.join(__dirname, 'fixtures', 'vai-517-mcp-dashboard-launch-readiness.json');
 const MGW_533_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-533-mcp-dashboard-launch-gate.json');
 const HAO_700_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-700-mcp-dashboard-launch-gate.json');
+const HAO_680_DISCOVERY_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'hallucinate_multimodal_control',
+  'discovery',
+  '2026-06-27-hao-680-dashboard-tool-receipts.md'
+);
 const MGW_533_OBJECTIVE_GAP_RECEIPT = path.join(
   REPO_ROOT,
   'data',
@@ -384,6 +391,22 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       'ipfs-accelerate:tools/list',
       'ipfs-accelerate:tools/call'
     ]));
+  });
+
+  test('records the HAO-680 launch-readiness receipt for dashboard tool mediation', () => {
+    const receipt = fs.readFileSync(HAO_680_DISCOVERY_RECEIPT, 'utf8');
+
+    expect(receipt).toContain('Task: HAO-680');
+    expect(receipt).toContain('Depends on: HAO-677');
+    expect(receipt).toContain('interaction_envelope');
+    expect(receipt).toContain('policy_decision');
+    expect(receipt).toContain('mediation_receipt');
+    expect(receipt).toContain('supervised MCP server transport');
+    expect(receipt).toContain('MCP++ descriptor/profile evidence');
+    expect(receipt).toContain('tools/list');
+    expect(receipt).toContain('tools/call');
+    expect(receipt).toContain('hallucinate_app.swissknife.mcp_capability_registry');
+    expect(receipt).toContain('launch_readiness_packet:VAIOS-G728');
   });
 
   test('records supervisor follow-up subtasks for failed dashboard validation', () => {
