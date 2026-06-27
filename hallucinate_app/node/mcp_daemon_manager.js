@@ -109,6 +109,18 @@ const DAEMON_LAUNCH_GATE_DISCOVERY_RECEIPTS = [
   'data/virtual_ai_os/discovery/2026-06-26-vai-519-daemon-launch-health-gate.md',
   'data/meta_glasses_display_widgets/discovery/2026-06-26-mgw-535-daemon-launch-health-gate.md'
 ];
+const MGW_551_DAEMON_LAUNCH_VALIDATION_GATE = {
+  task_id: 'MGW-551',
+  supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-27-mgw-551-objective-gap-b023c8de5b69.md',
+  launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-27-mgw-551-daemon-launch-health-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-551-daemon-launch-health-gate.json',
+  validation_commands: [
+    'PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q',
+    'npm --prefix swissknife run test:e2e:meta-glasses',
+    'npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts',
+    'npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts'
+  ]
+};
 
 const DASHBOARD_TOOL_PROTOCOLS = {
   'ipfs-kit': {
@@ -686,6 +698,21 @@ class MCPDaemonManager extends EventEmitter {
           evidence_term: 'launch Playwright validation gate',
           playwright_spec: 'hallucinate_app/test/e2e/daemon-launch-health.spec.ts'
         },
+        launch_validation_gates: [
+          {
+            task_id: DAEMON_LAUNCH_GATE_TASK_ID,
+            goal_id: DAEMON_LAUNCH_GATE_GOAL_ID,
+            evidence_term: 'launch Playwright validation gate',
+            playwright_spec: 'hallucinate_app/test/e2e/daemon-launch-health.spec.ts'
+          },
+          {
+            task_id: MGW_551_DAEMON_LAUNCH_VALIDATION_GATE.task_id,
+            goal_id: DAEMON_LAUNCH_GATE_GOAL_ID,
+            evidence_term: 'launch Playwright validation gate',
+            playwright_spec: 'hallucinate_app/test/e2e/daemon-launch-health.spec.ts',
+            supervisor_gap_receipt: MGW_551_DAEMON_LAUNCH_VALIDATION_GATE.supervisor_gap_receipt
+          }
+        ],
         daemon_id: config.id,
         server_package: config.packageName,
         startup_order: config.launchOrder,
@@ -706,26 +733,28 @@ class MCPDaemonManager extends EventEmitter {
       }));
   }
 
-  getDaemonLaunchValidationGate() {
+  getDaemonLaunchValidationGate(overrides = {}) {
     const launchPlan = this.getLaunchPlan();
     return {
       schema: 'hallucinate_app.daemon_launch_validation_gate.v1',
       receipt_schema: 'launch_readiness_receipt_v1',
-      task_id: DAEMON_LAUNCH_GATE_TASK_ID,
+      task_id: overrides.task_id || DAEMON_LAUNCH_GATE_TASK_ID,
       vai_task_id: DAEMON_LAUNCH_GATE_VAI_TASK_ID,
       backlog_task_id: DAEMON_LAUNCH_GATE_BACKLOG_TASK_ID,
-      shared_packet_task_id: DAEMON_LAUNCH_GATE_TASK_ID,
+      shared_packet_task_id: overrides.shared_packet_task_id || DAEMON_LAUNCH_GATE_TASK_ID,
       goal_id: DAEMON_LAUNCH_GATE_GOAL_ID,
       goal_packet: DAEMON_LAUNCH_GATE_PACKET_ID,
       packet_goals: [...DAEMON_LAUNCH_GATE_PACKET_GOALS],
       evidence_term: 'launch Playwright validation gate',
       launch_key: 'hallucinate-daemon-launch-orchestration',
       gate_state: 'gate_open_until_playwright_passes',
-      discovery_receipts: [...DAEMON_LAUNCH_GATE_DISCOVERY_RECEIPTS],
-      objective_gap_receipt: 'data/virtual_ai_os/discovery/2026-06-26-vai-519-objective-gap-b023c8de5b69.md',
-      supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-26-hao-702-objective-gap-b023c8de5b69.md',
+      discovery_receipts: overrides.discovery_receipts || [...DAEMON_LAUNCH_GATE_DISCOVERY_RECEIPTS],
+      objective_gap_receipt: overrides.objective_gap_receipt || 'data/virtual_ai_os/discovery/2026-06-26-vai-519-objective-gap-b023c8de5b69.md',
+      supervisor_gap_receipt: overrides.supervisor_gap_receipt || 'data/hallucinate_multimodal_control/discovery/2026-06-26-hao-702-objective-gap-b023c8de5b69.md',
       hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-26-hao-702-daemon-launch-health-gate.md',
-      validation_commands: [
+      ...(overrides.launch_gate_receipt ? { launch_gate_receipt: overrides.launch_gate_receipt } : {}),
+      ...(overrides.receipt_fixture ? { receipt_fixture: overrides.receipt_fixture } : {}),
+      validation_commands: overrides.validation_commands || [
         'npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts',
         'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
         'npm --prefix swissknife run test:e2e:meta-glasses',
@@ -761,6 +790,21 @@ class MCPDaemonManager extends EventEmitter {
       })),
       failure_rule: 'Any daemon launch, health, dashboard catalog, Swissknife handoff, or Playwright validation failure remains supervisor-generated follow-up work for VAIOS-G728.'
     };
+  }
+
+  getDaemonLaunchValidationGates() {
+    return [
+      this.getDaemonLaunchValidationGate(),
+      this.getDaemonLaunchValidationGate({
+        ...MGW_551_DAEMON_LAUNCH_VALIDATION_GATE,
+        shared_packet_task_id: 'MGW-551',
+        discovery_receipts: [
+          ...DAEMON_LAUNCH_GATE_DISCOVERY_RECEIPTS,
+          MGW_551_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt
+        ],
+        objective_gap_receipt: MGW_551_DAEMON_LAUNCH_VALIDATION_GATE.supervisor_gap_receipt
+      })
+    ];
   }
 
   getDashboardCapabilityCatalog() {
