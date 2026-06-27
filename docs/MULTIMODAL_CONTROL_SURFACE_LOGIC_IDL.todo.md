@@ -7923,7 +7923,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-678 Wire all IPFS MCP dashboards to daemon health and catalog-backed tool surfaces
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: launch
