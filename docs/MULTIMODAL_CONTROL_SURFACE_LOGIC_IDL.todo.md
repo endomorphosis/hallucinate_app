@@ -8602,3 +8602,14 @@ UI-plane participants and runtime-plane targets.
 - Candidate kind: validation_gate
 - Todo vector key: 423c5c08373fafe1
 - Acceptance: Objective scan filed this gap for VAIOS-G723. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-27-hao-714-objective-gap-7ea369464239.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (launch Playwright validation gate), and keep the supervisor-fed backlog aligned with the objective heap.  Add child goals for catalog normalization, dashboard UI wiring, mediated tool-call receipts, Swissknife consumers, Playwright coverage, and supervisor-generated follow-up subtasks if any dashboard or backend validation fails.
+
+## HAO-715 Resolve validation retry-budget failure for HAO-713
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: HAO-013
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, hallucinate_app, swissknife, external/ipfs_accelerate, external/ipfs_datasets, external/ipfs_kit, hallucinate_app/test/e2e/daemon-launch-health.spec.ts
+- Validation: PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q && (test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses) && (test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts)
+- Acceptance: Retry-budget guardrail filed this from repeated validation failures in HAO-713. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-27-hao-715-hao-713-retry-budget.md to fix the validation blocker, then mark this repair task completed so the supervisor can release HAO-713 from strategy blocked_tasks. For launch tasks, this repair validation preserves the launch Playwright validation gate.
