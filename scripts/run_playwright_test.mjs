@@ -18,6 +18,11 @@ const specSourceDisplayPatterns = [
   'electron.launch(',
   'ElectronApplication',
 ];
+const headlessStaticCoverageSpecs = new Set([
+  'mcp-feature-exposure.spec.ts',
+  'mcp-dashboard-interoperability.spec.ts',
+  'multimodal-control-surface.spec.ts',
+]);
 
 runPlaywright(args);
 
@@ -123,6 +128,10 @@ function selectedTestsNeedDisplay(playwrightArgs) {
   const specPaths = selectedSpecPaths(playwrightArgs);
   if (specPaths.length === 0) {
     return true;
+  }
+
+  if (specPaths.every((specPath) => headlessStaticCoverageSpecs.has(path.basename(specPath)))) {
+    return false;
   }
 
   return specPaths.some(specNeedsDisplay);

@@ -97,6 +97,7 @@ const DASHBOARD_LAUNCH_VALIDATION_GATES = [
 const DAEMON_LAUNCH_GATE_TASK_ID = 'MGW-535';
 const DAEMON_LAUNCH_GATE_VAI_TASK_ID = 'VAI-519';
 const DAEMON_LAUNCH_GATE_BACKLOG_TASK_ID = 'HAO-702';
+const DAEMON_LAUNCH_GATE_BACKLOG_TASK_IDS = ['HAO-702', 'HAO-713'];
 const DAEMON_LAUNCH_GATE_GOAL_ID = 'VAIOS-G728';
 const DAEMON_LAUNCH_GATE_PACKET_ID = 'goal_packet/launch/hallucinate_app/44dceea6bc53';
 const DAEMON_LAUNCH_GATE_PACKET_GOALS = ['VAIOS-G724', 'VAIOS-G728'];
@@ -714,6 +715,7 @@ class MCPDaemonManager extends EventEmitter {
       task_id: DAEMON_LAUNCH_GATE_TASK_ID,
       vai_task_id: DAEMON_LAUNCH_GATE_VAI_TASK_ID,
       backlog_task_id: DAEMON_LAUNCH_GATE_BACKLOG_TASK_ID,
+      backlog_task_ids: [...DAEMON_LAUNCH_GATE_BACKLOG_TASK_IDS],
       shared_packet_task_id: DAEMON_LAUNCH_GATE_TASK_ID,
       goal_id: DAEMON_LAUNCH_GATE_GOAL_ID,
       goal_packet: DAEMON_LAUNCH_GATE_PACKET_ID,
@@ -724,7 +726,15 @@ class MCPDaemonManager extends EventEmitter {
       discovery_receipts: [...DAEMON_LAUNCH_GATE_DISCOVERY_RECEIPTS],
       objective_gap_receipt: 'data/virtual_ai_os/discovery/2026-06-26-vai-519-objective-gap-b023c8de5b69.md',
       supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-26-hao-702-objective-gap-b023c8de5b69.md',
+      supervisor_gap_receipts: [
+        'data/hallucinate_multimodal_control/discovery/2026-06-26-hao-702-objective-gap-b023c8de5b69.md',
+        'data/hallucinate_multimodal_control/discovery/2026-06-27-hao-713-objective-gap-b023c8de5b69.md'
+      ],
       hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-26-hao-702-daemon-launch-health-gate.md',
+      hallucinate_backlog_receipts: [
+        'data/hallucinate_multimodal_control/discovery/2026-06-26-hao-702-daemon-launch-health-gate.md',
+        'data/hallucinate_multimodal_control/discovery/2026-06-27-hao-713-daemon-launch-health-gate.md'
+      ],
       validation_commands: [
         'npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts',
         'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
