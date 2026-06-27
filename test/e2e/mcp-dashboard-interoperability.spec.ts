@@ -25,6 +25,14 @@ const VAI_512_CONSUMPTION_RECEIPT = path.join(
 const VAI_517_LAUNCH_READINESS_FIXTURE = path.join(__dirname, 'fixtures', 'vai-517-mcp-dashboard-launch-readiness.json');
 const MGW_533_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-533-mcp-dashboard-launch-gate.json');
 const HAO_700_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-700-mcp-dashboard-launch-gate.json');
+const HAO_681_SWISSKNIFE_CONSUMER_FIXTURE = path.join(
+  REPO_ROOT,
+  'swissknife',
+  'test',
+  'e2e',
+  'fixtures',
+  'hao-681-mcp-dashboard-catalog-consumer.json'
+);
 const HAO_680_DISCOVERY_RECEIPT = path.join(
   REPO_ROOT,
   'data',
@@ -202,6 +210,13 @@ electronDescribe('MCP Dashboard Interoperability - VAIOS-G723 Electron UI wiring
       'hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts',
       'hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts'
     ]));
+    expect(catalog?.swissknife_catalog_consumer_proof).toMatchObject({
+      task_id: 'HAO-681',
+      depends_on: ['HAO-677', 'HAO-680'],
+      evidence_term: 'Hallucinate App MCP dashboard catalog consumed by Swissknife applications',
+      consumer_registry: 'hallucinate_app.swissknife.mcp_capability_registry',
+      receipt_fixture: 'swissknife/test/e2e/fixtures/hao-681-mcp-dashboard-catalog-consumer.json'
+    });
     expect(catalog?.validation_task_id).toBe('VAI-512');
     expect(catalog?.dashboard_only_mocks).toBe(false);
     expect(catalog?.control_surface_route).toEqual([
@@ -443,9 +458,10 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     const payload = JSON.parse(match![0]);
     expect(payload).toMatchObject({
       status: 'ok',
-      task_id: 'HAO-704',
+      task_id: 'HAO-681',
       catalog_task_id: 'VAI-512',
       launch_task_id: 'MGW-533',
+      consumer_receipt_task_id: 'HAO-681',
       swissknife_launch_task_id: 'HAO-704',
       launch_goal_ids: ['VAIOS-G723', 'VAIOS-G724', 'VAIOS-G728'],
       catalog_schema: 'hallucinate_app.mcp_dashboard_capability_catalog.v1'
@@ -495,6 +511,57 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       'ipfs_accelerate_py:tools/list',
       'ipfs_accelerate_py:tools/call'
     ]));
+  });
+
+  test('records HAO-681 Swissknife storage dataset and compute catalog consumption', () => {
+    const catalog = new MCPDaemonManager().getDashboardCapabilityCatalog();
+    const receipt = JSON.parse(fs.readFileSync(HAO_681_SWISSKNIFE_CONSUMER_FIXTURE, 'utf8'));
+    const serversByPackage = new Map(catalog.servers.map((server: any) => [server.server_package, server]));
+
+    expect(receipt).toMatchObject({
+      schema: 'swissknife_mcp_dashboard_catalog_consumer_receipt_v1',
+      task_id: 'HAO-681',
+      depends_on: ['HAO-677', 'HAO-680'],
+      goal_id: 'VAIOS-G723',
+      catalog_schema: catalog.schema,
+      catalog_generated_by: catalog.generated_by,
+      consumer_registry: 'hallucinate_app.swissknife.mcp_capability_registry',
+      receipt_schema: 'mcp_server_invocation_receipt_v1'
+    });
+    expect(catalog.swissknife_catalog_consumer_proof).toMatchObject({
+      task_id: receipt.task_id,
+      receipt_fixture: 'swissknife/test/e2e/fixtures/hao-681-mcp-dashboard-catalog-consumer.json',
+      discovery_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-27-hao-681-swissknife-dashboard-catalog-consumer.md'
+    });
+    expect(receipt.receipt_route).toEqual(expect.arrayContaining([
+      'Hallucinate App MCP dashboard catalog',
+      'MCP++ capability descriptor',
+      'interaction_envelope',
+      'policy_decision',
+      'mediation_receipt',
+      'supervised MCP server transport'
+    ]));
+    expect(receipt.required_receipt_fields).toEqual(expect.arrayContaining([
+      'interaction_envelope',
+      'policy_decision',
+      'mediation_receipt',
+      'mediation_receipt_id',
+      'receipt_cid',
+      'mcpplusplus_descriptor_evidence'
+    ]));
+    expect(receipt.applications.map((app: any) => app.role).sort()).toEqual(['compute', 'dataset', 'storage']);
+
+    for (const app of receipt.applications) {
+      const server = serversByPackage.get(app.server_package) as any;
+      expect(server, app.server_package).toBeTruthy();
+      expect(server.daemon_id).toBe(app.daemon_id);
+      expect(server.tool_protocols.tools_list.url).toBe(app.tools_list_url);
+      expect(server.tool_protocols.tools_call.safeProbe.tool_name).toBe(app.safe_tools_call_probe);
+      expect(server.tool_protocols.tools_call.safeProbe.expected_receipt).toBe(app.safe_probe_receipt);
+      expect(server.dashboard_receipt_consumer_refs).toEqual(expect.arrayContaining([
+        'hallucinate_app.swissknife.mcp_capability_registry'
+      ]));
+    }
   });
 
   test('binds the launch Playwright validation gate to the readiness receipt', () => {
