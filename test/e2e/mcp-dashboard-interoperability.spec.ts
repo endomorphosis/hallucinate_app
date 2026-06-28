@@ -41,6 +41,7 @@ const VAI_529_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-529-mc
 const VAI_535_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-535-mcp-dashboard-launch-gate.json');
 const VAI_537_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-537-mcp-dashboard-launch-gate.json');
 const VAI_543_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-543-mcp-dashboard-launch-gate.json');
+const HAO_727_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-727-mcp-dashboard-launch-gate.json');
 const MGW_555_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-555-mcp-dashboard-launch-gate.json');
 const HAO_681_SWISSKNIFE_CONSUMER_FIXTURE = path.join(
   REPO_ROOT,
@@ -245,6 +246,20 @@ const VAI_543_HALLUCINATE_LAUNCH_GATE_RECEIPT = path.join(
   'hallucinate_multimodal_control',
   'discovery',
   '2026-06-28-vai-543-mcp-dashboard-launch-gate.md'
+);
+const HAO_727_OBJECTIVE_GAP_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'hallucinate_multimodal_control',
+  'discovery',
+  '2026-06-28-hao-727-objective-gap-7ea369464239.md'
+);
+const HAO_727_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'hallucinate_multimodal_control',
+  'discovery',
+  '2026-06-28-hao-727-mcp-dashboard-launch-gate.md'
 );
 const MGW_555_OBJECTIVE_GAP_RECEIPT = path.join(
   REPO_ROOT,
@@ -1934,6 +1949,61 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     expect(objectiveHeap).toContain('data/virtual_ai_os/discovery/2026-06-28-vai-543-mcp-dashboard-launch-gate.md');
     expect(readinessDoc).toContain('VAI-543');
     expect(readinessDoc).toContain('mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts');
+  });
+
+  test('closes the HAO-727 Hallucinate backlog mirror with the same dashboard launch gate', () => {
+    const receipt = JSON.parse(fs.readFileSync(HAO_727_LAUNCH_GATE_FIXTURE, 'utf8'));
+    const launchGateReceipt = fs.readFileSync(HAO_727_LAUNCH_GATE_RECEIPT, 'utf8');
+    const objectiveGap = fs.readFileSync(HAO_727_OBJECTIVE_GAP_RECEIPT, 'utf8');
+    const objectiveHeap = fs.readFileSync(MGW_OBJECTIVE_HEAP, 'utf8');
+    const readinessDoc = fs.readFileSync(LAUNCH_READINESS_DOC, 'utf8');
+    const catalog = new MCPDaemonManager().getDashboardCapabilityCatalog();
+    const launchGate = catalog.launch_validation_gates?.find((gate: any) => gate.task_id === 'HAO-727');
+
+    expect(receipt).toMatchObject({
+      schema: 'launch_readiness_receipt_v1',
+      task_id: 'HAO-727',
+      goal_id: 'VAIOS-G723',
+      lineage_id: 'VAIOS-G723:hallucinate-mcp-dashboard-interoperability',
+      evidence_term: 'launch Playwright validation gate',
+      source_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-727-objective-gap-7ea369464239.md',
+      launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-727-mcp-dashboard-launch-gate.md',
+      receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-727-mcp-dashboard-launch-gate.json',
+      catalog_schema: catalog.schema,
+      catalog_generated_by: catalog.generated_by
+    });
+    expect(receipt.playwright_specs).toEqual(expect.arrayContaining([
+      'hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts',
+      'hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts'
+    ]));
+    expect(receipt.child_goals).toEqual(MGW_546_CHILD_GOALS);
+    expect(receipt.follow_up_subtasks).toEqual(FOLLOW_UP_TASKS);
+    expect(receipt.supervisor_follow_up_subtasks).toEqual(FOLLOW_UP_TASKS);
+    expect(launchGate).toMatchObject({
+      schema: 'launch_readiness_receipt_v1',
+      task_id: receipt.task_id,
+      goal_id: receipt.goal_id,
+      evidence_term: receipt.evidence_term,
+      supervisor_gap_receipt: receipt.source_gap_receipt,
+      launch_gate_receipt: receipt.launch_gate_receipt,
+      hallucinate_backlog_receipt: receipt.hallucinate_backlog_receipt,
+      receipt_fixture: receipt.receipt_fixture,
+      child_goals: receipt.child_goals,
+      follow_up_subtasks: receipt.follow_up_subtasks,
+      supervisor_follow_up_subtasks: receipt.supervisor_follow_up_subtasks
+    });
+
+    for (const term of receipt.required_evidence) {
+      expect(objectiveGap).toContain(term);
+      expect(launchGateReceipt).toContain(term);
+      expect(objectiveHeap).toContain(term);
+      expect(readinessDoc).toContain(term);
+    }
+
+    expect(objectiveHeap).toContain('HAO-727 proof');
+    expect(objectiveHeap).toContain('hallucinate_app/test/e2e/fixtures/hao-727-mcp-dashboard-launch-gate.json');
+    expect(readinessDoc).toContain('HAO-727');
+    expect(readinessDoc).toContain('hallucinate_app/test/e2e/fixtures/hao-727-mcp-dashboard-launch-gate.json');
   });
 
   function validateDashboardLaunchGateReceipt(expected: {
