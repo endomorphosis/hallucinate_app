@@ -171,7 +171,7 @@ async function runTests() {
   }
 
   // Test 10: MGW-535 daemon launch validation gate
-  console.log('\nTest 10: MGW-535 and MGW-551 daemon launch validation gates');
+  console.log('\nTest 10: MGW-535, MGW-551, and MGW-556 daemon launch validation gates');
   const launchGate = manager.getDaemonLaunchValidationGate();
   const launchGates = manager.getDaemonLaunchValidationGates();
   const launchGateOk =
@@ -202,6 +202,14 @@ async function runTests() {
       gate.validation_commands?.includes('npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts')
     ) &&
     launchGates.some(gate =>
+      gate.task_id === 'MGW-556' &&
+      gate.goal_id === 'VAIOS-G728' &&
+      gate.supervisor_gap_receipt === 'data/meta_glasses_display_widgets/discovery/2026-06-28-mgw-556-objective-gap-b023c8de5b69.md' &&
+      gate.launch_gate_receipt === 'data/meta_glasses_display_widgets/discovery/2026-06-28-mgw-556-daemon-launch-health-gate.md' &&
+      gate.receipt_fixture === 'hallucinate_app/test/e2e/fixtures/mgw-556-daemon-launch-health-gate.json' &&
+      gate.validation_commands?.includes('test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts')
+    ) &&
+    launchGates.some(gate =>
       gate.task_id === 'VAI-536' &&
       gate.goal_id === 'VAIOS-G728' &&
       gate.objective_gap_receipt === 'data/virtual_ai_os/discovery/2026-06-28-vai-536-objective-gap-b023c8de5b69.md' &&
@@ -211,7 +219,7 @@ async function runTests() {
     );
 
   if (launchGateOk) {
-    console.log('✅ MGW-535 and MGW-551 daemon launch validation gates are scanner-visible');
+    console.log('✅ MGW-535, MGW-551, and MGW-556 daemon launch validation gates are scanner-visible');
     testsPassed++;
   } else {
     console.log('❌ Daemon launch validation gate incomplete');
