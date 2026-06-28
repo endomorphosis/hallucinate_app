@@ -16,7 +16,10 @@ from queue import Queue, Empty
 from typing import Dict, List, Any, Optional, Union, Callable, Tuple
 
 # Import the actual server implementation
-from hallucinate_app.ipfs_kit_server import IPFSKitServer, IPFSKitClient
+try:
+    from hallucinate_app.ipfs_kit_server import IPFSKitServer, IPFSKitClient
+except ImportError:
+    from ipfs_kit_server import IPFSKitServer, IPFSKitClient
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -200,6 +203,50 @@ class IPFSKitPy:
             await self.init()
             
         return await self.client.async_ls(cid)
+
+    async def vfs_mount(self, ipfs_path: str, mount_point: str, read_only: bool = True):
+        """
+        Mount an IPFS path to a local VFS mount point
+
+        Args:
+            ipfs_path: IPFS path or CID to mount
+            mount_point: Local mount point
+            read_only: Whether the mount should be read-only
+
+        Returns:
+            dict: Mount result
+        """
+        if not self.initialized:
+            await self.init()
+
+        return await self.client.async_vfs_mount(ipfs_path, mount_point, read_only)
+
+    async def vfs_unmount(self, mount_point: str):
+        """
+        Unmount a local VFS mount point
+
+        Args:
+            mount_point: Local mount point
+
+        Returns:
+            dict: Unmount result
+        """
+        if not self.initialized:
+            await self.init()
+
+        return await self.client.async_vfs_unmount(mount_point)
+
+    async def vfs_list_mounts(self):
+        """
+        List active VFS mounts
+
+        Returns:
+            dict: Mount listing
+        """
+        if not self.initialized:
+            await self.init()
+
+        return await self.client.async_vfs_list_mounts()
     
     async def id(self):
         """

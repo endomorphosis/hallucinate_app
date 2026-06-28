@@ -63,6 +63,7 @@ class IPFSKitServer:
         self.running = False
         self.client = None
         self.mock_storage = {}  # For mock implementation
+        self.vfs_mounts = {}
         
         logger.info(f"IPFSKitServer initialized with API URL: {self.config['ipfs_api_url']}")
     
@@ -198,7 +199,10 @@ class IPFSKitServer:
             "pin_rm": self._real_pin_rm,
             "pin_ls": self._real_pin_ls,
             "ls": self._real_ls,
-            "id": self._real_id
+            "id": self._real_id,
+            "vfs_mount": self._real_vfs_mount,
+            "vfs_unmount": self._real_vfs_unmount,
+            "vfs_list_mounts": self._real_vfs_list_mounts,
         }
         
         if command not in command_map:
@@ -276,6 +280,24 @@ class IPFSKitServer:
         """Get IPFS node information"""
         result = self.client.id()
         return result
+
+    def _real_vfs_mount(self, params: Dict[str, Any]) -> Dict[str, Any]:
+        """Mounting to a local VFS path is not supported by the daemon client wrapper."""
+        raise NotImplementedError(
+            "VFS mount is not supported by the IPFS daemon client wrapper; use mock mode or an upstream VFS-capable backend"
+        )
+
+    def _real_vfs_unmount(self, params: Dict[str, Any]) -> Dict[str, Any]:
+        """Unmounting a local VFS path is not supported by the daemon client wrapper."""
+        raise NotImplementedError(
+            "VFS unmount is not supported by the IPFS daemon client wrapper; use mock mode or an upstream VFS-capable backend"
+        )
+
+    def _real_vfs_list_mounts(self, params: Dict[str, Any]) -> Dict[str, Any]:
+        """Listing local VFS mounts is not supported by the daemon client wrapper."""
+        raise NotImplementedError(
+            "VFS mount listing is not supported by the IPFS daemon client wrapper; use mock mode or an upstream VFS-capable backend"
+        )
     
     def _execute_mock_command(self, command: str, params: Dict[str, Any]) -> Any:
         """
@@ -297,7 +319,10 @@ class IPFSKitServer:
             "pin_rm": self._mock_pin_rm,
             "pin_ls": self._mock_pin_ls,
             "ls": self._mock_ls,
-            "id": self._mock_id
+            "id": self._mock_id,
+            "vfs_mount": self._mock_vfs_mount,
+            "vfs_unmount": self._mock_vfs_unmount,
+            "vfs_list_mounts": self._mock_vfs_list_mounts,
         }
         
         if command not in command_map:
@@ -417,6 +442,47 @@ class IPFSKitServer:
             "Addresses": ["/ip4/127.0.0.1/tcp/4001"],
             "AgentVersion": "go-ipfs/mock",
             "ProtocolVersion": "ipfs/mock"
+        }
+
+    def _mock_vfs_mount(self, params: Dict[str, Any]) -> Dict[str, Any]:
+        """Mock implementation of a VFS mount operation."""
+        ipfs_path = params.get("ipfs_path") or params.get("cid")
+        mount_point = params.get("mount_point")
+        read_only = params.get("read_only", True)
+
+        if not ipfs_path:
+            raise ValueError("IPFS path or CID is required for vfs_mount command")
+        if not mount_point:
+            raise ValueError("mount_point is required for vfs_mount command")
+
+        mount_info = {
+            "ipfs_path": ipfs_path,
+            "mount_point": mount_point,
+            "read_only": read_only,
+            "mounted": True,
+            "mount_time": time.time(),
+        }
+        self.vfs_mounts[mount_point] = mount_info
+        return mount_info
+
+    def _mock_vfs_unmount(self, params: Dict[str, Any]) -> Dict[str, Any]:
+        """Mock implementation of a VFS unmount operation."""
+        mount_point = params.get("mount_point")
+        if not mount_point:
+            raise ValueError("mount_point is required for vfs_unmount command")
+
+        mount_info = self.vfs_mounts.pop(mount_point, None)
+        return {
+            "mount_point": mount_point,
+            "unmounted": mount_info is not None,
+            "previous_mount": mount_info,
+        }
+
+    def _mock_vfs_list_mounts(self, params: Dict[str, Any]) -> Dict[str, Any]:
+        """Mock implementation of a VFS mount listing operation."""
+        return {
+            "mounts": list(self.vfs_mounts.values()),
+            "count": len(self.vfs_mounts),
         }
 
 
@@ -618,6 +684,46 @@ class IPFSKitClient:
             Dict[str, Any]: Directory contents
         """
         return self._send_command("ls", {"cid": cid})
+
+    def vfs_mount(self, ipfs_path: str, mount_point: str, read_only: bool = True) -> Dict[str, Any]:
+        """Mount an IPFS path to a local VFS path."""
+        return self._send_command(
+            "vfs_mount",
+            {
+                "ipfs_path": ipfs_path,
+                "mount_point": mount_point,
+                "read_only": read_only,
+            },
+        )
+
+    async def async_vfs_mount(
+        self, ipfs_path: str, mount_point: str, read_only: bool = True
+    ) -> Dict[str, Any]:
+        """Async version of vfs_mount"""
+        return await self.async_send_command(
+            "vfs_mount",
+            {
+                "ipfs_path": ipfs_path,
+                "mount_point": mount_point,
+                "read_only": read_only,
+            },
+        )
+
+    def vfs_unmount(self, mount_point: str) -> Dict[str, Any]:
+        """Unmount a local VFS path."""
+        return self._send_command("vfs_unmount", {"mount_point": mount_point})
+
+    async def async_vfs_unmount(self, mount_point: str) -> Dict[str, Any]:
+        """Async version of vfs_unmount"""
+        return await self.async_send_command("vfs_unmount", {"mount_point": mount_point})
+
+    def vfs_list_mounts(self) -> Dict[str, Any]:
+        """List active VFS mounts."""
+        return self._send_command("vfs_list_mounts", {})
+
+    async def async_vfs_list_mounts(self) -> Dict[str, Any]:
+        """Async version of vfs_list_mounts"""
+        return await self.async_send_command("vfs_list_mounts", {})
     
     async def async_ls(self, cid: str) -> Dict[str, Any]:
         """Async version of ls"""
