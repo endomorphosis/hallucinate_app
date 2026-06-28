@@ -114,6 +114,11 @@ const MGW_547_LAUNCH_VALIDATION_GATE = {
   launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-27-mgw-547-launch-playwright-validation-gate.md',
   hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-27-mgw-547-launch-playwright-validation-gate.md',
   receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-547-mcp-dashboard-launch-gate.json',
+  attempt: 11,
+  attempt_receipts: [
+    'data/meta_glasses_display_widgets/discovery/2026-06-28-mgw-547-attempt-11-launch-playwright-validation-gate.md',
+    'data/hallucinate_multimodal_control/discovery/2026-06-28-mgw-547-attempt-11-launch-playwright-validation-gate.md'
+  ],
   child_goals: [
     'VAIOS-G723-C1 Catalog normalization',
     'VAIOS-G723-C2 Dashboard UI wiring',
@@ -341,14 +346,31 @@ const VAI_537_LAUNCH_VALIDATION_GATE = {
   launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-537-mcp-dashboard-launch-gate.md',
   receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-537-mcp-dashboard-launch-gate.json'
 };
+const VAI_539_LAUNCH_VALIDATION_GATE = {
+  ...MGW_533_LAUNCH_VALIDATION_GATE,
+  task_id: 'VAI-539',
+  supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-539-objective-gap-3e00ad2a0074.md',
+  launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-539-mcp-dashboard-launch-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-539-mcp-dashboard-launch-gate.json'
+};
 const VAI_542_LAUNCH_VALIDATION_GATE = {
   ...MGW_533_LAUNCH_VALIDATION_GATE,
   task_id: 'VAI-542',
   goal_id: 'VAIOS-G723',
   supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-542-objective-gap-7ea369464239.md',
   launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-542-mcp-dashboard-launch-gate.md',
+  hallucinate_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-objective-gap-7ea369464239.md',
   hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-mcp-dashboard-launch-gate.md',
-  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-542-mcp-dashboard-launch-gate.json'
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-542-mcp-dashboard-launch-gate.json',
+  child_goals: [
+    'VAIOS-G723-C1 Catalog normalization',
+    'VAIOS-G723-C2 Dashboard UI wiring',
+    'VAIOS-G723-C3 Mediated tool-call receipts',
+    'VAIOS-G723-C4 Swissknife consumers',
+    'VAIOS-G723-C5 Playwright coverage',
+    'VAIOS-G723-C6 Supervisor-generated follow-up subtasks'
+  ],
+  follow_up_subtasks: ['HAO-678', 'HAO-679', 'HAO-680', 'HAO-681', 'HAO-682', 'HAO-683']
 };
 const VAI_543_LAUNCH_VALIDATION_GATE = {
   ...MGW_533_LAUNCH_VALIDATION_GATE,
@@ -368,6 +390,93 @@ const VAI_543_LAUNCH_VALIDATION_GATE = {
   ],
   follow_up_subtasks: ['HAO-678', 'HAO-679', 'HAO-680', 'HAO-681', 'HAO-682', 'HAO-683'],
   failure_rule: 'Any dashboard catalog, UI wiring, mediated tools/list, mediated tools/call, Swissknife consumer, backend validation, or Playwright failure remains supervisor-generated follow-up work for VAIOS-G723.'
+};
+const HAO_727_LAUNCH_VALIDATION_GATE = {
+  ...VAI_543_LAUNCH_VALIDATION_GATE,
+  schema: 'launch_readiness_receipt_v1',
+  task_id: 'HAO-727',
+  lineage_id: 'VAIOS-G723:hallucinate-mcp-dashboard-interoperability',
+  source_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-727-objective-gap-7ea369464239.md',
+  supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-727-objective-gap-7ea369464239.md',
+  launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-727-mcp-dashboard-launch-gate.md',
+  hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-727-mcp-dashboard-launch-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-727-mcp-dashboard-launch-gate.json',
+  required_backends: [
+    'ipfs_kit_py',
+    'ipfs_datasets_py',
+    'ipfs_accelerate_py'
+  ],
+  required_evidence: [
+    'Hallucinate App menus',
+    'Hallucinate App MCP dashboard',
+    'dashboard capability catalog',
+    'backend service catalog',
+    'daemon health',
+    'MCP++ telemetry',
+    'tools/list',
+    'tools/call',
+    'control_surface receipts',
+    'Swissknife applications',
+    'catalog normalization',
+    'dashboard UI wiring',
+    'mediated tool-call receipts',
+    'Swissknife consumers',
+    'Playwright coverage',
+    'supervisor-generated follow-up subtasks',
+    'launch Playwright validation gate'
+  ],
+  receipt_route: [
+    'Hallucinate App dashboard action',
+    'dashboard capability catalog',
+    'interaction_envelope',
+    'policy_decision',
+    'mediation_receipt',
+    'supervised MCP server transport',
+    'Swissknife MCP dashboard capability registry'
+  ],
+  dashboard_servers: [
+    {
+      daemon_id: 'ipfs-kit',
+      server_package: 'ipfs_kit_py',
+      health_path: '/api/mcp/status',
+      tools_list: 'tools/list',
+      tools_call: 'tools/call',
+      safe_probe_receipt: 'ipfs_kit_status_probe',
+      swissknife_consumer: 'Swissknife IPFS storage, pin dashboard, and backend health surfaces'
+    },
+    {
+      daemon_id: 'ipfs-datasets',
+      server_package: 'ipfs_datasets_py',
+      health_path: '/health/ready',
+      tools_list: 'tools/list',
+      tools_call: 'tools/call',
+      safe_probe_receipt: 'ipfs_datasets_list_probe',
+      swissknife_consumer: 'Swissknife dataset, content, index, provenance, and background task surfaces'
+    },
+    {
+      daemon_id: 'ipfs-accelerate',
+      server_package: 'ipfs_accelerate_py',
+      health_path: '/api/mcp/status',
+      tools_list: 'tools/list',
+      tools_call: 'tools/call',
+      safe_probe_receipt: 'ipfs_accelerate_hardware_profile_probe',
+      swissknife_consumer: 'Swissknife hardware profile, inference job, job status, and telemetry surfaces'
+    }
+  ],
+  validation_commands: [
+    'PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py tests/test_virtual_ai_os_todo_queue.py -q',
+    'npm --prefix hallucinate_app run test:daemon-manager',
+    'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
+    'npm --prefix swissknife run test:e2e:mcp',
+    'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
+    'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
+  ],
+  catalog_source: 'hallucinate_app.node.mcp_daemon_manager.getDashboardCapabilityCatalog',
+  catalog_schema: DASHBOARD_CATALOG_SCHEMA,
+  catalog_generated_by: 'hallucinate_app.node.mcp_daemon_manager.getDashboardCapabilityCatalog',
+  catalog_fixture: 'hallucinate_app/test/e2e/fixtures/vai-512-mcp-dashboard-catalog.json',
+  catalog_launch_objective_ids: DASHBOARD_LAUNCH_OBJECTIVE_IDS,
+  supervisor_follow_up_subtasks: ['HAO-678', 'HAO-679', 'HAO-680', 'HAO-681', 'HAO-682', 'HAO-683']
 };
 const MGW_555_LAUNCH_VALIDATION_GATE = {
   ...MGW_533_LAUNCH_VALIDATION_GATE,
@@ -389,8 +498,10 @@ const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   VAI_529_LAUNCH_VALIDATION_GATE,
   VAI_535_LAUNCH_VALIDATION_GATE,
   VAI_537_LAUNCH_VALIDATION_GATE,
+  VAI_539_LAUNCH_VALIDATION_GATE,
   VAI_542_LAUNCH_VALIDATION_GATE,
   VAI_543_LAUNCH_VALIDATION_GATE,
+  HAO_727_LAUNCH_VALIDATION_GATE,
   MGW_555_LAUNCH_VALIDATION_GATE
 ];
 const DAEMON_LAUNCH_GATE_TASK_ID = 'MGW-535';

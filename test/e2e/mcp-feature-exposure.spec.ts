@@ -404,6 +404,14 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
         supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-objective-gap-3e00ad2a0074.md'
       }),
       expect.objectContaining({
+        task_id: 'HAO-727',
+        goal_id: 'VAIOS-G723',
+        evidence_term: 'launch Playwright validation gate',
+        supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-727-objective-gap-7ea369464239.md',
+        launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-727-mcp-dashboard-launch-gate.md',
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-727-mcp-dashboard-launch-gate.json'
+      }),
+      expect.objectContaining({
         task_id: 'VAI-529',
         goal_id: 'VAIOS-G724',
         goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
@@ -1010,6 +1018,15 @@ test.describe('MCP Feature Exposure - headless backend gate', () => {
         supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-objective-gap-3e00ad2a0074.md',
         launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-mcp-dashboard-launch-gate.md',
         receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-724-mcp-dashboard-launch-gate.json'
+      }),
+      expect.objectContaining({
+        task_id: 'HAO-727',
+        goal_id: 'VAIOS-G723',
+        evidence_term: 'launch Playwright validation gate',
+        supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-727-objective-gap-7ea369464239.md',
+        launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-727-mcp-dashboard-launch-gate.md',
+        hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-727-mcp-dashboard-launch-gate.md',
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-727-mcp-dashboard-launch-gate.json'
       }),
       expect.objectContaining({
         task_id: 'VAI-529',
