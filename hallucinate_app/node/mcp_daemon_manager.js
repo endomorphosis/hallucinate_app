@@ -345,7 +345,17 @@ const VAI_543_LAUNCH_VALIDATION_GATE = {
   supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-543-objective-gap-7ea369464239.md',
   launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-543-mcp-dashboard-launch-gate.md',
   hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-vai-543-mcp-dashboard-launch-gate.md',
-  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-543-mcp-dashboard-launch-gate.json'
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-543-mcp-dashboard-launch-gate.json',
+  child_goals: [
+    'VAIOS-G723-C1 Catalog normalization',
+    'VAIOS-G723-C2 Dashboard UI wiring',
+    'VAIOS-G723-C3 Mediated tool-call receipts',
+    'VAIOS-G723-C4 Swissknife consumers',
+    'VAIOS-G723-C5 Playwright coverage',
+    'VAIOS-G723-C6 Supervisor-generated follow-up subtasks'
+  ],
+  follow_up_subtasks: ['HAO-678', 'HAO-679', 'HAO-680', 'HAO-681', 'HAO-682', 'HAO-683'],
+  failure_rule: 'Any dashboard catalog, UI wiring, mediated tools/list, mediated tools/call, Swissknife consumer, backend validation, or Playwright failure remains supervisor-generated follow-up work for VAIOS-G723.'
 };
 const MGW_555_LAUNCH_VALIDATION_GATE = {
   ...MGW_533_LAUNCH_VALIDATION_GATE,
