@@ -953,7 +953,11 @@ class MCPDaemonManager extends EventEmitter {
       gate_state: 'gate_open_until_playwright_passes',
       discovery_receipts: overrides.discovery_receipts || [...DAEMON_LAUNCH_GATE_DISCOVERY_RECEIPTS],
       objective_gap_receipt: overrides.objective_gap_receipt || 'data/virtual_ai_os/discovery/2026-06-26-vai-519-objective-gap-b023c8de5b69.md',
-      objective_gap_receipts: [...DAEMON_LAUNCH_GATE_OBJECTIVE_GAP_RECEIPTS],
+      objective_gap_receipts: Array.from(new Set([
+        ...DAEMON_LAUNCH_GATE_OBJECTIVE_GAP_RECEIPTS,
+        ...(overrides.objective_gap_receipts || []),
+        ...(overrides.objective_gap_receipt ? [overrides.objective_gap_receipt] : [])
+      ])),
       supervisor_gap_receipt: overrides.supervisor_gap_receipt || 'data/hallucinate_multimodal_control/discovery/2026-06-26-hao-702-objective-gap-b023c8de5b69.md',
       supervisor_gap_receipts: [...DAEMON_LAUNCH_GATE_SUPERVISOR_GAP_RECEIPTS],
       hallucinate_backlog_receipt: overrides.hallucinate_backlog_receipt || 'data/hallucinate_multimodal_control/discovery/2026-06-26-hao-702-daemon-launch-health-gate.md',
