@@ -25,6 +25,10 @@ const IPFS_IPC_CHANNELS = {
   EMBED: 'ipfs:embed',
   GENERATE: 'ipfs:generate',
   CAPABILITIES: 'ipfs:capabilities',
+  HARDWARE_PROFILE: 'ipfs:hardware_profile',
+  LIST_MODELS: 'ipfs:list_models',
+  LIST_DATASETS: 'ipfs:list_datasets',
+  INFERENCE: 'ipfs:inference',
 };
 
 /**
@@ -141,6 +145,33 @@ export function registerIPFSIPCHandlers() {
   // GET /v1/ipfs/capabilities - Hardware capabilities
   ipcMain.handle(IPFS_IPC_CHANNELS.CAPABILITIES, async () => {
     return backendRequest('GET', '/v1/ipfs/capabilities');
+  });
+
+  // GET /v1/ipfs/hardware_profile - Detailed hardware profile
+  ipcMain.handle(IPFS_IPC_CHANNELS.HARDWARE_PROFILE, async () => {
+    return backendRequest('GET', '/v1/ipfs/hardware_profile');
+  });
+
+  // GET /v1/ipfs/list_models - List available models
+  ipcMain.handle(IPFS_IPC_CHANNELS.LIST_MODELS, async () => {
+    return backendRequest('GET', '/v1/ipfs/list_models');
+  });
+
+  // POST /v1/ipfs/list_datasets - List/search datasets
+  ipcMain.handle(IPFS_IPC_CHANNELS.LIST_DATASETS, async (_event, request) => {
+    return backendRequest('POST', '/v1/ipfs/list_datasets', {
+      query: request?.query || null,
+      limit: request?.limit || 20,
+    });
+  });
+
+  // POST /v1/ipfs/inference - Direct model inference
+  ipcMain.handle(IPFS_IPC_CHANNELS.INFERENCE, async (_event, request) => {
+    return backendRequest('POST', '/v1/ipfs/inference', {
+      model_name: request.model_name,
+      inputs: request.inputs,
+      parameters: request.parameters || {},
+    });
   });
 
   console.log('[IPFS IPC] Registered handlers for channels:', Object.values(IPFS_IPC_CHANNELS).join(', '));

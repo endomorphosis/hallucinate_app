@@ -316,6 +316,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
     embed: (request) => ipcRenderer.invoke('ipfs:embed', request),
     generate: (request) => ipcRenderer.invoke('ipfs:generate', request),
     capabilities: () => ipcRenderer.invoke('ipfs:capabilities'),
+    hardwareProfile: () => ipcRenderer.invoke('ipfs:hardware_profile'),
+    listModels: () => ipcRenderer.invoke('ipfs:list_models'),
+    listDatasets: (request) => ipcRenderer.invoke('ipfs:list_datasets', request),
+    inference: (request) => ipcRenderer.invoke('ipfs:inference', request),
   },
   platform: process.platform,
   versions: {
