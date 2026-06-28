@@ -12,6 +12,7 @@ import electron_squirrel_startup from 'electron-squirrel-startup';
 import testHandler from './hallucinate_app/node/test_handler.js';
 import benchmarkHandler from './hallucinate_app/node/benchmark_handler.js';
 import { getDaemonManager } from './hallucinate_app/node/daemon_manager.js';
+import { registerIPFSIPCHandlers } from './hallucinate_app/node/ipfs_ipc_handlers.js';
 
 // ============================================================
 // VERBOSE ERROR LOGGING CONFIGURATION
@@ -2079,6 +2080,10 @@ const installControlSurfaceMenu = () => {
 app.on('ready', async () => {
   try {
     logInfo('APP_READY', 'Electron app ready, initializing...');
+    
+    // Register IPFS IPC handlers for renderer-to-backend communication
+    registerIPFSIPCHandlers();
+    logInfo('APP_READY', 'IPFS IPC handlers registered');
     
     // Start the SwissKnife web server
     await startSwissKnifeServer();

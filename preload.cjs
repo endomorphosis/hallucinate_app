@@ -302,6 +302,21 @@ contextBridge.exposeInMainWorld('electronAPI', {
     openDatabaseBackupDashboard: () => ipcRenderer.send('open-database-backup-dashboard'),
     openDashboard: (daemonId) => openCatalogDashboard(daemonId),
   },
+  /**
+   * IPFS operations - direct access to the handsfree /v1/ipfs/* backend
+   * via IPC handlers registered in ipfs_ipc_handlers.js
+   */
+  ipfs: {
+    status: () => ipcRenderer.invoke('ipfs:status'),
+    add: (request) => ipcRenderer.invoke('ipfs:add', request),
+    cat: (request) => ipcRenderer.invoke('ipfs:cat', request),
+    pin: (request) => ipcRenderer.invoke('ipfs:pin', request),
+    unpin: (request) => ipcRenderer.invoke('ipfs:unpin', request),
+    resolve: (request) => ipcRenderer.invoke('ipfs:resolve', request),
+    embed: (request) => ipcRenderer.invoke('ipfs:embed', request),
+    generate: (request) => ipcRenderer.invoke('ipfs:generate', request),
+    capabilities: () => ipcRenderer.invoke('ipfs:capabilities'),
+  },
   platform: process.platform,
   versions: {
     node: process.versions.node,
