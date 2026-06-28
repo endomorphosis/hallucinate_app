@@ -225,12 +225,14 @@ const DAEMON_LAUNCH_GATE_DISCOVERY_RECEIPTS = [
   'data/virtual_ai_os/discovery/2026-06-26-vai-519-daemon-launch-health-gate.md',
   'data/virtual_ai_os/discovery/2026-06-27-vai-530-daemon-launch-health-gate.md',
   'data/virtual_ai_os/discovery/2026-06-28-vai-536-daemon-launch-health-gate.md',
-  'data/meta_glasses_display_widgets/discovery/2026-06-26-mgw-535-daemon-launch-health-gate.md'
+  'data/meta_glasses_display_widgets/discovery/2026-06-26-mgw-535-daemon-launch-health-gate.md',
+  'data/meta_glasses_display_widgets/discovery/2026-06-28-mgw-551-daemon-launch-health-gate.md'
 ];
 const DAEMON_LAUNCH_GATE_OBJECTIVE_GAP_RECEIPTS = [
   'data/virtual_ai_os/discovery/2026-06-26-vai-519-objective-gap-b023c8de5b69.md',
   'data/virtual_ai_os/discovery/2026-06-27-vai-530-objective-gap-b023c8de5b69.md',
-  'data/virtual_ai_os/discovery/2026-06-28-vai-536-objective-gap-b023c8de5b69.md'
+  'data/virtual_ai_os/discovery/2026-06-28-vai-536-objective-gap-b023c8de5b69.md',
+  'data/meta_glasses_display_widgets/discovery/2026-06-27-mgw-551-objective-gap-b023c8de5b69.md'
 ];
 const DAEMON_LAUNCH_GATE_SUPERVISOR_GAP_RECEIPTS = [
   'data/hallucinate_multimodal_control/discovery/2026-06-26-hao-702-objective-gap-b023c8de5b69.md',
@@ -247,7 +249,7 @@ const DAEMON_LAUNCH_GATE_HALLUCINATE_BACKLOG_RECEIPTS = [
 const MGW_551_DAEMON_LAUNCH_VALIDATION_GATE = {
   task_id: 'MGW-551',
   supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-27-mgw-551-objective-gap-b023c8de5b69.md',
-  launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-27-mgw-551-daemon-launch-health-gate.md',
+  launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-28-mgw-551-daemon-launch-health-gate.md',
   receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-551-daemon-launch-health-gate.json',
   validation_commands: [
     'PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q',
