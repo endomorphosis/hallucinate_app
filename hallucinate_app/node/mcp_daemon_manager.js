@@ -114,6 +114,11 @@ const MGW_547_LAUNCH_VALIDATION_GATE = {
   launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-27-mgw-547-launch-playwright-validation-gate.md',
   hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-27-mgw-547-launch-playwright-validation-gate.md',
   receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-547-mcp-dashboard-launch-gate.json',
+  attempt: 11,
+  attempt_receipts: [
+    'data/meta_glasses_display_widgets/discovery/2026-06-28-mgw-547-attempt-11-launch-playwright-validation-gate.md',
+    'data/hallucinate_multimodal_control/discovery/2026-06-28-mgw-547-attempt-11-launch-playwright-validation-gate.md'
+  ],
   child_goals: [
     'VAIOS-G723-C1 Catalog normalization',
     'VAIOS-G723-C2 Dashboard UI wiring',
@@ -341,14 +346,31 @@ const VAI_537_LAUNCH_VALIDATION_GATE = {
   launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-537-mcp-dashboard-launch-gate.md',
   receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-537-mcp-dashboard-launch-gate.json'
 };
+const VAI_539_LAUNCH_VALIDATION_GATE = {
+  ...MGW_533_LAUNCH_VALIDATION_GATE,
+  task_id: 'VAI-539',
+  supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-539-objective-gap-3e00ad2a0074.md',
+  launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-539-mcp-dashboard-launch-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-539-mcp-dashboard-launch-gate.json'
+};
 const VAI_542_LAUNCH_VALIDATION_GATE = {
   ...MGW_533_LAUNCH_VALIDATION_GATE,
   task_id: 'VAI-542',
   goal_id: 'VAIOS-G723',
   supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-542-objective-gap-7ea369464239.md',
   launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-542-mcp-dashboard-launch-gate.md',
+  hallucinate_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-objective-gap-7ea369464239.md',
   hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-mcp-dashboard-launch-gate.md',
-  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-542-mcp-dashboard-launch-gate.json'
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-542-mcp-dashboard-launch-gate.json',
+  child_goals: [
+    'VAIOS-G723-C1 Catalog normalization',
+    'VAIOS-G723-C2 Dashboard UI wiring',
+    'VAIOS-G723-C3 Mediated tool-call receipts',
+    'VAIOS-G723-C4 Swissknife consumers',
+    'VAIOS-G723-C5 Playwright coverage',
+    'VAIOS-G723-C6 Supervisor-generated follow-up subtasks'
+  ],
+  follow_up_subtasks: ['HAO-678', 'HAO-679', 'HAO-680', 'HAO-681', 'HAO-682', 'HAO-683']
 };
 const VAI_543_LAUNCH_VALIDATION_GATE = {
   ...MGW_533_LAUNCH_VALIDATION_GATE,
@@ -389,6 +411,7 @@ const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   VAI_529_LAUNCH_VALIDATION_GATE,
   VAI_535_LAUNCH_VALIDATION_GATE,
   VAI_537_LAUNCH_VALIDATION_GATE,
+  VAI_539_LAUNCH_VALIDATION_GATE,
   VAI_542_LAUNCH_VALIDATION_GATE,
   VAI_543_LAUNCH_VALIDATION_GATE,
   MGW_555_LAUNCH_VALIDATION_GATE
