@@ -289,6 +289,7 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
       expect(receipt.packet_goals).toEqual(gate.packet_goals);
       expect(receipt.evidence_term).toBe(gate.evidence_term);
       expect(receipt.objective_gap_receipt).toBe(fixture.gapReceipt);
+      expect(receipt.objective_gap_receipts).toContain(fixture.gapReceipt);
       expect(receipt.supervisor_gap_receipt).toBe(fixture.gapReceipt);
       expect(receipt.launch_gate_receipt).toBe(fixture.launchReceipt);
       expect(receipt.hallucinate_backlog_receipt).toBe(fixture.launchReceipt);
