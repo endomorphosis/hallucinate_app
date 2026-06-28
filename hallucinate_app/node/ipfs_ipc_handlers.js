@@ -29,6 +29,15 @@ const IPFS_IPC_CHANNELS = {
   LIST_MODELS: 'ipfs:list_models',
   LIST_DATASETS: 'ipfs:list_datasets',
   INFERENCE: 'ipfs:inference',
+  LIST_PINS: 'ipfs:list_pins',
+  STAT: 'ipfs:stat',
+  DAG_GET: 'ipfs:dag_get',
+  DAG_PUT: 'ipfs:dag_put',
+  NAME_PUBLISH: 'ipfs:name_publish',
+  NAME_RESOLVE: 'ipfs:name_resolve',
+  SEARCH_MODELS: 'ipfs:search_models',
+  METRICS: 'ipfs:metrics',
+  ENDPOINTS: 'ipfs:endpoints',
 };
 
 /**
@@ -172,6 +181,51 @@ export function registerIPFSIPCHandlers() {
       inputs: request.inputs,
       parameters: request.parameters || {},
     });
+  });
+
+  // GET /v1/ipfs/list_pins - List pinned CIDs
+  ipcMain.handle(IPFS_IPC_CHANNELS.LIST_PINS, async () => {
+    return backendRequest('GET', '/v1/ipfs/list_pins');
+  });
+
+  // POST /v1/ipfs/stat - Object statistics
+  ipcMain.handle(IPFS_IPC_CHANNELS.STAT, async (_event, request) => {
+    return backendRequest('POST', '/v1/ipfs/stat', { cid: request.cid });
+  });
+
+  // POST /v1/ipfs/dag/get - Get DAG node
+  ipcMain.handle(IPFS_IPC_CHANNELS.DAG_GET, async (_event, request) => {
+    return backendRequest('POST', '/v1/ipfs/dag/get', { cid: request.cid });
+  });
+
+  // POST /v1/ipfs/dag/put - Store DAG node
+  ipcMain.handle(IPFS_IPC_CHANNELS.DAG_PUT, async (_event, request) => {
+    return backendRequest('POST', '/v1/ipfs/dag/put', { data: request.data });
+  });
+
+  // POST /v1/ipfs/name/publish - Publish CID to IPNS
+  ipcMain.handle(IPFS_IPC_CHANNELS.NAME_PUBLISH, async (_event, request) => {
+    return backendRequest('POST', '/v1/ipfs/name/publish', { value: request.cid || request.value });
+  });
+
+  // POST /v1/ipfs/name/resolve - Resolve IPNS name
+  ipcMain.handle(IPFS_IPC_CHANNELS.NAME_RESOLVE, async (_event, request) => {
+    return backendRequest('POST', '/v1/ipfs/name/resolve', { value: request.name || request.value });
+  });
+
+  // POST /v1/ipfs/search_models - Search AI models
+  ipcMain.handle(IPFS_IPC_CHANNELS.SEARCH_MODELS, async (_event, request) => {
+    return backendRequest('POST', '/v1/ipfs/search_models', { query: request?.query || '' });
+  });
+
+  // GET /v1/ipfs/metrics - Performance metrics
+  ipcMain.handle(IPFS_IPC_CHANNELS.METRICS, async () => {
+    return backendRequest('GET', '/v1/ipfs/metrics');
+  });
+
+  // GET /v1/ipfs/endpoints - List inference endpoints
+  ipcMain.handle(IPFS_IPC_CHANNELS.ENDPOINTS, async () => {
+    return backendRequest('GET', '/v1/ipfs/endpoints');
   });
 
   console.log('[IPFS IPC] Registered handlers for channels:', Object.values(IPFS_IPC_CHANNELS).join(', '));
