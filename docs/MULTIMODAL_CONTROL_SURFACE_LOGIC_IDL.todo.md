@@ -8708,7 +8708,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-720 Close objective gap: Hallucinate App MCP dashboard capability catalog
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: launch
