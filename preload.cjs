@@ -340,6 +340,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
     scrapeBatch: (request) => ipcRenderer.invoke('ipfs:scrape_batch', request),
     workflowExecute: (request) => ipcRenderer.invoke('ipfs:workflow_execute', request),
   },
+  ucan: {
+    getIdentity: () => ipcRenderer.invoke('ucan:get-identity'),
+    getDID: () => ipcRenderer.invoke('ucan:get-did'),
+    createDelegation: (audience, capabilities) => ipcRenderer.invoke('ucan:create-delegation', audience, capabilities),
+  },
   platform: process.platform,
   versions: {
     node: process.versions.node,
