@@ -239,6 +239,15 @@ const VAI_537_LAUNCH_VALIDATION_GATE = {
   launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-537-mcp-dashboard-launch-gate.md',
   receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-537-mcp-dashboard-launch-gate.json'
 };
+const VAI_542_LAUNCH_VALIDATION_GATE = {
+  ...MGW_533_LAUNCH_VALIDATION_GATE,
+  task_id: 'VAI-542',
+  goal_id: 'VAIOS-G723',
+  supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-542-objective-gap-7ea369464239.md',
+  launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-542-mcp-dashboard-launch-gate.md',
+  hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-mcp-dashboard-launch-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-542-mcp-dashboard-launch-gate.json'
+};
 const VAI_543_LAUNCH_VALIDATION_GATE = {
   ...MGW_533_LAUNCH_VALIDATION_GATE,
   task_id: 'VAI-543',
@@ -266,6 +275,7 @@ const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   VAI_529_LAUNCH_VALIDATION_GATE,
   VAI_535_LAUNCH_VALIDATION_GATE,
   VAI_537_LAUNCH_VALIDATION_GATE,
+  VAI_542_LAUNCH_VALIDATION_GATE,
   VAI_543_LAUNCH_VALIDATION_GATE,
   MGW_555_LAUNCH_VALIDATION_GATE
 ];
