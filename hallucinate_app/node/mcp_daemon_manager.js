@@ -308,6 +308,18 @@ const HAO_720_LAUNCH_VALIDATION_GATE = {
   launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-720-mcp-dashboard-launch-gate.md',
   receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-720-mcp-dashboard-launch-gate.json'
 };
+const HAO_724_LAUNCH_VALIDATION_GATE = {
+  ...MGW_533_LAUNCH_VALIDATION_GATE,
+  task_id: 'HAO-724',
+  supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-objective-gap-3e00ad2a0074.md',
+  launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-mcp-dashboard-launch-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-724-mcp-dashboard-launch-gate.json',
+  validation_commands: [
+    'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
+    'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
+    'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
+  ]
+};
 const VAI_529_LAUNCH_VALIDATION_GATE = {
   ...MGW_533_LAUNCH_VALIDATION_GATE,
   task_id: 'VAI-529',
@@ -373,6 +385,7 @@ const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   HAO_712_LAUNCH_VALIDATION_GATE,
   HAO_718_LAUNCH_VALIDATION_GATE,
   HAO_720_LAUNCH_VALIDATION_GATE,
+  HAO_724_LAUNCH_VALIDATION_GATE,
   VAI_529_LAUNCH_VALIDATION_GATE,
   VAI_535_LAUNCH_VALIDATION_GATE,
   VAI_537_LAUNCH_VALIDATION_GATE,
