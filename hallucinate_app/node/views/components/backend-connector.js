@@ -31,6 +31,9 @@ class BackendConnector {
     this.kit = new IPFSKitClient(this);
     this.datasets = new IPFSDatasetsClient(this);
     this.accelerate = new IPFSAccelerateClient(this);
+    this.vector = new VectorSearchClient(this);
+    this.scraping = new WebScrapingClient(this);
+    this.workflow = new WorkflowClient(this);
   }
 
   _loadSettings() {
@@ -179,7 +182,52 @@ class IPFSAccelerateClient {
   }
 }
 
+// --- Vector Store & Search Client ---
+class VectorSearchClient {
+  constructor(connector) { this.c = connector; }
+
+  async index(content, metadata = {}, collection = 'default') {
+    return this.c._post('/v1/ipfs/vector/index', { content, metadata, collection });
+  }
+  async search(query, collection = 'default', top_k = 10) {
+    return this.c._post('/v1/ipfs/vector/search', { query, collection, top_k });
+  }
+  async metadata(collection = 'default') {
+    return this.c._post('/v1/ipfs/vector/metadata', { collection });
+  }
+  async semanticSearch(query, top_k = 10, filters = {}) {
+    return this.c._post('/v1/ipfs/search/semantic', { query, top_k, filters });
+  }
+  async similaritySearch(query, threshold = 0.7, max_results = 20) {
+    return this.c._post('/v1/ipfs/search/similarity', { query, threshold, max_results });
+  }
+  async facetedSearch(query, facets = [], filters = {}) {
+    return this.c._post('/v1/ipfs/search/faceted', { query, facets, filters });
+  }
+}
+
+// --- Web Scraping Client ---
+class WebScrapingClient {
+  constructor(connector) { this.c = connector; }
+
+  async scrapeUrl(url, options = {}) {
+    return this.c._post('/v1/ipfs/scrape/url', { url, ...options });
+  }
+  async scrapeBatch(urls, options = {}) {
+    return this.c._post('/v1/ipfs/scrape/batch', { urls, ...options });
+  }
+}
+
+// --- Workflow Client ---
+class WorkflowClient {
+  constructor(connector) { this.c = connector; }
+
+  async execute(workflow_id, step, params = {}) {
+    return this.c._post('/v1/ipfs/workflow/execute', { workflow_id, step, params });
+  }
+}
+
 // Export for module environments
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { BackendConnector, IPFSKitClient, IPFSDatasetsClient, IPFSAccelerateClient };
+  module.exports = { BackendConnector, IPFSKitClient, IPFSDatasetsClient, IPFSAccelerateClient, VectorSearchClient, WebScrapingClient, WorkflowClient };
 }

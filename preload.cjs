@@ -329,6 +329,16 @@ contextBridge.exposeInMainWorld('electronAPI', {
     searchModels: (request) => ipcRenderer.invoke('ipfs:search_models', request),
     metrics: () => ipcRenderer.invoke('ipfs:metrics'),
     endpoints: () => ipcRenderer.invoke('ipfs:endpoints'),
+    // Extended tool coverage
+    vectorIndex: (request) => ipcRenderer.invoke('ipfs:vector_index', request),
+    vectorSearch: (request) => ipcRenderer.invoke('ipfs:vector_search', request),
+    vectorMetadata: (request) => ipcRenderer.invoke('ipfs:vector_metadata', request),
+    semanticSearch: (request) => ipcRenderer.invoke('ipfs:semantic_search', request),
+    similaritySearch: (request) => ipcRenderer.invoke('ipfs:similarity_search', request),
+    facetedSearch: (request) => ipcRenderer.invoke('ipfs:faceted_search', request),
+    scrapeUrl: (request) => ipcRenderer.invoke('ipfs:scrape_url', request),
+    scrapeBatch: (request) => ipcRenderer.invoke('ipfs:scrape_batch', request),
+    workflowExecute: (request) => ipcRenderer.invoke('ipfs:workflow_execute', request),
   },
   platform: process.platform,
   versions: {

@@ -38,6 +38,16 @@ const IPFS_IPC_CHANNELS = {
   SEARCH_MODELS: 'ipfs:search_models',
   METRICS: 'ipfs:metrics',
   ENDPOINTS: 'ipfs:endpoints',
+  // Extended tool coverage
+  VECTOR_INDEX: 'ipfs:vector_index',
+  VECTOR_SEARCH: 'ipfs:vector_search',
+  VECTOR_METADATA: 'ipfs:vector_metadata',
+  SEMANTIC_SEARCH: 'ipfs:semantic_search',
+  SIMILARITY_SEARCH: 'ipfs:similarity_search',
+  FACETED_SEARCH: 'ipfs:faceted_search',
+  SCRAPE_URL: 'ipfs:scrape_url',
+  SCRAPE_BATCH: 'ipfs:scrape_batch',
+  WORKFLOW_EXECUTE: 'ipfs:workflow_execute',
 };
 
 /**
@@ -226,6 +236,53 @@ export function registerIPFSIPCHandlers() {
   // GET /v1/ipfs/endpoints - List inference endpoints
   ipcMain.handle(IPFS_IPC_CHANNELS.ENDPOINTS, async () => {
     return backendRequest('GET', '/v1/ipfs/endpoints');
+  });
+
+  // --- Extended Tool Coverage ---
+
+  // POST /v1/ipfs/vector/index - Index into vector store
+  ipcMain.handle(IPFS_IPC_CHANNELS.VECTOR_INDEX, async (_event, request) => {
+    return backendRequest('POST', '/v1/ipfs/vector/index', request);
+  });
+
+  // POST /v1/ipfs/vector/search - Search vector store
+  ipcMain.handle(IPFS_IPC_CHANNELS.VECTOR_SEARCH, async (_event, request) => {
+    return backendRequest('POST', '/v1/ipfs/vector/search', request);
+  });
+
+  // POST /v1/ipfs/vector/metadata - Vector store metadata
+  ipcMain.handle(IPFS_IPC_CHANNELS.VECTOR_METADATA, async (_event, request) => {
+    return backendRequest('POST', '/v1/ipfs/vector/metadata', request);
+  });
+
+  // POST /v1/ipfs/search/semantic - Semantic search
+  ipcMain.handle(IPFS_IPC_CHANNELS.SEMANTIC_SEARCH, async (_event, request) => {
+    return backendRequest('POST', '/v1/ipfs/search/semantic', request);
+  });
+
+  // POST /v1/ipfs/search/similarity - Similarity search
+  ipcMain.handle(IPFS_IPC_CHANNELS.SIMILARITY_SEARCH, async (_event, request) => {
+    return backendRequest('POST', '/v1/ipfs/search/similarity', request);
+  });
+
+  // POST /v1/ipfs/search/faceted - Faceted search
+  ipcMain.handle(IPFS_IPC_CHANNELS.FACETED_SEARCH, async (_event, request) => {
+    return backendRequest('POST', '/v1/ipfs/search/faceted', request);
+  });
+
+  // POST /v1/ipfs/scrape/url - Scrape URL
+  ipcMain.handle(IPFS_IPC_CHANNELS.SCRAPE_URL, async (_event, request) => {
+    return backendRequest('POST', '/v1/ipfs/scrape/url', request);
+  });
+
+  // POST /v1/ipfs/scrape/batch - Scrape batch
+  ipcMain.handle(IPFS_IPC_CHANNELS.SCRAPE_BATCH, async (_event, request) => {
+    return backendRequest('POST', '/v1/ipfs/scrape/batch', request);
+  });
+
+  // POST /v1/ipfs/workflow/execute - Execute workflow
+  ipcMain.handle(IPFS_IPC_CHANNELS.WORKFLOW_EXECUTE, async (_event, request) => {
+    return backendRequest('POST', '/v1/ipfs/workflow/execute', request);
   });
 
   console.log('[IPFS IPC] Registered handlers for channels:', Object.values(IPFS_IPC_CHANNELS).join(', '));
