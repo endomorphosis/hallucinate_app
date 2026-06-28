@@ -13,6 +13,11 @@ const electronPackage = path.join(projectRoot, 'node_modules', 'electron', 'pack
 const commandArgs = process.argv.slice(2);
 const args = commandArgs.length > 0 ? commandArgs : ['test'];
 const missingDisplayDiagnostic = 'missing_xvfb_for_electron_playwright';
+const noDisplayLaunchGateSpecs = new Set([
+  'mcp-feature-exposure.spec.ts',
+  'mcp-dashboard-interoperability.spec.ts',
+  'multimodal-control-surface.spec.ts',
+]);
 const specSourceDisplayPatterns = [
   '_electron:',
   'electron.launch(',
