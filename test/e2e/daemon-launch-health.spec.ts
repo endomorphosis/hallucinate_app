@@ -10,6 +10,7 @@ const repoRoot = path.resolve(__dirname, '..', '..', '..');
 const { test, expect } = playwrightTest as unknown as typeof import('@playwright/test');
 
 const GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-535-daemon-launch-health-gate.json');
+const MGW_551_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-551-daemon-launch-health-gate.json');
 const VAI_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-519-daemon-launch-health-gate.json');
 const HAO_713_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-713-daemon-launch-health-gate.json');
 const VAI_530_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-530-daemon-launch-health-gate.json');
@@ -102,6 +103,53 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
       });
       expect(handoff.swissknife_consumer).toContain('Swissknife');
     }
+  });
+
+  test('closes the MGW-551 daemon launch objective gap with the current Playwright gate', () => {
+    const manager = new MCPDaemonManager();
+    const fixture = JSON.parse(fs.readFileSync(MGW_551_GATE_FIXTURE, 'utf8'));
+    const gates = manager.getDaemonLaunchValidationGates();
+    const gate = gates.find((candidate: any) => candidate.task_id === 'MGW-551') as any;
+    const launchPlan = manager.getLaunchPlan();
+
+    expect(gate).toBeTruthy();
+    expect(gate).toEqual(fixture);
+    expect(gates.map((candidate: any) => candidate.task_id)).toEqual(['MGW-535', 'MGW-551']);
+    expect(gate.goal_id).toBe('VAIOS-G728');
+    expect(gate.goal_packet).toBe('goal_packet/launch/hallucinate_app/44dceea6bc53');
+    expect(gate.packet_goals).toEqual(['VAIOS-G724', 'VAIOS-G728']);
+    expect(gate.evidence_term).toBe('launch Playwright validation gate');
+    expect(gate.supervisor_gap_receipt).toBe(
+      'data/meta_glasses_display_widgets/discovery/2026-06-27-mgw-551-objective-gap-b023c8de5b69.md'
+    );
+    expect(gate.launch_gate_receipt).toBe(
+      'data/meta_glasses_display_widgets/discovery/2026-06-27-mgw-551-daemon-launch-health-gate.md'
+    );
+    expect(gate.validation_commands).toEqual(expect.arrayContaining([
+      'PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q',
+      'npm --prefix swissknife run test:e2e:meta-glasses',
+      'npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts',
+      'npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts'
+    ]));
+    expect(gate.required_evidence).toEqual(expect.arrayContaining([
+      'Hallucinate App daemon health',
+      'daemon launcher',
+      'MCP server',
+      'MCP dashboard',
+      'ipfs_accelerate_py',
+      'ipfs_datasets_py',
+      'ipfs_kit_py',
+      'dashboard capability catalog',
+      'Swissknife applications',
+      'launch Playwright validation gate'
+    ]));
+    expect(launchPlan.every((entry: any) => (
+      entry.launch_validation_gates.some((candidate: any) => candidate.task_id === 'MGW-551') &&
+      entry.launch_validation_gates.some((candidate: any) => candidate.task_id === 'MGW-535')
+    ))).toBe(true);
+    expect(gate.daemon_health_paths.map((entry: any) => entry.daemon_id)).toEqual(DAEMON_IDS);
+    expect(gate.required_backends).toEqual(BACKEND_PACKAGES);
+    expect(gate.swissknife_handoff.every((entry: any) => entry.swissknife_consumer.includes('Swissknife'))).toBe(true);
   });
 
   test('binds the VAI-519 objective gap receipt to the daemon launch health gate', () => {

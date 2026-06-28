@@ -171,8 +171,9 @@ async function runTests() {
   }
 
   // Test 10: MGW-535 daemon launch validation gate
-  console.log('\nTest 10: MGW-535 daemon launch validation gate');
+  console.log('\nTest 10: MGW-535 and MGW-551 daemon launch validation gates');
   const launchGate = manager.getDaemonLaunchValidationGate();
+  const launchGates = manager.getDaemonLaunchValidationGates();
   const launchGateOk =
     launchGate.schema === 'hallucinate_app.daemon_launch_validation_gate.v1' &&
     launchGate.task_id === 'MGW-535' &&
@@ -189,14 +190,22 @@ async function runTests() {
     launchGate.playwright_specs?.includes('hallucinate_app/test/e2e/daemon-launch-health.spec.ts') &&
     launchGate.required_backends?.join(',') === 'ipfs_kit_py,ipfs_datasets_py,ipfs_accelerate_py' &&
     launchGate.daemon_health_paths?.length === 3 &&
-    launchGate.swissknife_handoff?.every(entry => entry.swissknife_consumer?.includes('Swissknife'));
+    launchGate.swissknife_handoff?.every(entry => entry.swissknife_consumer?.includes('Swissknife')) &&
+    launchGates.some(gate =>
+      gate.task_id === 'MGW-551' &&
+      gate.goal_id === 'VAIOS-G728' &&
+      gate.supervisor_gap_receipt === 'data/meta_glasses_display_widgets/discovery/2026-06-27-mgw-551-objective-gap-b023c8de5b69.md' &&
+      gate.launch_gate_receipt === 'data/meta_glasses_display_widgets/discovery/2026-06-27-mgw-551-daemon-launch-health-gate.md' &&
+      gate.validation_commands?.includes('npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts')
+    );
 
   if (launchGateOk) {
-    console.log('✅ MGW-535 daemon launch validation gate is scanner-visible');
+    console.log('✅ MGW-535 and MGW-551 daemon launch validation gates are scanner-visible');
     testsPassed++;
   } else {
-    console.log('❌ MGW-535 daemon launch validation gate incomplete');
+    console.log('❌ Daemon launch validation gate incomplete');
     console.log('   Launch gate:', launchGate);
+    console.log('   Launch gates:', launchGates);
     testsFailed++;
   }
   
