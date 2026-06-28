@@ -570,13 +570,13 @@ const DASHBOARD_TOOL_PROTOCOLS = {
       operation: 'tools/list',
       transport: 'http',
       method: 'GET',
-      path: '/models/list'
+      path: '/api/mcp/tools'
     },
     toolsCall: {
       operation: 'tools/call',
       transport: 'http',
       method: 'POST',
-      path: '/inference',
+      path: '/api/tools',
       safeProbe: {
         tool_name: 'hardware_profile',
         arguments: { dry_run: true },
@@ -631,9 +631,9 @@ class MCPDaemonManager extends EventEmitter {
         name: 'IPFS Kit MCP',
         launchOrder: 10,
         command: this.pythonCommand,
-        args: ['-m', 'ipfs_kit_py.cli', 'mcp', 'start'],
+        args: ['-m', 'ipfs_kit_py.cli', 'mcp', 'start', ...(process.env.MCP_KIT_PORT ? ['--port', process.env.MCP_KIT_PORT] : [])],
         cwd: path.join(this.baseDir, 'ipfs_kit_py'),
-        port: 8004,
+        port: Number(process.env.MCP_KIT_PORT) || 8004,
         transport: 'http',
         rpcPath: '/mcp/tools/call',
         healthPath: '/api/mcp/status',
