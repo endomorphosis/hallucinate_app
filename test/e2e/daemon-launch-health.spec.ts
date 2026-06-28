@@ -145,6 +145,21 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
     expect(receipt.validation_commands).toEqual(gate.validation_commands);
     expect(receipt.required_backends).toEqual(gate.required_backends);
     expect(receipt.required_evidence).toEqual(gate.required_evidence);
+    expect(receipt.daemon_health_paths).toEqual(gate.daemon_health_paths);
+    expect(receipt.swissknife_handoff).toEqual(gate.swissknife_handoff);
+    expect(receipt.playwright_gate).toMatchObject({
+      surface: 'hallucinate_app',
+      command: 'npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts',
+      spec: 'hallucinate_app/test/e2e/daemon-launch-health.spec.ts'
+    });
+    expect(receipt.supervisor_alignment).toMatchObject({
+      objective_heap_goal: 'VAIOS-G728',
+      packet_sibling_goal: 'VAIOS-G724',
+      backlog_task: 'VAI-530',
+      shared_packet_task: 'MGW-535',
+      keeps_supervisor_fed_backlog_aligned: true
+    });
+    expect(receipt.failure_rule).toBe(gate.failure_rule);
   });
 
   test('keeps HAO-715 retry-budget repair aligned with headless-safe launch specs', () => {

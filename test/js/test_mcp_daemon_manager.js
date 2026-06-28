@@ -178,6 +178,9 @@ async function runTests() {
     launchGate.task_id === 'MGW-535' &&
     launchGate.goal_id === 'VAIOS-G728' &&
     launchGate.evidence_term === 'launch Playwright validation gate' &&
+    launchGate.vai_task_ids?.includes('VAI-530') &&
+    launchGate.discovery_receipts?.includes('data/virtual_ai_os/discovery/2026-06-27-vai-530-daemon-launch-health-gate.md') &&
+    launchGate.objective_gap_receipts?.includes('data/virtual_ai_os/discovery/2026-06-27-vai-530-objective-gap-b023c8de5b69.md') &&
     launchGate.packet_goals?.includes('VAIOS-G724') &&
     launchGate.packet_goals?.includes('VAIOS-G728') &&
     launchGate.backlog_task_ids?.includes('HAO-713') &&

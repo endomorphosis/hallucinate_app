@@ -40,5 +40,64 @@
     "dashboard capability catalog",
     "Swissknife applications",
     "launch Playwright validation gate"
-  ]
+  ],
+  "daemon_health_paths": [
+    {
+      "daemon_id": "ipfs-kit",
+      "server_package": "ipfs_kit_py",
+      "endpoint": "http://127.0.0.1:8004",
+      "health_path": "/api/mcp/status",
+      "rpc_path": "/mcp/tools/call",
+      "startup_order": 10
+    },
+    {
+      "daemon_id": "ipfs-datasets",
+      "server_package": "ipfs_datasets_py",
+      "endpoint": "http://127.0.0.1:3002",
+      "health_path": "/health/ready",
+      "rpc_path": "/datasets/load",
+      "startup_order": 20
+    },
+    {
+      "daemon_id": "ipfs-accelerate",
+      "server_package": "ipfs_accelerate_py",
+      "endpoint": "http://127.0.0.1:3003",
+      "health_path": "/api/mcp/status",
+      "rpc_path": "/mcp",
+      "startup_order": 30
+    }
+  ],
+  "swissknife_handoff": [
+    {
+      "daemon_id": "ipfs-kit",
+      "server_package": "ipfs_kit_py",
+      "swissknife_consumer": "Swissknife IPFS storage, pin dashboard, and backend health surfaces",
+      "mediation_contract_ref": "control_surface_contract:mcp-daemon:ipfs-kit"
+    },
+    {
+      "daemon_id": "ipfs-datasets",
+      "server_package": "ipfs_datasets_py",
+      "swissknife_consumer": "Swissknife dataset, content, index, provenance, and background task surfaces",
+      "mediation_contract_ref": "control_surface_contract:mcp-daemon:ipfs-datasets"
+    },
+    {
+      "daemon_id": "ipfs-accelerate",
+      "server_package": "ipfs_accelerate_py",
+      "swissknife_consumer": "Swissknife hardware profile, inference job, job status, and telemetry surfaces",
+      "mediation_contract_ref": "control_surface_contract:mcp-daemon:ipfs-accelerate"
+    }
+  ],
+  "playwright_gate": {
+    "surface": "hallucinate_app",
+    "command": "npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts",
+    "spec": "hallucinate_app/test/e2e/daemon-launch-health.spec.ts"
+  },
+  "supervisor_alignment": {
+    "objective_heap_goal": "VAIOS-G728",
+    "packet_sibling_goal": "VAIOS-G724",
+    "backlog_task": "VAI-530",
+    "shared_packet_task": "MGW-535",
+    "keeps_supervisor_fed_backlog_aligned": true
+  },
+  "failure_rule": "Any daemon launch, health, dashboard catalog, Swissknife handoff, or Playwright validation failure remains supervisor-generated follow-up work for VAIOS-G728."
 }
