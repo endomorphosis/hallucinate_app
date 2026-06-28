@@ -892,10 +892,15 @@ test.describe('MCP Feature Exposure - headless backend gate', () => {
     expect(catalog?.task_id).toBe('HAO-677');
     expect(catalog?.goal_id).toBe('VAIOS-G723');
     expect(catalog?.launch_objective_ids).toEqual(['VAIOS-G723', 'VAIOS-G724', 'VAIOS-G728']);
+    expect(catalog?.dashboard_only_mocks).toBe(false);
     expect(catalog?.launch_validation_gate).toMatchObject({
       task_id: 'MGW-533',
       goal_id: 'VAIOS-G724',
-      evidence_term: 'launch Playwright validation gate'
+      evidence_term: 'launch Playwright validation gate',
+      playwright_specs: [
+        'hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts',
+        'hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts'
+      ]
     });
     expect(catalog?.launch_validation_gates).toEqual(expect.arrayContaining([
       expect.objectContaining({
@@ -918,6 +923,12 @@ test.describe('MCP Feature Exposure - headless backend gate', () => {
       expect(entry.tool_protocols.tools_call.safeProbe.mutation).toBe(false);
       expect(entry.control_surface_mediation_contract).toContain(`mcp-daemon:${daemonId}`);
       expect(entry.control_surface_receipt_requirements).toContain('receipt_cid');
+      expect(entry.control_surface_receipt_requirements).toEqual(expect.arrayContaining([
+        'interaction_envelope',
+        'policy_decision',
+        'mediation_receipt',
+        'receipt_cid'
+      ]));
     }
 
     expect((byId.get('ipfs-kit') as any)?.port).toBe(8004);
