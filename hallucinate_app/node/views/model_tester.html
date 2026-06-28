@@ -135,6 +135,14 @@
       <h3>Test Results:</h3>
       <div id="testResult" class="result-area">No test results yet</div>
     </div>
+
+    <div class="section">
+      <h2>Backend Integration Test</h2>
+      <p style="color: #666; font-size: 0.9em;">Test the handsfree backend connection (port 8080) for model capabilities, hardware profile, and model listing.</p>
+      <button onclick="testBackendModel()">Test Backend (Handsfree API)</button>
+      <h3>Backend Response:</h3>
+      <div id="backendTestResult" class="result-area">Click "Test Backend" to check connection</div>
+    </div>
   </div>
   
   <script>
@@ -249,6 +257,27 @@
         testResult.textContent = JSON.stringify(data, null, 2);
       }
     });
+
+    // Quick backend integration test
+    async function testBackendModel() {
+      const output = document.getElementById('backendTestResult');
+      if (!output) return;
+      output.textContent = 'Testing IPFS Accelerate backend...';
+      try {
+        const [capResp, modelsResp, hwResp] = await Promise.allSettled([
+          fetch('http://localhost:8080/v1/ipfs/capabilities', { signal: AbortSignal.timeout(5000) }),
+          fetch('http://localhost:8080/v1/ipfs/list_models', { signal: AbortSignal.timeout(5000) }),
+          fetch('http://localhost:8080/v1/ipfs/hardware_profile', { signal: AbortSignal.timeout(5000) }),
+        ]);
+        const results = {};
+        if (capResp.status === 'fulfilled') results.capabilities = await capResp.value.json();
+        if (modelsResp.status === 'fulfilled') results.models = await modelsResp.value.json();
+        if (hwResp.status === 'fulfilled') results.hardware = await hwResp.value.json();
+        output.textContent = JSON.stringify(results, null, 2);
+      } catch (e) {
+        output.textContent = 'Backend unavailable: ' + e.message;
+      }
+    }
   </script>
 </body>
 </html>

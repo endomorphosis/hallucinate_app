@@ -264,6 +264,49 @@
     </div>
 
     <div class="settings-section">
+      <h2>Backend Integration</h2>
+      <div class="setting-row">
+        <div class="setting-label">
+          Handsfree Backend Port
+          <small>Port for the unified backend API (default: 8080)</small>
+        </div>
+        <div class="setting-control">
+          <input type="number" id="handsfreePort" value="8080" min="1024" max="65535">
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-label">
+          SwissKnife Web Port
+          <small>Port for the SwissKnife web interface (default: 8765)</small>
+        </div>
+        <div class="setting-control">
+          <input type="number" id="swissKnifePort" value="8765" min="1024" max="65535">
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-label">
+          Auto-connect to Backend
+          <small>Automatically connect dashboards to the handsfree backend on load</small>
+        </div>
+        <div class="setting-control">
+          <label class="toggle">
+            <input type="checkbox" id="autoConnectBackend" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-label">
+          Backend Health Check Interval
+          <small>Seconds between automatic health checks (0 to disable)</small>
+        </div>
+        <div class="setting-control">
+          <input type="number" id="healthCheckInterval" value="15" min="0" max="300">
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
       <h2>Developer</h2>
       <div class="setting-row">
         <div class="setting-label">
@@ -309,6 +352,10 @@
         if (saved.ipfsKitPort) document.getElementById('ipfsKitPort').value = saved.ipfsKitPort;
         if (saved.ipfsDatasetsPort) document.getElementById('ipfsDatasetsPort').value = saved.ipfsDatasetsPort;
         if (saved.ipfsAcceleratePort) document.getElementById('ipfsAcceleratePort').value = saved.ipfsAcceleratePort;
+        if (saved.handsfreePort) document.getElementById('handsfreePort').value = saved.handsfreePort;
+        if (saved.swissKnifePort) document.getElementById('swissKnifePort').value = saved.swissKnifePort;
+        if (saved.autoConnectBackend !== undefined) document.getElementById('autoConnectBackend').checked = saved.autoConnectBackend;
+        if (saved.healthCheckInterval !== undefined) document.getElementById('healthCheckInterval').value = saved.healthCheckInterval;
         if (saved.devtools !== undefined) document.getElementById('devtools').checked = saved.devtools;
         if (saved.logLevel) document.getElementById('logLevel').value = saved.logLevel;
       } catch (e) {
@@ -324,6 +371,10 @@
         ipfsKitPort: parseInt(document.getElementById('ipfsKitPort').value, 10),
         ipfsDatasetsPort: parseInt(document.getElementById('ipfsDatasetsPort').value, 10),
         ipfsAcceleratePort: parseInt(document.getElementById('ipfsAcceleratePort').value, 10),
+        handsfreePort: parseInt(document.getElementById('handsfreePort').value, 10),
+        swissKnifePort: parseInt(document.getElementById('swissKnifePort').value, 10),
+        autoConnectBackend: document.getElementById('autoConnectBackend').checked,
+        healthCheckInterval: parseInt(document.getElementById('healthCheckInterval').value, 10),
         devtools: document.getElementById('devtools').checked,
         logLevel: document.getElementById('logLevel').value
       };

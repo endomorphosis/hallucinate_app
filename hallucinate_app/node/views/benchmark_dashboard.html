@@ -103,6 +103,48 @@
     
     // Initialize when the DOM is ready
     window.addEventListener('DOMContentLoaded', initDashboard);
+
+    // Backend benchmark integration - fetch real metrics from handsfree API
+    async function fetchBackendMetrics() {
+      const container = document.getElementById('dashboard-container');
+      if (!container) return;
+      
+      try {
+        const [metricsResp, hwResp] = await Promise.allSettled([
+          fetch('http://localhost:8080/v1/ipfs/metrics', { signal: AbortSignal.timeout(5000) }),
+          fetch('http://localhost:8080/v1/ipfs/hardware_profile', { signal: AbortSignal.timeout(5000) }),
+        ]);
+        
+        const backendPanel = document.createElement('div');
+        backendPanel.id = 'backend-metrics-panel';
+        backendPanel.style.cssText = 'padding: 20px; margin: 12px; background: #f0fdf4; border-radius: 8px; border: 1px solid #86efac;';
+        
+        let html = '<h3 style="margin-top:0; color:#166534;">Backend Performance Metrics</h3>';
+        
+        if (metricsResp.status === 'fulfilled' && metricsResp.value.ok) {
+          const metrics = await metricsResp.value.json();
+          html += `<pre style="font-size:0.85em; overflow-x: auto;">${JSON.stringify(metrics, null, 2)}</pre>`;
+        } else {
+          html += '<p style="color:#666;">Metrics endpoint not available (start handsfree backend on port 8080)</p>';
+        }
+        
+        if (hwResp.status === 'fulfilled' && hwResp.value.ok) {
+          const hw = await hwResp.value.json();
+          html += `<h4>Hardware Profile</h4><pre style="font-size:0.85em; overflow-x: auto;">${JSON.stringify(hw, null, 2)}</pre>`;
+        }
+        
+        backendPanel.innerHTML = html;
+        
+        const existing = document.getElementById('backend-metrics-panel');
+        if (existing) existing.remove();
+        container.prepend(backendPanel);
+      } catch (e) {
+        console.log('Backend metrics unavailable:', e.message);
+      }
+    }
+
+    // Fetch backend metrics after dashboard loads
+    setTimeout(fetchBackendMetrics, 2000);
   </script>
   
   <style>

@@ -286,6 +286,38 @@
         </div>
       </div>
     </div>
+
+    <!-- Quick MCP Tool Test Panel -->
+    <div class="event-log" style="margin-top: 20px;">
+      <h2>Quick MCP Tool Test</h2>
+      <p style="color: #718096; font-size: 0.9em; margin-bottom: 12px;">
+        Test any registered MCP tool endpoint directly against the backend.
+      </p>
+      <div style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
+        <select id="toolTestEndpoint" style="padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9em; min-width: 200px;">
+          <optgroup label="IPFS Kit">
+            <option value="/v1/ipfs/status">status</option>
+            <option value="/v1/ipfs/list_pins">list_pins</option>
+            <option value="/v1/ipfs/stat?cid=test">stat</option>
+          </optgroup>
+          <optgroup label="IPFS Datasets">
+            <option value="/v1/ipfs/list_datasets">list_datasets</option>
+            <option value="/v1/ipfs/embed">embed (POST)</option>
+            <option value="/v1/ipfs/generate">generate (POST)</option>
+          </optgroup>
+          <optgroup label="IPFS Accelerate">
+            <option value="/v1/ipfs/capabilities">capabilities</option>
+            <option value="/v1/ipfs/hardware_profile">hardware_profile</option>
+            <option value="/v1/ipfs/list_models">list_models</option>
+            <option value="/v1/ipfs/search_models?query=bert">search_models</option>
+            <option value="/v1/ipfs/metrics">metrics</option>
+            <option value="/v1/ipfs/endpoints">endpoints</option>
+          </optgroup>
+        </select>
+        <button class="btn refresh" onclick="runToolTest()">Run Test</button>
+      </div>
+      <pre id="toolTestOutput" style="background: #1a202c; color: #68d391; padding: 12px; border-radius: 8px; font-size: 0.85em; max-height: 300px; overflow-y: auto; white-space: pre-wrap;">Select a tool and click "Run Test"</pre>
+    </div>
   </div>
 
   <script>
@@ -557,6 +589,36 @@
         detachDaemonListener();
       }
     });
+
+    // Quick MCP Tool Test
+    async function runToolTest() {
+      const endpoint = document.getElementById('toolTestEndpoint').value;
+      const output = document.getElementById('toolTestOutput');
+      output.textContent = `Testing: http://localhost:8080${endpoint}...\n`;
+      
+      const isPost = endpoint.includes('(POST)');
+      const url = `http://localhost:8080${endpoint.replace(' (POST)', '')}`;
+      
+      try {
+        const ctrl = new AbortController();
+        setTimeout(() => ctrl.abort(), 10000);
+        const opts = { signal: ctrl.signal };
+        if (isPost) {
+          opts.method = 'POST';
+          opts.headers = { 'Content-Type': 'application/json' };
+          opts.body = JSON.stringify({});
+        }
+        const resp = await fetch(url, opts);
+        const text = await resp.text();
+        let formatted;
+        try {
+          formatted = JSON.stringify(JSON.parse(text), null, 2);
+        } catch { formatted = text; }
+        output.textContent = `Status: ${resp.status} ${resp.statusText}\n\n${formatted}`;
+      } catch (e) {
+        output.textContent = `Error: ${e.message}\n\nMake sure the handsfree backend is running on port 8080.`;
+      }
+    }
   </script>
 </body>
 </html>

@@ -134,6 +134,41 @@
           </div>
         </div>
         
+        <!-- IPFS Backend Status Panel -->
+        <div class="card">
+          <div class="card-header">
+            <h2><i class="fas fa-server"></i> IPFS Backend Services</h2>
+          </div>
+          <div class="card-body">
+            <div class="status-grid" id="ipfsBackendStatus">
+              <div class="status-item">
+                <span class="status-label">IPFS Kit (port 8004):</span>
+                <span class="status-value" id="ipfs-kit-status">Checking...</span>
+              </div>
+              <div class="status-item">
+                <span class="status-label">IPFS Datasets (port 3002):</span>
+                <span class="status-value" id="ipfs-datasets-status">Checking...</span>
+              </div>
+              <div class="status-item">
+                <span class="status-label">IPFS Accelerate (port 3003):</span>
+                <span class="status-value" id="ipfs-accelerate-status">Checking...</span>
+              </div>
+              <div class="status-item">
+                <span class="status-label">Handsfree Backend (port 8080):</span>
+                <span class="status-value" id="handsfree-backend-status">Checking...</span>
+              </div>
+              <div class="status-item">
+                <span class="status-label">SwissKnife (port 8765):</span>
+                <span class="status-value" id="swissknife-status">Checking...</span>
+              </div>
+            </div>
+            <div class="btn-group" style="margin-top: 12px;">
+              <button class="btn btn-outline" id="btnRefreshBackendStatus"><i class="fas fa-sync-alt"></i> Refresh</button>
+              <button class="btn btn-primary" id="btnOpenDaemonManager"><i class="fas fa-cogs"></i> Daemon Manager</button>
+            </div>
+          </div>
+        </div>
+
         <div class="card">
           <div class="card-header">
             <h2>System Status</h2>
@@ -960,6 +995,46 @@
           }
         });
       }
+    });
+
+    // IPFS Backend Health Monitoring
+    const BACKEND_SERVICES = [
+      { id: 'ipfs-kit-status', url: 'http://localhost:8004/api/mcp/status', name: 'IPFS Kit' },
+      { id: 'ipfs-datasets-status', url: 'http://localhost:3002/health/ready', name: 'IPFS Datasets' },
+      { id: 'ipfs-accelerate-status', url: 'http://localhost:3003/api/mcp/status', name: 'IPFS Accelerate' },
+      { id: 'handsfree-backend-status', url: 'http://localhost:8080/v1/ipfs/status', name: 'Handsfree' },
+      { id: 'swissknife-status', url: 'http://localhost:8765/health', name: 'SwissKnife' },
+    ];
+
+    async function checkBackendHealth() {
+      for (const svc of BACKEND_SERVICES) {
+        const el = document.getElementById(svc.id);
+        if (!el) continue;
+        try {
+          const ctrl = new AbortController();
+          setTimeout(() => ctrl.abort(), 3000);
+          const resp = await fetch(svc.url, { signal: ctrl.signal });
+          if (resp.ok) {
+            el.textContent = 'Online';
+            el.style.color = '#10b981';
+          } else {
+            el.textContent = `Error (${resp.status})`;
+            el.style.color = '#f59e0b';
+          }
+        } catch (e) {
+          el.textContent = 'Offline';
+          el.style.color = '#ef4444';
+        }
+      }
+    }
+
+    // Check on load and every 15s
+    checkBackendHealth();
+    setInterval(checkBackendHealth, 15000);
+
+    document.getElementById('btnRefreshBackendStatus')?.addEventListener('click', checkBackendHealth);
+    document.getElementById('btnOpenDaemonManager')?.addEventListener('click', () => {
+      if (window.ipcRenderer) window.ipcRenderer.send('open-daemon-manager');
     });
   </script>
 </body>
