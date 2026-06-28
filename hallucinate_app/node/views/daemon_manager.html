@@ -323,9 +323,15 @@
     <div style="margin-top: 20px;">
       <div id="unified-tool-explorer"></div>
     </div>
+
+    <!-- MCP++ Protocol Panel -->
+    <div style="margin-top: 20px;">
+      <div id="mcppp-panel"></div>
+    </div>
   </div>
 
   <script src="components/unified-tool-explorer.js"></script>
+  <script src="components/mcppp-protocol-panel.js"></script>
   <script>
     const daemonApi = window?.electronAPI?.daemon;
     if (!daemonApi) {
