@@ -198,7 +198,7 @@ async function runTests() {
       gate.task_id === 'MGW-551' &&
       gate.goal_id === 'VAIOS-G728' &&
       gate.supervisor_gap_receipt === 'data/meta_glasses_display_widgets/discovery/2026-06-27-mgw-551-objective-gap-b023c8de5b69.md' &&
-      gate.launch_gate_receipt === 'data/meta_glasses_display_widgets/discovery/2026-06-27-mgw-551-daemon-launch-health-gate.md' &&
+      gate.launch_gate_receipt === 'data/meta_glasses_display_widgets/discovery/2026-06-28-mgw-551-daemon-launch-health-gate.md' &&
       gate.validation_commands?.includes('npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts')
     ) &&
     launchGates.some(gate =>

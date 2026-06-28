@@ -106,6 +106,24 @@ const MGW_546_LAUNCH_VALIDATION_GATE = {
   ],
   follow_up_subtasks: ['HAO-678', 'HAO-679', 'HAO-680', 'HAO-681', 'HAO-682', 'HAO-683']
 };
+const MGW_547_LAUNCH_VALIDATION_GATE = {
+  ...MGW_533_LAUNCH_VALIDATION_GATE,
+  task_id: 'MGW-547',
+  goal_id: 'VAIOS-G723',
+  supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-27-mgw-547-objective-gap-7ea369464239.md',
+  launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-27-mgw-547-launch-playwright-validation-gate.md',
+  hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-27-mgw-547-launch-playwright-validation-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-547-mcp-dashboard-launch-gate.json',
+  child_goals: [
+    'VAIOS-G723-C1 Catalog normalization',
+    'VAIOS-G723-C2 Dashboard UI wiring',
+    'VAIOS-G723-C3 Mediated tool-call receipts',
+    'VAIOS-G723-C4 Swissknife consumers',
+    'VAIOS-G723-C5 Playwright coverage',
+    'VAIOS-G723-C6 Supervisor-generated follow-up subtasks'
+  ],
+  follow_up_subtasks: ['HAO-678', 'HAO-679', 'HAO-680', 'HAO-681', 'HAO-682', 'HAO-683']
+};
 const VAI_531_DASHBOARD_INTEROPERABILITY_GATE = {
   schema: 'mcp_dashboard_interoperability_gate_v1',
   task_id: 'VAI-531',
@@ -203,6 +221,7 @@ const VAI_535_LAUNCH_VALIDATION_GATE = {
 const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   MGW_533_LAUNCH_VALIDATION_GATE,
   MGW_546_LAUNCH_VALIDATION_GATE,
+  MGW_547_LAUNCH_VALIDATION_GATE,
   MGW_550_LAUNCH_VALIDATION_GATE,
   HAO_712_LAUNCH_VALIDATION_GATE,
   VAI_529_LAUNCH_VALIDATION_GATE,
@@ -1004,10 +1023,7 @@ class MCPDaemonManager extends EventEmitter {
       this.getDaemonLaunchValidationGate({
         ...MGW_551_DAEMON_LAUNCH_VALIDATION_GATE,
         shared_packet_task_id: 'MGW-551',
-        discovery_receipts: [
-          ...DAEMON_LAUNCH_GATE_DISCOVERY_RECEIPTS,
-          MGW_551_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt
-        ],
+        discovery_receipts: [...DAEMON_LAUNCH_GATE_DISCOVERY_RECEIPTS],
         objective_gap_receipt: MGW_551_DAEMON_LAUNCH_VALIDATION_GATE.supervisor_gap_receipt
       }),
       this.getDaemonLaunchValidationGate({
