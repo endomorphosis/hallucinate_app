@@ -632,5 +632,94 @@
       }
     }
   </script>
+
+  <!-- Schema-Driven UI Auto-Generator from IDL -->
+  <script src="components/schema-driven-ui-renderer.js"></script>
+  <script>
+    // IDL Profile Descriptors (mirroring SwissKnife ipfs-ui-profiles.ts)
+    const IPFS_IDL_PROFILES = [
+      {
+        meta: { app_id: 'ipfs-kit', name: 'IPFS Kit', version: '1.0.0', description: 'Content-addressed storage' },
+        methods: [
+          { name: 'add', description: 'Add content to IPFS', inputSchema: { type: 'object', properties: { content: { type: 'string', description: 'Content to add' }, filename: { type: 'string' }, pin: { type: 'boolean', default: true } }, required: ['content'] }, outputSchema: { type: 'object', properties: { cid: { type: 'string' }, size: { type: 'number' } } } },
+          { name: 'cat', description: 'Retrieve content by CID', inputSchema: { type: 'object', properties: { cid: { type: 'string' } }, required: ['cid'] }, outputSchema: { type: 'object', properties: { content: { type: 'string' } } } },
+          { name: 'pin', description: 'Pin content', inputSchema: { type: 'object', properties: { cid: { type: 'string' } }, required: ['cid'] }, outputSchema: { type: 'object', properties: { pinned: { type: 'boolean' } } } },
+          { name: 'unpin', description: 'Unpin content', inputSchema: { type: 'object', properties: { cid: { type: 'string' } }, required: ['cid'] }, outputSchema: { type: 'object', properties: { unpinned: { type: 'boolean' } } } },
+          { name: 'list_pins', description: 'List pinned CIDs', inputSchema: { type: 'object', properties: {} }, outputSchema: { type: 'object', properties: { pins: { type: 'array', items: { type: 'string' } } } } },
+          { name: 'stat', description: 'Object statistics', inputSchema: { type: 'object', properties: { cid: { type: 'string' } }, required: ['cid'] }, outputSchema: { type: 'object', properties: { cid: { type: 'string' }, size: { type: 'number' }, blocks: { type: 'number' } } } },
+          { name: 'dag_get', description: 'Get DAG node', inputSchema: { type: 'object', properties: { cid: { type: 'string' } }, required: ['cid'] }, outputSchema: { type: 'object', properties: { data: { type: 'object' }, links: { type: 'array' } } } },
+          { name: 'dag_put', description: 'Store DAG node', inputSchema: { type: 'object', properties: { data: { type: 'object' } }, required: ['data'] }, outputSchema: { type: 'object', properties: { cid: { type: 'string' } } } },
+          { name: 'name_publish', description: 'Publish to IPNS', inputSchema: { type: 'object', properties: { cid: { type: 'string' }, key: { type: 'string' } }, required: ['cid'] }, outputSchema: { type: 'object', properties: { name: { type: 'string' } } } },
+          { name: 'name_resolve', description: 'Resolve IPNS name', inputSchema: { type: 'object', properties: { name: { type: 'string' } }, required: ['name'] }, outputSchema: { type: 'object', properties: { path: { type: 'string' } } } },
+        ],
+        data_contracts: { operations: [
+          { method: 'add', path: '/add', http_method: 'POST' },
+          { method: 'cat', path: '/cat', http_method: 'GET' },
+          { method: 'pin', path: '/pin', http_method: 'POST' },
+          { method: 'unpin', path: '/unpin', http_method: 'POST' },
+          { method: 'list_pins', path: '/list_pins', http_method: 'GET' },
+          { method: 'stat', path: '/stat', http_method: 'GET' },
+          { method: 'dag_get', path: '/dag/get', http_method: 'GET' },
+          { method: 'dag_put', path: '/dag/put', http_method: 'POST' },
+          { method: 'name_publish', path: '/name/publish', http_method: 'POST' },
+          { method: 'name_resolve', path: '/name/resolve', http_method: 'GET' },
+        ] },
+      },
+      {
+        meta: { app_id: 'ipfs-datasets', name: 'IPFS Datasets', version: '1.0.0', description: 'Dataset management & vector search' },
+        methods: [
+          { name: 'embed', description: 'Generate embeddings', inputSchema: { type: 'object', properties: { texts: { type: 'array', items: { type: 'string' } }, model: { type: 'string' } }, required: ['texts'] }, outputSchema: { type: 'object', properties: { embeddings: { type: 'array' }, dimensions: { type: 'number' } } } },
+          { name: 'generate', description: 'Generate text', inputSchema: { type: 'object', properties: { prompt: { type: 'string' }, model: { type: 'string' }, max_tokens: { type: 'number' }, temperature: { type: 'number' } }, required: ['prompt'] }, outputSchema: { type: 'object', properties: { text: { type: 'string' }, tokens_used: { type: 'number' } } } },
+          { name: 'list_datasets', description: 'List datasets', inputSchema: { type: 'object', properties: {} }, outputSchema: { type: 'object', properties: { datasets: { type: 'array' } } } },
+          { name: 'semantic_search', description: 'Semantic search', inputSchema: { type: 'object', properties: { query: { type: 'string' }, top_k: { type: 'number' } }, required: ['query'] }, outputSchema: { type: 'object', properties: { results: { type: 'array' } } } },
+          { name: 'vector_index', description: 'Index into vector store', inputSchema: { type: 'object', properties: { content: { type: 'string' }, collection: { type: 'string' }, metadata: { type: 'object' } }, required: ['content'] }, outputSchema: { type: 'object', properties: { id: { type: 'string' }, indexed: { type: 'boolean' } } } },
+          { name: 'vector_search', description: 'Vector similarity search', inputSchema: { type: 'object', properties: { query: { type: 'string' }, collection: { type: 'string' }, top_k: { type: 'number' } }, required: ['query'] }, outputSchema: { type: 'object', properties: { results: { type: 'array' } } } },
+        ],
+        data_contracts: { operations: [
+          { method: 'embed', path: '/embed', http_method: 'POST' },
+          { method: 'generate', path: '/generate', http_method: 'POST' },
+          { method: 'list_datasets', path: '/list_datasets', http_method: 'GET' },
+          { method: 'semantic_search', path: '/search/semantic', http_method: 'POST' },
+          { method: 'vector_index', path: '/vector/index', http_method: 'POST' },
+          { method: 'vector_search', path: '/vector/search', http_method: 'POST' },
+        ] },
+      },
+      {
+        meta: { app_id: 'ipfs-accelerate', name: 'IPFS Accelerate', version: '1.0.0', description: 'Hardware-accelerated inference' },
+        methods: [
+          { name: 'capabilities', description: 'Hardware capabilities', inputSchema: { type: 'object', properties: {} }, outputSchema: { type: 'object', properties: { backends: { type: 'array' }, devices: { type: 'array' } } } },
+          { name: 'hardware_profile', description: 'Detailed HW profile', inputSchema: { type: 'object', properties: {} }, outputSchema: { type: 'object', properties: { cpu: { type: 'object' }, gpu: { type: 'array' } } } },
+          { name: 'inference', description: 'Run inference', inputSchema: { type: 'object', properties: { model: { type: 'string' }, input: { type: 'object' }, backend: { type: 'string' } }, required: ['model', 'input'] }, outputSchema: { type: 'object', properties: { output: { type: 'object' }, latency_ms: { type: 'number' } } } },
+          { name: 'list_models', description: 'List models', inputSchema: { type: 'object', properties: {} }, outputSchema: { type: 'object', properties: { models: { type: 'array' } } } },
+          { name: 'metrics', description: 'Performance metrics', inputSchema: { type: 'object', properties: {} }, outputSchema: { type: 'object', properties: { throughput: { type: 'number' }, latency_p50: { type: 'number' }, gpu_utilization: { type: 'number' } } } },
+          { name: 'scrape_url', description: 'Scrape a URL', inputSchema: { type: 'object', properties: { url: { type: 'string' } }, required: ['url'] }, outputSchema: { type: 'object', properties: { content: { type: 'string' }, metadata: { type: 'object' } } } },
+          { name: 'workflow_execute', description: 'Execute workflow step', inputSchema: { type: 'object', properties: { workflow_id: { type: 'string' }, step: { type: 'string' }, params: { type: 'object' } }, required: ['workflow_id', 'step'] }, outputSchema: { type: 'object', properties: { result: { type: 'object' }, status: { type: 'string' } } } },
+        ],
+        data_contracts: { operations: [
+          { method: 'capabilities', path: '/capabilities', http_method: 'GET' },
+          { method: 'hardware_profile', path: '/hardware_profile', http_method: 'GET' },
+          { method: 'inference', path: '/inference', http_method: 'POST' },
+          { method: 'list_models', path: '/list_models', http_method: 'GET' },
+          { method: 'metrics', path: '/metrics', http_method: 'GET' },
+          { method: 'scrape_url', path: '/scrape/url', http_method: 'POST' },
+          { method: 'workflow_execute', path: '/workflow/execute', http_method: 'POST' },
+        ] },
+      },
+    ];
+
+    // Mount the Schema-Driven UI Renderer
+    document.addEventListener('DOMContentLoaded', () => {
+      // Add the IDL Auto-UI section
+      const container = document.querySelector('.container') || document.body;
+      const section = document.createElement('div');
+      section.id = 'idl-auto-ui-section';
+      section.style.cssText = 'margin-top:24px;background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.1);';
+      section.innerHTML = '<div id="schema-ui-mount"></div>';
+      container.appendChild(section);
+
+      const renderer = new SchemaDrivenUIRenderer(document.getElementById('schema-ui-mount'));
+      renderer.loadProfiles(IPFS_IDL_PROFILES);
+    });
+  </script>
 </body>
 </html>
