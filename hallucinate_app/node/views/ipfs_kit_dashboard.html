@@ -426,9 +426,17 @@
     });
   </script>
 
-  <!-- Shared component scripts -->
   <script src="components/health-status-bar.js"></script>
   <script src="components/sidebar-nav.js"></script>
   <script src="components/tool-invocation-panel.js"></script>
   <script src="components/backend-connector.js"></script>
+  <script src="components/glasses-state-bridge.js"></script>
+  <script>
+    // Connect IPFS Kit dashboard to Meta Glasses display
+    const glassesBridge = new IPFSKitGlassesBridge();
+    glassesBridge.onCommand((cmd) => {
+      if (cmd.action === 'list_pins') document.querySelector('[data-action="list-pins"]')?.click();
+      if (cmd.action === 'add') document.querySelector('[data-action="upload"]')?.click();
+    });
+  </script>
 </body>
