@@ -26,6 +26,11 @@ const VAI_517_LAUNCH_READINESS_FIXTURE = path.join(__dirname, 'fixtures', 'vai-5
 const MGW_546_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-546-mcp-dashboard-launch-gate.json');
 const MGW_547_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-547-mcp-dashboard-launch-gate.json');
 const VAI_531_DASHBOARD_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-531-mcp-dashboard-interoperability-gate.json');
+const HAO_714_INTEROPERABILITY_CONSOLE_FIXTURE = path.join(
+  __dirname,
+  'fixtures',
+  'hao-714-mcp-dashboard-interoperability-console.json'
+);
 const MGW_533_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-533-mcp-dashboard-launch-gate.json');
 const MGW_550_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-550-mcp-dashboard-launch-gate.json');
 const HAO_700_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-700-mcp-dashboard-launch-gate.json');
@@ -420,6 +425,13 @@ electronDescribe('MCP Dashboard Interoperability - VAIOS-G723 Electron UI wiring
         goal_id: 'VAIOS-G723',
         evidence_term: 'launch Playwright validation gate',
         supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-27-mgw-547-objective-gap-7ea369464239.md'
+      }),
+      expect.objectContaining({
+        task_id: 'HAO-714',
+        goal_id: 'VAIOS-G723',
+        evidence_term: 'launch Playwright validation gate',
+        source_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-27-hao-714-objective-gap-7ea369464239.md',
+        launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-27-hao-714-mcp-dashboard-interoperability-console.md'
       }),
       expect.objectContaining({
         task_id: 'MGW-550',
@@ -1196,8 +1208,10 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
 
   test('binds VAI-531 and HAO-714 dashboard interoperability evidence to the launch Playwright gate', () => {
     const receipt = JSON.parse(fs.readFileSync(VAI_531_DASHBOARD_GATE_FIXTURE, 'utf8'));
+    const hao714Receipt = JSON.parse(fs.readFileSync(HAO_714_INTEROPERABILITY_CONSOLE_FIXTURE, 'utf8'));
     const catalog = new MCPDaemonManager().getDashboardCapabilityCatalog();
     const launchGate = catalog.dashboard_interoperability_validation_gate;
+    const hao714LaunchGate = catalog.launch_validation_gates?.find((gate: any) => gate.task_id === 'HAO-714');
     const objectiveGap = fs.readFileSync(VAI_531_OBJECTIVE_GAP_RECEIPT, 'utf8');
     const launchGateReceipt = fs.readFileSync(VAI_531_LAUNCH_GATE_RECEIPT, 'utf8');
     const hallucinateLaunchGateReceipt = fs.readFileSync(HAO_714_LAUNCH_GATE_RECEIPT, 'utf8');
@@ -1205,6 +1219,16 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     const readinessDoc = fs.readFileSync(LAUNCH_READINESS_DOC, 'utf8');
 
     expect(receipt).toEqual(launchGate);
+    expect(hao714Receipt).toEqual(hao714LaunchGate);
+    expect(hao714Receipt).toMatchObject({
+      schema: 'launch_readiness_receipt_v1',
+      task_id: 'HAO-714',
+      goal_id: 'VAIOS-G723',
+      source_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-27-hao-714-objective-gap-7ea369464239.md',
+      launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-27-hao-714-mcp-dashboard-interoperability-console.md',
+      catalog_schema: catalog.schema,
+      catalog_generated_by: catalog.generated_by
+    });
     expect(receipt).toMatchObject({
       schema: 'mcp_dashboard_interoperability_gate_v1',
       task_id: 'VAI-531',
@@ -1236,12 +1260,21 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     ]);
     expect(receipt.child_goals).toEqual(MGW_546_CHILD_GOALS);
     expect(receipt.follow_up_subtasks).toEqual(FOLLOW_UP_TASKS);
+    expect(hao714Receipt.child_goals).toEqual(MGW_546_CHILD_GOALS);
+    expect(hao714Receipt.supervisor_follow_up_subtasks).toEqual(FOLLOW_UP_TASKS);
     expect(receipt.receipt_route).toEqual(expect.arrayContaining([
       'dashboard capability catalog',
       'interaction_envelope',
       'policy_decision',
       'mediation_receipt',
       'Swissknife MCP dashboard capability registry'
+    ]));
+    expect(hao714Receipt.receipt_route).toEqual(expect.arrayContaining([
+      'dashboard capability catalog',
+      'interaction_envelope',
+      'policy_decision',
+      'mediation_receipt',
+      'Swissknife consumer registry'
     ]));
 
     for (const term of [
@@ -1259,6 +1292,7 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       'launch Playwright validation gate'
     ]) {
       expect(receipt.required_evidence).toContain(term);
+      expect(hao714Receipt.required_evidence).toContain(term);
       expect(launchGateReceipt).toContain(term);
       expect(hallucinateLaunchGateReceipt).toContain(term);
       expect(objectiveHeap).toContain(term);

@@ -190,6 +190,96 @@ const VAI_531_DASHBOARD_INTEROPERABILITY_GATE = {
   follow_up_subtasks: ['HAO-678', 'HAO-679', 'HAO-680', 'HAO-681', 'HAO-682', 'HAO-683'],
   failure_rule: 'Any dashboard catalog, UI wiring, mediated tools/list, mediated tools/call, Swissknife consumer, backend validation, or Playwright failure remains supervisor-generated follow-up work for VAIOS-G723.'
 };
+const HAO_714_DASHBOARD_INTEROPERABILITY_CONSOLE_GATE = {
+  schema: 'launch_readiness_receipt_v1',
+  task_id: 'HAO-714',
+  goal_id: 'VAIOS-G723',
+  goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
+  packet_goal_ids: ['VAIOS-G723', 'VAIOS-G724', 'VAIOS-G728'],
+  lineage_id: 'VAIOS-G723:hallucinate-mcp-dashboard-interoperability-console',
+  source_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-27-hao-714-objective-gap-7ea369464239.md',
+  launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-27-hao-714-mcp-dashboard-interoperability-console.md',
+  evidence_term: 'launch Playwright validation gate',
+  gate_state: 'gate_open_until_playwright_passes',
+  playwright_specs: [
+    'hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts',
+    'hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts'
+  ],
+  validation_commands: [
+    'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
+    'npm --prefix swissknife run test:e2e:mcp',
+    'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
+    'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
+  ],
+  required_backends: [
+    'ipfs_kit_py',
+    'ipfs_datasets_py',
+    'ipfs_accelerate_py'
+  ],
+  required_evidence: [
+    'catalog normalization',
+    'dashboard UI wiring',
+    'mediated tool-call receipts',
+    'Swissknife consumers',
+    'Playwright coverage',
+    'supervisor-generated follow-up subtasks',
+    'daemon health',
+    'MCP++ telemetry',
+    'tools/list',
+    'tools/call',
+    'control_surface receipts',
+    'launch Playwright validation gate'
+  ],
+  child_goals: [
+    'VAIOS-G723-C1 Catalog normalization',
+    'VAIOS-G723-C2 Dashboard UI wiring',
+    'VAIOS-G723-C3 Mediated tool-call receipts',
+    'VAIOS-G723-C4 Swissknife consumers',
+    'VAIOS-G723-C5 Playwright coverage',
+    'VAIOS-G723-C6 Supervisor-generated follow-up subtasks'
+  ],
+  catalog_schema: DASHBOARD_CATALOG_SCHEMA,
+  catalog_generated_by: 'hallucinate_app.node.mcp_daemon_manager.getDashboardCapabilityCatalog',
+  catalog_fixture: 'hallucinate_app/test/e2e/fixtures/vai-512-mcp-dashboard-catalog.json',
+  catalog_launch_objective_ids: DASHBOARD_LAUNCH_OBJECTIVE_IDS,
+  interoperability_fixture: 'hallucinate_app/test/e2e/fixtures/hao-682-mcp-dashboard-launch-readiness.json',
+  swissknife_consumer_fixture: 'swissknife/test/e2e/fixtures/hao-681-mcp-dashboard-catalog-consumer.json',
+  supervisor_heap: 'implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md',
+  receipt_route: [
+    'Hallucinate App dashboard action',
+    'dashboard capability catalog',
+    'interaction_envelope',
+    'policy_decision',
+    'mediation_receipt',
+    'supervised MCP server transport',
+    'Swissknife consumer registry'
+  ],
+  dashboard_servers: [
+    {
+      daemon_id: 'ipfs-kit',
+      server_package: 'ipfs_kit_py',
+      health_path: '/api/mcp/status',
+      safe_probe_receipt: 'ipfs_kit_status_probe',
+      swissknife_consumer: 'Swissknife IPFS storage, pin dashboard, and backend health surfaces'
+    },
+    {
+      daemon_id: 'ipfs-datasets',
+      server_package: 'ipfs_datasets_py',
+      health_path: '/health/ready',
+      safe_probe_receipt: 'ipfs_datasets_list_probe',
+      swissknife_consumer: 'Swissknife dataset, content, index, provenance, and background task surfaces'
+    },
+    {
+      daemon_id: 'ipfs-accelerate',
+      server_package: 'ipfs_accelerate_py',
+      health_path: '/api/mcp/status',
+      safe_probe_receipt: 'ipfs_accelerate_hardware_profile_probe',
+      swissknife_consumer: 'Swissknife hardware profile, inference job, job status, and telemetry surfaces'
+    }
+  ],
+  supervisor_follow_up_subtasks: ['HAO-678', 'HAO-679', 'HAO-680', 'HAO-681', 'HAO-682', 'HAO-683'],
+  failure_rule: 'Any catalog normalization, dashboard UI wiring, mediated tools/list, mediated tools/call, Swissknife consumer, Playwright, dashboard backend, or supervisor follow-up failure remains supervisor-generated launch work for VAIOS-G723.'
+};
 const MGW_550_LAUNCH_VALIDATION_GATE = {
   ...MGW_533_LAUNCH_VALIDATION_GATE,
   task_id: 'MGW-550',
@@ -268,6 +358,7 @@ const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   MGW_533_LAUNCH_VALIDATION_GATE,
   MGW_546_LAUNCH_VALIDATION_GATE,
   MGW_547_LAUNCH_VALIDATION_GATE,
+  HAO_714_DASHBOARD_INTEROPERABILITY_CONSOLE_GATE,
   MGW_550_LAUNCH_VALIDATION_GATE,
   HAO_712_LAUNCH_VALIDATION_GATE,
   HAO_718_LAUNCH_VALIDATION_GATE,
