@@ -30,6 +30,7 @@ const MGW_550_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-550-mc
 const HAO_700_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-700-mcp-dashboard-launch-gate.json');
 const HAO_712_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-712-mcp-dashboard-launch-gate.json');
 const VAI_529_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-529-mcp-dashboard-launch-gate.json');
+const VAI_535_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-535-mcp-dashboard-launch-gate.json');
 const HAO_681_SWISSKNIFE_CONSUMER_FIXTURE = path.join(
   REPO_ROOT,
   'swissknife',
@@ -135,6 +136,20 @@ const VAI_529_LAUNCH_GATE_RECEIPT = path.join(
   'virtual_ai_os',
   'discovery',
   '2026-06-28-vai-529-mcp-dashboard-launch-gate.md'
+);
+const VAI_535_OBJECTIVE_GAP_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-06-28-vai-535-objective-gap-3e00ad2a0074.md'
+);
+const VAI_535_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-06-28-vai-535-mcp-dashboard-launch-gate.md'
 );
 const MGW_OBJECTIVE_HEAP = path.join(
   REPO_ROOT,
@@ -353,6 +368,13 @@ electronDescribe('MCP Dashboard Interoperability - VAIOS-G723 Electron UI wiring
         goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
         evidence_term: 'launch Playwright validation gate',
         supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-06-27-vai-529-objective-gap-3e00ad2a0074.md'
+      }),
+      expect.objectContaining({
+        task_id: 'VAI-535',
+        goal_id: 'VAIOS-G724',
+        goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
+        evidence_term: 'launch Playwright validation gate',
+        supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-535-objective-gap-3e00ad2a0074.md'
       })
     ]));
     expect(catalog?.swissknife_catalog_consumer_proof).toMatchObject({

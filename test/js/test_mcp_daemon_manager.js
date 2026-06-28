@@ -180,8 +180,11 @@ async function runTests() {
     launchGate.goal_id === 'VAIOS-G728' &&
     launchGate.evidence_term === 'launch Playwright validation gate' &&
     launchGate.vai_task_ids?.includes('VAI-530') &&
+    launchGate.vai_task_ids?.includes('VAI-536') &&
     launchGate.discovery_receipts?.includes('data/virtual_ai_os/discovery/2026-06-27-vai-530-daemon-launch-health-gate.md') &&
+    launchGate.discovery_receipts?.includes('data/virtual_ai_os/discovery/2026-06-28-vai-536-daemon-launch-health-gate.md') &&
     launchGate.objective_gap_receipts?.includes('data/virtual_ai_os/discovery/2026-06-27-vai-530-objective-gap-b023c8de5b69.md') &&
+    launchGate.objective_gap_receipts?.includes('data/virtual_ai_os/discovery/2026-06-28-vai-536-objective-gap-b023c8de5b69.md') &&
     launchGate.packet_goals?.includes('VAIOS-G724') &&
     launchGate.packet_goals?.includes('VAIOS-G728') &&
     launchGate.backlog_task_ids?.includes('HAO-713') &&
@@ -196,6 +199,14 @@ async function runTests() {
       gate.goal_id === 'VAIOS-G728' &&
       gate.supervisor_gap_receipt === 'data/meta_glasses_display_widgets/discovery/2026-06-27-mgw-551-objective-gap-b023c8de5b69.md' &&
       gate.launch_gate_receipt === 'data/meta_glasses_display_widgets/discovery/2026-06-27-mgw-551-daemon-launch-health-gate.md' &&
+      gate.validation_commands?.includes('npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts')
+    ) &&
+    launchGates.some(gate =>
+      gate.task_id === 'VAI-536' &&
+      gate.goal_id === 'VAIOS-G728' &&
+      gate.objective_gap_receipt === 'data/virtual_ai_os/discovery/2026-06-28-vai-536-objective-gap-b023c8de5b69.md' &&
+      gate.launch_gate_receipt === 'data/virtual_ai_os/discovery/2026-06-28-vai-536-daemon-launch-health-gate.md' &&
+      gate.receipt_fixture === 'hallucinate_app/test/e2e/fixtures/vai-536-daemon-launch-health-gate.json' &&
       gate.validation_commands?.includes('npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts')
     );
 
