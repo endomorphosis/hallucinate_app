@@ -73,6 +73,12 @@
   </style>
 </head>
 <body>
+  <!-- Shared Components -->
+  <div id="health-status-bar"></div>
+  <div style="display: flex; min-height: 100vh;">
+    <div id="sidebar-nav"></div>
+    <div style="flex: 1; overflow-y: auto;">
+
   <div class="container">
     <div class="page-header">
       <h1>IPFS Kit Dashboard</h1>
@@ -307,5 +313,122 @@
     updateServerStatus();
     setInterval(updateServerStatus, 5000);
   </script>
+
+  <!-- IPFS Content Management Section -->
+  <div style="padding: 1.25rem; border-top: 1px solid #e2e8f0;">
+    <h2 style="margin: 0 0 1rem 0; font-size: 1.2rem; color: #2d3748;">Content Management</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <!-- Upload / Add Content -->
+      <div style="border: 2px dashed #cbd5e0; border-radius: 8px; padding: 1.5rem; text-align: center;" id="ipfs-drop-zone">
+        <p style="margin: 0 0 8px; font-size: 14px; color: #475569;">Drop file here or click to upload</p>
+        <input type="file" id="ipfs-upload-file" style="display: none;">
+        <button onclick="document.getElementById('ipfs-upload-file').click()" style="padding: 6px 16px; border: 1px solid #3b82f6; border-radius: 4px; background: #eff6ff; color: #2563eb; cursor: pointer;">Select File</button>
+        <div id="upload-result" style="margin-top: 8px; font-size: 12px; color: #64748b;"></div>
+      </div>
+      <!-- Retrieve by CID -->
+      <div style="padding: 1rem; border: 1px solid #e2e8f0; border-radius: 8px;">
+        <label style="font-size: 12px; font-weight: 600; color: #475569; display: block; margin-bottom: 4px;">Retrieve Content by CID</label>
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="ipfs-cat-cid" placeholder="Qm... or bafy..." style="flex:1; padding: 6px 10px; border: 1px solid #cbd5e0; border-radius: 4px; font-family: monospace; font-size: 12px;">
+          <button id="btn-ipfs-cat" style="padding: 6px 12px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">Cat</button>
+        </div>
+        <pre id="ipfs-cat-result" style="margin-top: 8px; padding: 8px; background: #f1f5f9; border-radius: 4px; font-size: 11px; max-height: 150px; overflow: auto; display: none;"></pre>
+      </div>
+    </div>
+    <!-- Pin Management -->
+    <div style="margin-top: 1rem; padding: 1rem; border: 1px solid #e2e8f0; border-radius: 8px;">
+      <label style="font-size: 12px; font-weight: 600; color: #475569; display: block; margin-bottom: 4px;">Pin / Unpin Content</label>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <input type="text" id="ipfs-pin-cid" placeholder="CID to pin/unpin" style="flex:1; padding: 6px 10px; border: 1px solid #cbd5e0; border-radius: 4px; font-family: monospace; font-size: 12px;">
+        <button id="btn-ipfs-pin" style="padding: 6px 12px; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer;">Pin</button>
+        <button id="btn-ipfs-unpin" style="padding: 6px 12px; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer;">Unpin</button>
+      </div>
+      <div id="pin-result" style="margin-top: 6px; font-size: 12px; color: #64748b;"></div>
+    </div>
+  </div>
+
+  <!-- Tool Invocation Panel -->
+  <div style="padding: 1.25rem; border-top: 1px solid #e2e8f0;">
+    <div id="tool-invocation-panel" data-daemon="ipfs-kit" data-port="8004"></div>
+  </div>
+
+  </div><!-- close flex container -->
+  </div><!-- close sidebar layout -->
+
+  <script>
+    // Content management handlers
+    const IPFS_BACKEND = 'http://127.0.0.1:8080/v1/ipfs';
+
+    document.getElementById('ipfs-upload-file').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const resultEl = document.getElementById('upload-result');
+      resultEl.textContent = 'Uploading...';
+      try {
+        const data = await file.arrayBuffer();
+        const resp = await fetch(`${IPFS_BACKEND}/add`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/octet-stream' },
+          body: data,
+        });
+        const json = await resp.json();
+        resultEl.textContent = `CID: ${json.cid || json.Hash || JSON.stringify(json)}`;
+      } catch (err) {
+        resultEl.textContent = `Error: ${err.message}`;
+      }
+    });
+
+    document.getElementById('btn-ipfs-cat').addEventListener('click', async () => {
+      const cid = document.getElementById('ipfs-cat-cid').value.trim();
+      if (!cid) return;
+      const resultEl = document.getElementById('ipfs-cat-result');
+      resultEl.style.display = 'block';
+      resultEl.textContent = 'Fetching...';
+      try {
+        const resp = await fetch(`${IPFS_BACKEND}/cat/${cid}`);
+        const text = await resp.text();
+        resultEl.textContent = text.slice(0, 4096);
+      } catch (err) {
+        resultEl.textContent = `Error: ${err.message}`;
+      }
+    });
+
+    document.getElementById('btn-ipfs-pin').addEventListener('click', async () => {
+      const cid = document.getElementById('ipfs-pin-cid').value.trim();
+      if (!cid) return;
+      try {
+        const resp = await fetch(`${IPFS_BACKEND}/pin/${cid}`, { method: 'POST' });
+        document.getElementById('pin-result').textContent = resp.ok ? `Pinned: ${cid}` : `Failed: ${resp.status}`;
+      } catch (err) { document.getElementById('pin-result').textContent = `Error: ${err.message}`; }
+    });
+
+    document.getElementById('btn-ipfs-unpin').addEventListener('click', async () => {
+      const cid = document.getElementById('ipfs-pin-cid').value.trim();
+      if (!cid) return;
+      try {
+        const resp = await fetch(`${IPFS_BACKEND}/unpin/${cid}`, { method: 'POST' });
+        document.getElementById('pin-result').textContent = resp.ok ? `Unpinned: ${cid}` : `Failed: ${resp.status}`;
+      } catch (err) { document.getElementById('pin-result').textContent = `Error: ${err.message}`; }
+    });
+
+    // Drop zone handlers
+    const dropZone = document.getElementById('ipfs-drop-zone');
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.style.borderColor = '#3b82f6'; });
+    dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = '#cbd5e0'; });
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault(); dropZone.style.borderColor = '#cbd5e0';
+      const file = e.dataTransfer.files[0];
+      if (file) {
+        const dt = new DataTransfer(); dt.items.add(file);
+        document.getElementById('ipfs-upload-file').files = dt.files;
+        document.getElementById('ipfs-upload-file').dispatchEvent(new Event('change'));
+      }
+    });
+  </script>
+
+  <!-- Shared component scripts -->
+  <script src="components/health-status-bar.js"></script>
+  <script src="components/sidebar-nav.js"></script>
+  <script src="components/tool-invocation-panel.js"></script>
 </body>
 </html>

@@ -218,6 +218,12 @@
   </style>
 </head>
 <body>
+  <!-- Shared Components -->
+  <div id="health-status-bar"></div>
+  <div style="display: flex; min-height: 100vh;">
+    <div id="sidebar-nav"></div>
+    <div style="flex: 1; overflow-y: auto;">
+
   <div class="container">
     <div class="page-header">
       <h1><i class="fas fa-database"></i> IPFS Datasets Dashboard</h1>
@@ -715,5 +721,88 @@
     updateServerStatus();
     setInterval(updateServerStatus, 5000);
   </script>
+
+  <!-- Dataset Search & Embedding Section -->
+  <div style="padding: 1.5rem; border-top: 1px solid #e2e8f0;">
+    <h2 style="margin: 0 0 1rem; font-size: 1.2rem; color: #2d3748;"><i class="fas fa-search"></i> Dataset Search & Embedding</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <!-- Dataset Loader -->
+      <div style="padding: 1rem; border: 1px solid #e2e8f0; border-radius: 8px;">
+        <label style="font-size: 12px; font-weight: 600; color: #475569; display: block; margin-bottom: 4px;">Load Dataset from IPFS</label>
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="dataset-cid" placeholder="CID or dataset name" style="flex:1; padding: 6px 10px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 12px;">
+          <button id="btn-load-dataset" style="padding: 6px 12px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">Load</button>
+        </div>
+        <pre id="dataset-result" style="margin-top: 8px; padding: 8px; background: #f1f5f9; border-radius: 4px; font-size: 11px; max-height: 200px; overflow: auto; display: none;"></pre>
+      </div>
+      <!-- Embedding Generator -->
+      <div style="padding: 1rem; border: 1px solid #e2e8f0; border-radius: 8px;">
+        <label style="font-size: 12px; font-weight: 600; color: #475569; display: block; margin-bottom: 4px;">Generate Embeddings</label>
+        <textarea id="embed-texts" rows="3" placeholder="Enter text(s) to embed, one per line..." style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 12px; resize: vertical; margin-bottom: 8px;"></textarea>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <input type="text" id="embed-model" placeholder="Model (e.g. all-MiniLM-L6-v2)" style="flex: 1; padding: 6px 10px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 12px;">
+          <button id="btn-embed" style="padding: 6px 12px; background: #8b5cf6; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">Embed</button>
+        </div>
+        <pre id="embed-result" style="margin-top: 8px; padding: 8px; background: #f1f5f9; border-radius: 4px; font-size: 11px; max-height: 150px; overflow: auto; display: none;"></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tool Invocation Panel -->
+  <div style="padding: 1.5rem; border-top: 1px solid #e2e8f0;">
+    <div id="tool-invocation-panel" data-daemon="ipfs-datasets" data-port="3002"></div>
+  </div>
+
+  </div><!-- close flex container -->
+  </div><!-- close sidebar layout -->
+
+  <script>
+    const BACKEND = 'http://127.0.0.1:8080/v1/ipfs';
+
+    document.getElementById('btn-load-dataset').addEventListener('click', async () => {
+      const cid = document.getElementById('dataset-cid').value.trim();
+      if (!cid) return;
+      const resultEl = document.getElementById('dataset-result');
+      resultEl.style.display = 'block';
+      resultEl.textContent = 'Loading dataset...';
+      try {
+        const resp = await fetch(`${BACKEND}/cat/${cid}`);
+        const text = await resp.text();
+        resultEl.textContent = text.slice(0, 4096);
+      } catch (err) {
+        resultEl.textContent = `Error: ${err.message}`;
+      }
+    });
+
+    document.getElementById('btn-embed').addEventListener('click', async () => {
+      const rawTexts = document.getElementById('embed-texts').value.trim();
+      const model = document.getElementById('embed-model').value.trim() || 'all-MiniLM-L6-v2';
+      if (!rawTexts) return;
+      const texts = rawTexts.split('\n').filter(t => t.trim());
+      const resultEl = document.getElementById('embed-result');
+      resultEl.style.display = 'block';
+      resultEl.textContent = 'Generating embeddings...';
+      try {
+        const resp = await fetch(`${BACKEND}/embed`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ texts, model_name: model }),
+        });
+        const data = await resp.json();
+        // Show first few dimensions for readability
+        const preview = (data.embeddings || data).map((emb, i) =>
+          `[${i}] dim=${emb.length} first5=[${emb.slice(0,5).map(v => v.toFixed(4)).join(', ')}...]`
+        ).join('\n');
+        resultEl.textContent = preview || JSON.stringify(data, null, 2);
+      } catch (err) {
+        resultEl.textContent = `Error: ${err.message}`;
+      }
+    });
+  </script>
+
+  <!-- Shared component scripts -->
+  <script src="components/health-status-bar.js"></script>
+  <script src="components/sidebar-nav.js"></script>
+  <script src="components/tool-invocation-panel.js"></script>
 </body>
 </html>

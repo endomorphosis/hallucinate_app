@@ -204,6 +204,12 @@
   </style>
 </head>
 <body>
+  <!-- Shared Components -->
+  <div id="health-status-bar"></div>
+  <div style="display: flex; min-height: 100vh;">
+    <div id="sidebar-nav"></div>
+    <div style="flex: 1; overflow-y: auto;">
+
   <div class="container">
     <div class="page-header">
       <h1><i class="fas fa-bolt"></i> IPFS Accelerate Dashboard</h1>
@@ -623,5 +629,100 @@
       }
     }, 10000);
   </script>
+
+  <!-- Hardware Profile & Inference Section -->
+  <div style="padding: 1.5rem; border-top: 1px solid #e2e8f0;">
+    <h2 style="margin: 0 0 1rem; font-size: 1.2rem; color: #2d3748;"><i class="fas fa-microchip"></i> Hardware Profile</h2>
+    <div id="hw-profile" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 1rem;">
+      <div style="padding: 12px; background: #f1f5f9; border-radius: 6px;">
+        <div style="font-size: 11px; color: #64748b;">GPU</div>
+        <div id="hw-gpu" style="font-weight: 600; font-size: 14px;">--</div>
+      </div>
+      <div style="padding: 12px; background: #f1f5f9; border-radius: 6px;">
+        <div style="font-size: 11px; color: #64748b;">VRAM</div>
+        <div id="hw-vram" style="font-weight: 600; font-size: 14px;">--</div>
+      </div>
+      <div style="padding: 12px; background: #f1f5f9; border-radius: 6px;">
+        <div style="font-size: 11px; color: #64748b;">Backends</div>
+        <div id="hw-backends" style="font-weight: 600; font-size: 14px;">--</div>
+      </div>
+      <div style="padding: 12px; background: #f1f5f9; border-radius: 6px;">
+        <div style="font-size: 11px; color: #64748b;">Quantization</div>
+        <div id="hw-quant" style="font-weight: 600; font-size: 14px;">--</div>
+      </div>
+    </div>
+    <button id="btn-refresh-hw" style="padding: 6px 14px; border: 1px solid #cbd5e0; border-radius: 4px; cursor: pointer; font-size: 12px;">Refresh Hardware Profile</button>
+  </div>
+
+  <!-- Inference Form -->
+  <div style="padding: 1.5rem; border-top: 1px solid #e2e8f0;">
+    <h2 style="margin: 0 0 1rem; font-size: 1.2rem; color: #2d3748;"><i class="fas fa-robot"></i> Run Inference</h2>
+    <div style="display: grid; gap: 12px; max-width: 600px;">
+      <div>
+        <label style="font-size: 12px; font-weight: 600; color: #475569; display: block; margin-bottom: 4px;">Model Name</label>
+        <input type="text" id="infer-model" placeholder="e.g. bert-base-uncased" style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 13px;">
+      </div>
+      <div>
+        <label style="font-size: 12px; font-weight: 600; color: #475569; display: block; margin-bottom: 4px;">Input Text</label>
+        <textarea id="infer-input" rows="3" placeholder="Enter text to process..." style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 13px; resize: vertical;"></textarea>
+      </div>
+      <button id="btn-run-inference" style="padding: 8px 16px; background: #7c3aed; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; width: fit-content;">Run Inference</button>
+      <pre id="infer-result" style="padding: 10px; background: #1e293b; color: #e2e8f0; border-radius: 4px; font-size: 12px; max-height: 200px; overflow: auto; display: none;"></pre>
+    </div>
+  </div>
+
+  <!-- Tool Invocation Panel -->
+  <div style="padding: 1.5rem; border-top: 1px solid #e2e8f0;">
+    <div id="tool-invocation-panel" data-daemon="ipfs-accelerate" data-port="3003"></div>
+  </div>
+
+  </div><!-- close flex container -->
+  </div><!-- close sidebar layout -->
+
+  <script>
+    const BACKEND = 'http://127.0.0.1:8080/v1/ipfs';
+
+    document.getElementById('btn-refresh-hw').addEventListener('click', async () => {
+      try {
+        const resp = await fetch(`${BACKEND}/capabilities`);
+        const data = await resp.json();
+        const caps = data.capabilities || data;
+        document.getElementById('hw-gpu').textContent = caps.gpu || caps.device || '--';
+        document.getElementById('hw-vram').textContent = caps.vram || caps.memory || '--';
+        document.getElementById('hw-backends').textContent = (caps.backends || []).join(', ') || '--';
+        document.getElementById('hw-quant').textContent = (caps.quantization_formats || []).join(', ') || '--';
+      } catch (err) {
+        document.getElementById('hw-gpu').textContent = 'Error: ' + err.message;
+      }
+    });
+
+    document.getElementById('btn-run-inference').addEventListener('click', async () => {
+      const model = document.getElementById('infer-model').value.trim();
+      const input = document.getElementById('infer-input').value.trim();
+      if (!model || !input) return;
+      const resultEl = document.getElementById('infer-result');
+      resultEl.style.display = 'block';
+      resultEl.textContent = 'Running inference...';
+      try {
+        const resp = await fetch(`${BACKEND}/generate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: input, model_name: model }),
+        });
+        const data = await resp.json();
+        resultEl.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        resultEl.textContent = `Error: ${err.message}`;
+      }
+    });
+
+    // Auto-load hw profile on page load
+    document.getElementById('btn-refresh-hw').click();
+  </script>
+
+  <!-- Shared component scripts -->
+  <script src="components/health-status-bar.js"></script>
+  <script src="components/sidebar-nav.js"></script>
+  <script src="components/tool-invocation-panel.js"></script>
 </body>
 </html>
