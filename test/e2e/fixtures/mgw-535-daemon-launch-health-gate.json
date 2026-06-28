@@ -5,12 +5,15 @@
   "vai_task_id": "VAI-519",
   "vai_task_ids": [
     "VAI-519",
-    "VAI-530"
+    "VAI-530",
+    "VAI-536"
   ],
   "backlog_task_id": "HAO-702",
   "backlog_task_ids": [
     "HAO-702",
-    "HAO-713"
+    "HAO-713",
+    "HAO-719",
+    "HAO-721"
   ],
   "shared_packet_task_id": "MGW-535",
   "goal_id": "VAIOS-G728",
@@ -25,22 +28,28 @@
   "discovery_receipts": [
     "data/virtual_ai_os/discovery/2026-06-26-vai-519-daemon-launch-health-gate.md",
     "data/virtual_ai_os/discovery/2026-06-27-vai-530-daemon-launch-health-gate.md",
+    "data/virtual_ai_os/discovery/2026-06-28-vai-536-daemon-launch-health-gate.md",
     "data/meta_glasses_display_widgets/discovery/2026-06-26-mgw-535-daemon-launch-health-gate.md"
   ],
   "objective_gap_receipt": "data/virtual_ai_os/discovery/2026-06-26-vai-519-objective-gap-b023c8de5b69.md",
   "objective_gap_receipts": [
     "data/virtual_ai_os/discovery/2026-06-26-vai-519-objective-gap-b023c8de5b69.md",
-    "data/virtual_ai_os/discovery/2026-06-27-vai-530-objective-gap-b023c8de5b69.md"
+    "data/virtual_ai_os/discovery/2026-06-27-vai-530-objective-gap-b023c8de5b69.md",
+    "data/virtual_ai_os/discovery/2026-06-28-vai-536-objective-gap-b023c8de5b69.md"
   ],
   "supervisor_gap_receipt": "data/hallucinate_multimodal_control/discovery/2026-06-26-hao-702-objective-gap-b023c8de5b69.md",
   "supervisor_gap_receipts": [
     "data/hallucinate_multimodal_control/discovery/2026-06-26-hao-702-objective-gap-b023c8de5b69.md",
-    "data/hallucinate_multimodal_control/discovery/2026-06-27-hao-713-objective-gap-b023c8de5b69.md"
+    "data/hallucinate_multimodal_control/discovery/2026-06-27-hao-713-objective-gap-b023c8de5b69.md",
+    "data/hallucinate_multimodal_control/discovery/2026-06-28-hao-719-objective-gap-b023c8de5b69.md",
+    "data/hallucinate_multimodal_control/discovery/2026-06-28-hao-721-objective-gap-b023c8de5b69.md"
   ],
   "hallucinate_backlog_receipt": "data/hallucinate_multimodal_control/discovery/2026-06-26-hao-702-daemon-launch-health-gate.md",
   "hallucinate_backlog_receipts": [
     "data/hallucinate_multimodal_control/discovery/2026-06-26-hao-702-daemon-launch-health-gate.md",
-    "data/hallucinate_multimodal_control/discovery/2026-06-27-hao-713-daemon-launch-health-gate.md"
+    "data/hallucinate_multimodal_control/discovery/2026-06-27-hao-713-daemon-launch-health-gate.md",
+    "data/hallucinate_multimodal_control/discovery/2026-06-28-hao-719-daemon-launch-health-gate.md",
+    "data/hallucinate_multimodal_control/discovery/2026-06-28-hao-721-daemon-launch-health-gate.md"
   ],
   "validation_commands": [
     "npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts",
