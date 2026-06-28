@@ -32,6 +32,7 @@ const HAO_700_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-700-mc
 const HAO_712_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-712-mcp-dashboard-launch-gate.json');
 const VAI_529_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-529-mcp-dashboard-launch-gate.json');
 const VAI_535_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-535-mcp-dashboard-launch-gate.json');
+const VAI_537_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-537-mcp-dashboard-launch-gate.json');
 const HAO_681_SWISSKNIFE_CONSUMER_FIXTURE = path.join(
   REPO_ROOT,
   'swissknife',
@@ -172,6 +173,20 @@ const VAI_535_LAUNCH_GATE_RECEIPT = path.join(
   'virtual_ai_os',
   'discovery',
   '2026-06-28-vai-535-mcp-dashboard-launch-gate.md'
+);
+const VAI_537_OBJECTIVE_GAP_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-06-28-vai-537-objective-gap-3e00ad2a0074.md'
+);
+const VAI_537_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-06-28-vai-537-mcp-dashboard-launch-gate.md'
 );
 const MGW_OBJECTIVE_HEAP = path.join(
   REPO_ROOT,
@@ -403,6 +418,13 @@ electronDescribe('MCP Dashboard Interoperability - VAIOS-G723 Electron UI wiring
         goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
         evidence_term: 'launch Playwright validation gate',
         supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-535-objective-gap-3e00ad2a0074.md'
+      }),
+      expect.objectContaining({
+        task_id: 'VAI-537',
+        goal_id: 'VAIOS-G724',
+        goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
+        evidence_term: 'launch Playwright validation gate',
+        supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-537-objective-gap-3e00ad2a0074.md'
       })
     ]));
     expect(catalog?.swissknife_catalog_consumer_proof).toMatchObject({
@@ -1606,6 +1628,75 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     expect(objectiveHeap).toContain('VAI-535 proof');
     expect(objectiveHeap).toContain('hallucinate_app/test/e2e/fixtures/vai-535-mcp-dashboard-launch-gate.json');
     expect(objectiveHeap).toContain('data/virtual_ai_os/discovery/2026-06-28-vai-535-mcp-dashboard-launch-gate.md');
+    expect(objectiveHeap).toContain('VAIOS-G728');
+  });
+
+  test('closes the VAI-537 objective gap with the current Hallucinate launch Playwright validation gate', () => {
+    const receipt = JSON.parse(fs.readFileSync(VAI_537_LAUNCH_GATE_FIXTURE, 'utf8'));
+    const launchGateReceipt = fs.readFileSync(VAI_537_LAUNCH_GATE_RECEIPT, 'utf8');
+    const objectiveGap = fs.readFileSync(VAI_537_OBJECTIVE_GAP_RECEIPT, 'utf8');
+    const objectiveHeap = fs.readFileSync(MGW_OBJECTIVE_HEAP, 'utf8');
+    const catalog = new MCPDaemonManager().getDashboardCapabilityCatalog();
+    const serversByPackage = new Map(catalog.servers.map((server: any) => [server.server_package, server]));
+
+    expect(receipt.schema).toBe('launch_readiness_receipt_v1');
+    expect(receipt.task_id).toBe('VAI-537');
+    expect(receipt.goal_id).toBe('VAIOS-G724');
+    expect(receipt.goal_packet).toBe('goal_packet/launch/hallucinate_app/44dceea6bc53');
+    expect(receipt.packet_goal_ids).toEqual(['VAIOS-G724', 'VAIOS-G728']);
+    expect(receipt.source_gap_receipt).toBe(
+      'data/virtual_ai_os/discovery/2026-06-28-vai-537-objective-gap-3e00ad2a0074.md'
+    );
+    expect(receipt.launch_gate_receipt).toBe(
+      'data/virtual_ai_os/discovery/2026-06-28-vai-537-mcp-dashboard-launch-gate.md'
+    );
+    expect(receipt.evidence_term).toBe('launch Playwright validation gate');
+    expect(receipt.validation_commands).toEqual(expect.arrayContaining([
+      'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
+      'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
+      'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
+    ]));
+    expect(receipt.required_evidence).toEqual(MGW_533_REQUIRED_EVIDENCE);
+    expect(receipt.catalog_schema).toBe(catalog.schema);
+    expect(receipt.catalog_generated_by).toBe(catalog.generated_by);
+    expect(receipt.catalog_launch_objective_ids).toEqual(catalog.launch_objective_ids);
+    expect(catalog.launch_validation_gates).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        task_id: receipt.task_id,
+        goal_id: receipt.goal_id,
+        goal_packet: receipt.goal_packet,
+        packet_goal_ids: receipt.packet_goal_ids,
+        evidence_term: receipt.evidence_term,
+        supervisor_gap_receipt: receipt.source_gap_receipt,
+        launch_gate_receipt: receipt.launch_gate_receipt,
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-537-mcp-dashboard-launch-gate.json'
+      })
+    ]));
+
+    for (const server of receipt.dashboard_servers) {
+      const catalogServer = serversByPackage.get(server.server_package) as any;
+      expect(catalogServer).toBeTruthy();
+      expect(catalogServer.daemon_id).toBe(server.daemon_id);
+      expect(catalogServer.health_path).toBe(server.health_path);
+      expect(catalogServer.tool_protocols.tools_list.operation).toBe('tools/list');
+      expect(catalogServer.tool_protocols.tools_call.operation).toBe('tools/call');
+      expect(catalogServer.tool_protocols.tools_call.safeProbe.expected_receipt).toBe(server.safe_probe_receipt);
+      expect(catalogServer.dashboard_receipt_consumer_refs).toEqual(expect.arrayContaining([
+        'hallucinate_app.swissknife.mcp_capability_registry',
+        'launch_readiness_packet:VAIOS-G724',
+        'launch_readiness_packet:VAIOS-G728'
+      ]));
+      expect(catalogServer.swissknife_consumer).toBe(server.swissknife_consumer);
+    }
+
+    for (const term of MGW_533_REQUIRED_EVIDENCE) {
+      expect(objectiveGap).toContain(term);
+      expect(launchGateReceipt).toContain(term);
+    }
+
+    expect(objectiveHeap).toContain('VAI-537 proof');
+    expect(objectiveHeap).toContain('hallucinate_app/test/e2e/fixtures/vai-537-mcp-dashboard-launch-gate.json');
+    expect(objectiveHeap).toContain('data/virtual_ai_os/discovery/2026-06-28-vai-537-mcp-dashboard-launch-gate.md');
     expect(objectiveHeap).toContain('VAIOS-G728');
   });
 });
