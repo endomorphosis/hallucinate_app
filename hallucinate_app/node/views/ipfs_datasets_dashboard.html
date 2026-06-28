@@ -805,5 +805,13 @@
   <script src="components/sidebar-nav.js"></script>
   <script src="components/tool-invocation-panel.js"></script>
   <script src="components/backend-connector.js"></script>
+  <script src="components/glasses-state-bridge.js"></script>
+  <script>
+    const glassesBridge = new IPFSDatasetsGlassesBridge();
+    glassesBridge.onCommand((cmd) => {
+      if (cmd.action === 'list_datasets') document.querySelector('[data-action="list-datasets"]')?.click();
+      if (cmd.action === 'semantic_search') document.querySelector('[data-action="search"]')?.click();
+    });
+  </script>
 </body>
 </html>

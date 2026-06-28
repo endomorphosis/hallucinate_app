@@ -13,6 +13,7 @@ import testHandler from './hallucinate_app/node/test_handler.js';
 import benchmarkHandler from './hallucinate_app/node/benchmark_handler.js';
 import { getDaemonManager } from './hallucinate_app/node/daemon_manager.js';
 import { registerIPFSIPCHandlers } from './hallucinate_app/node/ipfs_ipc_handlers.js';
+import UCANIdentityManager from './hallucinate_app/node/ucan_identity_manager.js';
 
 // ============================================================
 // VERBOSE ERROR LOGGING CONFIGURATION
@@ -1969,14 +1970,15 @@ const createSwissKnifeWindow = (appName) => {
       preload: path.join(__dirname, 'preload.cjs'), // Secure IPC bridge
       sandbox: false                     // Disabled to allow preload script
     },
-    title: 'hallucinate_app - IPFS HuggingFace Bridge',
+    title: 'SwissKnife Virtual Desktop',
     icon: path.join(__dirname, 'hallucinate_app', 'assets', 'icon.png')
   });
 
-  // Load the main dashboard, optionally navigating to a specific app via hash
-  win.loadFile(path.join(__dirname, 'hallucinate_app', 'node', 'views', 'dashboard.html'), {
-    hash: appName || ''
-  });
+  // Load the SwissKnife virtual desktop as the primary interface
+  // The virtual desktop is served from the local web server (port 8765)
+  // and provides the full desktop environment with all IPFS/MCP apps
+  const desktopUrl = `http://127.0.0.1:${SWISSKNIFE_PORT}/${appName ? `#${appName}` : ''}`;
+  win.loadURL(desktopUrl);
   
   // Open the DevTools in development
   if (process.env.NODE_ENV === 'development') {
@@ -2080,6 +2082,20 @@ const installControlSurfaceMenu = () => {
 app.on('ready', async () => {
   try {
     logInfo('APP_READY', 'Electron app ready, initializing...');
+    
+    // Initialize UCAN identity (creates DID:key on first launch)
+    const ucanManager = new UCANIdentityManager(
+      path.join(app.getPath('userData'), 'identity')
+    );
+    await ucanManager.initialize();
+    logInfo('APP_READY', `UCAN identity ready: ${ucanManager.getDID()}`);
+    
+    // Expose UCAN identity to IPC for renderer access
+    ipcMain.handle('ucan:get-identity', () => ucanManager.getPublicInfo());
+    ipcMain.handle('ucan:get-did', () => ucanManager.getDID());
+    ipcMain.handle('ucan:create-delegation', (event, audience, capabilities) => {
+      return ucanManager.createDelegation(audience, capabilities);
+    });
     
     // Register IPFS IPC handlers for renderer-to-backend communication
     registerIPFSIPCHandlers();
