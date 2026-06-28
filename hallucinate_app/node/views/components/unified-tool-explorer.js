@@ -13,10 +13,18 @@
   'use strict';
 
   const ENDPOINTS = [
-    { name: 'IPFS Kit', port: 8004, listPath: '/mcp/tools/list', callPath: '/mcp/tools/call', color: '#3b82f6' },
-    { name: 'IPFS Datasets', port: 3002, listPath: '/mcp/tools/list', callPath: '/mcp/tools/call', color: '#10b981' },
-    { name: 'IPFS Accelerate', port: 3003, listPath: '/mcp/tools/list', callPath: '/mcp/tools/call', color: '#f59e0b' },
-    { name: 'Handsfree API', port: 8080, listPath: '/v1/ipfs/status', callPath: null, color: '#8b5cf6' },
+    { name: 'IPFS Kit', port: 8004, listPath: '/mcp/tools/list', callPath: '/mcp/tools/call', color: '#3b82f6', category: 'storage' },
+    { name: 'IPFS Datasets', port: 3002, listPath: '/mcp/tools/list', callPath: '/mcp/tools/call', color: '#10b981', category: 'datasets' },
+    { name: 'IPFS Accelerate', port: 3003, listPath: '/mcp/tools/list', callPath: '/mcp/tools/call', color: '#f59e0b', category: 'accelerate' },
+    { name: 'Handsfree API', port: 8080, listPath: '/v1/ipfs/status', callPath: null, color: '#8b5cf6', category: 'backend' },
+  ];
+
+  // Extended tool categories surfaced via the handsfree backend
+  const EXTENDED_CATEGORIES = [
+    { name: 'Vector Store', tools: ['vector_index', 'vector_search', 'vector_metadata'], color: '#6366f1', icon: 'database' },
+    { name: 'Search', tools: ['semantic_search', 'similarity_search', 'faceted_search'], color: '#ec4899', icon: 'search' },
+    { name: 'Web Scraping', tools: ['scrape_url', 'scrape_batch'], color: '#14b8a6', icon: 'globe' },
+    { name: 'Workflow', tools: ['workflow_execute'], color: '#f97316', icon: 'project-diagram' },
   ];
 
   class UnifiedToolExplorer {
@@ -155,6 +163,22 @@
 
       results.forEach(r => {
         if (r.status === 'fulfilled') this.allTools.push(...r.value);
+      });
+
+      // Inject extended tool categories from handsfree backend
+      EXTENDED_CATEGORIES.forEach(cat => {
+        cat.tools.forEach(toolName => {
+          // Only add if not already discovered from a daemon
+          if (!this.allTools.find(t => t.name === toolName)) {
+            this.allTools.push({
+              name: toolName,
+              description: `[${cat.name}] Extended tool via handsfree backend`,
+              _source: `Extended: ${cat.name}`,
+              _color: cat.color,
+              _category: cat.name,
+            });
+          }
+        });
       });
 
       countEl.textContent = `${this.allTools.length} tools found`;

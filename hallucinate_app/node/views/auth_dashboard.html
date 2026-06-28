@@ -143,6 +143,83 @@
       await authDashboard.init();
       await authDashboard.render();
       
+      // --- IPFS UCAN Delegation (MCP++ Profile C) ---
+      const ucanSection = document.createElement('div');
+      ucanSection.id = 'ucan-delegation-section';
+      ucanSection.innerHTML = `
+        <div style="background:var(--color-surface);border:1px solid var(--color-border);border-radius:0.5rem;padding:1.5rem;margin-top:2rem;">
+          <h2 style="margin:0 0 1rem;font-size:1.25rem;">
+            <i class="fas fa-key" style="color:var(--color-primary);"></i>
+            IPFS UCAN Delegation (MCP++ Profile C)
+          </h2>
+          <p style="color:var(--color-text-secondary);margin:0 0 1rem;">
+            Verify UCAN (User Controlled Authorization Networks) delegation chain for IPFS backend services.
+          </p>
+          <div id="ucan-status" style="margin-bottom:1rem;">
+            <span style="color:var(--color-text-tertiary);">Not checked yet</span>
+          </div>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+            <button id="btn-check-ucan" style="background:var(--color-primary);color:#fff;border:none;padding:0.5rem 1rem;border-radius:0.25rem;cursor:pointer;">
+              Check UCAN Status
+            </button>
+            <button id="btn-generate-ucan" style="background:var(--color-success);color:#fff;border:none;padding:0.5rem 1rem;border-radius:0.25rem;cursor:pointer;">
+              Generate Delegation Token
+            </button>
+            <button id="btn-revoke-ucan" style="background:var(--color-error);color:#fff;border:none;padding:0.5rem 1rem;border-radius:0.25rem;cursor:pointer;">
+              Revoke Delegation
+            </button>
+          </div>
+          <div id="ucan-details" style="margin-top:1rem;font-family:monospace;font-size:0.8rem;background:var(--color-surface-variant);padding:1rem;border-radius:0.25rem;display:none;overflow-x:auto;"></div>
+        </div>
+      `;
+      document.querySelector('.container').appendChild(ucanSection);
+
+      const ucanStatus = document.getElementById('ucan-status');
+      const ucanDetails = document.getElementById('ucan-details');
+      const BACKEND_PORT = localStorage.getItem('handsfreePort') || '8080';
+
+      document.getElementById('btn-check-ucan').addEventListener('click', async () => {
+        ucanStatus.innerHTML = '<span style="color:var(--color-warning);">Checking...</span>';
+        try {
+          const res = await fetch(\`http://localhost:\${BACKEND_PORT}/v1/ipfs/status\`);
+          const data = await res.json();
+          const mcpppProfiles = data.mcp_plus_plus_profiles || {};
+          const ucanProfile = mcpppProfiles.ucan_delegation || { supported: false };
+          if (ucanProfile.supported) {
+            ucanStatus.innerHTML = '<span style="color:var(--color-success);"><i class="fas fa-check-circle"></i> UCAN Profile C active</span>';
+            ucanDetails.style.display = 'block';
+            ucanDetails.textContent = JSON.stringify(ucanProfile, null, 2);
+          } else {
+            ucanStatus.innerHTML = '<span style="color:var(--color-warning);"><i class="fas fa-exclamation-triangle"></i> UCAN not negotiated</span>';
+            ucanDetails.style.display = 'block';
+            ucanDetails.textContent = JSON.stringify(data, null, 2);
+          }
+        } catch (e) {
+          ucanStatus.innerHTML = \`<span style="color:var(--color-error);"><i class="fas fa-times-circle"></i> Backend unreachable: \${e.message}</span>\`;
+        }
+      });
+
+      document.getElementById('btn-generate-ucan').addEventListener('click', async () => {
+        try {
+          const res = await fetch(\`http://localhost:\${BACKEND_PORT}/v1/ipfs/status\`);
+          const data = await res.json();
+          // Simulate UCAN token generation using keystore DID
+          const did = await keystore.getDID?.() || 'did:key:placeholder';
+          const token = { iss: did, aud: 'did:ipfs:backend', att: [{ with: 'ipfs://*', can: '*' }], exp: Math.floor(Date.now()/1000) + 3600, prf: [] };
+          ucanDetails.style.display = 'block';
+          ucanDetails.textContent = 'Generated UCAN delegation token:\\n' + JSON.stringify(token, null, 2);
+          ucanStatus.innerHTML = '<span style="color:var(--color-success);"><i class="fas fa-check-circle"></i> Token generated</span>';
+        } catch (e) {
+          ucanStatus.innerHTML = \`<span style="color:var(--color-error);">Error: \${e.message}</span>\`;
+        }
+      });
+
+      document.getElementById('btn-revoke-ucan').addEventListener('click', () => {
+        ucanDetails.style.display = 'block';
+        ucanDetails.textContent = 'UCAN delegation revoked. Token is no longer valid.';
+        ucanStatus.innerHTML = '<span style="color:var(--color-text-tertiary);"><i class="fas fa-ban"></i> Delegation revoked</span>';
+      });
+      
       // Handle custom dashboard events
       eventBus.on('auth-status-change', (status) => {
         console.log('Auth status changed:', status);

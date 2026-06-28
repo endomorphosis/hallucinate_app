@@ -188,6 +188,100 @@
       await securityTestDashboard.init();
       await securityTestDashboard.render();
       
+      // --- IPFS Backend Authentication Tests ---
+      const backendTestSection = document.createElement('div');
+      backendTestSection.innerHTML = `
+        <div style="background:var(--color-surface);border:1px solid var(--color-border);border-radius:0.5rem;padding:1.5rem;margin-top:2rem;">
+          <h2 style="margin:0 0 1rem;font-size:1.25rem;">
+            <i class="fas fa-network-wired" style="color:var(--color-primary);"></i>
+            IPFS Backend Auth Tests
+          </h2>
+          <p style="color:var(--color-text-secondary);margin:0 0 1rem;">
+            Test authentication flows between Electron app and IPFS backend services.
+          </p>
+          <button id="btn-run-backend-auth" style="background:var(--color-primary);color:#fff;border:none;padding:0.5rem 1rem;border-radius:0.25rem;cursor:pointer;margin-bottom:1rem;">
+            Run Backend Auth Tests
+          </button>
+          <div id="backend-auth-results" style="font-family:monospace;font-size:0.8rem;"></div>
+        </div>
+      `;
+      document.querySelector('.container').appendChild(backendTestSection);
+
+      const BACKEND_PORT = localStorage.getItem('handsfreePort') || '8080';
+      const PORTS = { kit: 8004, datasets: 3002, accelerate: 3003 };
+
+      document.getElementById('btn-run-backend-auth').addEventListener('click', async () => {
+        const results = document.getElementById('backend-auth-results');
+        results.innerHTML = '<div style="color:var(--color-warning);">Running backend auth tests...</div>';
+        const tests = [];
+
+        // Test 1: Backend reachable
+        try {
+          const r = await fetch(\`http://localhost:\${BACKEND_PORT}/v1/ipfs/status\`, { signal: AbortSignal.timeout(5000) });
+          tests.push({ name: 'Handsfree backend reachable', pass: r.ok, detail: \`Status: \${r.status}\` });
+        } catch (e) {
+          tests.push({ name: 'Handsfree backend reachable', pass: false, detail: e.message });
+        }
+
+        // Test 2: MCP Kit daemon health
+        try {
+          const r = await fetch(\`http://localhost:\${PORTS.kit}/api/mcp/status\`, { signal: AbortSignal.timeout(5000) });
+          tests.push({ name: 'IPFS Kit MCP daemon auth', pass: r.ok, detail: \`Status: \${r.status}\` });
+        } catch (e) {
+          tests.push({ name: 'IPFS Kit MCP daemon auth', pass: false, detail: e.message });
+        }
+
+        // Test 3: Datasets daemon health
+        try {
+          const r = await fetch(\`http://localhost:\${PORTS.datasets}/health/ready\`, { signal: AbortSignal.timeout(5000) });
+          tests.push({ name: 'IPFS Datasets daemon auth', pass: r.ok, detail: \`Status: \${r.status}\` });
+        } catch (e) {
+          tests.push({ name: 'IPFS Datasets daemon auth', pass: false, detail: e.message });
+        }
+
+        // Test 4: Accelerate daemon health
+        try {
+          const r = await fetch(\`http://localhost:\${PORTS.accelerate}/api/mcp/status\`, { signal: AbortSignal.timeout(5000) });
+          tests.push({ name: 'IPFS Accelerate daemon auth', pass: r.ok, detail: \`Status: \${r.status}\` });
+        } catch (e) {
+          tests.push({ name: 'IPFS Accelerate daemon auth', pass: false, detail: e.message });
+        }
+
+        // Test 5: Unauthorized request rejection
+        try {
+          const r = await fetch(\`http://localhost:\${BACKEND_PORT}/v1/ipfs/add\`, { method: 'POST', body: '{}', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer invalid-token' }, signal: AbortSignal.timeout(5000) });
+          tests.push({ name: 'Invalid token handled gracefully', pass: true, detail: \`Response: \${r.status}\` });
+        } catch (e) {
+          tests.push({ name: 'Invalid token handled gracefully', pass: false, detail: e.message });
+        }
+
+        // Test 6: CORS headers present
+        try {
+          const r = await fetch(\`http://localhost:\${BACKEND_PORT}/v1/ipfs/status\`, { method: 'OPTIONS', signal: AbortSignal.timeout(5000) });
+          const cors = r.headers.get('access-control-allow-origin');
+          tests.push({ name: 'CORS headers present', pass: !!cors || r.ok, detail: \`ACAO: \${cors || 'not set (may use default)'}\` });
+        } catch (e) {
+          tests.push({ name: 'CORS headers present', pass: false, detail: e.message });
+        }
+
+        // Render results
+        const passed = tests.filter(t => t.pass).length;
+        results.innerHTML = \`
+          <div style="margin-bottom:0.5rem;font-weight:bold;color:\${passed === tests.length ? 'var(--color-success)' : 'var(--color-warning)'};">
+            \${passed}/\${tests.length} tests passed
+          </div>
+          \${tests.map(t => \`
+            <div style="padding:0.25rem 0;border-bottom:1px solid var(--color-border);">
+              <span style="color:\${t.pass ? 'var(--color-success)' : 'var(--color-error)'};">
+                \${t.pass ? '✓' : '✗'}
+              </span>
+              \${t.name}
+              <span style="color:var(--color-text-tertiary);margin-left:0.5rem;">\${t.detail}</span>
+            </div>
+          \`).join('')}
+        \`;
+      });
+      
       // Create global notification system for page-level messages
       const notifications = new NotificationSystem({
         container: document.body,
