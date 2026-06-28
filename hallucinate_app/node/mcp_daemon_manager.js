@@ -186,11 +186,19 @@ const HAO_712_LAUNCH_VALIDATION_GATE = {
   launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-27-hao-712-mcp-dashboard-launch-gate.md',
   receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-712-mcp-dashboard-launch-gate.json'
 };
+const VAI_529_LAUNCH_VALIDATION_GATE = {
+  ...MGW_533_LAUNCH_VALIDATION_GATE,
+  task_id: 'VAI-529',
+  supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-06-27-vai-529-objective-gap-3e00ad2a0074.md',
+  launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-529-mcp-dashboard-launch-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-529-mcp-dashboard-launch-gate.json'
+};
 const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   MGW_533_LAUNCH_VALIDATION_GATE,
   MGW_546_LAUNCH_VALIDATION_GATE,
   MGW_550_LAUNCH_VALIDATION_GATE,
-  HAO_712_LAUNCH_VALIDATION_GATE
+  HAO_712_LAUNCH_VALIDATION_GATE,
+  VAI_529_LAUNCH_VALIDATION_GATE
 ];
 const DAEMON_LAUNCH_GATE_TASK_ID = 'MGW-535';
 const DAEMON_LAUNCH_GATE_VAI_TASK_ID = 'VAI-519';

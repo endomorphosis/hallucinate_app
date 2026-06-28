@@ -116,6 +116,24 @@
       "supervisor_gap_receipt": "data/hallucinate_multimodal_control/discovery/2026-06-27-hao-712-objective-gap-3e00ad2a0074.md",
       "launch_gate_receipt": "data/hallucinate_multimodal_control/discovery/2026-06-27-hao-712-mcp-dashboard-launch-gate.md",
       "receipt_fixture": "hallucinate_app/test/e2e/fixtures/hao-712-mcp-dashboard-launch-gate.json"
+    },
+    {
+      "task_id": "VAI-529",
+      "goal_id": "VAIOS-G724",
+      "goal_packet": "goal_packet/launch/hallucinate_app/44dceea6bc53",
+      "packet_goal_ids": [
+        "VAIOS-G724",
+        "VAIOS-G728"
+      ],
+      "evidence_term": "launch Playwright validation gate",
+      "playwright_specs": [
+        "hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts",
+        "hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts"
+      ],
+      "validation_command": "npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts",
+      "supervisor_gap_receipt": "data/virtual_ai_os/discovery/2026-06-27-vai-529-objective-gap-3e00ad2a0074.md",
+      "launch_gate_receipt": "data/virtual_ai_os/discovery/2026-06-28-vai-529-mcp-dashboard-launch-gate.md",
+      "receipt_fixture": "hallucinate_app/test/e2e/fixtures/vai-529-mcp-dashboard-launch-gate.json"
     }
   ],
   "dashboard_interoperability_validation_gate": {
