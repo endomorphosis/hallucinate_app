@@ -318,8 +318,14 @@
       </div>
       <pre id="toolTestOutput" style="background: #1a202c; color: #68d391; padding: 12px; border-radius: 8px; font-size: 0.85em; max-height: 300px; overflow-y: auto; white-space: pre-wrap;">Select a tool and click "Run Test"</pre>
     </div>
+
+    <!-- Unified Tool Explorer -->
+    <div style="margin-top: 20px;">
+      <div id="unified-tool-explorer"></div>
+    </div>
   </div>
 
+  <script src="components/unified-tool-explorer.js"></script>
   <script>
     const daemonApi = window?.electronAPI?.daemon;
     if (!daemonApi) {
