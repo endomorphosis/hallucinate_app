@@ -8627,11 +8627,11 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-717 Resolve merge retry-budget failure for HAO-712
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
 - Depends on: 
-- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, hallucinate_app, swissknife, external/ipfs_accelerate, external/ipfs_datasets, external/ipfs_kit, hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts, hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts
-- Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-28-hao-717-hao-712-merge-retry-budget.md
-- Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-712. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-28-hao-717-hao-712-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-712 from strategy blocked_tasks.
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, hallucinate_app, swissknife, external/ipfs_accelerate, external/ipfs_datasets, external/ipfs_kit, hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts, hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts, data/hallucinate_multimodal_control/state/discovery
+- Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/state/discovery/2026-06-28-hao-717-hao-712-merge-retry-budget.md
+- Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-712. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/state/discovery/2026-06-28-hao-717-hao-712-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-712 from strategy blocked_tasks.
