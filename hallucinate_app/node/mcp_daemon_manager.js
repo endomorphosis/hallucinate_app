@@ -1004,10 +1004,7 @@ class MCPDaemonManager extends EventEmitter {
       this.getDaemonLaunchValidationGate({
         ...MGW_551_DAEMON_LAUNCH_VALIDATION_GATE,
         shared_packet_task_id: 'MGW-551',
-        discovery_receipts: [
-          ...DAEMON_LAUNCH_GATE_DISCOVERY_RECEIPTS,
-          MGW_551_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt
-        ],
+        discovery_receipts: [...DAEMON_LAUNCH_GATE_DISCOVERY_RECEIPTS],
         objective_gap_receipt: MGW_551_DAEMON_LAUNCH_VALIDATION_GATE.supervisor_gap_receipt
       }),
       this.getDaemonLaunchValidationGate({
