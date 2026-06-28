@@ -550,16 +550,16 @@ const DASHBOARD_TOOL_PROTOCOLS = {
       operation: 'tools/list',
       transport: 'http',
       method: 'GET',
-      path: '/datasets/list'
+      path: '/tools/list'
     },
     toolsCall: {
       operation: 'tools/call',
       transport: 'http',
       method: 'POST',
-      path: '/datasets/load',
+      path: '/tools/execute/{tool_name}',
       safeProbe: {
-        tool_name: 'datasets_list',
-        arguments: { limit: 1 },
+        tool_name: 'list_tools',
+        arguments: {},
         mutation: false,
         expected_receipt: 'ipfs_datasets_list_probe'
       }
@@ -599,6 +599,7 @@ class MCPDaemonManager extends EventEmitter {
     this.daemons = new Map();
     this.dashboardSidecars = new Map();
     this.mcpPlusPlusCapabilities = new Map();
+    this.daemonAuthTokens = new Map();
     this.launchReceipts = [];
     this.restartCounts = new Map();
     this.healthCheckInterval = null;
@@ -652,6 +653,12 @@ class MCPDaemonManager extends EventEmitter {
         transport: 'http',
         rpcPath: '/datasets/load',
         healthPath: '/health/ready',
+        auth: {
+          scheme: 'bearer',
+          loginPath: '/auth/login',
+          username: process.env.MCP_DATASETS_USERNAME || 'hallucinate_app',
+          password: process.env.MCP_DATASETS_PASSWORD || 'dashboard'
+        },
         nativeDashboard: {
           port: 8899,
           path: '/mcp',
@@ -1699,9 +1706,7 @@ class MCPDaemonManager extends EventEmitter {
 
   async _dashboardTransportProbe(config, toolProtocol, mediation) {
     const health = await this.checkDaemonHealth(config.id);
-    return {
-      ok: health.healthy,
-      fail_closed: !health.healthy,
+    const base = {
       daemon_id: config.id,
       server_package: config.packageName,
       operation: toolProtocol.operation,
@@ -1713,7 +1718,145 @@ class MCPDaemonManager extends EventEmitter {
       mediation_receipt_id: mediation.mediation_receipt.receipt_id,
       mediation_receipt_cid: mediation.mediation_receipt.receipt_cid
     };
+
+    // Fail closed when the daemon is not healthy — never attempt live transport
+    // against an unreachable backend.
+    if (!health.healthy) {
+      return {
+        ...base,
+        ok: false,
+        fail_closed: true,
+        live: false,
+        message: `${config.name || config.id} is not healthy; live ${toolProtocol.operation} was not attempted.`
+      };
+    }
+
+    // Perform the REAL request against the live MCP backend so dashboards surface
+    // working results (not a health-only mock).
+    try {
+      const live = await this._invokeLiveTool(config, toolProtocol);
+      return {
+        ...base,
+        ok: live.ok,
+        fail_closed: !live.ok,
+        live: true,
+        status_code: live.status_code,
+        response: live.response,
+        error: live.error || ''
+      };
+    } catch (error) {
+      return {
+        ...base,
+        ok: false,
+        fail_closed: true,
+        live: true,
+        error: error?.message || String(error),
+        message: `Live ${toolProtocol.operation} transport to ${toolProtocol.url} failed.`
+      };
+    }
   }
+
+  /**
+   * Issue the real HTTP request for a dashboard tool protocol against the live
+   * MCP backend and return the parsed response. tools/list uses the advertised
+   * method (GET); tools/call posts the non-mutating safe probe payload. When the
+   * daemon advertises an auth scheme, a bearer token is acquired (and refreshed
+   * on 401) before the request.
+   */
+  async _invokeLiveTool(config, toolProtocol, attempt = 0) {
+    if (typeof fetch !== 'function') {
+      throw new Error('global fetch is not available in this runtime');
+    }
+    const method = String(toolProtocol.method || 'GET').toUpperCase();
+    const safeProbe = toolProtocol.safeProbe || {};
+    // Substitute any path template (e.g. /tools/execute/{tool_name}).
+    const url = String(toolProtocol.url).replace('{tool_name}', encodeURIComponent(safeProbe.tool_name || ''));
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), Number(process.env.MCP_DASHBOARD_TOOL_TIMEOUT_MS || 4000));
+    try {
+      const headers = { Accept: 'application/json' };
+      if (config.auth) {
+        const token = await this._ensureAuthToken(config);
+        if (token) {
+          headers.Authorization = `Bearer ${token}`;
+        }
+      }
+      const options = { method, headers, signal: controller.signal };
+      if (method === 'POST') {
+        headers['Content-Type'] = 'application/json';
+        // Send a payload that satisfies common MCP REST shapes (tool name +
+        // arguments), so the safe probe reaches the backend regardless of the
+        // exact field naming it expects.
+        options.body = JSON.stringify({
+          tool: safeProbe.tool_name,
+          name: safeProbe.tool_name,
+          tool_name: safeProbe.tool_name,
+          arguments: safeProbe.arguments || {},
+          params: safeProbe.arguments || {}
+        });
+      }
+      const response = await fetch(url, options);
+      // Token expired/invalid — refresh once and retry.
+      if (response.status === 401 && config.auth && attempt === 0) {
+        this.daemonAuthTokens.delete(config.id);
+        clearTimeout(timeout);
+        return this._invokeLiveTool(config, toolProtocol, attempt + 1);
+      }
+      const text = await response.text();
+      let parsed;
+      try {
+        parsed = text ? JSON.parse(text) : null;
+      } catch {
+        parsed = { raw: text.slice(0, 2000) };
+      }
+      return { ok: response.ok, status_code: response.status, response: parsed, url };
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  /**
+   * Acquire (and cache) a bearer token for a daemon that requires auth by
+   * logging in through its advertised login path.
+   */
+  async _ensureAuthToken(config) {
+    if (!config.auth || config.auth.scheme !== 'bearer') {
+      return null;
+    }
+    const cached = this.daemonAuthTokens.get(config.id);
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.token;
+    }
+    const endpoint = this._daemonEndpoint(config);
+    const loginUrl = `${endpoint}${config.auth.loginPath}`;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 4000);
+    try {
+      const response = await fetch(loginUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ username: config.auth.username, password: config.auth.password }),
+        signal: controller.signal
+      });
+      if (!response.ok) {
+        return null;
+      }
+      const data = await response.json().catch(() => null);
+      const token = data?.access_token || data?.token;
+      if (!token) {
+        return null;
+      }
+      // Cache slightly less than the typical 15 minute JWT lifetime.
+      this.daemonAuthTokens.set(config.id, { token, expiresAt: Date.now() + 10 * 60 * 1000 });
+      return token;
+    } catch {
+      return null;
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+
 
   _mcpPlusPlusStatus(daemonId, daemon = null) {
     if (daemon?.mcpPlusPlus) {

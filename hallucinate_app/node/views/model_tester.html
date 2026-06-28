@@ -98,7 +98,8 @@
   </style>
 </head>
 <body>
-  <div class="container">
+  <button type="button" data-testid="nav-home" aria-label="Back to Main Dashboard" title="Back to Main Dashboard" onclick="window.electronAPI?.navigation?.navigateHome?.()" style="position:fixed;bottom:16px;left:16px;z-index:99999;padding:8px 14px;background:#2d3748;color:#fff;border:none;border-radius:20px;cursor:pointer;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,0.25);">🏠 Home</button>
+  <div class="container" role="main">
     <h1>IPFS Accelerate Model Tester</h1>
     
     <div class="section">
@@ -146,7 +147,7 @@
   </div>
   
   <script>
-    const { ipcRenderer } = window.require('electron');
+    /* ipcRenderer is provided as a global by the preload bridge (window.ipcRenderer) */
     
     // Elements
     const btnStartServer = document.getElementById('btnStartServer');

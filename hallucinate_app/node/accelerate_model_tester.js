@@ -6,6 +6,10 @@ import pythonBridge from '../../test/js/python_bridge.js';
 // Get the directory where the current module is located
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
+// Guard so the model-tester IPC handlers are registered exactly once, whether
+// the trigger is app startup or opening the standalone model-tester window.
+let ipcHandlersRegistered = false;
+
 /**
  * Creates a new window for the IPFS HuggingFace Bridge dashboard
  */
@@ -36,6 +40,11 @@ export function createModelTesterWindow() {
  * Set up IPC handlers for dashboard and model tester UI
  */
 function setupIpcHandlers() {
+  if (ipcHandlersRegistered) {
+    return;
+  }
+  ipcHandlersRegistered = true;
+
   // Start server
   ipcMain.on('start-server', async (event) => {
     try {
@@ -114,4 +123,5 @@ function setupIpcHandlers() {
   });
 }
 
-export default { createModelTesterWindow };
+export { setupIpcHandlers as setupModelTesterIpcHandlers };
+export default { createModelTesterWindow, setupIpcHandlers };
