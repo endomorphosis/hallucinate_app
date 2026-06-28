@@ -2404,5 +2404,43 @@
     `;
     document.head.appendChild(style);
   </script>
+  <!-- Backend integration -->
+  <script src="components/backend-connector.js"></script>
+  <script>
+    // Wire IPFS Kit backend into Content Index for pinning/retrieval
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (typeof BackendConnector === 'undefined') return;
+      const backend = new BackendConnector();
+      
+      // Add "Pin to IPFS" button to content browser entries
+      const observer = new MutationObserver((mutations) => {
+        document.querySelectorAll('.content-entry:not([data-ipfs-wired])').forEach(entry => {
+          entry.setAttribute('data-ipfs-wired', 'true');
+          const cid = entry.dataset?.cid;
+          if (!cid) return;
+          const btn = document.createElement('button');
+          btn.textContent = 'Pin';
+          btn.className = 'btn btn-sm';
+          btn.style.cssText = 'margin-left: 8px; font-size: 0.8em; padding: 2px 8px;';
+          btn.onclick = async () => {
+            btn.disabled = true;
+            btn.textContent = 'Pinning...';
+            try {
+              await backend.kit.pin(cid);
+              btn.textContent = 'Pinned';
+              btn.style.color = '#10b981';
+            } catch (e) {
+              btn.textContent = 'Failed';
+              btn.style.color = '#ef4444';
+            }
+          };
+          entry.querySelector('.actions, .entry-actions')?.appendChild(btn);
+        });
+      });
+      
+      const container = document.getElementById('content-browser') || document.body;
+      observer.observe(container, { childList: true, subtree: true });
+    });
+  </script>
 </body>
 </html>

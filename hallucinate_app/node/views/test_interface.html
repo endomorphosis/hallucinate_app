@@ -657,5 +657,63 @@
       ipcRenderer.send('check-services-status');
     });
   </script>
+  <!-- Backend integration for real endpoint testing -->
+  <script src="components/backend-connector.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof BackendConnector === 'undefined') return;
+      
+      // Add backend test suite to the test interface
+      const backend = new BackendConnector();
+      const testContainer = document.querySelector('.test-suites, .module-grid, .container');
+      if (!testContainer) return;
+      
+      const section = document.createElement('div');
+      section.className = 'test-section';
+      section.style.cssText = 'margin-top: 20px; padding: 16px; background: #f0f9ff; border-radius: 8px; border: 1px solid #bae6fd;';
+      section.innerHTML = `
+        <h3 style="margin-top:0; color:#0369a1;">Backend Integration Tests</h3>
+        <p style="font-size: 0.9em; color: #666;">Run live tests against the handsfree API (port 8080)</p>
+        <button id="btnRunBackendTests" style="padding: 8px 16px; background: #0284c7; color: white; border: none; border-radius: 6px; cursor: pointer;">
+          Run All Backend Tests
+        </button>
+        <pre id="backendTestResults" style="margin-top: 12px; padding: 12px; background: #1e293b; color: #94a3b8; border-radius: 6px; font-size: 0.85em; max-height: 400px; overflow-y: auto; display: none;"></pre>
+      `;
+      testContainer.appendChild(section);
+      
+      document.getElementById('btnRunBackendTests').onclick = async () => {
+        const out = document.getElementById('backendTestResults');
+        out.style.display = 'block';
+        out.textContent = 'Running backend tests...\\n';
+        
+        const tests = [
+          { name: 'GET /v1/ipfs/status', fn: () => backend.getStatus() },
+          { name: 'GET /v1/ipfs/capabilities', fn: () => backend.accelerate.capabilities() },
+          { name: 'GET /v1/ipfs/list_models', fn: () => backend.accelerate.listModels() },
+          { name: 'GET /v1/ipfs/hardware_profile', fn: () => backend.accelerate.hardwareProfile() },
+          { name: 'GET /v1/ipfs/list_pins', fn: () => backend.kit.listPins() },
+          { name: 'GET /v1/ipfs/list_datasets', fn: () => backend.datasets.listDatasets() },
+          { name: 'GET /v1/ipfs/metrics', fn: () => backend.accelerate.metrics() },
+          { name: 'GET /v1/ipfs/endpoints', fn: () => backend.accelerate.endpoints() },
+          { name: 'Health Check All', fn: () => backend.healthCheckAll() },
+        ];
+        
+        let passed = 0, failed = 0;
+        for (const t of tests) {
+          try {
+            const start = performance.now();
+            await t.fn();
+            const ms = (performance.now() - start).toFixed(0);
+            out.textContent += \`  PASS  \${t.name} (\${ms}ms)\\n\`;
+            passed++;
+          } catch (e) {
+            out.textContent += \`  FAIL  \${t.name}: \${e.message}\\n\`;
+            failed++;
+          }
+        }
+        out.textContent += \`\\nResults: \${passed} passed, \${failed} failed\\n\`;
+      };
+    });
+  </script>
 </body>
 </html>

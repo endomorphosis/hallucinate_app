@@ -217,5 +217,31 @@
       generateEvent();
     }
   </script>
+  <!-- Backend integration for real usage data -->
+  <script src="components/backend-connector.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (typeof BackendConnector === 'undefined') return;
+      const backend = new BackendConnector();
+      
+      // Periodically fetch real metrics from accelerate backend
+      async function updateRealMetrics() {
+        try {
+          const metrics = await backend.accelerate.metrics();
+          if (metrics && typeof usageTracker !== 'undefined') {
+            usageTracker.trackEvent('ipfs-accelerate', 'metrics_fetch', {
+              result_type: 'success',
+              timestamp: Date.now(),
+              real_data: true
+            }, { duration: 0, memory: 0, success: true });
+          }
+        } catch (e) { /* backend offline */ }
+      }
+      
+      // Fetch every 30s
+      updateRealMetrics();
+      setInterval(updateRealMetrics, 30000);
+    });
+  </script>
 </body>
 </html>
