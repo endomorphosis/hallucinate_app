@@ -65,29 +65,27 @@ jobs:
             runner: ubuntu-latest
             platform: linux
             makers: deb,rpm,zip
-          
-          # RedHat/RHEL x64 builds (optimized for RHEL)
-          - os: rhel
-            arch: x64
-            runner: ubuntu-latest
-            platform: linux
-            makers: rpm
-            container: rockylinux:9
-          
-          # RedHat/RHEL ARM64 builds (optimized for RHEL)
-          - os: rhel
-            arch: arm64
-            runner: ubuntu-latest
-            platform: linux
-            makers: rpm
-            container: rockylinux:9
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: false
           fetch-depth: 0
+
+      # Initialize only the top-level backend submodules. Recursive init is
+      # avoided because the upstream repos contain broken/circular nested
+      # vendored submodules (e.g. ipfs_accelerate_py/ipfs_datasets_py/.tools/...)
+      # whose gitlinks point at commits no longer present upstream, which breaks
+      # `submodules: recursive` checkout on every runner. The build only needs
+      # the top-level module sources, which the staging script then trims.
+      - name: Initialize top-level backend submodules
+        shell: bash
+        run: |
+          git submodule update --init --force --depth 1 \
+            ipfs_kit_py ipfs_datasets_py ipfs_accelerate_py swissknife || \
+            git submodule update --init --force \
+              ipfs_kit_py ipfs_datasets_py ipfs_accelerate_py swissknife
       
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -341,6 +339,7 @@ jobs:
   create-release:
     name: Create GitHub Release
     needs: build-release
+    if: ${{ always() }}
     runs-on: ubuntu-latest
     
     steps:
