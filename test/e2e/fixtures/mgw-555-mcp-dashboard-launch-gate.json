@@ -11,7 +11,7 @@
   "source_gap_receipt": "data/meta_glasses_display_widgets/discovery/2026-06-28-mgw-555-objective-gap-3e00ad2a0074.md",
   "launch_gate_receipt": "data/meta_glasses_display_widgets/discovery/2026-06-28-mgw-555-launch-playwright-validation-gate.md",
   "evidence_term": "launch Playwright validation gate",
-  "gate_state": "gate_open_until_playwright_passes",
+  "gate_state": "gate_closed_by_playwright_validation",
   "playwright_specs": [
     "hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts",
     "hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts"
@@ -21,6 +21,18 @@
     "test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses",
     "test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts"
   ],
+  "validation_gate": {
+    "state": "gate_closed_by_playwright_validation",
+    "primary_command": "npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts",
+    "packet_commands": [
+      "test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses",
+      "test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts"
+    ],
+    "required_specs": [
+      "hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts",
+      "hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts"
+    ]
+  },
   "required_backends": [
     "ipfs_kit_py",
     "ipfs_datasets_py",
@@ -48,6 +60,8 @@
     "VAIOS-G724",
     "VAIOS-G728"
   ],
+  "closes_goal_packet": "goal_packet/launch/hallucinate_app/44dceea6bc53",
+  "packet_sibling_goal_id": "VAIOS-G728",
   "interoperability_fixture": "hallucinate_app/test/e2e/fixtures/mgw-533-mcp-dashboard-launch-gate.json",
   "supervisor_heap": "implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md",
   "receipt_route": [
