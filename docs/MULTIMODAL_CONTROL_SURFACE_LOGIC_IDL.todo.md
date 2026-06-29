@@ -8916,8 +8916,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-728 Resolve merge retry-budget failure for HAO-727
 
-- Status: todo
-- Completion: manual
+- Status: completed
+- Completion: manual 2026-06-29: verified the HAO-727 implementation is committed in owning submodules (`hallucinate_app` descendant `93855a23` containing `3d32e4a6`, and `swissknife` descendant `a28e1e2b` containing `0bc501af`), recorded the dirty-checkout repair evidence in `data/hallucinate_multimodal_control/discovery/2026-06-29-hao-728-hao-727-merge-retry-budget.md`, and skipped semantic merge-resolver application because the retry-budget evidence is `main_checkout_dirty_conflict` rather than a source conflict.
 - Priority: P1
 - Track: ops
 - Depends on: 
