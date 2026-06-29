@@ -277,6 +277,13 @@ const MGW_555_LAUNCH_GATE_RECEIPT = path.join(
   'discovery',
   '2026-06-28-mgw-555-launch-playwright-validation-gate.md'
 );
+const MGW_555_ATTEMPT_3_VALIDATION_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'meta_glasses_display_widgets',
+  'discovery',
+  '2026-06-29-mgw-555-attempt-3-validation.md'
+);
 const MGW_558_OBJECTIVE_GAP_RECEIPT = path.join(
   REPO_ROOT,
   'data',
@@ -1948,6 +1955,20 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       receiptFixture: 'hallucinate_app/test/e2e/fixtures/mgw-555-mcp-dashboard-launch-gate.json',
       heapProof: 'MGW-555 proof'
     });
+
+    const attemptReceipt = fs.readFileSync(MGW_555_ATTEMPT_3_VALIDATION_RECEIPT, 'utf8');
+    const objectiveHeap = fs.readFileSync(MGW_OBJECTIVE_HEAP, 'utf8');
+
+    expect(attemptReceipt).toContain('MGW-555 attempt 3');
+    expect(attemptReceipt).toContain('VAIOS-G724');
+    expect(attemptReceipt).toContain('VAIOS-G728');
+    expect(attemptReceipt).toContain('launch Playwright validation gate');
+    expect(attemptReceipt).toContain('hallucinate_app/test/e2e/fixtures/mgw-555-mcp-dashboard-launch-gate.json');
+    expect(attemptReceipt).toContain('npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts');
+    expect(attemptReceipt).toContain('Swissknife Meta glasses Playwright gate: 6 passed');
+    expect(attemptReceipt).toContain('Hallucinate multimodal control-surface Playwright gate: 5 passed');
+    expect(objectiveHeap).toContain('MGW-555 attempt 3 validation');
+    expect(objectiveHeap).toContain('data/meta_glasses_display_widgets/discovery/2026-06-29-mgw-555-attempt-3-validation.md');
   });
 
   test('closes the VAI-543 objective gap with a dashboard interoperability launch gate receipt', () => {
