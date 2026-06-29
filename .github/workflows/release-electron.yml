@@ -127,19 +127,21 @@ jobs:
         if: matrix.os == 'linux'
         run: |
           sudo apt-get update
+          # ubuntu-24.04: libgconf-2-4 was removed and libasound2 is now the
+          # libasound2t64 transitional package. Install asound via a name that
+          # resolves on both 22.04 and 24.04, and drop the obsolete gconf pkg.
           sudo apt-get install -y \
             libgtk-3-0 \
             libnotify-dev \
-            libgconf-2-4 \
             libnss3 \
             libxss1 \
-            libasound2 \
             libxtst6 \
             xauth \
             xvfb \
             rpm \
             fakeroot \
             dpkg
+          sudo apt-get install -y libasound2t64 || sudo apt-get install -y libasound2
       
       - name: Install macOS system dependencies
         if: matrix.os == 'macos'
