@@ -186,7 +186,8 @@
   </style>
 </head>
 <body>
-  <div class="container">
+  <button type="button" data-testid="nav-home" aria-label="Back to Main Dashboard" title="Back to Main Dashboard" onclick="window.electronAPI?.navigation?.navigateHome?.()" style="position:fixed;bottom:16px;left:16px;z-index:99999;padding:8px 14px;background:#2d3748;color:#fff;border:none;border-radius:20px;cursor:pointer;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,0.25);">🏠 Home</button>
+  <div class="container" role="main">
     <h1>⚙️ Settings</h1>
 
     <div id="statusMsg" class="status-msg">Settings saved successfully.</div>
@@ -240,7 +241,7 @@
           <small>Port for the IPFS Kit MCP server</small>
         </div>
         <div class="setting-control">
-          <input type="number" id="ipfsKitPort" value="8004" min="1024" max="65535">
+          <input type="number" id="ipfsKitPort" aria-label="IPFS Kit MCP Port" value="8004" min="1024" max="65535">
         </div>
       </div>
       <div class="setting-row">
@@ -249,7 +250,7 @@
           <small>Port for the IPFS Datasets MCP server</small>
         </div>
         <div class="setting-control">
-          <input type="number" id="ipfsDatasetsPort" value="3002" min="1024" max="65535">
+          <input type="number" id="ipfsDatasetsPort" aria-label="IPFS Datasets MCP Port" value="3002" min="1024" max="65535">
         </div>
       </div>
       <div class="setting-row">
@@ -258,7 +259,7 @@
           <small>Port for the IPFS Accelerate MCP server</small>
         </div>
         <div class="setting-control">
-          <input type="number" id="ipfsAcceleratePort" value="3003" min="1024" max="65535">
+          <input type="number" id="ipfsAcceleratePort" aria-label="IPFS Accelerate MCP Port" value="3003" min="1024" max="65535">
         </div>
       </div>
     </div>

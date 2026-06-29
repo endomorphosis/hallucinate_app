@@ -264,16 +264,17 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🚀 MCP Daemon Manager</h1>
+  <button type="button" data-testid="nav-home" aria-label="Back to Main Dashboard" title="Back to Main Dashboard" onclick="window.electronAPI?.navigation?.navigateHome?.()" style="position:fixed;bottom:16px;left:16px;z-index:99999;padding:8px 14px;background:#2d3748;color:#fff;border:none;border-radius:20px;cursor:pointer;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,0.25);">🏠 Home</button>
+  <div class="container" role="main" data-testid="daemon-manager">
+    <h1 data-testid="daemon-manager-title">🚀 MCP Daemon Manager</h1>
     
     <div class="controls">
-      <button class="btn start" onclick="startAll()">Start All Daemons</button>
-      <button class="btn stop" onclick="stopAll()">Stop All Daemons</button>
-      <button class="btn refresh" onclick="refreshStatus()">Refresh Status</button>
+      <button class="btn start" data-testid="btn-start-all" onclick="startAll()">Start All Daemons</button>
+      <button class="btn stop" data-testid="btn-stop-all" onclick="stopAll()">Stop All Daemons</button>
+      <button class="btn refresh" data-testid="btn-refresh-status" onclick="refreshStatus()">Refresh Status</button>
     </div>
 
-    <div class="daemon-grid" id="daemonGrid">
+    <div class="daemon-grid" id="daemonGrid" data-testid="daemon-grid">
       <!-- Daemon cards will be inserted here -->
     </div>
 
@@ -281,7 +282,7 @@
       <h2>Event Log</h2>
       <div id="eventLog">
         <div class="event-item">
-          <span class="event-time">${new Date().toLocaleTimeString()}</span> - 
+          <span class="event-time" id="initialEventTime"></span> - 
           Daemon Manager initialized
         </div>
       </div>
@@ -592,6 +593,12 @@
 
     // Initial status load
     refreshStatus();
+
+    // Render the initialization timestamp (was previously an unevaluated template literal in static HTML).
+    const initialEventTime = document.getElementById('initialEventTime');
+    if (initialEventTime) {
+      initialEventTime.textContent = new Date().toLocaleTimeString();
+    }
     
     // Auto-refresh every 10 seconds
     setInterval(refreshStatus, 10000);

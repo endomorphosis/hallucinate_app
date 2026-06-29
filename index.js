@@ -1,5 +1,5 @@
 import { app, BrowserWindow, Menu, MenuItem, ipcMain, protocol, shell } from 'electron';
-import { createModelTesterWindow } from './hallucinate_app/node/accelerate_model_tester.js';
+import { createModelTesterWindow, setupModelTesterIpcHandlers } from './hallucinate_app/node/accelerate_model_tester.js';
 import MCPDaemonManager from './hallucinate_app/node/mcp_daemon_manager.js';
 import MenuGenerator from './hallucinate_app/node/menu_generator.js';
 import path from 'path';
@@ -200,6 +200,25 @@ function startSwissKnifeServer() {
 // Initialize MCP Daemon Manager
 const daemonManager = new MCPDaemonManager();
 
+// Allow read-only dashboard probes (tools/list and explicitly non-mutating
+// tools/call safe probes) to reach the live MCP backends. Any mutating or
+// unrecognized invocation stays fail-closed. This is what lets the dashboards
+// verify working results from the real servers instead of mocks; set
+// HALLUCINATE_APP_DASHBOARD_LIVE_TOOLS=false to keep everything fail-closed.
+if (process.env.HALLUCINATE_APP_DASHBOARD_LIVE_TOOLS !== 'false') {
+  daemonManager.setControlSurfaceRuntimePolicyEvaluator((request) => {
+    const method = request?.method || request?.invocation_payload?.method;
+    const mutation = request?.invocation_payload?.safe_probe?.mutation;
+    const readOnly = method === 'tools/list' || (method === 'tools/call' && mutation === false);
+    return {
+      outcome: readOnly ? 'allow' : 'require_confirmation',
+      reason: readOnly
+        ? 'Read-only dashboard probe permitted against live MCP backend.'
+        : 'Mutating MCP invocation requires confirmation; fail-closed.'
+    };
+  });
+}
+
 const broadcastDaemonEvent = (type, data = {}) => {
   for (const win of BrowserWindow.getAllWindows()) {
     if (!win.isDestroyed()) {
@@ -240,6 +259,7 @@ daemonManager.on('all-stopped', () => {
 // Setup test and benchmark handlers
 testHandler.setupIpcHandlers();
 benchmarkHandler.setupIpcHandlers();
+setupModelTesterIpcHandlers();
 
 // Setup daemon manager IPC handlers
 ipcMain.handle('daemon:getAll', async () => {
@@ -2010,6 +2030,10 @@ const navigateToView = (viewPath, loadOptions) => {
 };
 
 // Setup IPC handlers for navigation and window management
+ipcMain.on('navigate-home', () => {
+  navigateToView(path.join(__dirname, 'hallucinate_app', 'node', 'views', 'dashboard.html'));
+});
+
 ipcMain.on('open-daemon-manager', () => {
   navigateToView(path.join(__dirname, 'hallucinate_app', 'node', 'views', 'daemon_manager.html'));
 });

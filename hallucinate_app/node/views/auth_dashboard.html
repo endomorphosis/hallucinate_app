@@ -6,7 +6,7 @@
   <title>Authentication &amp; Security Dashboard</title>
   
   <!-- Font Awesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="../../../node_modules/@fortawesome/fontawesome-free/css/all.min.css">
   
   <!-- Dashboard CSS -->
   <link rel="stylesheet" href="../dashboard/auth_dashboard.css">
@@ -88,7 +88,8 @@
   </style>
 </head>
 <body>
-  <div class="container">
+  <button type="button" data-testid="nav-home" aria-label="Back to Main Dashboard" title="Back to Main Dashboard" onclick="window.electronAPI?.navigation?.navigateHome?.()" style="position:fixed;bottom:16px;left:16px;z-index:99999;padding:8px 14px;background:#2d3748;color:#fff;border:none;border-radius:20px;cursor:pointer;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,0.25);">🏠 Home</button>
+  <div class="container" role="main">
     <header>
       <h1>
         <i class="fas fa-shield-alt"></i>
