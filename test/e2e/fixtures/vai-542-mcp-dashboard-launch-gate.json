@@ -7,7 +7,7 @@
   "evidence_term": "launch Playwright validation gate",
   "gate_state": "gate_open_until_playwright_passes",
   "source_gap_receipt": "data/virtual_ai_os/discovery/2026-06-28-vai-542-objective-gap-7ea369464239.md",
-  "hallucinate_gap_receipt": "data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-objective-gap-7ea369464239.md",
+  "hallucinate_gap_receipt": "data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-objective-gap-3e00ad2a0074.md",
   "launch_gate_receipt": "data/virtual_ai_os/discovery/2026-06-28-vai-542-mcp-dashboard-launch-gate.md",
   "hallucinate_launch_gate_receipt": "data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-mcp-dashboard-launch-gate.md",
   "receipt_fixture": "hallucinate_app/test/e2e/fixtures/vai-542-mcp-dashboard-launch-gate.json",
