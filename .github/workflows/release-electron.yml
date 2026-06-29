@@ -43,14 +43,14 @@ jobs:
             arch: x64
             runner: macos-13
             platform: darwin
-            makers: zip
+            makers: dmg,zip
           
           # macOS builds (Apple Silicon)
           - os: macos
             arch: arm64
             runner: macos-14
             platform: darwin
-            makers: zip
+            makers: dmg,zip
           
           # Linux x64 builds
           - os: linux
@@ -148,6 +148,27 @@ jobs:
         run: |
           brew install python@3.12 || true
       
+      # Force C++20 for native module (re)builds. Electron 32's headers require
+      # C++20 but node-gyp defaults to gnu++17 on Linux/macOS, which breaks the
+      # deasync/keytar native rebuild. gyp reads $HOME/.gyp/include.gypi.
+      - name: Configure C++20 for node-gyp (non-Windows)
+        if: matrix.os != 'windows'
+        shell: bash
+        run: |
+          mkdir -p "$HOME/.gyp"
+          cat > "$HOME/.gyp/include.gypi" <<'GYPI'
+          {
+            'target_defaults': {
+              'cflags_cc': ['-std=gnu++20'],
+              'cflags_cc!': ['-std=gnu++17', '-std=gnu++14', '-std=gnu++1y'],
+              'xcode_settings': {
+                'CLANG_CXX_LANGUAGE_STANDARD': 'gnu++20',
+              },
+            },
+          }
+          GYPI
+          cat "$HOME/.gyp/include.gypi"
+
       # Install JavaScript dependencies
       - name: Install npm dependencies
         run: |
@@ -218,6 +239,7 @@ jobs:
         with:
           name: macos-x64
           path: |
+            out/make/**/*.dmg
             out/make/zip/darwin/x64/*.zip
           retention-days: 7
           if-no-files-found: error
@@ -228,6 +250,7 @@ jobs:
         with:
           name: macos-arm64
           path: |
+            out/make/**/*.dmg
             out/make/zip/darwin/arm64/*.zip
           retention-days: 7
           if-no-files-found: error
@@ -416,6 +439,7 @@ jobs:
           files: |
             release-artifacts/**/*.exe
             release-artifacts/**/*.nupkg
+            release-artifacts/**/*.dmg
             release-artifacts/**/*.zip
             release-artifacts/**/*.deb
             release-artifacts/**/*.rpm

@@ -58,6 +58,16 @@ module.exports = {
       platforms: ['darwin', 'linux'],
     },
     {
+      // Real macOS disk image. Only runs on darwin (requires macOS tooling);
+      // Forge skips it on other platforms.
+      name: '@electron-forge/maker-dmg',
+      config: {
+        format: 'ULFO',
+        name: 'hallucinate_app',
+      },
+      platforms: ['darwin'],
+    },
+    {
       name: '@electron-forge/maker-deb',
       config: {
         options: {

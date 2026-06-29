@@ -38,6 +38,8 @@ const EXCLUDE_DIRS = new Set([
   '__pycache__',
   '.venv',
   'venv',
+  'venvs',
+  'test_venv',
   'node_modules',
   '.pytest_cache',
   '.mypy_cache',
@@ -46,7 +48,37 @@ const EXCLUDE_DIRS = new Set([
   '.eggs',
   'test-results',
   'playwright-report',
+  // Dev-only / bloat directories that the runtime daemons never import.
+  'test',
+  'tests',
+  'docs',
+  'doc',
+  'examples',
+  'benchmarks',
+  'archive',
+  'backup',
+  'workspace',
+  'artifacts',
+  'htmlcov',
+  '.github',
+  '.idea',
+  '.vscode',
+  '.tools',
+  // Compiled / vendored toolchain + build output dirs (platform-specific,
+  // never imported by the daemons; binaries are fetched at runtime).
+  'target',
+  'qualcomm',
+  'llvm',
 ]);
+
+// Files larger than this are skipped unless they are Python source. This drops
+// vendored platform-specific binaries (e.g. lotus/lassie, *.exe/*.dll, Rust
+// *.rlib build artifacts) that bloat the cross-platform installers.
+const MAX_NONSOURCE_FILE_BYTES = 8 * 1024 * 1024;
+const SOURCE_FILE_RE = /\.(py|pyi|pyx|pxd)$/i;
+
+// File extensions that are platform-specific build outputs we should not copy.
+const EXCLUDE_FILE_RE = /\.(pyc|pyo|log|whl|tar\.gz|egg|exe|dll|dylib|rlib|rmeta)$/i;
 
 function hasPythonPackage(dir) {
   return (
@@ -55,7 +87,14 @@ function hasPythonPackage(dir) {
   );
 }
 
-function copyTree(src, dest) {
+function isExcludedDir(base) {
+  if (EXCLUDE_DIRS.has(base)) return true;
+  // Catch-all for backup/scratch dirs like "reorganization_backup_final".
+  if (/(^|_)backup($|_)/i.test(base) || /^reorganization/i.test(base)) return true;
+  return false;
+}
+
+function copyTree(src, dest, isRoot = false) {
   let stat;
   try {
     stat = fs.lstatSync(src);
@@ -63,34 +102,42 @@ function copyTree(src, dest) {
     return; // unreadable / dangling entry
   }
   if (stat.isSymbolicLink()) {
-    // Preserve symlinks; skip dangling ones rather than failing the build.
-    let target;
+    // Dereference symlinks so the packaged tree is self-contained and never
+    // contains dangling links (which break the deb/rpm makers). Skip dangling
+    // links and directory links (the latter avoids symlink loops and bloat).
+    let real;
     try {
-      target = fs.readlinkSync(src);
+      real = fs.realpathSync(src);
+    } catch {
+      return; // dangling link -> drop it
+    }
+    let rstat;
+    try {
+      rstat = fs.statSync(real);
     } catch {
       return;
     }
-    try {
-      fs.symlinkSync(target, dest);
-    } catch {
-      // Fall back to copying the resolved target if it exists.
-      try {
-        if (fs.existsSync(src)) copyTree(fs.realpathSync(src), dest);
-      } catch {
-        /* skip */
-      }
+    if (rstat.isFile() && !EXCLUDE_FILE_RE.test(real)) {
+      fs.copyFileSync(real, dest);
     }
     return;
   }
   if (stat.isDirectory()) {
     const base = path.basename(src);
-    if (EXCLUDE_DIRS.has(base)) return;
+    if (isExcludedDir(base)) return;
+    // Skip nested vendored package roots (a sub-directory that is itself a
+    // Python package with its own setup.py/pyproject.toml). These are checked-out
+    // submodules of the package being staged; each backend package is bundled
+    // separately, so the nested copies are redundant and enormous.
+    if (!isRoot && hasPythonPackage(src)) return;
     fs.mkdirSync(dest, { recursive: true });
     for (const entry of fs.readdirSync(src)) {
       copyTree(path.join(src, entry), path.join(dest, entry));
     }
   } else if (stat.isFile()) {
-    if (src.endsWith('.pyc')) return;
+    if (EXCLUDE_FILE_RE.test(src)) return;
+    // Skip large non-source blobs (vendored binaries, datasets, build output).
+    if (!SOURCE_FILE_RE.test(src) && stat.size > MAX_NONSOURCE_FILE_BYTES) return;
     fs.copyFileSync(src, dest);
   }
 }
@@ -135,7 +182,7 @@ function main() {
     }
 
     console.log(`[stage] ${pkg}: staging from ${src} -> ${dest}`);
-    copyTree(src, dest);
+    copyTree(src, dest, true);
     staged += 1;
   }
 
