@@ -726,6 +726,11 @@
       "launch_gate_receipt": "data/meta_glasses_display_widgets/discovery/2026-06-29-mgw-559-launch-playwright-validation-gate.md",
       "hallucinate_backlog_receipt": "data/hallucinate_multimodal_control/discovery/2026-06-29-mgw-559-mcp-dashboard-launch-gate.md",
       "receipt_fixture": "hallucinate_app/test/e2e/fixtures/mgw-559-mcp-dashboard-launch-gate.json",
+      "attempt": 8,
+      "attempt_receipts": [
+        "data/meta_glasses_display_widgets/discovery/2026-06-29-mgw-559-attempt-8-launch-playwright-validation-gate.md",
+        "data/hallucinate_multimodal_control/discovery/2026-06-29-mgw-559-attempt-8-mcp-dashboard-launch-gate.md"
+      ],
       "child_goals": [
         "VAIOS-G723-C1 Catalog normalization",
         "VAIOS-G723-C2 Dashboard UI wiring",

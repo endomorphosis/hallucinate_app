@@ -8,6 +8,11 @@
   "launch_gate_receipt": "data/meta_glasses_display_widgets/discovery/2026-06-29-mgw-559-launch-playwright-validation-gate.md",
   "hallucinate_backlog_receipt": "data/hallucinate_multimodal_control/discovery/2026-06-29-mgw-559-mcp-dashboard-launch-gate.md",
   "receipt_fixture": "hallucinate_app/test/e2e/fixtures/mgw-559-mcp-dashboard-launch-gate.json",
+  "attempt": 8,
+  "attempt_receipts": [
+    "data/meta_glasses_display_widgets/discovery/2026-06-29-mgw-559-attempt-8-launch-playwright-validation-gate.md",
+    "data/hallucinate_multimodal_control/discovery/2026-06-29-mgw-559-attempt-8-mcp-dashboard-launch-gate.md"
+  ],
   "evidence_term": "launch Playwright validation gate",
   "gate_state": "gate_open_until_playwright_passes",
   "playwright_specs": [

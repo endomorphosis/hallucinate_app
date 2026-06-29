@@ -508,6 +508,11 @@ const MGW_559_LAUNCH_VALIDATION_GATE = {
   launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-29-mgw-559-launch-playwright-validation-gate.md',
   hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-29-mgw-559-mcp-dashboard-launch-gate.md',
   receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-559-mcp-dashboard-launch-gate.json',
+  attempt: 8,
+  attempt_receipts: [
+    'data/meta_glasses_display_widgets/discovery/2026-06-29-mgw-559-attempt-8-launch-playwright-validation-gate.md',
+    'data/hallucinate_multimodal_control/discovery/2026-06-29-mgw-559-attempt-8-mcp-dashboard-launch-gate.md'
+  ],
   failure_rule: 'Any MGW-559 dashboard catalog, UI wiring, mediated tools/list, mediated tools/call, Swissknife consumer, backend validation, or Playwright failure remains supervisor-generated follow-up work for VAIOS-G723.'
 };
 const MGW_555_LAUNCH_VALIDATION_GATE = {
@@ -743,6 +748,10 @@ function stableReceiptCid(value) {
   const canonical = JSON.stringify(value);
   const digest = crypto.createHash('sha256').update(canonical).digest('hex');
   return `sha256:mcp_daemon_receipt:${digest}`;
+}
+
+function omitUndefinedFields(value) {
+  return JSON.parse(JSON.stringify(value));
 }
 
 class MCPDaemonManager extends EventEmitter {
@@ -1465,7 +1474,7 @@ class MCPDaemonManager extends EventEmitter {
   }
 
   getDashboardCapabilityCatalog() {
-    return {
+    return omitUndefinedFields({
       schema: DASHBOARD_CATALOG_SCHEMA,
       task_id: DASHBOARD_CATALOG_TASK_ID,
       validation_task_id: 'VAI-512',
@@ -1488,7 +1497,7 @@ class MCPDaemonManager extends EventEmitter {
       servers: [...this.daemonConfigs]
         .sort((a, b) => a.launchOrder - b.launchOrder)
         .map((config) => this._dashboardCapabilityEntry(config))
-    };
+    });
   }
 
   getDashboardCapability(daemonId) {

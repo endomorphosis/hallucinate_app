@@ -2258,6 +2258,11 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     expect(receipt.child_goals).toEqual(MGW_546_CHILD_GOALS);
     expect(receipt.follow_up_subtasks).toEqual(FOLLOW_UP_TASKS);
     expect(receipt.supervisor_follow_up_subtasks).toEqual(FOLLOW_UP_TASKS);
+    expect(receipt.attempt).toBe(8);
+    expect(receipt.attempt_receipts).toEqual([
+      'data/meta_glasses_display_widgets/discovery/2026-06-29-mgw-559-attempt-8-launch-playwright-validation-gate.md',
+      'data/hallucinate_multimodal_control/discovery/2026-06-29-mgw-559-attempt-8-mcp-dashboard-launch-gate.md'
+    ]);
     expect(launchGate).toMatchObject({
       task_id: receipt.task_id,
       goal_id: receipt.goal_id,
@@ -2266,6 +2271,8 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       launch_gate_receipt: receipt.launch_gate_receipt,
       hallucinate_backlog_receipt: receipt.hallucinate_backlog_receipt,
       receipt_fixture: receipt.receipt_fixture,
+      attempt: receipt.attempt,
+      attempt_receipts: receipt.attempt_receipts,
       child_goals: receipt.child_goals,
       follow_up_subtasks: receipt.follow_up_subtasks
     });
@@ -2297,6 +2304,10 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     expect(objectiveHeap).toContain(receipt.receipt_fixture);
     expect(objectiveHeap).toContain(receipt.launch_gate_receipt);
     expect(objectiveHeap).toContain(receipt.hallucinate_backlog_receipt);
+    for (const attemptReceipt of receipt.attempt_receipts) {
+      expect(objectiveHeap).toContain(attemptReceipt);
+      expect(readinessDoc).toContain(attemptReceipt);
+    }
     expect(readinessDoc).toContain('MGW-559');
     expect(readinessDoc).toContain(receipt.receipt_fixture);
     expect(readinessDoc).toContain(receipt.launch_gate_receipt);
