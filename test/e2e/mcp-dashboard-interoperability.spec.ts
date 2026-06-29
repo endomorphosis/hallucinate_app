@@ -37,6 +37,7 @@ const HAO_700_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-700-mc
 const HAO_712_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-712-mcp-dashboard-launch-gate.json');
 const HAO_720_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-720-mcp-dashboard-launch-gate.json');
 const HAO_724_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-724-mcp-dashboard-launch-gate.json');
+const HAO_727_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-727-mcp-dashboard-launch-gate.json');
 const VAI_529_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-529-mcp-dashboard-launch-gate.json');
 const VAI_535_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-535-mcp-dashboard-launch-gate.json');
 const VAI_537_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-537-mcp-dashboard-launch-gate.json');
@@ -198,6 +199,20 @@ const HAO_724_LAUNCH_GATE_RECEIPT = path.join(
   'discovery',
   '2026-06-28-hao-724-mcp-dashboard-launch-gate.md'
 );
+const HAO_727_OBJECTIVE_GAP_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'hallucinate_multimodal_control',
+  'discovery',
+  '2026-06-28-hao-727-objective-gap-7ea369464239.md'
+);
+const HAO_727_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'hallucinate_multimodal_control',
+  'discovery',
+  '2026-06-28-hao-727-mcp-dashboard-launch-gate.md'
+);
 const VAI_535_OBJECTIVE_GAP_RECEIPT = path.join(
   REPO_ROOT,
   'data',
@@ -331,6 +346,25 @@ const VAI_503_EVIDENCE_TERMS = [
   'Swissknife consumers',
   'Playwright coverage',
   'supervisor-generated follow-up subtasks'
+];
+const HAO_727_REQUIRED_EVIDENCE = [
+  'Hallucinate App menus',
+  'Hallucinate App MCP dashboard',
+  'dashboard capability catalog',
+  'backend service catalog',
+  'daemon health',
+  'MCP++ telemetry',
+  'tools/list',
+  'tools/call',
+  'control_surface receipts',
+  'Swissknife applications',
+  'catalog normalization',
+  'dashboard UI wiring',
+  'mediated tool-call receipts',
+  'Swissknife consumers',
+  'Playwright coverage',
+  'supervisor-generated follow-up subtasks',
+  'launch Playwright validation gate'
 ];
 const MGW_546_CHILD_GOALS = [
   'VAIOS-G723-C1 Catalog normalization',
@@ -545,6 +579,14 @@ electronDescribe('MCP Dashboard Interoperability - VAIOS-G723 Electron UI wiring
         goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
         evidence_term: 'launch Playwright validation gate',
         supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-537-objective-gap-3e00ad2a0074.md'
+      }),
+      expect.objectContaining({
+        task_id: 'HAO-727',
+        goal_id: 'VAIOS-G723',
+        evidence_term: 'launch Playwright validation gate',
+        supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-727-objective-gap-7ea369464239.md',
+        launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-727-mcp-dashboard-launch-gate.md',
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-727-mcp-dashboard-launch-gate.json'
       }),
       expect.objectContaining({
         task_id: 'MGW-555',
