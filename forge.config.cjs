@@ -40,7 +40,19 @@ module.exports = {
       /\.pyc$/,
     ],
   },
-  rebuildConfig: {},
+  // Skip the native-module source rebuild during packaging. Every native
+  // module this app ships (sharp, keytar, onnxruntime-node) uses ABI-stable
+  // N-API prebuilt binaries that load under Electron as-is, so they do not
+  // need an Electron-ABI rebuild. The only module with a non-N-API
+  // (NAN-based) addon is `deasync`, pulled in transitively by
+  // ipfs_model_manager_js but never actually required at runtime; forcing its
+  // source rebuild broke packaging on macOS (node-gyp) and Windows (the
+  // Visual Studio finder exceeding its stdout maxBuffer). An empty
+  // `onlyModules` allowlist tells @electron/rebuild to rebuild nothing, which
+  // makes packaging deterministic and toolchain-independent on every runner.
+  rebuildConfig: {
+    onlyModules: [],
+  },
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
