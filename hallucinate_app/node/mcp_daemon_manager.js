@@ -458,6 +458,7 @@ const VAI_542_LAUNCH_VALIDATION_GATE = {
   task_id: 'VAI-542',
   goal_id: 'VAIOS-G723',
   supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-542-objective-gap-7ea369464239.md',
+  hallucinate_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-objective-gap-7ea369464239.md',
   launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-542-mcp-dashboard-launch-gate.md',
   hallucinate_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-objective-gap-7ea369464239.md',
   hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-mcp-dashboard-launch-gate.md',
