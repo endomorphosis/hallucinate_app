@@ -2339,6 +2339,7 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     expect(receipt.catalog_schema).toBe(catalog.schema);
     expect(receipt.catalog_generated_by).toBe(catalog.generated_by);
     expect(receipt.catalog_launch_objective_ids).toEqual(catalog.launch_objective_ids);
+    const launchGate = (catalog.launch_validation_gates || []).find((gate: any) => gate.task_id === receipt.task_id);
     if (receipt.task_id === 'HAO-724') {
       expect(launchGateReceipt).toContain(`Task: ${receipt.task_id}`);
       expect(launchGateReceipt).toContain(`Goal id: ${receipt.goal_id}`);
@@ -2346,6 +2347,26 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       expect(launchGateReceipt).toContain(receipt.launch_gate_receipt);
       expect(launchGateReceipt).toContain(receipt.catalog_generated_by);
       expect(launchGateReceipt).toContain('VAIOS-G728');
+      expect(launchGate).toMatchObject({
+        schema: receipt.schema,
+        task_id: receipt.task_id,
+        lineage_id: receipt.lineage_id,
+        source_gap_receipt: receipt.source_gap_receipt,
+        supervisor_gap_receipt: receipt.source_gap_receipt,
+        launch_gate_receipt: receipt.launch_gate_receipt,
+        receipt_fixture: expected.receiptFixture,
+        gate_state: receipt.gate_state,
+        catalog_schema: receipt.catalog_schema,
+        catalog_generated_by: receipt.catalog_generated_by,
+        catalog_fixture: receipt.catalog_fixture,
+        daemon_launch_health_gate: 'VAIOS-G728',
+        supervisor_heap: receipt.supervisor_heap,
+        failure_rule: receipt.failure_rule
+      });
+      expect(launchGate?.required_backends).toEqual(receipt.required_backends);
+      expect(launchGate?.required_evidence).toEqual(receipt.required_evidence);
+      expect(launchGate?.receipt_route).toEqual(receipt.receipt_route);
+      expect(launchGate?.catalog_launch_objective_ids).toEqual(receipt.catalog_launch_objective_ids);
     }
     expect(catalog.launch_validation_gates).toEqual(expect.arrayContaining([
       expect.objectContaining({
@@ -2365,8 +2386,8 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       expect(catalogServer).toBeTruthy();
       expect(catalogServer.daemon_id).toBe(server.daemon_id);
       expect(catalogServer.health_path).toBe(server.health_path);
-      expect(catalogServer.tool_protocols.tools_list.operation).toBe('tools/list');
-      expect(catalogServer.tool_protocols.tools_call.operation).toBe('tools/call');
+      expect(catalogServer.tool_protocols.tools_list.operation).toBe(server.tools_list || 'tools/list');
+      expect(catalogServer.tool_protocols.tools_call.operation).toBe(server.tools_call || 'tools/call');
       expect(catalogServer.tool_protocols.tools_call.safeProbe.expected_receipt).toBe(server.safe_probe_receipt);
       expect(catalogServer.dashboard_receipt_consumer_refs).toEqual(expect.arrayContaining([
         'hallucinate_app.swissknife.mcp_capability_registry',
@@ -2374,6 +2395,10 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
         'launch_readiness_packet:VAIOS-G728'
       ]));
       expect(catalogServer.swissknife_consumer).toBe(server.swissknife_consumer);
+    }
+
+    if (receipt.task_id === 'HAO-724') {
+      expect(launchGate?.dashboard_servers).toEqual(receipt.dashboard_servers);
     }
 
     for (const term of MGW_533_REQUIRED_EVIDENCE) {

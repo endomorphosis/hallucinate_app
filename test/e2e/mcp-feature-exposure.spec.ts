@@ -401,7 +401,12 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
         goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
         packet_goal_ids: ['VAIOS-G724', 'VAIOS-G728'],
         evidence_term: 'launch Playwright validation gate',
-        supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-objective-gap-3e00ad2a0074.md'
+        source_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-objective-gap-3e00ad2a0074.md',
+        supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-objective-gap-3e00ad2a0074.md',
+        launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-mcp-dashboard-launch-gate.md',
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-724-mcp-dashboard-launch-gate.json',
+        daemon_launch_health_gate: 'VAIOS-G728',
+        catalog_schema: 'hallucinate_app.mcp_dashboard_capability_catalog.v1'
       }),
       expect.objectContaining({
         task_id: 'HAO-727',
@@ -458,6 +463,48 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
         packet_goal_ids: ['VAIOS-G724', 'VAIOS-G728'],
         evidence_term: 'launch Playwright validation gate',
         supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-28-mgw-555-objective-gap-3e00ad2a0074.md'
+      })
+    ]));
+    const hao724Gate = catalog?.launch_validation_gates?.find((gate: any) => gate.task_id === 'HAO-724');
+    expect(hao724Gate?.required_backends).toEqual(['ipfs_kit_py', 'ipfs_datasets_py', 'ipfs_accelerate_py']);
+    expect(hao724Gate?.required_evidence).toEqual(expect.arrayContaining([
+      'hallucinate_app menus',
+      'Hallucinate App MCP dashboard',
+      'dashboard capability catalog',
+      'daemon health',
+      'tools/list',
+      'tools/call',
+      'ipfs_accelerate_py MCP server',
+      'ipfs_datasets_py MCP server',
+      'ipfs_kit_py MCP server',
+      'Swissknife applications',
+      'Playwright MCP dashboard interoperability',
+      'launch Playwright validation gate'
+    ]));
+    expect(hao724Gate?.dashboard_servers).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        daemon_id: 'ipfs-kit',
+        server_package: 'ipfs_kit_py',
+        health_path: '/api/mcp/status',
+        tools_list: 'tools/list',
+        tools_call: 'tools/call',
+        safe_probe_receipt: 'ipfs_kit_status_probe'
+      }),
+      expect.objectContaining({
+        daemon_id: 'ipfs-datasets',
+        server_package: 'ipfs_datasets_py',
+        health_path: '/health/ready',
+        tools_list: 'tools/list',
+        tools_call: 'tools/call',
+        safe_probe_receipt: 'ipfs_datasets_list_probe'
+      }),
+      expect.objectContaining({
+        daemon_id: 'ipfs-accelerate',
+        server_package: 'ipfs_accelerate_py',
+        health_path: '/api/mcp/status',
+        tools_list: 'tools/list',
+        tools_call: 'tools/call',
+        safe_probe_receipt: 'ipfs_accelerate_hardware_profile_probe'
       })
     ]));
     expect(catalog?.control_surface_route).toContain('mediation_receipt');
@@ -1031,9 +1078,12 @@ test.describe('MCP Feature Exposure - headless backend gate', () => {
         goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
         packet_goal_ids: ['VAIOS-G724', 'VAIOS-G728'],
         evidence_term: 'launch Playwright validation gate',
+        source_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-objective-gap-3e00ad2a0074.md',
         supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-objective-gap-3e00ad2a0074.md',
         launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-mcp-dashboard-launch-gate.md',
-        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-724-mcp-dashboard-launch-gate.json'
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-724-mcp-dashboard-launch-gate.json',
+        daemon_launch_health_gate: 'VAIOS-G728',
+        catalog_schema: 'hallucinate_app.mcp_dashboard_capability_catalog.v1'
       }),
       expect.objectContaining({
         task_id: 'HAO-727',
@@ -1083,6 +1133,48 @@ test.describe('MCP Feature Exposure - headless backend gate', () => {
         supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-28-mgw-555-objective-gap-3e00ad2a0074.md',
         launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-28-mgw-555-launch-playwright-validation-gate.md',
         receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-555-mcp-dashboard-launch-gate.json'
+      })
+    ]));
+    const hao724Gate = catalog?.launch_validation_gates?.find((gate: any) => gate.task_id === 'HAO-724');
+    expect(hao724Gate?.required_backends).toEqual(['ipfs_kit_py', 'ipfs_datasets_py', 'ipfs_accelerate_py']);
+    expect(hao724Gate?.required_evidence).toEqual(expect.arrayContaining([
+      'hallucinate_app menus',
+      'Hallucinate App MCP dashboard',
+      'dashboard capability catalog',
+      'daemon health',
+      'tools/list',
+      'tools/call',
+      'ipfs_accelerate_py MCP server',
+      'ipfs_datasets_py MCP server',
+      'ipfs_kit_py MCP server',
+      'Swissknife applications',
+      'Playwright MCP dashboard interoperability',
+      'launch Playwright validation gate'
+    ]));
+    expect(hao724Gate?.dashboard_servers).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        daemon_id: 'ipfs-kit',
+        server_package: 'ipfs_kit_py',
+        health_path: '/api/mcp/status',
+        tools_list: 'tools/list',
+        tools_call: 'tools/call',
+        safe_probe_receipt: 'ipfs_kit_status_probe'
+      }),
+      expect.objectContaining({
+        daemon_id: 'ipfs-datasets',
+        server_package: 'ipfs_datasets_py',
+        health_path: '/health/ready',
+        tools_list: 'tools/list',
+        tools_call: 'tools/call',
+        safe_probe_receipt: 'ipfs_datasets_list_probe'
+      }),
+      expect.objectContaining({
+        daemon_id: 'ipfs-accelerate',
+        server_package: 'ipfs_accelerate_py',
+        health_path: '/api/mcp/status',
+        tools_list: 'tools/list',
+        tools_call: 'tools/call',
+        safe_probe_receipt: 'ipfs_accelerate_hardware_profile_probe'
       })
     ]));
     expect(catalog?.control_surface_route).toContain('mediation_receipt');

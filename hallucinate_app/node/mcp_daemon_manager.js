@@ -315,15 +315,83 @@ const HAO_720_LAUNCH_VALIDATION_GATE = {
 };
 const HAO_724_LAUNCH_VALIDATION_GATE = {
   ...MGW_533_LAUNCH_VALIDATION_GATE,
+  schema: 'launch_readiness_receipt_v1',
   task_id: 'HAO-724',
+  lineage_id: 'VAIOS-G724:hallucinate-mcp-dashboard-capability-catalog',
+  source_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-objective-gap-3e00ad2a0074.md',
   supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-objective-gap-3e00ad2a0074.md',
   launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-mcp-dashboard-launch-gate.md',
   receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-724-mcp-dashboard-launch-gate.json',
+  gate_state: 'gate_open_until_playwright_passes',
+  required_backends: [
+    'ipfs_kit_py',
+    'ipfs_datasets_py',
+    'ipfs_accelerate_py'
+  ],
+  required_evidence: [
+    'hallucinate_app menus',
+    'Hallucinate App MCP dashboard',
+    'dashboard capability catalog',
+    'daemon health',
+    'tools/list',
+    'tools/call',
+    'ipfs_accelerate_py MCP server',
+    'ipfs_datasets_py MCP server',
+    'ipfs_kit_py MCP server',
+    'Swissknife applications',
+    'Playwright MCP dashboard interoperability',
+    'launch Playwright validation gate'
+  ],
+  catalog_schema: DASHBOARD_CATALOG_SCHEMA,
+  catalog_generated_by: 'hallucinate_app.node.mcp_daemon_manager.getDashboardCapabilityCatalog',
+  catalog_fixture: 'hallucinate_app/test/e2e/fixtures/vai-512-mcp-dashboard-catalog.json',
+  catalog_launch_objective_ids: DASHBOARD_LAUNCH_OBJECTIVE_IDS,
+  interoperability_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-533-mcp-dashboard-launch-gate.json',
+  daemon_launch_health_gate: 'VAIOS-G728',
+  supervisor_heap: 'implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md',
+  receipt_route: [
+    'Hallucinate App dashboard action',
+    'dashboard capability catalog',
+    'interaction_envelope',
+    'policy_decision',
+    'mediation_receipt',
+    'supervised MCP server transport'
+  ],
+  dashboard_servers: [
+    {
+      daemon_id: 'ipfs-kit',
+      server_package: 'ipfs_kit_py',
+      health_path: '/api/mcp/status',
+      tools_list: 'tools/list',
+      tools_call: 'tools/call',
+      safe_probe_receipt: 'ipfs_kit_status_probe',
+      swissknife_consumer: 'Swissknife IPFS storage, pin dashboard, and backend health surfaces'
+    },
+    {
+      daemon_id: 'ipfs-datasets',
+      server_package: 'ipfs_datasets_py',
+      health_path: '/health/ready',
+      tools_list: 'tools/list',
+      tools_call: 'tools/call',
+      safe_probe_receipt: 'ipfs_datasets_list_probe',
+      swissknife_consumer: 'Swissknife dataset, content, index, provenance, and background task surfaces'
+    },
+    {
+      daemon_id: 'ipfs-accelerate',
+      server_package: 'ipfs_accelerate_py',
+      health_path: '/api/mcp/status',
+      tools_list: 'tools/list',
+      tools_call: 'tools/call',
+      safe_probe_receipt: 'ipfs_accelerate_hardware_profile_probe',
+      swissknife_consumer: 'Swissknife hardware profile, inference job, job status, and telemetry surfaces'
+    }
+  ],
   validation_commands: [
     'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
     'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
     'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
-  ]
+  ],
+  failure_rule: 'Any missing HAO-724 launch Playwright validation gate, catalog, daemon health, tools/list, tools/call, Swissknife consumer, or packet sibling evidence remains supervisor-fed launch work for VAIOS-G724 and VAIOS-G728.'
 };
 const VAI_529_LAUNCH_VALIDATION_GATE = {
   ...MGW_533_LAUNCH_VALIDATION_GATE,

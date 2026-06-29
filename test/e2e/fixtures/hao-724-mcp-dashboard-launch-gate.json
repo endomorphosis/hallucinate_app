@@ -64,6 +64,8 @@
       "daemon_id": "ipfs-kit",
       "server_package": "ipfs_kit_py",
       "health_path": "/api/mcp/status",
+      "tools_list": "tools/list",
+      "tools_call": "tools/call",
       "safe_probe_receipt": "ipfs_kit_status_probe",
       "swissknife_consumer": "Swissknife IPFS storage, pin dashboard, and backend health surfaces"
     },
@@ -71,6 +73,8 @@
       "daemon_id": "ipfs-datasets",
       "server_package": "ipfs_datasets_py",
       "health_path": "/health/ready",
+      "tools_list": "tools/list",
+      "tools_call": "tools/call",
       "safe_probe_receipt": "ipfs_datasets_list_probe",
       "swissknife_consumer": "Swissknife dataset, content, index, provenance, and background task surfaces"
     },
@@ -78,6 +82,8 @@
       "daemon_id": "ipfs-accelerate",
       "server_package": "ipfs_accelerate_py",
       "health_path": "/api/mcp/status",
+      "tools_list": "tools/list",
+      "tools_call": "tools/call",
       "safe_probe_receipt": "ipfs_accelerate_hardware_profile_probe",
       "swissknife_consumer": "Swissknife hardware profile, inference job, job status, and telemetry surfaces"
     }
