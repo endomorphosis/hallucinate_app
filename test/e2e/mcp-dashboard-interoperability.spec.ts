@@ -41,6 +41,7 @@ const HAO_727_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-727-mc
 const VAI_529_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-529-mcp-dashboard-launch-gate.json');
 const VAI_535_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-535-mcp-dashboard-launch-gate.json');
 const VAI_537_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-537-mcp-dashboard-launch-gate.json');
+const VAI_539_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-539-mcp-dashboard-launch-gate.json');
 const VAI_543_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-543-mcp-dashboard-launch-gate.json');
 const HAO_727_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-727-mcp-dashboard-launch-gate.json');
 const MGW_555_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-555-mcp-dashboard-launch-gate.json');
@@ -241,6 +242,20 @@ const VAI_537_LAUNCH_GATE_RECEIPT = path.join(
   'virtual_ai_os',
   'discovery',
   '2026-06-28-vai-537-mcp-dashboard-launch-gate.md'
+);
+const VAI_539_OBJECTIVE_GAP_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-06-28-vai-539-objective-gap-3e00ad2a0074.md'
+);
+const VAI_539_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-06-28-vai-539-mcp-dashboard-launch-gate.md'
 );
 const VAI_543_OBJECTIVE_GAP_RECEIPT = path.join(
   REPO_ROOT,
@@ -1941,6 +1956,19 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       launchGateReceipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-537-mcp-dashboard-launch-gate.md',
       receiptFixture: 'hallucinate_app/test/e2e/fixtures/vai-537-mcp-dashboard-launch-gate.json',
       heapProof: 'VAI-537 proof'
+    });
+  });
+
+  test('closes the VAI-539 objective gap with the current Hallucinate launch Playwright validation gate', () => {
+    validateDashboardLaunchGateReceipt({
+      fixturePath: VAI_539_LAUNCH_GATE_FIXTURE,
+      launchGateReceiptPath: VAI_539_LAUNCH_GATE_RECEIPT,
+      objectiveGapPath: VAI_539_OBJECTIVE_GAP_RECEIPT,
+      taskId: 'VAI-539',
+      sourceGapReceipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-539-objective-gap-3e00ad2a0074.md',
+      launchGateReceipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-539-mcp-dashboard-launch-gate.md',
+      receiptFixture: 'hallucinate_app/test/e2e/fixtures/vai-539-mcp-dashboard-launch-gate.json',
+      heapProof: 'VAI-539 proof'
     });
   });
 
