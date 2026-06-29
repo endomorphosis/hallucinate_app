@@ -26,6 +26,13 @@ const path = require('path');
 const APP_DIR = path.resolve(__dirname, '..');
 const REPO_ROOT = path.resolve(APP_DIR, '..');
 
+// All bundled backend source is written here as a freshly-cleaned copy. We
+// never bundle the raw submodule checkouts directly because upstream trees
+// contain dangling symlinks (e.g. ipfs_kit_py/tools/verify.py) and large
+// platform-specific binaries that break the deb/rpm makers and bloat the
+// installers. forge.config.cjs points extraResource at <STAGE_ROOT>/<pkg>.
+const STAGE_ROOT = path.join(APP_DIR, '.staged_backend');
+
 // destPkg (matches the Python import name / submodule dir) -> candidate sources
 const PACKAGES = [
   { pkg: 'ipfs_kit_py', sources: ['ipfs_kit_py', '../external/ipfs_kit'] },
@@ -152,18 +159,15 @@ function resolveSource(candidates) {
 
 function main() {
   let staged = 0;
-  let present = 0;
   let missing = 0;
 
-  for (const { pkg, sources } of PACKAGES) {
-    const dest = path.join(APP_DIR, pkg);
+  // Always start from a clean staging root so stale/dangling content from a
+  // previous build can never leak into the packaged installers.
+  fs.rmSync(STAGE_ROOT, { recursive: true, force: true });
+  fs.mkdirSync(STAGE_ROOT, { recursive: true });
 
-    // Already populated (checked-out submodule) -> nothing to do.
-    if (hasPythonPackage(dest)) {
-      console.log(`[stage] ${pkg}: source already present (${dest})`);
-      present += 1;
-      continue;
-    }
+  for (const { pkg, sources } of PACKAGES) {
+    const dest = path.join(STAGE_ROOT, pkg);
 
     const src = resolveSource(sources);
     if (!src) {
@@ -176,19 +180,16 @@ function main() {
       continue;
     }
 
-    if (path.resolve(src) === path.resolve(dest)) {
-      present += 1;
-      continue;
-    }
-
-    console.log(`[stage] ${pkg}: staging from ${src} -> ${dest}`);
+    console.log(`[stage] ${pkg}: staging cleaned copy from ${src} -> ${dest}`);
     copyTree(src, dest, true);
+
+    if (!hasPythonPackage(dest)) {
+      console.warn(`[stage] ${pkg}: WARNING staged copy is missing setup.py/pyproject.toml`);
+    }
     staged += 1;
   }
 
-  console.log(
-    `[stage] done: ${present} already present, ${staged} staged, ${missing} missing`
-  );
+  console.log(`[stage] done: ${staged} staged, ${missing} missing -> ${STAGE_ROOT}`);
 
   if (missing === PACKAGES.length) {
     console.error('[stage] ERROR: no backend sources could be staged.');
@@ -200,4 +201,4 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { main, PACKAGES, hasPythonPackage };
+module.exports = { main, PACKAGES, hasPythonPackage, STAGE_ROOT };

@@ -5,9 +5,13 @@ const { main: stageBackendSources } = require('./scripts/stage_backend_sources.c
 
 // Backend Python packages bundled as source so the runtime
 // PythonEnvironmentManager can pip-install them on first launch (the published
-// PyPI wheels are incomplete/broken). Staged by scripts/stage_backend_sources.cjs.
+// PyPI wheels are incomplete/broken). A cleaned, trimmed copy is produced under
+// .staged_backend/<pkg> by scripts/stage_backend_sources.cjs (run in the
+// generateAssets hook below) — we bundle that, never the raw submodule
+// checkouts, which contain dangling symlinks and platform-specific binaries
+// that break the deb/rpm makers.
 const BACKEND_PACKAGE_DIRS = ['ipfs_kit_py', 'ipfs_datasets_py', 'ipfs_accelerate_py'].map((p) =>
-  path.join(__dirname, p)
+  path.join(__dirname, '.staged_backend', p)
 );
 
 module.exports = {
@@ -38,6 +42,13 @@ module.exports = {
       /^\/venv($|\/)/,
       /^\/__pycache__($|\/)/,
       /\.pyc$/,
+      // The raw backend submodule checkouts are bundled separately (cleaned)
+      // via extraResource from .staged_backend; keep them and the staging dir
+      // itself out of the app asar to avoid dangling symlinks and bloat.
+      /^\/ipfs_kit_py($|\/)/,
+      /^\/ipfs_datasets_py($|\/)/,
+      /^\/ipfs_accelerate_py($|\/)/,
+      /^\/\.staged_backend($|\/)/,
     ],
   },
   // Skip the native-module source rebuild during packaging. Every native
