@@ -194,8 +194,11 @@ async function runTests() {
     launchGate.packet_goals?.includes('VAIOS-G724') &&
     launchGate.packet_goals?.includes('VAIOS-G728') &&
     launchGate.backlog_task_ids?.includes('HAO-713') &&
+    launchGate.backlog_task_ids?.includes('HAO-725') &&
     launchGate.supervisor_gap_receipts?.includes('data/hallucinate_multimodal_control/discovery/2026-06-27-hao-713-objective-gap-b023c8de5b69.md') &&
+    launchGate.supervisor_gap_receipts?.includes('data/hallucinate_multimodal_control/discovery/2026-06-28-hao-725-objective-gap-b023c8de5b69.md') &&
     launchGate.hallucinate_backlog_receipts?.includes('data/hallucinate_multimodal_control/discovery/2026-06-27-hao-713-daemon-launch-health-gate.md') &&
+    launchGate.hallucinate_backlog_receipts?.includes('data/hallucinate_multimodal_control/discovery/2026-06-28-hao-725-daemon-launch-health-gate.md') &&
     launchGate.playwright_specs?.includes('hallucinate_app/test/e2e/daemon-launch-health.spec.ts') &&
     launchGate.required_backends?.join(',') === 'ipfs_kit_py,ipfs_datasets_py,ipfs_accelerate_py' &&
     launchGate.daemon_health_paths?.length === 3 &&
