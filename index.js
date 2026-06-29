@@ -14,6 +14,7 @@ import benchmarkHandler from './hallucinate_app/node/benchmark_handler.js';
 import { getDaemonManager } from './hallucinate_app/node/daemon_manager.js';
 import { registerIPFSIPCHandlers } from './hallucinate_app/node/ipfs_ipc_handlers.js';
 import UCANIdentityManager from './hallucinate_app/node/ucan_identity_manager.js';
+import PythonEnvironmentManager from './hallucinate_app/node/python_environment_manager.js';
 
 // ============================================================
 // VERBOSE ERROR LOGGING CONFIGURATION
@@ -236,6 +237,69 @@ daemonManager.on('all-started', () => {
 daemonManager.on('all-stopped', () => {
   broadcastDaemonEvent('all-stopped');
 });
+
+// Tracks the most recent Python provisioning result for diagnostics / IPC.
+let pythonEnvStatus = { state: 'pending', pythonPath: null, error: null };
+
+/**
+ * Provision the bundled Python runtime used by the MCP daemons. Idempotent and
+ * safe to run on every launch; the manager fast-paths when already provisioned.
+ * Surfaces progress to the renderer and points the daemon manager at the
+ * resulting interpreter so the packaged app works without any manual setup.
+ */
+async function provisionPythonEnvironment() {
+  logInfo('PYTHON_ENV', 'Provisioning bundled Python runtime...');
+  broadcastDaemonEvent('python-env', { phase: 'start', percent: 0, message: 'Preparing Python runtime' });
+
+  const manager = new PythonEnvironmentManager({
+    userDataDir: app.getPath('userData'),
+    // In a packaged build, extraResource places `python/` under resourcesPath.
+    resourcesPath: process.resourcesPath || null,
+    // In a dev run, requirements live next to index.js.
+    appRoot: __dirname,
+    onProgress: (evt) => {
+      pythonEnvStatus = { ...pythonEnvStatus, state: evt.phase, lastMessage: evt.message };
+      broadcastDaemonEvent('python-env', evt);
+    },
+    logger: {
+      info: (...a) => logInfo('PYTHON_ENV', a.join(' ')),
+      warn: (...a) => logInfo('PYTHON_ENV_WARN', a.join(' ')),
+      error: (...a) => logError('PYTHON_ENV', new Error(a.join(' '))),
+    },
+  });
+
+  const result = await manager.ensureEnvironment();
+
+  if (result.pythonPath && result.provisioned) {
+    pythonEnvStatus = { state: 'ready', pythonPath: result.pythonPath, error: null, fromCache: result.fromCache };
+    // Make the managed interpreter the canonical one for daemons + probes.
+    process.env.HALLUCINATE_PYTHON_HOME = manager.venvDir;
+    daemonManager.setPythonCommand(result.pythonPath);
+    logInfo('PYTHON_ENV', `Python runtime ready: ${result.pythonPath} (cached=${result.fromCache})`);
+    broadcastDaemonEvent('python-env', { phase: 'ready', percent: 100, message: 'Python runtime ready' });
+  } else {
+    pythonEnvStatus = { state: 'error', pythonPath: null, error: result.error };
+    logError('PYTHON_ENV', new Error(result.error || 'Python provisioning failed'));
+    broadcastDaemonEvent('python-env', {
+      phase: 'error',
+      percent: 100,
+      message: result.error || 'Python provisioning failed',
+    });
+  }
+  return result;
+}
+
+// Expose Python environment status to the renderer.
+ipcMain.handle('python-env:get-status', () => pythonEnvStatus);
+ipcMain.handle('python-env:reprovision', async () => {
+  process.env.HALLUCINATE_FORCE_PY_PROVISION = 'true';
+  try {
+    return await provisionPythonEnvironment();
+  } finally {
+    delete process.env.HALLUCINATE_FORCE_PY_PROVISION;
+  }
+});
+
 
 // Setup test and benchmark handlers
 testHandler.setupIpcHandlers();
@@ -2109,9 +2173,17 @@ app.on('ready', async () => {
 
     logInfo('APP_READY', 'Creating menu...');
     createAppMenu();
-    
-    // Auto-start MCP daemons after a short delay
+
+    // Provision the bundled Python environment so the MCP daemons "just work"
+    // out of the box on a freshly-installed .exe / .dmg / .deb / .rpm, then
+    // point the daemon manager at the managed interpreter.
     setTimeout(async () => {
+      try {
+        await provisionPythonEnvironment();
+      } catch (error) {
+        logError('PYTHON_ENV_PROVISION', error);
+      }
+
       try {
         logInfo('MCP_DAEMONS', 'Auto-starting MCP daemons...');
         await daemonManager.startAll();

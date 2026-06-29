@@ -1,8 +1,22 @@
 const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 const path = require('path');
+const { main: stageBackendSources } = require('./scripts/stage_backend_sources.cjs');
+
+// Backend Python packages bundled as source so the runtime
+// PythonEnvironmentManager can pip-install them on first launch (the published
+// PyPI wheels are incomplete/broken). Staged by scripts/stage_backend_sources.cjs.
+const BACKEND_PACKAGE_DIRS = ['ipfs_kit_py', 'ipfs_datasets_py', 'ipfs_accelerate_py'].map((p) =>
+  path.join(__dirname, p)
+);
 
 module.exports = {
+  hooks: {
+    // Ensure backend source is present before the packager copies extraResource.
+    generateAssets: async () => {
+      stageBackendSources();
+    },
+  },
   packagerConfig: {
     asar: true,
     name: 'hallucinate_app',
@@ -13,6 +27,7 @@ module.exports = {
     extraResource: [
       path.join(__dirname, 'hallucinate_app'),
       path.join(__dirname, 'python'),
+      ...BACKEND_PACKAGE_DIRS,
     ],
     ignore: [
       /^\/\.git($|\/)/,

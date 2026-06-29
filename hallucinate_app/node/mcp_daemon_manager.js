@@ -834,21 +834,51 @@ class MCPDaemonManager extends EventEmitter {
   }
 
   _resolveDaemonPythonCommand() {
-    const explicitPython = process.env.MCP_DAEMON_PYTHON;
+    const explicitPython = process.env.MCP_DAEMON_PYTHON || process.env.HALLUCINATE_PYTHON;
     if (explicitPython) {
       return explicitPython;
     }
 
-    const venvDir = process.env.VIRTUAL_ENV || path.resolve(this.baseDir, '..', '.venv');
-    const candidate = process.platform === 'win32'
-      ? path.join(venvDir, 'Scripts', 'python.exe')
-      : path.join(venvDir, 'bin', 'python');
+    // Managed per-user environment provisioned by PythonEnvironmentManager.
+    // HALLUCINATE_PYTHON_HOME points at the venv root (…/python-runtime/venv).
+    const candidateRoots = [];
+    if (process.env.HALLUCINATE_PYTHON_HOME) {
+      candidateRoots.push(process.env.HALLUCINATE_PYTHON_HOME);
+    }
+    if (process.env.VIRTUAL_ENV) {
+      candidateRoots.push(process.env.VIRTUAL_ENV);
+    }
+    candidateRoots.push(path.resolve(this.baseDir, '..', '.venv'));
 
-    if (fs.existsSync(candidate)) {
-      return candidate;
+    for (const venvDir of candidateRoots) {
+      const candidate = process.platform === 'win32'
+        ? path.join(venvDir, 'Scripts', 'python.exe')
+        : path.join(venvDir, 'bin', 'python');
+      if (fs.existsSync(candidate)) {
+        return candidate;
+      }
     }
 
     return 'python';
+  }
+
+  /**
+   * Point every managed daemon (and native dashboard) at a specific Python
+   * interpreter. Called after the runtime environment is provisioned so the
+   * packaged app launches the bundled/managed interpreter instead of a system
+   * `python` that may not exist.
+   */
+  setPythonCommand(pythonCommand) {
+    if (!pythonCommand) {
+      return;
+    }
+    this.pythonCommand = pythonCommand;
+    for (const config of this.daemonConfigs) {
+      config.command = pythonCommand;
+      if (config.nativeDashboard && config.nativeDashboard.command) {
+        config.nativeDashboard.command = pythonCommand;
+      }
+    }
   }
 
   /**

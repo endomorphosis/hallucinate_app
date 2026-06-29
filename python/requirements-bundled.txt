@@ -1,0 +1,50 @@
+# =============================================================================
+# Consolidated runtime requirements for the packaged hallucinate_app
+# =============================================================================
+# Bundled into the .exe / .dmg / .deb / .rpm and installed into a per-user
+# virtual environment on first launch by
+# hallucinate_app/node/python_environment_manager.js so the Python MCP daemons
+# "just work" out of the box with no manual setup.
+#
+# The three IPFS packages themselves are installed from BUNDLED LOCAL SOURCE
+# (see _installBundledPackages) because the published PyPI wheels are
+# incomplete / broken. This file pins the *supporting* dependency layer that
+# those packages import at runtime but under-declare in their own metadata.
+#
+# Daemon entrypoints (hallucinate_app/node/mcp_daemon_manager.js):
+#   - ipfs-kit:        python -m ipfs_kit_py.cli mcp start
+#   - ipfs-datasets:   python -m uvicorn ipfs_datasets_py.mcp_server.fastapi_service:app
+#   - ipfs-accelerate: python -m ipfs_accelerate_py.cli mcp start
+# -----------------------------------------------------------------------------
+
+# --- Web / RPC runtime used by the daemons -----------------------------------
+fastapi>=0.100.0
+uvicorn[standard]>=0.23.0
+hypercorn>=0.16.0
+pydantic>=2.0.0
+PyJWT>=2.8.0
+
+# --- Data plane (virtual filesystem + metadata indexes) ----------------------
+# numpy pinned <=2.1.3 to satisfy ipfs_datasets_py's declared constraint.
+pyarrow>=14.0.0
+fsspec>=2023.1.0
+numpy>=1.26.4,<=2.1.3
+
+# --- Transitively required by the ipfs_kit_py MCP / VFS chain -----------------
+toml>=0.10.2
+psutil>=5.9.0
+msgpack>=1.0.5
+structlog>=23.1.0
+rich>=13.4.1
+
+# --- ML / data stack imported by the daemons (best-effort; the app still
+#     launches if these fail to install on a constrained machine) -------------
+transformers>=4.30.0
+datasets>=2.14.0
+huggingface-hub>=0.16.0
+boto3>=1.28.0
+
+# --- Optional heavy accelerator backend --------------------------------------
+# torch is large (~GBs). Install the CPU build on demand rather than by default:
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+# The ipfs_accelerate_py daemon degrades gracefully (tokenizers/CPU) without it.
