@@ -2339,6 +2339,14 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     expect(receipt.catalog_schema).toBe(catalog.schema);
     expect(receipt.catalog_generated_by).toBe(catalog.generated_by);
     expect(receipt.catalog_launch_objective_ids).toEqual(catalog.launch_objective_ids);
+    if (receipt.task_id === 'HAO-724') {
+      expect(launchGateReceipt).toContain(`Task: ${receipt.task_id}`);
+      expect(launchGateReceipt).toContain(`Goal id: ${receipt.goal_id}`);
+      expect(launchGateReceipt).toContain(`Source gap: ${receipt.source_gap_receipt}`);
+      expect(launchGateReceipt).toContain(receipt.launch_gate_receipt);
+      expect(launchGateReceipt).toContain(receipt.catalog_generated_by);
+      expect(launchGateReceipt).toContain('VAIOS-G728');
+    }
     expect(catalog.launch_validation_gates).toEqual(expect.arrayContaining([
       expect.objectContaining({
         task_id: receipt.task_id,
