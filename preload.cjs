@@ -141,8 +141,7 @@ async function dashboardToolsList(daemonId) {
   }
 
   try {
-    const rawResponse = await ipcRenderer.invoke('daemon:dashboardToolsList', daemonId);
-    const response = rawResponse?.output || rawResponse;
+    const response = await ipcRenderer.invoke('daemon:dashboardToolsList', daemonId);
     const failedClosed = response?.fail_closed === true || response?.denied === true || response?.ok === false;
     return dashboardReceipt(allowed.entry, 'tools/list', failedClosed ? 'fail_closed' : 'ok', {
       tool_protocol: protocol,
@@ -183,8 +182,7 @@ async function dashboardToolsCall(daemonId) {
   }
 
   try {
-    const rawResponse = await ipcRenderer.invoke('daemon:dashboardToolsCall', daemonId);
-    const response = rawResponse?.output || rawResponse;
+    const response = await ipcRenderer.invoke('daemon:dashboardToolsCall', daemonId);
     const failedClosed = response?.fail_closed === true || response?.denied === true || response?.ok === false;
     return dashboardReceipt(allowed.entry, 'tools/call', failedClosed ? 'fail_closed' : 'ok', {
       tool_protocol: protocol,
@@ -230,58 +228,7 @@ async function openCatalogDashboard(daemonId) {
   });
 }
 
-// ---------------------------------------------------------------------------
-// Safe generic IPC bridge for the legacy dashboards.
-//
-// Several dashboards were written for nodeIntegration and used
-// `const { ipcRenderer } = window.require('electron')`, which throws under
-// contextIsolation and breaks the entire view. We expose a narrow, allow-listed
-// ipcRenderer shim instead so those features work without re-enabling Node in
-// the renderer.
-// ---------------------------------------------------------------------------
-const IPC_SEND_ALLOWLIST = new Set([
-  // model tester / dashboard inference controls
-  'start-server', 'stop-server', 'load-model', 'run-inference', 'run-test',
-  // test interface / benchmark service controls
-  'start-all-services', 'stop-all-services', 'run-all-tests', 'test-module',
-  'check-services-status', 'export-test-results',
-  // in-app navigation
-  'navigate-home', 'open-daemon-manager', 'open-model-tester',
-  'open-security-test-dashboard', 'open-database-backup-dashboard'
-]);
-
-const IPC_RECEIVE_ALLOWLIST = new Set([
-  'server-status', 'services-status', 'model-loaded', 'inference-result',
-  'test-result', 'all-tests-complete', 'export-complete'
-]);
-
-const safeIpcRenderer = {
-  send(channel, ...args) {
-    if (IPC_SEND_ALLOWLIST.has(channel)) {
-      ipcRenderer.send(channel, ...args);
-    } else {
-      console.warn(`[preload] Blocked ipcRenderer.send to disallowed channel: ${channel}`);
-    }
-  },
-  on(channel, listener) {
-    if (!IPC_RECEIVE_ALLOWLIST.has(channel)) {
-      console.warn(`[preload] Blocked ipcRenderer.on for disallowed channel: ${channel}`);
-      return;
-    }
-    // Do not forward the raw IpcRendererEvent across the context bridge (it is
-    // not cloneable); preserve the legacy `(event, data)` listener signature
-    // with a null event placeholder.
-    ipcRenderer.on(channel, (_event, ...args) => listener(null, ...args));
-  },
-  removeAllListeners(channel) {
-    ipcRenderer.removeAllListeners(channel);
-  }
-};
-
-contextBridge.exposeInMainWorld('ipcRenderer', safeIpcRenderer);
-
 contextBridge.exposeInMainWorld('electronAPI', {
-  ipc: safeIpcRenderer,
   daemon: {
     getAll: () => ipcRenderer.invoke('daemon:getAll'),
     getLaunchPlan: () => ipcRenderer.invoke('daemon:getLaunchPlan'),
@@ -349,7 +296,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     close: () => ipcRenderer.send('window:close'),
   },
   navigation: {
-    navigateHome: () => ipcRenderer.send('navigate-home'),
     openDaemonManager: () => ipcRenderer.send('open-daemon-manager'),
     openModelTester: () => ipcRenderer.send('open-model-tester'),
     openSecurityTestDashboard: () => ipcRenderer.send('open-security-test-dashboard'),

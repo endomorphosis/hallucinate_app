@@ -8,11 +8,10 @@
   <link rel="stylesheet" href="../dashboard/database_backup_search.css">
   <link rel="stylesheet" href="../dashboard/backup_monitoring.css">
   <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="../../../node_modules/@fortawesome/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
-  <button type="button" data-testid="nav-home" aria-label="Back to Main Dashboard" title="Back to Main Dashboard" onclick="window.electronAPI?.navigation?.navigateHome?.()" style="position:fixed;bottom:16px;left:16px;z-index:99999;padding:8px 14px;background:#2d3748;color:#fff;border:none;border-radius:20px;cursor:pointer;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,0.25);">🏠 Home</button>
-  <div class="dashboard-container" role="main">
+  <div class="dashboard-container">
     <div class="dashboard-header">
       <h1>Database Backup Dashboard</h1>
       <div class="security-status" id="security-status-indicator">
@@ -494,7 +493,7 @@
       background-color: #e9ecef;
     }
   </style>
-  <script src="../../../node_modules/chart.js/dist/chart.min.js"></script>
+  <script src="../../node_modules/chart.js/dist/chart.umd.js"></script>
   <script type="module">
     // Import required modules
     import { authManager } from '../auth.js';

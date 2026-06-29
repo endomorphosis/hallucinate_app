@@ -285,106 +285,6 @@ const HAO_714_DASHBOARD_INTEROPERABILITY_CONSOLE_GATE = {
   supervisor_follow_up_subtasks: ['HAO-678', 'HAO-679', 'HAO-680', 'HAO-681', 'HAO-682', 'HAO-683'],
   failure_rule: 'Any catalog normalization, dashboard UI wiring, mediated tools/list, mediated tools/call, Swissknife consumer, Playwright, dashboard backend, or supervisor follow-up failure remains supervisor-generated launch work for VAIOS-G723.'
 };
-const HAO_727_LAUNCH_VALIDATION_GATE = {
-  schema: 'launch_readiness_receipt_v1',
-  task_id: 'HAO-727',
-  goal_id: 'VAIOS-G723',
-  lineage_id: 'VAIOS-G723:hallucinate-mcp-dashboard-interoperability',
-  source_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-727-objective-gap-7ea369464239.md',
-  launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-727-mcp-dashboard-launch-gate.md',
-  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-727-mcp-dashboard-launch-gate.json',
-  evidence_term: 'launch Playwright validation gate',
-  gate_state: 'gate_open_until_playwright_passes',
-  playwright_specs: [
-    'hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts',
-    'hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts'
-  ],
-  validation_commands: [
-    'npm --prefix hallucinate_app run test:daemon-manager',
-    'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
-    'npm --prefix swissknife run test:e2e:mcp',
-    'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
-    'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
-  ],
-  required_backends: [
-    'ipfs_kit_py',
-    'ipfs_datasets_py',
-    'ipfs_accelerate_py'
-  ],
-  required_evidence: [
-    'Hallucinate App menus',
-    'Hallucinate App MCP dashboard',
-    'dashboard capability catalog',
-    'backend service catalog',
-    'daemon health',
-    'MCP++ telemetry',
-    'tools/list',
-    'tools/call',
-    'control_surface receipts',
-    'Swissknife applications',
-    'catalog normalization',
-    'dashboard UI wiring',
-    'mediated tool-call receipts',
-    'Swissknife consumers',
-    'Playwright coverage',
-    'supervisor-generated follow-up subtasks',
-    'launch Playwright validation gate'
-  ],
-  child_goals: [
-    'VAIOS-G723-C1 Catalog normalization',
-    'VAIOS-G723-C2 Dashboard UI wiring',
-    'VAIOS-G723-C3 Mediated tool-call receipts',
-    'VAIOS-G723-C4 Swissknife consumers',
-    'VAIOS-G723-C5 Playwright coverage',
-    'VAIOS-G723-C6 Supervisor-generated follow-up subtasks'
-  ],
-  catalog_source: 'hallucinate_app.node.mcp_daemon_manager.getDashboardCapabilityCatalog',
-  catalog_schema: DASHBOARD_CATALOG_SCHEMA,
-  catalog_generated_by: 'hallucinate_app.node.mcp_daemon_manager.getDashboardCapabilityCatalog',
-  catalog_fixture: 'hallucinate_app/test/e2e/fixtures/vai-512-mcp-dashboard-catalog.json',
-  catalog_launch_objective_ids: DASHBOARD_LAUNCH_OBJECTIVE_IDS,
-  receipt_route: [
-    'Hallucinate App dashboard action',
-    'dashboard capability catalog',
-    'interaction_envelope',
-    'policy_decision',
-    'mediation_receipt',
-    'supervised MCP server transport',
-    'Swissknife MCP dashboard capability registry'
-  ],
-  dashboard_servers: [
-    {
-      daemon_id: 'ipfs-kit',
-      server_package: 'ipfs_kit_py',
-      health_path: '/api/mcp/status',
-      tools_list: 'tools/list',
-      tools_call: 'tools/call',
-      safe_probe_receipt: 'ipfs_kit_status_probe',
-      swissknife_consumer: 'Swissknife IPFS storage, pin dashboard, and backend health surfaces'
-    },
-    {
-      daemon_id: 'ipfs-datasets',
-      server_package: 'ipfs_datasets_py',
-      health_path: '/health/ready',
-      tools_list: 'tools/list',
-      tools_call: 'tools/call',
-      safe_probe_receipt: 'ipfs_datasets_list_probe',
-      swissknife_consumer: 'Swissknife dataset, content, index, provenance, and background task surfaces'
-    },
-    {
-      daemon_id: 'ipfs-accelerate',
-      server_package: 'ipfs_accelerate_py',
-      health_path: '/api/mcp/status',
-      tools_list: 'tools/list',
-      tools_call: 'tools/call',
-      safe_probe_receipt: 'ipfs_accelerate_hardware_profile_probe',
-      swissknife_consumer: 'Swissknife hardware profile, inference job, job status, and telemetry surfaces'
-    }
-  ],
-  follow_up_subtasks: ['HAO-678', 'HAO-679', 'HAO-680', 'HAO-681', 'HAO-682', 'HAO-683'],
-  supervisor_follow_up_subtasks: ['HAO-678', 'HAO-679', 'HAO-680', 'HAO-681', 'HAO-682', 'HAO-683'],
-  failure_rule: 'Any dashboard catalog, UI wiring, mediated tools/list, mediated tools/call, Swissknife consumer, backend validation, or Playwright failure remains supervisor-generated follow-up work for VAIOS-G723.'
-};
 const MGW_550_LAUNCH_VALIDATION_GATE = {
   ...MGW_533_LAUNCH_VALIDATION_GATE,
   task_id: 'MGW-550',
@@ -458,7 +358,6 @@ const VAI_542_LAUNCH_VALIDATION_GATE = {
   task_id: 'VAI-542',
   goal_id: 'VAIOS-G723',
   supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-542-objective-gap-7ea369464239.md',
-  hallucinate_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-objective-gap-7ea369464239.md',
   launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-542-mcp-dashboard-launch-gate.md',
   hallucinate_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-objective-gap-7ea369464239.md',
   hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-mcp-dashboard-launch-gate.md',
@@ -606,41 +505,13 @@ const MGW_555_LAUNCH_VALIDATION_GATE = {
   task_id: 'MGW-555',
   supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-28-mgw-555-objective-gap-3e00ad2a0074.md',
   launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-28-mgw-555-launch-playwright-validation-gate.md',
-  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-555-mcp-dashboard-launch-gate.json',
-  gate_state: 'gate_closed_by_playwright_validation',
-  validation_commands: [
-    'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
-    'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
-    'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
-  ],
-  required_backends: [
-    'ipfs_kit_py',
-    'ipfs_datasets_py',
-    'ipfs_accelerate_py'
-  ],
-  required_evidence: [
-    'hallucinate_app menus',
-    'Hallucinate App MCP dashboard',
-    'dashboard capability catalog',
-    'daemon health',
-    'tools/list',
-    'tools/call',
-    'ipfs_accelerate_py MCP server',
-    'ipfs_datasets_py MCP server',
-    'ipfs_kit_py MCP server',
-    'Swissknife applications',
-    'Playwright MCP dashboard interoperability',
-    'launch Playwright validation gate'
-  ],
-  closes_goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
-  packet_sibling_goal_id: 'VAIOS-G728'
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-555-mcp-dashboard-launch-gate.json'
 };
 const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   MGW_533_LAUNCH_VALIDATION_GATE,
   MGW_546_LAUNCH_VALIDATION_GATE,
   MGW_547_LAUNCH_VALIDATION_GATE,
   HAO_714_DASHBOARD_INTEROPERABILITY_CONSOLE_GATE,
-  HAO_727_LAUNCH_VALIDATION_GATE,
   MGW_550_LAUNCH_VALIDATION_GATE,
   HAO_712_LAUNCH_VALIDATION_GATE,
   HAO_718_LAUNCH_VALIDATION_GATE,
@@ -660,7 +531,7 @@ const DAEMON_LAUNCH_GATE_TASK_ID = 'MGW-535';
 const DAEMON_LAUNCH_GATE_VAI_TASK_ID = 'VAI-519';
 const DAEMON_LAUNCH_GATE_VAI_TASK_IDS = ['VAI-519', 'VAI-530', 'VAI-536', 'VAI-538', 'VAI-540'];
 const DAEMON_LAUNCH_GATE_BACKLOG_TASK_ID = 'HAO-702';
-const DAEMON_LAUNCH_GATE_BACKLOG_TASK_IDS = ['HAO-702', 'HAO-713', 'HAO-719', 'HAO-721', 'HAO-725'];
+const DAEMON_LAUNCH_GATE_BACKLOG_TASK_IDS = ['HAO-702', 'HAO-713', 'HAO-719', 'HAO-721'];
 const DAEMON_LAUNCH_GATE_GOAL_ID = 'VAIOS-G728';
 const DAEMON_LAUNCH_GATE_PACKET_ID = 'goal_packet/launch/hallucinate_app/44dceea6bc53';
 const DAEMON_LAUNCH_GATE_PACKET_GOALS = ['VAIOS-G724', 'VAIOS-G728'];
@@ -690,15 +561,13 @@ const DAEMON_LAUNCH_GATE_SUPERVISOR_GAP_RECEIPTS = [
   'data/hallucinate_multimodal_control/discovery/2026-06-26-hao-702-objective-gap-b023c8de5b69.md',
   'data/hallucinate_multimodal_control/discovery/2026-06-27-hao-713-objective-gap-b023c8de5b69.md',
   'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-719-objective-gap-b023c8de5b69.md',
-  'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-721-objective-gap-b023c8de5b69.md',
-  'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-725-objective-gap-b023c8de5b69.md'
+  'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-721-objective-gap-b023c8de5b69.md'
 ];
 const DAEMON_LAUNCH_GATE_HALLUCINATE_BACKLOG_RECEIPTS = [
   'data/hallucinate_multimodal_control/discovery/2026-06-26-hao-702-daemon-launch-health-gate.md',
   'data/hallucinate_multimodal_control/discovery/2026-06-27-hao-713-daemon-launch-health-gate.md',
   'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-719-daemon-launch-health-gate.md',
-  'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-721-daemon-launch-health-gate.md',
-  'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-725-daemon-launch-health-gate.md'
+  'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-721-daemon-launch-health-gate.md'
 ];
 const MGW_551_DAEMON_LAUNCH_VALIDATION_GATE = {
   task_id: 'MGW-551',
@@ -788,20 +657,6 @@ const HAO_721_DAEMON_LAUNCH_VALIDATION_GATE = {
     'npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts'
   ]
 };
-const HAO_725_DAEMON_LAUNCH_VALIDATION_GATE = {
-  task_id: 'HAO-725',
-  objective_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-725-objective-gap-b023c8de5b69.md',
-  supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-725-objective-gap-b023c8de5b69.md',
-  launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-725-daemon-launch-health-gate.md',
-  hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-725-daemon-launch-health-gate.md',
-  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-725-daemon-launch-health-gate.json',
-  validation_commands: [
-    'PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q',
-    'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts',
-    'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
-    'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
-  ]
-};
 
 const DASHBOARD_TOOL_PROTOCOLS = {
   'ipfs-kit': {
@@ -829,16 +684,16 @@ const DASHBOARD_TOOL_PROTOCOLS = {
       operation: 'tools/list',
       transport: 'http',
       method: 'GET',
-      path: '/tools/list'
+      path: '/datasets/list'
     },
     toolsCall: {
       operation: 'tools/call',
       transport: 'http',
       method: 'POST',
-      path: '/tools/execute/{tool_name}',
+      path: '/datasets/load',
       safeProbe: {
-        tool_name: 'list_tools',
-        arguments: {},
+        tool_name: 'datasets_list',
+        arguments: { limit: 1 },
         mutation: false,
         expected_receipt: 'ipfs_datasets_list_probe'
       }
@@ -849,13 +704,13 @@ const DASHBOARD_TOOL_PROTOCOLS = {
       operation: 'tools/list',
       transport: 'http',
       method: 'GET',
-      path: '/api/mcp/tools'
+      path: '/models/list'
     },
     toolsCall: {
       operation: 'tools/call',
       transport: 'http',
       method: 'POST',
-      path: '/api/tools',
+      path: '/inference',
       safeProbe: {
         tool_name: 'hardware_profile',
         arguments: { dry_run: true },
@@ -878,7 +733,6 @@ class MCPDaemonManager extends EventEmitter {
     this.daemons = new Map();
     this.dashboardSidecars = new Map();
     this.mcpPlusPlusCapabilities = new Map();
-    this.daemonAuthTokens = new Map();
     this.launchReceipts = [];
     this.restartCounts = new Map();
     this.healthCheckInterval = null;
@@ -910,9 +764,9 @@ class MCPDaemonManager extends EventEmitter {
         name: 'IPFS Kit MCP',
         launchOrder: 10,
         command: this.pythonCommand,
-        args: ['-m', 'ipfs_kit_py.cli', 'mcp', 'start', ...(process.env.MCP_KIT_PORT ? ['--port', process.env.MCP_KIT_PORT] : [])],
+        args: ['-m', 'ipfs_kit_py.cli', 'mcp', 'start'],
         cwd: path.join(this.baseDir, 'ipfs_kit_py'),
-        port: Number(process.env.MCP_KIT_PORT) || 8004,
+        port: 8004,
         transport: 'http',
         rpcPath: '/mcp/tools/call',
         healthPath: '/api/mcp/status',
@@ -932,12 +786,6 @@ class MCPDaemonManager extends EventEmitter {
         transport: 'http',
         rpcPath: '/datasets/load',
         healthPath: '/health/ready',
-        auth: {
-          scheme: 'bearer',
-          loginPath: '/auth/login',
-          username: process.env.MCP_DATASETS_USERNAME || 'hallucinate_app',
-          password: process.env.MCP_DATASETS_PASSWORD || 'dashboard'
-        },
         nativeDashboard: {
           port: 8899,
           path: '/mcp',
@@ -1447,14 +1295,6 @@ class MCPDaemonManager extends EventEmitter {
             playwright_spec: 'hallucinate_app/test/e2e/daemon-launch-health.spec.ts',
             supervisor_gap_receipt: HAO_721_DAEMON_LAUNCH_VALIDATION_GATE.supervisor_gap_receipt,
             launch_gate_receipt: HAO_721_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt
-          },
-          {
-            task_id: HAO_725_DAEMON_LAUNCH_VALIDATION_GATE.task_id,
-            goal_id: DAEMON_LAUNCH_GATE_GOAL_ID,
-            evidence_term: 'launch Playwright validation gate',
-            playwright_spec: 'hallucinate_app/test/e2e/daemon-launch-health.spec.ts',
-            supervisor_gap_receipt: HAO_725_DAEMON_LAUNCH_VALIDATION_GATE.supervisor_gap_receipt,
-            launch_gate_receipt: HAO_725_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt
           }
         ],
         daemon_id: config.id,
@@ -1602,15 +1442,6 @@ class MCPDaemonManager extends EventEmitter {
           HAO_721_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt
         ],
         objective_gap_receipt: HAO_721_DAEMON_LAUNCH_VALIDATION_GATE.objective_gap_receipt
-      }),
-      this.getDaemonLaunchValidationGate({
-        ...HAO_725_DAEMON_LAUNCH_VALIDATION_GATE,
-        shared_packet_task_id: DAEMON_LAUNCH_GATE_TASK_ID,
-        discovery_receipts: [
-          ...DAEMON_LAUNCH_GATE_DISCOVERY_RECEIPTS,
-          HAO_725_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt
-        ],
-        objective_gap_receipt: HAO_725_DAEMON_LAUNCH_VALIDATION_GATE.objective_gap_receipt
       })
     ];
   }
@@ -2002,7 +1833,9 @@ class MCPDaemonManager extends EventEmitter {
 
   async _dashboardTransportProbe(config, toolProtocol, mediation) {
     const health = await this.checkDaemonHealth(config.id);
-    const base = {
+    return {
+      ok: health.healthy,
+      fail_closed: !health.healthy,
       daemon_id: config.id,
       server_package: config.packageName,
       operation: toolProtocol.operation,
@@ -2014,145 +1847,7 @@ class MCPDaemonManager extends EventEmitter {
       mediation_receipt_id: mediation.mediation_receipt.receipt_id,
       mediation_receipt_cid: mediation.mediation_receipt.receipt_cid
     };
-
-    // Fail closed when the daemon is not healthy — never attempt live transport
-    // against an unreachable backend.
-    if (!health.healthy) {
-      return {
-        ...base,
-        ok: false,
-        fail_closed: true,
-        live: false,
-        message: `${config.name || config.id} is not healthy; live ${toolProtocol.operation} was not attempted.`
-      };
-    }
-
-    // Perform the REAL request against the live MCP backend so dashboards surface
-    // working results (not a health-only mock).
-    try {
-      const live = await this._invokeLiveTool(config, toolProtocol);
-      return {
-        ...base,
-        ok: live.ok,
-        fail_closed: !live.ok,
-        live: true,
-        status_code: live.status_code,
-        response: live.response,
-        error: live.error || ''
-      };
-    } catch (error) {
-      return {
-        ...base,
-        ok: false,
-        fail_closed: true,
-        live: true,
-        error: error?.message || String(error),
-        message: `Live ${toolProtocol.operation} transport to ${toolProtocol.url} failed.`
-      };
-    }
   }
-
-  /**
-   * Issue the real HTTP request for a dashboard tool protocol against the live
-   * MCP backend and return the parsed response. tools/list uses the advertised
-   * method (GET); tools/call posts the non-mutating safe probe payload. When the
-   * daemon advertises an auth scheme, a bearer token is acquired (and refreshed
-   * on 401) before the request.
-   */
-  async _invokeLiveTool(config, toolProtocol, attempt = 0) {
-    if (typeof fetch !== 'function') {
-      throw new Error('global fetch is not available in this runtime');
-    }
-    const method = String(toolProtocol.method || 'GET').toUpperCase();
-    const safeProbe = toolProtocol.safeProbe || {};
-    // Substitute any path template (e.g. /tools/execute/{tool_name}).
-    const url = String(toolProtocol.url).replace('{tool_name}', encodeURIComponent(safeProbe.tool_name || ''));
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), Number(process.env.MCP_DASHBOARD_TOOL_TIMEOUT_MS || 4000));
-    try {
-      const headers = { Accept: 'application/json' };
-      if (config.auth) {
-        const token = await this._ensureAuthToken(config);
-        if (token) {
-          headers.Authorization = `Bearer ${token}`;
-        }
-      }
-      const options = { method, headers, signal: controller.signal };
-      if (method === 'POST') {
-        headers['Content-Type'] = 'application/json';
-        // Send a payload that satisfies common MCP REST shapes (tool name +
-        // arguments), so the safe probe reaches the backend regardless of the
-        // exact field naming it expects.
-        options.body = JSON.stringify({
-          tool: safeProbe.tool_name,
-          name: safeProbe.tool_name,
-          tool_name: safeProbe.tool_name,
-          arguments: safeProbe.arguments || {},
-          params: safeProbe.arguments || {}
-        });
-      }
-      const response = await fetch(url, options);
-      // Token expired/invalid — refresh once and retry.
-      if (response.status === 401 && config.auth && attempt === 0) {
-        this.daemonAuthTokens.delete(config.id);
-        clearTimeout(timeout);
-        return this._invokeLiveTool(config, toolProtocol, attempt + 1);
-      }
-      const text = await response.text();
-      let parsed;
-      try {
-        parsed = text ? JSON.parse(text) : null;
-      } catch {
-        parsed = { raw: text.slice(0, 2000) };
-      }
-      return { ok: response.ok, status_code: response.status, response: parsed, url };
-    } finally {
-      clearTimeout(timeout);
-    }
-  }
-
-  /**
-   * Acquire (and cache) a bearer token for a daemon that requires auth by
-   * logging in through its advertised login path.
-   */
-  async _ensureAuthToken(config) {
-    if (!config.auth || config.auth.scheme !== 'bearer') {
-      return null;
-    }
-    const cached = this.daemonAuthTokens.get(config.id);
-    if (cached && cached.expiresAt > Date.now()) {
-      return cached.token;
-    }
-    const endpoint = this._daemonEndpoint(config);
-    const loginUrl = `${endpoint}${config.auth.loginPath}`;
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 4000);
-    try {
-      const response = await fetch(loginUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ username: config.auth.username, password: config.auth.password }),
-        signal: controller.signal
-      });
-      if (!response.ok) {
-        return null;
-      }
-      const data = await response.json().catch(() => null);
-      const token = data?.access_token || data?.token;
-      if (!token) {
-        return null;
-      }
-      // Cache slightly less than the typical 15 minute JWT lifetime.
-      this.daemonAuthTokens.set(config.id, { token, expiresAt: Date.now() + 10 * 60 * 1000 });
-      return token;
-    } catch {
-      return null;
-    } finally {
-      clearTimeout(timeout);
-    }
-  }
-
-
 
   _mcpPlusPlusStatus(daemonId, daemon = null) {
     if (daemon?.mcpPlusPlus) {

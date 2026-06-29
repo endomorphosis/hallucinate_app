@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' http://localhost:* http://127.0.0.1:*; frame-src http://localhost:* http://127.0.0.1:*;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com; connect-src 'self' http://localhost:* http://127.0.0.1:*; frame-src http://localhost:* http://127.0.0.1:*;">
   <title>IPFS Kit Dashboard</title>
   
   <!-- Add Font Awesome for icons -->
-  <link rel="stylesheet" href="../../../node_modules/@fortawesome/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   
   <!-- Add dashboard styles -->
   <link rel="stylesheet" href="../dashboard/ipfs_kit_dashboard.css">
@@ -73,10 +73,15 @@
   </style>
 </head>
 <body>
-  <button type="button" data-testid="nav-home" aria-label="Back to Main Dashboard" title="Back to Main Dashboard" onclick="window.electronAPI?.navigation?.navigateHome?.()" style="position:fixed;bottom:16px;left:16px;z-index:99999;padding:8px 14px;background:#2d3748;color:#fff;border:none;border-radius:20px;cursor:pointer;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,0.25);">🏠 Home</button>
-  <div class="container" role="main" data-testid="mcp-dashboard" data-daemon-id="ipfs-kit">
+  <!-- Shared Components -->
+  <div id="health-status-bar"></div>
+  <div style="display: flex; min-height: 100vh;">
+    <div id="sidebar-nav"></div>
+    <div style="flex: 1; overflow-y: auto;">
+
+  <div class="container">
     <div class="page-header">
-      <h1 data-testid="dashboard-title">IPFS Kit Dashboard</h1>
+      <h1>IPFS Kit Dashboard</h1>
       <p>Test and manage IPFS Kit functionality</p>
     </div>
     
@@ -84,27 +89,27 @@
       <div class="status-panel" style="padding: 1.25rem; border-bottom: 1px solid #e2e8f0;">
         <h2 style="margin: 0 0 0.75rem 0; font-size: 1.2rem; color: #2d3748;">MCP Server Status</h2>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem;">
-          <div><strong>Status:</strong> <span id="server-status" data-testid="server-status">Checking...</span></div>
+          <div><strong>Status:</strong> <span id="server-status">Checking...</span></div>
           <div><strong>Port:</strong> 8004</div>
-          <div><strong>Health:</strong> <span id="health-status" data-testid="health-status">Unknown</span></div>
-          <div><strong>Endpoint:</strong> <span id="endpoint-status" data-testid="endpoint-status">http://127.0.0.1:8004</span></div>
+          <div><strong>Health:</strong> <span id="health-status">Unknown</span></div>
+          <div><strong>Endpoint:</strong> <span id="endpoint-status">http://127.0.0.1:8004</span></div>
           <div><strong>Package:</strong> <span id="package-status">ipfs_kit_py</span></div>
-          <div><strong>MCP++:</strong> <span id="mcpplusplus-status" data-testid="mcpplusplus-status">Checking...</span></div>
+          <div><strong>MCP++:</strong> <span id="mcpplusplus-status">Checking...</span></div>
         </div>
       </div>
 
       <div class="actions-panel" style="padding: 1.25rem; border-bottom: 1px solid #e2e8f0;">
         <h2 style="margin: 0 0 0.75rem 0; font-size: 1.2rem; color: #2d3748;">Quick Actions</h2>
         <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-          <button id="btn-test-connection" data-testid="btn-test-connection" style="padding: 0.5rem 0.75rem;">Test MCP Connection</button>
-          <button id="btn-view-logs" data-testid="btn-view-logs" style="padding: 0.5rem 0.75rem;">View Server Logs</button>
-          <button id="btn-open-web-dashboard" data-testid="btn-open-web-dashboard" style="padding: 0.5rem 0.75rem;">Open Web Dashboard</button>
-          <button id="btn-open-daemon-manager" data-testid="btn-open-daemon-manager" style="padding: 0.5rem 0.75rem;">Open Daemon Manager</button>
+          <button id="btn-test-connection" style="padding: 0.5rem 0.75rem;">Test MCP Connection</button>
+          <button id="btn-view-logs" style="padding: 0.5rem 0.75rem;">View Server Logs</button>
+          <button id="btn-open-web-dashboard" style="padding: 0.5rem 0.75rem;">Open Web Dashboard</button>
+          <button id="btn-open-daemon-manager" style="padding: 0.5rem 0.75rem;">Open Daemon Manager</button>
         </div>
-        <div id="health-receipt" class="receipt-box" data-testid="health-receipt">Waiting for daemon health receipt...</div>
+        <div id="health-receipt" class="receipt-box">Waiting for daemon health receipt...</div>
       </div>
 
-      <div class="tools-panel" data-testid="tools-panel" style="padding: 1.25rem; border-bottom: 1px solid #e2e8f0;">
+      <div class="tools-panel" style="padding: 1.25rem; border-bottom: 1px solid #e2e8f0;">
         <h2 style="margin: 0 0 0.75rem 0; font-size: 1.2rem; color: #2d3748;">Catalog-backed MCP Tool Surface</h2>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0.75rem; margin-bottom: 0.75rem;">
           <div><strong>tools/list:</strong> <code id="tools-list-url">Loading...</code></div>
@@ -113,13 +118,10 @@
           <div><strong>Native Dashboard:</strong> <code id="native-dashboard-url">Loading...</code></div>
         </div>
         <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-          <button id="btn-tools-list" data-testid="btn-tools-list" style="padding: 0.5rem 0.75rem;">Run tools/list</button>
-          <button id="btn-tools-call" data-testid="btn-tools-call" style="padding: 0.5rem 0.75rem;">Run safe tools/call</button>
+          <button id="btn-tools-list" style="padding: 0.5rem 0.75rem;">Run tools/list</button>
+          <button id="btn-tools-call" style="padding: 0.5rem 0.75rem;">Run safe tools/call</button>
         </div>
-        <div id="tool-receipt" class="receipt-box" data-testid="tool-receipt">No tool receipt yet.</div>
-        <div id="discovered-tools" data-testid="discovered-tools" style="margin-top: 0.85rem;">
-          <p style="margin: 0; color: #718096;">Run <code>tools/list</code> to enumerate the advertised MCP tools.</p>
-        </div>
+        <div id="tool-receipt" class="receipt-box">No tool receipt yet.</div>
       </div>
 
       <div class="features-panel" style="padding: 1.25rem;">
@@ -163,53 +165,6 @@
 
     function renderReceipt(targetId, receipt) {
       document.getElementById(targetId).textContent = JSON.stringify(receipt, null, 2);
-    }
-
-    // Extract an MCP tools[] array from the varied shapes a tools/list receipt may carry.
-    function extractTools(receipt) {
-      const candidates = [
-        receipt?.response?.response?.result?.tools,
-        receipt?.response?.response?.tools,
-        receipt?.response?.result?.tools,
-        receipt?.response?.tools,
-        receipt?.response?.result,
-        receipt?.tools
-      ];
-      for (const candidate of candidates) {
-        if (Array.isArray(candidate)) {
-          return candidate.filter((tool) => tool && (tool.name || tool.tool_name));
-        }
-      }
-      return [];
-    }
-
-    // Render discovered MCP tools with stable, per-tool test hooks.
-    function renderDiscoveredTools(receipt) {
-      const container = document.getElementById('discovered-tools');
-      if (!container) {
-        return;
-      }
-      const tools = extractTools(receipt);
-      container.dataset.toolCount = String(tools.length);
-      if (tools.length === 0) {
-        const blocked = receipt?.fail_closed ? ' (daemon not healthy — tool surface is fail-closed)' : '';
-        container.innerHTML = `<p style="margin: 0; color: #718096;">No MCP tools advertised yet${blocked}.</p>`;
-        return;
-      }
-      const rows = tools.map((tool) => {
-        const name = String(tool.name || tool.tool_name);
-        const safeId = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-        const description = String(tool.description || tool.title || '').replace(/[<>&]/g, '');
-        return `
-          <div class="mcp-tool-row" data-testid="mcp-tool" data-tool-name="${name}"
-               style="padding: 0.5rem 0.65rem; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 0.4rem; background: #fff;">
-            <code data-testid="mcp-tool-name-${safeId}" style="font-weight: 600;">${name}</code>
-            <div style="color: #4a5568; font-size: 0.85rem; margin-top: 0.2rem;">${description || 'No description advertised.'}</div>
-          </div>`;
-      }).join('');
-      container.innerHTML = `
-        <p style="margin: 0 0 0.5rem; color: #2d3748; font-weight: 600;">Discovered MCP Tools (${tools.length})</p>
-        ${rows}`;
     }
 
     function setButtonBusy(buttonId, busy, label) {
@@ -339,9 +294,7 @@
     document.getElementById('btn-tools-list').addEventListener('click', async () => {
       setButtonBusy('btn-tools-list', true, 'Run tools/list');
       try {
-        const receipt = await daemonApi.dashboardToolsList(DAEMON_ID);
-        renderReceipt('tool-receipt', receipt);
-        renderDiscoveredTools(receipt);
+        renderReceipt('tool-receipt', await daemonApi.dashboardToolsList(DAEMON_ID));
       } finally {
         setButtonBusy('btn-tools-list', false, 'Run tools/list');
       }

@@ -8870,7 +8870,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-726 Resolve merge retry-budget failure for HAO-724
 
-- Status: completed
+- Status: todo
 - Completion: manual
 - Priority: P1
 - Track: ops

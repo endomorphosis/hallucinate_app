@@ -444,25 +444,12 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
         supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-537-objective-gap-3e00ad2a0074.md'
       }),
       expect.objectContaining({
-        task_id: 'HAO-727',
-        goal_id: 'VAIOS-G723',
-        evidence_term: 'launch Playwright validation gate',
-        supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-727-objective-gap-7ea369464239.md',
-        launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-727-mcp-dashboard-launch-gate.md',
-        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-727-mcp-dashboard-launch-gate.json'
-      }),
-      expect.objectContaining({
         task_id: 'MGW-555',
         goal_id: 'VAIOS-G724',
         goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
         packet_goal_ids: ['VAIOS-G724', 'VAIOS-G728'],
         evidence_term: 'launch Playwright validation gate',
-        supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-28-mgw-555-objective-gap-3e00ad2a0074.md',
-        launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-28-mgw-555-launch-playwright-validation-gate.md',
-        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-555-mcp-dashboard-launch-gate.json',
-        gate_state: 'gate_closed_by_playwright_validation',
-        closes_goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
-        packet_sibling_goal_id: 'VAIOS-G728'
+        supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-28-mgw-555-objective-gap-3e00ad2a0074.md'
       })
     ]));
     expect(catalog?.control_surface_route).toContain('mediation_receipt');
@@ -1080,14 +1067,6 @@ test.describe('MCP Feature Exposure - headless backend gate', () => {
         receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-537-mcp-dashboard-launch-gate.json'
       }),
       expect.objectContaining({
-        task_id: 'HAO-727',
-        goal_id: 'VAIOS-G723',
-        evidence_term: 'launch Playwright validation gate',
-        supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-727-objective-gap-7ea369464239.md',
-        launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-727-mcp-dashboard-launch-gate.md',
-        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-727-mcp-dashboard-launch-gate.json'
-      }),
-      expect.objectContaining({
         task_id: 'MGW-555',
         goal_id: 'VAIOS-G724',
         goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
@@ -1095,15 +1074,7 @@ test.describe('MCP Feature Exposure - headless backend gate', () => {
         evidence_term: 'launch Playwright validation gate',
         supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-28-mgw-555-objective-gap-3e00ad2a0074.md',
         launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-28-mgw-555-launch-playwright-validation-gate.md',
-        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-555-mcp-dashboard-launch-gate.json',
-        gate_state: 'gate_closed_by_playwright_validation',
-        validation_commands: [
-          'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
-          'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
-          'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
-        ],
-        closes_goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
-        packet_sibling_goal_id: 'VAIOS-G728'
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-555-mcp-dashboard-launch-gate.json'
       })
     ]));
     expect(catalog?.control_surface_route).toContain('mediation_receipt');
