@@ -142,6 +142,27 @@ jobs:
             fakeroot \
             dpkg
           sudo apt-get install -y libasound2t64 || sudo apt-get install -y libasound2
+
+      # The rpm maker (electron-installer-redhat) runs rpmbuild, whose default
+      # %install post-processing strips every ELF/.node binary it finds. The app
+      # bundles foreign-architecture native binaries (e.g. onnxruntime-node's
+      # linux/arm64 .node files, groth16 aarch64 helpers) that `strip` on the
+      # x86_64 build host cannot parse, aborting the rpm build. Disable rpm's
+      # strip/compress/debug post-processing via ~/.rpmmacros so the rpm packages
+      # the binaries verbatim (the right arch is selected at runtime).
+      - name: Configure rpmbuild (disable strip)
+        if: matrix.os == 'linux' || matrix.os == 'rhel'
+        shell: bash
+        run: |
+          cat > "$HOME/.rpmmacros" <<'RPMMACROS'
+          %__os_install_post %{nil}
+          %__strip /bin/true
+          %debug_package %{nil}
+          %__brp_strip %{nil}
+          %__brp_strip_static_archive %{nil}
+          %__brp_strip_comment_note %{nil}
+          RPMMACROS
+          cat "$HOME/.rpmmacros"
       
       - name: Install macOS system dependencies
         if: matrix.os == 'macos'
