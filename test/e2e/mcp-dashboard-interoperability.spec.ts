@@ -2064,6 +2064,7 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       'PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py tests/test_virtual_ai_os_todo_queue.py -q',
       'npm --prefix hallucinate_app run test:daemon-manager',
       'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
+      'cd hallucinate_app && (env -u DISPLAY -u WAYLAND_DISPLAY HALLUCINATE_APP_E2E_NO_BOOTSTRAP=true node scripts/run_playwright_test.mjs --help || test $? -eq 78)',
       'npm --prefix swissknife run test:e2e:mcp',
       'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
       'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
@@ -2088,6 +2089,7 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       child_goals: receipt.child_goals,
       follow_up_subtasks: receipt.follow_up_subtasks
     });
+    expect(launchGate?.validation_commands).toEqual(receipt.validation_commands);
 
     for (const server of receipt.dashboard_servers) {
       const catalogServer = serversByPackage.get(server.server_package) as any;
