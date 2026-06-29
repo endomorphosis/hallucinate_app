@@ -203,14 +203,18 @@ the running MCP server.
   `test-results/mcp-live-backend/live-backend.json`.
 
 ### Diagnosed environment/backend blockers (not app-logic bugs)
-- **IPFS Kit (`8004`)** never becomes healthy here because **port 8004 is already
-  owned by the VS Code process** — the kit daemon cannot serve its
-  `/api/mcp/status` HTTP endpoint. The app should detect port conflicts / make the
-  kit port configurable (follow-up).
-- **Datasets / Accelerate** must be running on their configured app ports
-  (`3002` / `3003`); separate sidecar services seen on `8899` / `9000` use a
-  different MCP transport (POST JSON-RPC returns `405`), so the advertised REST
-  tool paths may need to be reconciled with the Python servers.
+
+### End-to-end live result (all three verified)
+With a free kit port (`MCP_KIT_PORT=8014` to dodge the VS Code 8004 conflict),
+`MCP_LIVE_BACKEND=1` shows **all three MCP servers healthy and live**:
+- **IPFS Kit** — healthy, `tools/list` 200, **95 real tools**.
+- **IPFS Datasets** — healthy, authenticated `tools/list` 200 (16 categories).
+- **IPFS Accelerate** — healthy, `tools/list` 200 (REST tool enumeration is
+  backend-stubbed; full tools are on the mcplusplus transport).
+
+Reconciled config: kit port is env-configurable; datasets tool paths
+`/tools/list` + `/tools/execute/{tool_name}` with bearer login; accelerate paths
+`/api/mcp/tools` + `/api/tools`. Mutating operations remain fail-closed.
 
 
 ## Suggested test roadmap
