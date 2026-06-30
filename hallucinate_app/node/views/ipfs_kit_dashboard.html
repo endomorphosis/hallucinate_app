@@ -163,6 +163,31 @@
       console.error('Daemon API bridge is unavailable.');
     }
 
+    function nativeDashboardUrlFromEntry(entry, liveEndpoint) {
+      // ipfs_kit_py serves its native dashboard at <endpoint>/dashboard on the
+      // same port as the MCP endpoint (no separate sidecar). Always prefer the
+      // LIVE endpoint so the embedded frame follows port reassignment (e.g.
+      // 8004 -> 8005 when 8004 is occupied) instead of pinning the stale
+      // build-time port advertised in native_dashboard_url / menu_dashboard_url.
+      const base = liveEndpoint || entry?.endpoint;
+      if (base) {
+        return `${base.replace(/\/$/, '')}/dashboard`;
+      }
+      const advertised = entry?.native_dashboard_url || entry?.menu_dashboard_url;
+      return advertised || null;
+    }
+
+    function syncNativeDashboardFrame(entry, liveEndpoint) {
+      const frame = document.getElementById('package-dashboard-frame');
+      if (!frame) {
+        return;
+      }
+      const url = nativeDashboardUrlFromEntry(entry, liveEndpoint);
+      if (url && frame.src !== url) {
+        frame.src = url;
+      }
+    }
+
     function renderReceipt(targetId, receipt) {
       document.getElementById(targetId).textContent = JSON.stringify(receipt, null, 2);
     }
@@ -215,6 +240,7 @@
           serverStatus.textContent = 'Running';
           serverStatus.style.color = '#2f855a';
           endpointStatus.textContent = kitStatus.endpoint || dashboardCapability?.endpoint || 'http://127.0.0.1:8004';
+          syncNativeDashboardFrame(dashboardCapability, kitStatus.endpoint);
         } else {
           serverStatus.textContent = 'Stopped';
           serverStatus.style.color = '#c53030';
@@ -288,7 +314,13 @@
         return;
       }
       const frame = document.getElementById('package-dashboard-frame');
-      frame.src = healthState?.entry?.native_dashboard_url || healthState?.entry?.menu_dashboard_url || frame.src;
+      let liveEndpoint = null;
+      try {
+        const status = await daemonApi.getAll();
+        liveEndpoint = status?.[DAEMON_ID]?.endpoint || null;
+      } catch { /* fall back to entry/static endpoint */ }
+      const url = nativeDashboardUrlFromEntry(healthState?.entry, liveEndpoint);
+      frame.src = url || frame.src;
     });
 
     document.getElementById('btn-tools-list').addEventListener('click', async () => {

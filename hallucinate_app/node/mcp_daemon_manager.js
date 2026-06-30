@@ -1463,6 +1463,7 @@ class MCPDaemonManager extends EventEmitter {
         startup_order: config.launchOrder,
         entrypoint: `${config.command} ${config.args.join(' ')}`,
         cwd: config.cwd,
+        port: config.port,
         endpoint: this._daemonEndpoint(config),
         transport: config.transport,
         rpc_path: config.rpcPath,

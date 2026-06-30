@@ -157,6 +157,32 @@ async function waitForWindowUrl(electronApp: ElectronApplication, matcher: RegEx
   throw new Error(`No window URL matched ${matcher}`);
 }
 
+/**
+ * Resolve each daemon's LIVE endpoint and native web-dashboard URL from the
+ * running app (launch plan + daemon status). The daemon manager reassigns a
+ * port when the configured one is occupied (e.g. ipfs-kit 8004 -> 8005), and
+ * every UI/menu surface follows that live port, so tests must assert against
+ * the advertised endpoint rather than a hardcoded literal. In a clean
+ * environment these resolve back to the configured 8004/3002/3003.
+ */
+async function liveDaemonEndpoints(window: Page): Promise<Record<string, { endpoint: string; webDashboardUrl: string }>> {
+  return window.evaluate(async () => {
+    const api = (window as any)?.electronAPI?.daemon;
+    const plan = (await api?.getLaunchPlan?.()) || [];
+    const all = (await api?.getAll?.()) || {};
+    const map: Record<string, { endpoint: string; webDashboardUrl: string }> = {};
+    for (const entry of plan) {
+      const live = all?.[entry.daemon_id] || {};
+      const endpoint = live.endpoint || entry.endpoint;
+      map[entry.daemon_id] = {
+        endpoint,
+        webDashboardUrl: entry.native_dashboard_url || `${endpoint}/dashboard`
+      };
+    }
+    return map;
+  });
+}
+
 async function installFetchStub(window: Page) {
   await window.evaluate(() => {
     (window as any).__fetchCalls = [];
@@ -540,9 +566,10 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
     expect(bodyText).toContain('IPFS Datasets MCP');
     expect(bodyText).toContain('IPFS Accelerate MCP');
 
-    expect(bodyText).toContain('http://127.0.0.1:8004');
-    expect(bodyText).toContain('http://127.0.0.1:3002');
-    expect(bodyText).toContain('http://127.0.0.1:3003');
+    const live = await liveDaemonEndpoints(window);
+    expect(bodyText).toContain(live['ipfs-kit'].endpoint);
+    expect(bodyText).toContain(live['ipfs-datasets'].endpoint);
+    expect(bodyText).toContain(live['ipfs-accelerate'].endpoint);
   });
 
   test('daemon manager event log surface is present and initialized', async () => {
@@ -654,7 +681,8 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
 
     await expect(window.locator('h1')).toContainText('IPFS Kit Dashboard');
     await expect(window.locator('#dashboard-container')).toBeVisible();
-    await expect(window.locator('#package-dashboard-frame')).toHaveAttribute('src', 'http://127.0.0.1:8004/dashboard');
+    const live = await liveDaemonEndpoints(window);
+    await expect(window.locator('#package-dashboard-frame')).toHaveAttribute('src', live['ipfs-kit'].webDashboardUrl);
   });
 
   test('embedded native package dashboards are present for kit and accelerate', async () => {
@@ -680,7 +708,8 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
     await openDashboardFromMenu(electronApp, window, 'IPFS Kit Dashboard');
     await waitForDaemonHealthy(window, 'ipfs-kit');
 
-    const response = await window.request.get('http://127.0.0.1:8004/api/mcp/status');
+    const live = await liveDaemonEndpoints(window);
+    const response = await window.request.get(`${live['ipfs-kit'].endpoint}/api/mcp/status`);
     expect(response.ok()).toBe(true);
 
     await window.locator('#btn-test-connection').click();
@@ -715,12 +744,15 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
       },
     ];
 
+    const live = await liveDaemonEndpoints(window);
     for (const dashboard of dashboards) {
+      const liveEndpoint = live[dashboard.daemonId]?.endpoint || dashboard.endpoint;
+      const liveToolsList = dashboard.toolsList.replace(dashboard.endpoint, liveEndpoint);
       await openDashboardFromMenu(electronApp, window, dashboard.label);
       await waitForDaemonHealthy(window, dashboard.daemonId);
-      await expect(window.locator('#endpoint-status')).toContainText(dashboard.endpoint);
+      await expect(window.locator('#endpoint-status')).toContainText(liveEndpoint);
       await expect(window.locator('#health-status')).toContainText(/Healthy|Degraded|Unknown/);
-      await expect(window.locator('#tools-list-url')).toContainText(dashboard.toolsList);
+      await expect(window.locator('#tools-list-url')).toContainText(liveToolsList);
       await expect(window.locator('#tools-call-probe')).toContainText(dashboard.safeProbe);
       await expect(window.locator('#control-surface-contract')).toContainText(`mcp-daemon:${dashboard.daemonId}`);
       await expect(window.locator('#native-dashboard-url')).toContainText(/dashboard|mcp/i);
@@ -820,13 +852,25 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
   test('Tools menu exposes the configured MCP tool URLs for kit, datasets, and accelerate', async () => {
     await installOpenExternalSpy(electronApp);
 
+    const live = await liveDaemonEndpoints(window);
     for (const server of mcpServers.filter((server) => ['ipfs-kit', 'ipfs-datasets', 'ipfs-accelerate'].includes(server.id))) {
+      const livePort = new URL(live[server.id].endpoint).port;
       for (const tool of server.tools.filter((tool: any) => tool.url)) {
+        let expectedUrl = tool.url;
+        try {
+          const parsed = new URL(tool.url);
+          if (parsed.hostname === '127.0.0.1' || parsed.hostname === 'localhost') {
+            parsed.port = String(livePort);
+            expectedUrl = parsed.toString();
+          }
+        } catch {
+          expectedUrl = tool.url;
+        }
         const clicked = await clickApplicationMenuPath(electronApp, ['Tools', `${server.displayName} Tools`, tool.label]);
         expect(clicked).toBe(true);
 
         const calls = await getOpenExternalCalls(electronApp);
-        expect(calls[calls.length - 1]).toBe(tool.url);
+        expect(calls[calls.length - 1]).toBe(expectedUrl);
       }
     }
   });
@@ -834,6 +878,7 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
   test('MCP Servers browser entries use the live dashboard URLs', async () => {
     await installOpenExternalSpy(electronApp);
 
+    const live = await liveDaemonEndpoints(window);
     for (const server of mcpServers.filter((server) => ['ipfs-kit', 'ipfs-datasets', 'ipfs-accelerate'].includes(server.id))) {
       const clicked = await clickApplicationMenuPath(electronApp, [
         'MCP Servers',
@@ -843,12 +888,13 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
       expect(clicked).toBe(true);
 
       const calls = await getOpenExternalCalls(electronApp);
-      expect(calls[calls.length - 1]).toBe(server.webDashboardUrl);
+      expect(calls[calls.length - 1]).toBe(live[server.id].webDashboardUrl);
     }
   });
 
   test('MCP Servers embedded web dashboard entries launch MCP dashboard windows', async () => {
     const targets = mcpServers.filter((server) => ['ipfs-kit', 'ipfs-datasets', 'ipfs-accelerate'].includes(server.id));
+    const live = await liveDaemonEndpoints(window);
 
     for (const target of targets) {
       expect(await clickApplicationMenuPath(electronApp, [
@@ -859,7 +905,7 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
 
       await waitForWindowUrl(
         electronApp,
-        new RegExp(target.webDashboardUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+        new RegExp(live[target.id].webDashboardUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
       );
     }
   });
