@@ -524,6 +524,16 @@ const MGW_561_LAUNCH_VALIDATION_GATE = {
   receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-561-mcp-dashboard-launch-gate.json',
   failure_rule: 'Any MGW-561 dashboard catalog, UI wiring, mediated tools/list, mediated tools/call, Swissknife consumer, backend validation, or Playwright failure remains supervisor-generated follow-up work for VAIOS-G723.'
 };
+const MGW_562_LAUNCH_VALIDATION_GATE = {
+  ...MGW_558_LAUNCH_VALIDATION_GATE,
+  task_id: 'MGW-562',
+  source_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-30-mgw-562-objective-gap-7ea369464239.md',
+  supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-30-mgw-562-objective-gap-7ea369464239.md',
+  launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-30-mgw-562-launch-playwright-validation-gate.md',
+  hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-30-mgw-562-mcp-dashboard-launch-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-562-mcp-dashboard-launch-gate.json',
+  failure_rule: 'Any MGW-562 dashboard catalog, UI wiring, mediated tools/list, mediated tools/call, Swissknife consumer, backend validation, or Playwright failure remains supervisor-generated follow-up work for VAIOS-G723.'
+};
 const MGW_555_LAUNCH_VALIDATION_GATE = {
   ...MGW_533_LAUNCH_VALIDATION_GATE,
   task_id: 'MGW-555',
@@ -558,6 +568,7 @@ const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   MGW_558_LAUNCH_VALIDATION_GATE,
   MGW_559_LAUNCH_VALIDATION_GATE,
   MGW_561_LAUNCH_VALIDATION_GATE,
+  MGW_562_LAUNCH_VALIDATION_GATE,
   MGW_555_LAUNCH_VALIDATION_GATE
 ];
 const DAEMON_LAUNCH_GATE_TASK_ID = 'MGW-535';
