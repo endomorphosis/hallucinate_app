@@ -771,10 +771,16 @@ const LIVE_TOOL_INVOCATION = {
     toolsCall: { method: 'POST', path: '/tools/execute/tools_list_categories', requiresAuth: true, body: {} }
   },
   'ipfs-accelerate': {
-    toolsList: { method: 'GET', path: '/api/mcp/tools' },
+    // The accelerate MCP runtime serves the standard MCP JSON-RPC surface at
+    // /mcp (GET returns {result:{tools:[...]}}, POST accepts JSON-RPC). The old
+    // /api/mcp/tools path returns a status object (no tools) and /jsonrpc 404s,
+    // which made live tools/list report 0 tools and tools/call fail — surfacing
+    // in the app as the accelerate MCP tools "not working". Probe the real MCP
+    // endpoint so the dashboard exercises the same surface external MCP clients use.
+    toolsList: { method: 'GET', path: '/mcp/tools/list' },
     // Invoke a real, non-mutating MCP tool through the JSON-RPC tools/call
     // interface so the dashboard exercises the actual MCP tool surface.
-    toolsCall: { method: 'POST', path: '/jsonrpc', jsonRpc: true, toolName: 'hardware_get_info', arguments: {} }
+    toolsCall: { method: 'POST', path: '/mcp', jsonRpc: true, toolName: 'hardware_get_info', arguments: {} }
   }
 };
 
@@ -2263,6 +2269,15 @@ class MCPDaemonManager extends EventEmitter {
         live.tools_sample = tools.slice(0, 8).map((t) => (typeof t === 'string' ? t : t?.name)).filter(Boolean);
         live.ok = response.ok && tools.length > 0;
       } else {
+        // A JSON-RPC tools/call returns HTTP 200 even for protocol errors
+        // ({"error": ...}); only treat it as a working result when the backend
+        // returned a non-error JSON-RPC result so live_ok reflects a real call.
+        if (json && typeof json === 'object' && 'jsonrpc' in json) {
+          live.ok = response.ok && !json.error && json.result !== undefined;
+          if (json.error) {
+            live.error = typeof json.error === 'object' ? json.error.message || JSON.stringify(json.error) : String(json.error);
+          }
+        }
         live.response_preview = json ? JSON.stringify(json).slice(0, 400) : String(text || '').slice(0, 400);
       }
       return live;
