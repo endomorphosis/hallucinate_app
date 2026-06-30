@@ -125,6 +125,9 @@
   // ---- fetch interception -------------------------------------------------
   if (typeof window.fetch === 'function') {
     var origFetch = window.fetch.bind(window);
+    // Expose the un-rewritten fetch so the discovery layer can probe absolute
+    // candidate URLs without the localhost->backend rewriting kicking in.
+    window.__hlNativeFetch = origFetch;
     window.fetch = function (input, init) {
       try {
         if (typeof input === 'string') {
@@ -244,14 +247,35 @@
       if (window.sessionStorage && window.sessionStorage.getItem('hlBackendPromptDismissed')) return;
     } catch (e) {}
     var banner = document.createElement('div');
+    banner.id = 'hl-mobile-nav-banner';
     banner.style.cssText =
       'position:fixed;left:0;right:0;top:0;z-index:2147483647;background:#b8860b;color:#000;' +
       'padding:10px 14px;font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;' +
       'display:flex;align-items:center;justify-content:space-between;gap:8px;';
     var msg = document.createElement('span');
-    msg.textContent = 'No backend configured — IPFS / dataset / accelerate features need a remote MCP++ server.';
+    msg.textContent = 'No backend configured — searching the network…';
     var right = document.createElement('span');
     right.style.cssText = 'display:flex;gap:8px;align-items:center;';
+    var disc = document.createElement('button');
+    disc.textContent = 'Discover';
+    disc.style.cssText = 'background:#000;color:#fff;border:none;border-radius:6px;padding:6px 10px;cursor:pointer;white-space:nowrap;';
+    disc.onclick = function () {
+      disc.disabled = true;
+      msg.textContent = 'Searching mDNS / DHT / pubsub / rendezvous…';
+      window.HallucinateMobile.discover({ timeout: 4000 }).then(function (list) {
+        if (list && list.length) {
+          applyBackend(list[0].url);
+          banner.remove();
+          showAutoToast(list[0]);
+        } else {
+          msg.textContent = 'No backends found. Tap Configure to set one manually.';
+          disc.disabled = false;
+        }
+      }).catch(function () {
+        msg.textContent = 'Discovery failed. Tap Configure to set one manually.';
+        disc.disabled = false;
+      });
+    };
     var go = document.createElement('a');
     go.textContent = 'Configure';
     go.href = '/settings.html';
@@ -263,11 +287,91 @@
       banner.remove();
       try { window.sessionStorage.setItem('hlBackendPromptDismissed', '1'); } catch (e) {}
     };
+    right.appendChild(disc);
     right.appendChild(go);
     right.appendChild(x);
     banner.appendChild(msg);
     banner.appendChild(right);
     document.body.appendChild(banner);
+  }
+
+  // ---- discovery integration ---------------------------------------------
+  // Lazily load the multi-method libp2p discovery layer (discovery.js) and
+  // expose a small helper + first-run auto-discovery.
+  var discoveryLoading = null;
+  function loadDiscovery() {
+    if (window.HallucinateDiscovery) return Promise.resolve(window.HallucinateDiscovery);
+    if (discoveryLoading) return discoveryLoading;
+    discoveryLoading = new Promise(function (resolve, reject) {
+      var s = document.createElement('script');
+      s.src = '/mobile/discovery.js';
+      s.async = true;
+      s.onload = function () { resolve(window.HallucinateDiscovery); };
+      s.onerror = function () { reject(new Error('failed to load discovery.js')); };
+      (document.head || document.documentElement).appendChild(s);
+    });
+    return discoveryLoading;
+  }
+
+  function applyBackend(url) {
+    var base = trimSlash(url);
+    if (!base) return;
+    try {
+      window.localStorage.setItem(LS.base, base);
+      if (!read(LS.port)) window.localStorage.setItem(LS.port, '8080');
+    } catch (e) {}
+  }
+
+  // Public helper used by settings.html and auto-discovery.
+  window.HallucinateMobile = window.HallucinateMobile || {};
+  window.HallucinateMobile.discover = function (opts) {
+    return loadDiscovery().then(function (D) {
+      return D.discoverAll(opts || {});
+    });
+  };
+  window.HallucinateMobile.applyBackend = applyBackend;
+  window.HallucinateMobile.loadDiscovery = loadDiscovery;
+
+  // On first run with no backend configured, quietly search the network and
+  // auto-select a single clearly-best backend; otherwise leave it to the user.
+  function maybeAutoDiscover() {
+    if (backendBase()) return; // already configured
+    if (/settings\.html$/.test(window.location.pathname)) return;
+    if (read('hallucinateAutoDiscover') === 'off') return;
+    try {
+      if (window.sessionStorage && window.sessionStorage.getItem('hlAutoDiscoverDone')) return;
+      window.sessionStorage.setItem('hlAutoDiscoverDone', '1');
+    } catch (e) {}
+    loadDiscovery().then(function (D) {
+      return D.discoverAll({ timeout: 3500, relayHops: 1 });
+    }).then(function (list) {
+      if (!list || !list.length) return;
+      if (!backendBase()) {
+        applyBackend(list[0].url);
+        var b = document.getElementById('hl-mobile-nav-banner');
+        if (b) b.remove();
+        console.log('[hallucinate] auto-discovered backend:', list[0].url,
+          '(' + (list[0].methods || []).join(',') + ')');
+        showAutoToast(list[0]);
+      }
+    }).catch(function () { /* discovery best-effort */ });
+  }
+
+  function showAutoToast(cand) {
+    var t = document.createElement('div');
+    t.style.cssText =
+      'position:fixed;left:0;right:0;top:0;z-index:2147483647;background:#2e7d32;color:#fff;' +
+      'padding:10px 14px;font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;' +
+      'display:flex;align-items:center;justify-content:space-between;gap:8px;';
+    t.innerHTML = '<span>\u2713 Backend auto-discovered: ' + cand.url +
+      ' <small style="opacity:.8">(' + (cand.methods || []).join(', ') + ')</small></span>';
+    var x = document.createElement('button');
+    x.textContent = '\u2715';
+    x.style.cssText = 'background:transparent;border:none;color:#fff;font-size:16px;cursor:pointer;';
+    x.onclick = function () { t.remove(); };
+    t.appendChild(x);
+    document.body.appendChild(t);
+    setTimeout(function () { try { t.remove(); } catch (e) {} }, 6000);
   }
 
   function onReady() {
@@ -278,6 +382,7 @@
     } catch (e) {}
     injectNav();
     ensureConfigured();
+    maybeAutoDiscover();
   }
 
   if (document.readyState === 'loading') {

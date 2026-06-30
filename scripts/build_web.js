@@ -164,6 +164,7 @@ console.log('Copying mobile bridge + JS MCP SDK...');
 const mobileOut = join(wwwDir, 'mobile');
 mkdirSync(mobileOut, { recursive: true });
 copyFileSync(join(mobileSrcDir, 'mobile_bridge.js'), join(mobileOut, 'mobile_bridge.js'));
+copyFileSync(join(mobileSrcDir, 'discovery.js'), join(mobileOut, 'discovery.js'));
 copyFileSync(join(mobileSrcDir, 'settings.html'), join(wwwDir, 'settings.html'));
 if (existsSync(jsSdkDir)) {
   for (const f of ['ipfs-kit-mcp-sdk.js', 'ipfs-kit-mcp-sdk.ts', 'tools-manifest.json']) {

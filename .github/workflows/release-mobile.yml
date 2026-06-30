@@ -99,6 +99,19 @@ jobs:
           npx cap add android || echo "android platform already added"
           npx cap sync android
 
+      - name: Enable mDNS (Wi-Fi multicast) permissions for discovery
+        run: |
+          MANIFEST=android/app/src/main/AndroidManifest.xml
+          if [ -f "$MANIFEST" ]; then
+            for PERM in CHANGE_WIFI_MULTICAST_STATE ACCESS_WIFI_STATE ACCESS_NETWORK_STATE; do
+              if ! grep -q "android.permission.$PERM" "$MANIFEST"; then
+                sed -i "s#<application#<uses-permission android:name=\"android.permission.$PERM\" />\n    <application#" "$MANIFEST"
+              fi
+            done
+            echo "Patched $MANIFEST for mDNS:"
+            grep -n "uses-permission" "$MANIFEST" || true
+          fi
+
       - name: Generate ephemeral signing keystore
         id: keystore
         shell: bash
@@ -220,6 +233,21 @@ jobs:
         run: |
           npx cap add ios || echo "ios platform already added"
           npx cap sync ios
+
+      - name: Enable mDNS (Bonjour / Local Network) for discovery
+        run: |
+          PLIST=ios/App/App/Info.plist
+          if [ -f "$PLIST" ]; then
+            /usr/libexec/PlistBuddy -c "Add :NSLocalNetworkUsageDescription string 'Discover IPFS / MCP++ backends on your local network.'" "$PLIST" 2>/dev/null || \
+              /usr/libexec/PlistBuddy -c "Set :NSLocalNetworkUsageDescription 'Discover IPFS / MCP++ backends on your local network.'" "$PLIST"
+            /usr/libexec/PlistBuddy -c "Delete :NSBonjourServices" "$PLIST" 2>/dev/null || true
+            /usr/libexec/PlistBuddy -c "Add :NSBonjourServices array" "$PLIST"
+            /usr/libexec/PlistBuddy -c "Add :NSBonjourServices:0 string '_hallucinate-mcp._tcp'" "$PLIST"
+            /usr/libexec/PlistBuddy -c "Add :NSBonjourServices:1 string '_ipfs._tcp'" "$PLIST"
+            /usr/libexec/PlistBuddy -c "Add :NSBonjourServices:2 string '_mcp._tcp'" "$PLIST"
+            /usr/libexec/PlistBuddy -c "Add :NSBonjourServices:3 string '_libp2p._tcp'" "$PLIST"
+            echo "Patched $PLIST for Bonjour discovery."
+          fi
 
       - name: Install CocoaPods dependencies
         run: |
