@@ -46,6 +46,7 @@ const MGW_555_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-555-mc
 const MGW_558_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-558-mcp-dashboard-launch-gate.json');
 const MGW_559_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-559-mcp-dashboard-launch-gate.json');
 const MGW_561_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-561-mcp-dashboard-launch-gate.json');
+const MGW_562_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-562-mcp-dashboard-launch-gate.json');
 const HAO_681_SWISSKNIFE_CONSUMER_FIXTURE = path.join(
   REPO_ROOT,
   'swissknife',
@@ -340,6 +341,27 @@ const MGW_561_HALLUCINATE_LAUNCH_GATE_RECEIPT = path.join(
   'hallucinate_multimodal_control',
   'discovery',
   '2026-06-30-mgw-561-mcp-dashboard-launch-gate.md'
+);
+const MGW_562_OBJECTIVE_GAP_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'meta_glasses_display_widgets',
+  'discovery',
+  '2026-06-30-mgw-562-objective-gap-7ea369464239.md'
+);
+const MGW_562_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'meta_glasses_display_widgets',
+  'discovery',
+  '2026-06-30-mgw-562-launch-playwright-validation-gate.md'
+);
+const MGW_562_HALLUCINATE_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'hallucinate_multimodal_control',
+  'discovery',
+  '2026-06-30-mgw-562-mcp-dashboard-launch-gate.md'
 );
 const MGW_OBJECTIVE_HEAP = path.join(
   REPO_ROOT,
@@ -645,6 +667,15 @@ electronDescribe('MCP Dashboard Interoperability - VAIOS-G723 Electron UI wiring
         launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-30-mgw-561-launch-playwright-validation-gate.md',
         hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-30-mgw-561-mcp-dashboard-launch-gate.md',
         receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-561-mcp-dashboard-launch-gate.json'
+      }),
+      expect.objectContaining({
+        task_id: 'MGW-562',
+        goal_id: 'VAIOS-G723',
+        evidence_term: 'launch Playwright validation gate',
+        supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-30-mgw-562-objective-gap-7ea369464239.md',
+        launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-30-mgw-562-launch-playwright-validation-gate.md',
+        hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-30-mgw-562-mcp-dashboard-launch-gate.md',
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-562-mcp-dashboard-launch-gate.json'
       })
     ]));
     expect(catalog?.swissknife_catalog_consumer_proof).toMatchObject({
@@ -2421,6 +2452,98 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     expect(objectiveHeap).toContain(receipt.launch_gate_receipt);
     expect(objectiveHeap).toContain(receipt.hallucinate_backlog_receipt);
     expect(readinessDoc).toContain('MGW-561');
+    expect(readinessDoc).toContain(receipt.receipt_fixture);
+    expect(readinessDoc).toContain(receipt.launch_gate_receipt);
+    expect(readinessDoc).toContain(receipt.hallucinate_backlog_receipt);
+  });
+
+  test('binds MGW-562 objective gap evidence to the VAIOS-G723 dashboard launch Playwright gate', () => {
+    const receipt = JSON.parse(fs.readFileSync(MGW_562_LAUNCH_GATE_FIXTURE, 'utf8'));
+    const launchGateReceipt = fs.readFileSync(MGW_562_LAUNCH_GATE_RECEIPT, 'utf8');
+    const hallucinateLaunchGateReceipt = fs.readFileSync(MGW_562_HALLUCINATE_LAUNCH_GATE_RECEIPT, 'utf8');
+    const objectiveGap = fs.readFileSync(MGW_562_OBJECTIVE_GAP_RECEIPT, 'utf8');
+    const objectiveHeap = fs.readFileSync(MGW_OBJECTIVE_HEAP, 'utf8');
+    const readinessDoc = fs.readFileSync(LAUNCH_READINESS_DOC, 'utf8');
+    const catalog = new MCPDaemonManager().getDashboardCapabilityCatalog();
+    const launchGate = catalog.launch_validation_gates?.find((gate: any) => gate.task_id === 'MGW-562');
+    const serversByPackage = new Map(catalog.servers.map((server: any) => [server.server_package, server]));
+
+    expect(receipt).toMatchObject({
+      schema: 'launch_readiness_receipt_v1',
+      task_id: 'MGW-562',
+      goal_id: 'VAIOS-G723',
+      lineage_id: 'VAIOS-G723:hallucinate-mcp-dashboard-interoperability-console',
+      evidence_term: 'launch Playwright validation gate',
+      source_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-30-mgw-562-objective-gap-7ea369464239.md',
+      launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-30-mgw-562-launch-playwright-validation-gate.md',
+      hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-30-mgw-562-mcp-dashboard-launch-gate.md',
+      receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-562-mcp-dashboard-launch-gate.json',
+      catalog_schema: catalog.schema,
+      catalog_source: catalog.generated_by,
+      catalog_generated_by: catalog.generated_by
+    });
+    expect(receipt.playwright_specs).toEqual(expect.arrayContaining([
+      'hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts',
+      'hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts'
+    ]));
+    expect(receipt.validation_commands).toEqual(expect.arrayContaining([
+      'PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py tests/test_virtual_ai_os_todo_queue.py -q',
+      'npm --prefix hallucinate_app run test:daemon-manager',
+      'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
+      'cd hallucinate_app && (env -u DISPLAY -u WAYLAND_DISPLAY HALLUCINATE_APP_E2E_NO_BOOTSTRAP=true node scripts/run_playwright_test.mjs --help || test $? -eq 78)',
+      'npm --prefix swissknife run test:e2e:mcp',
+      'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
+      'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
+    ]));
+    expect(receipt.required_backends.sort()).toEqual([
+      'ipfs_accelerate_py',
+      'ipfs_datasets_py',
+      'ipfs_kit_py'
+    ]);
+    expect(receipt.required_evidence).toEqual(HAO_727_REQUIRED_EVIDENCE);
+    expect(receipt.child_goals).toEqual(MGW_546_CHILD_GOALS);
+    expect(receipt.follow_up_subtasks).toEqual(FOLLOW_UP_TASKS);
+    expect(receipt.supervisor_follow_up_subtasks).toEqual(FOLLOW_UP_TASKS);
+    expect(launchGate).toMatchObject({
+      task_id: receipt.task_id,
+      goal_id: receipt.goal_id,
+      evidence_term: receipt.evidence_term,
+      supervisor_gap_receipt: receipt.source_gap_receipt,
+      launch_gate_receipt: receipt.launch_gate_receipt,
+      hallucinate_backlog_receipt: receipt.hallucinate_backlog_receipt,
+      receipt_fixture: receipt.receipt_fixture,
+      child_goals: receipt.child_goals,
+      follow_up_subtasks: receipt.follow_up_subtasks
+    });
+
+    for (const server of receipt.dashboard_servers) {
+      const catalogServer = serversByPackage.get(server.server_package) as any;
+      expect(catalogServer, server.server_package).toBeTruthy();
+      expect(catalogServer.daemon_id).toBe(server.daemon_id);
+      expect(catalogServer.health_path).toBe(server.health_path);
+      expect(catalogServer.tool_protocols.tools_list.operation).toBe(server.tools_list);
+      expect(catalogServer.tool_protocols.tools_call.operation).toBe(server.tools_call);
+      expect(catalogServer.tool_protocols.tools_call.safeProbe.expected_receipt).toBe(server.safe_probe_receipt);
+      expect(catalogServer.dashboard_receipt_consumer_refs).toEqual(expect.arrayContaining([
+        'hallucinate_app.swissknife.mcp_capability_registry',
+        'launch_readiness_packet:VAIOS-G723'
+      ]));
+      expect(catalogServer.swissknife_consumer).toBe(server.swissknife_consumer);
+    }
+
+    for (const term of receipt.required_evidence) {
+      expect(objectiveGap).toContain(term);
+      expect(launchGateReceipt).toContain(term);
+      expect(hallucinateLaunchGateReceipt).toContain(term);
+      expect(objectiveHeap).toContain(term);
+      expect(readinessDoc).toContain(term);
+    }
+
+    expect(objectiveHeap).toContain('MGW-562 proof');
+    expect(objectiveHeap).toContain(receipt.receipt_fixture);
+    expect(objectiveHeap).toContain(receipt.launch_gate_receipt);
+    expect(objectiveHeap).toContain(receipt.hallucinate_backlog_receipt);
+    expect(readinessDoc).toContain('MGW-562');
     expect(readinessDoc).toContain(receipt.receipt_fixture);
     expect(readinessDoc).toContain(receipt.launch_gate_receipt);
     expect(readinessDoc).toContain(receipt.hallucinate_backlog_receipt);
