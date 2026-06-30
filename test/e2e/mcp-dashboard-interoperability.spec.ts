@@ -483,6 +483,42 @@ async function dashboardCatalog(window: Page) {
   return window.evaluate(async () => window?.electronAPI?.daemon?.getDashboardCapabilityCatalog?.());
 }
 
+// Bring the given dashboard daemons up through the app's own daemon manager and
+// wait until each reports healthy. "Open Web Dashboard" loads the daemon's live
+// dashboard URL into a BrowserWindow; if the backend is unreachable the
+// navigation never commits (ERR_CONNECTION_REFUSED leaves window.url() empty),
+// so the URL assertion can only be satisfied deterministically when the live
+// backend is actually serving. This makes the "opens each live dashboard URL"
+// test verify real live dashboards instead of depending on ambient/external
+// daemons that happen to be running.
+async function ensureDashboardDaemonsHealthy(window: Page, ids: readonly string[], timeoutMs = 60000) {
+  for (const id of ids) {
+    await window.evaluate(async (daemonId) => {
+      try {
+        await window?.electronAPI?.daemon?.start?.(daemonId);
+      } catch {
+        /* already running / start raced — health poll below is the gate */
+      }
+    }, id);
+  }
+
+  const deadline = Date.now() + timeoutMs;
+  for (const id of ids) {
+    let healthy = false;
+    while (Date.now() < deadline) {
+      healthy = await window.evaluate(async (daemonId) => {
+        const health = await window?.electronAPI?.daemon?.checkHealth?.(daemonId).catch(() => null);
+        return !!health?.healthy;
+      }, id);
+      if (healthy) {
+        break;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+    expect(healthy, `${id} did not become healthy within ${timeoutMs}ms`).toBe(true);
+  }
+}
+
 async function waitForWindowUrl(electronApp: ElectronApplication, matcher: RegExp, attempts = 20, delayMs = 500) {
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     const windows = electronApp.windows();
@@ -713,6 +749,10 @@ electronDescribe('MCP Dashboard Interoperability - VAIOS-G723 Electron UI wiring
   });
 
   test('opens each live dashboard URL from the MCP Servers menu', async () => {
+    // The dashboards must be live for their URLs to commit into a window; start
+    // the backing daemons through the app and wait for health before opening.
+    await ensureDashboardDaemonsHealthy(window, DASHBOARD_SERVER_IDS);
+
     const catalog = await dashboardCatalog(window);
     const serversById = new Map((catalog?.servers || []).map((server: any) => [server.daemon_id, server]));
 
