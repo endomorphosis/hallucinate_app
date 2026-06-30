@@ -127,7 +127,15 @@ jobs:
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew --no-daemon assembleRelease bundleRelease
+          # Retry to ride out transient Maven Central/network hiccups.
+          n=0
+          until [ "$n" -ge 3 ]; do
+            ./gradlew --no-daemon assembleRelease bundleRelease && break
+            n=$((n+1))
+            echo "gradle build attempt $n failed; retrying in 20s..."
+            sleep 20
+          done
+          [ "$n" -lt 3 ]
 
       - name: Collect & rename artifacts
         id: collect
