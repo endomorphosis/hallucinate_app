@@ -542,6 +542,10 @@ const MGW_555_LAUNCH_VALIDATION_GATE = {
   receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-555-mcp-dashboard-launch-gate.json',
   gate_state: 'gate_closed_by_playwright_validation',
   packet_sibling_goal_id: 'VAIOS-G728',
+  attempt: 4,
+  attempt_receipts: [
+    'data/meta_glasses_display_widgets/discovery/2026-06-30-mgw-555-attempt-4-launch-playwright-validation-gate.md'
+  ],
   validation_commands: [
     'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
     'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
@@ -571,6 +575,23 @@ const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   MGW_562_LAUNCH_VALIDATION_GATE,
   MGW_555_LAUNCH_VALIDATION_GATE
 ];
+
+function stripUndefinedFields(value) {
+  if (Array.isArray(value)) {
+    return value.map(stripUndefinedFields);
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value)
+        .filter(([, item]) => item !== undefined)
+        .map(([key, item]) => [key, stripUndefinedFields(item)])
+    );
+  }
+
+  return value;
+}
+
 const DAEMON_LAUNCH_GATE_TASK_ID = 'MGW-535';
 const DAEMON_LAUNCH_GATE_VAI_TASK_ID = 'VAI-519';
 const DAEMON_LAUNCH_GATE_VAI_TASK_IDS = ['VAI-519', 'VAI-530', 'VAI-536', 'VAI-538', 'VAI-540'];
@@ -1521,7 +1542,7 @@ class MCPDaemonManager extends EventEmitter {
   }
 
   getDashboardCapabilityCatalog() {
-    return {
+    const catalog = {
       schema: DASHBOARD_CATALOG_SCHEMA,
       task_id: DASHBOARD_CATALOG_TASK_ID,
       validation_task_id: 'VAI-512',
@@ -1545,6 +1566,7 @@ class MCPDaemonManager extends EventEmitter {
         .sort((a, b) => a.launchOrder - b.launchOrder)
         .map((config) => this._dashboardCapabilityEntry(config))
     };
+    return stripUndefinedFields(catalog);
   }
 
   getDashboardCapability(daemonId) {
