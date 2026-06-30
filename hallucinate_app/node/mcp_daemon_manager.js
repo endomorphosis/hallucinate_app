@@ -6,6 +6,7 @@
 import { spawn, spawnSync } from 'child_process';
 import { EventEmitter } from 'events';
 import fs from 'fs';
+import net from 'net';
 import path from 'path';
 import url from 'url';
 import crypto from 'crypto';
@@ -919,6 +920,47 @@ class MCPDaemonManager extends EventEmitter {
       }
     }
 
+    // Preflight the port. The configured port may be occupied (a stale daemon
+    // from a prior session, or an unrelated process such as an IDE's dev
+    // server). Without this the daemon would spawn, fail to bind, exit, and the
+    // auto-restart logic would loop forever while the app reported the server
+    // as "not working". Resolve to a usable port and rewrite the launch args so
+    // every downstream consumer (endpoint, health URL, rpc URL, launch plan,
+    // renderer tool panels) follows the live port.
+    const portResolution = await this._resolveDaemonPort(config);
+    if (portResolution.adopted) {
+      console.log(`[${config.name}] Port ${config.port} already serving a healthy ${config.id} daemon; adopting it without spawning.`);
+      const adoptedDaemon = {
+        id: daemonId,
+        name: config.name,
+        packageName: config.packageName,
+        entrypoint: `${config.command} ${config.args.join(' ')}`,
+        process: null,
+        pid: null,
+        port: config.port,
+        status: 'running',
+        adopted: true,
+        startTime: Date.now(),
+        restartCount: this.restartCounts.get(daemonId) || 0,
+        lastError: null,
+        lastHealth: null,
+        launchOrder: config.launchOrder,
+        endpoint: this._daemonEndpoint(config),
+        logs: []
+      };
+      this.daemons.set(daemonId, adoptedDaemon);
+      this._recordLaunchReceipt(config, adoptedDaemon, 'launch_adopted', 'ok', {
+        reason: options.reason || 'manual',
+        health: await this.checkDaemonHealth(daemonId)
+      });
+      this.emit('started', { daemon: daemonId, port: config.port });
+      return adoptedDaemon;
+    } else if (portResolution.reassigned) {
+      console.warn(`[${config.name}] Configured port ${config.port} is in use by another process; falling back to port ${portResolution.port}.`);
+      config.port = portResolution.port;
+      config.args = this._applyPortToArgs(config.args, portResolution.port);
+    }
+
     console.log(`[${config.name}] Starting on port ${config.port}...`);
     const launchEnv = this._buildDaemonEnv(config);
     
@@ -1805,6 +1847,92 @@ class MCPDaemonManager extends EventEmitter {
     return `http://127.0.0.1:${config.port}`;
   }
 
+  /**
+   * Resolve whether a TCP port on 127.0.0.1 can be bound right now.
+   * Returns true when the port is free, false when something is already
+   * listening on it.
+   */
+  _isPortAvailable(port) {
+    return new Promise((resolve) => {
+      const tester = net.createServer();
+      tester.once('error', (err) => {
+        tester.close(() => {});
+        // EADDRINUSE / EACCES => not available; anything else, assume unusable.
+        resolve(false);
+      });
+      tester.once('listening', () => {
+        tester.close(() => resolve(true));
+      });
+      try {
+        tester.listen(port, '127.0.0.1');
+      } catch (e) {
+        resolve(false);
+      }
+    });
+  }
+
+  /**
+   * Probe whether the process already listening on `port` is one of *our* MCP
+   * daemons by hitting its health path. Lets us adopt a still-running daemon
+   * (e.g. left over from a previous app session) instead of treating it as a
+   * foreign conflict.
+   */
+  async _portServesOurDaemon(config, port) {
+    if (typeof fetch !== 'function') return false;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), this.healthTimeoutMs);
+    try {
+      const resp = await fetch(`http://127.0.0.1:${port}${config.healthPath}`, { signal: controller.signal });
+      return resp.ok;
+    } catch (e) {
+      return false;
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  /**
+   * Find a usable port for a daemon. Prefers the configured port; if it is
+   * occupied by a foreign process, scans forward for the next free port so the
+   * daemon still launches instead of crash-looping on EADDRINUSE.
+   * Returns { port, reassigned, adopted }.
+   */
+  async _resolveDaemonPort(config) {
+    const preferred = config.port;
+    if (await this._isPortAvailable(preferred)) {
+      return { port: preferred, reassigned: false, adopted: false };
+    }
+    // Port is busy — is it our own daemon already serving? If so, adopt it.
+    if (await this._portServesOurDaemon(config, preferred)) {
+      return { port: preferred, reassigned: false, adopted: true };
+    }
+    // Foreign occupant: scan forward for a free port.
+    for (let candidate = preferred + 1; candidate <= preferred + 50; candidate += 1) {
+      if (await this._isPortAvailable(candidate)) {
+        return { port: candidate, reassigned: true, adopted: false };
+      }
+    }
+    // Nothing free in range; fall back to the preferred port and let the
+    // daemon surface its own bind error.
+    return { port: preferred, reassigned: false, adopted: false };
+  }
+
+  /**
+   * Return a copy of `args` with the daemon's `--port` value set to `port`.
+   * Replaces an existing `--port <n>` token, or appends one when the daemon
+   * relies on its built-in default (e.g. ipfs-kit).
+   */
+  _applyPortToArgs(args, port) {
+    const next = Array.isArray(args) ? [...args] : [];
+    const idx = next.indexOf('--port');
+    if (idx !== -1 && idx + 1 < next.length) {
+      next[idx + 1] = String(port);
+    } else {
+      next.push('--port', String(port));
+    }
+    return next;
+  }
+
   _nativeDashboardStatus(daemonId) {
     const sidecar = this.dashboardSidecars.get(daemonId);
     if (!sidecar) {
@@ -2238,6 +2366,11 @@ class MCPDaemonManager extends EventEmitter {
     }
 
     if (config.detachedLauncher && result.endpoint_ok) {
+      result.process_alive = true;
+    }
+    // Adopted daemons (an already-running instance we attached to without
+    // spawning) have no child PID, so trust the endpoint for liveness.
+    if (daemon?.adopted && result.endpoint_ok) {
       result.process_alive = true;
     }
 

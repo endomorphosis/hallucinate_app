@@ -109,11 +109,46 @@
       });
     }
 
+    /**
+     * Override the static ENDPOINTS ports with the live ports reported by the
+     * daemon manager. A daemon whose configured port was occupied may have been
+     * reassigned (e.g. 8004 -> 8005), so we must discover/invoke on the live port.
+     */
+    async resolveLivePorts() {
+      try {
+        const getAll = window.electronAPI?.daemon?.getAll;
+        if (typeof getAll !== 'function') return;
+        const all = await getAll();
+        if (!all) return;
+        const idByName = {
+          'IPFS Kit': 'ipfs-kit',
+          'IPFS Datasets': 'ipfs-datasets',
+          'IPFS Accelerate': 'ipfs-accelerate',
+        };
+        for (const ep of ENDPOINTS) {
+          const id = idByName[ep.name];
+          if (!id) continue;
+          const info = all[id];
+          if (!info) continue;
+          let livePort = info.port;
+          if (!livePort && typeof info.endpoint === 'string') {
+            const m = info.endpoint.match(/:(\d+)\b/);
+            if (m) livePort = parseInt(m[1], 10);
+          }
+          if (livePort && Number.isFinite(livePort)) {
+            ep.port = livePort;
+          }
+        }
+      } catch { /* keep the default ports */ }
+    }
+
     async discover() {
       const statusBar = this.container.querySelector('.ute-daemon-status');
       const countEl = this.container.querySelector('.ute-count');
       this.allTools = [];
       statusBar.innerHTML = '';
+
+      await this.resolveLivePorts();
 
       const results = await Promise.allSettled(
         ENDPOINTS.map(async (ep) => {

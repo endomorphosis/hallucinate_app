@@ -125,9 +125,33 @@
       this.container.querySelector('.tip-invoke-btn').addEventListener('click', () => this.invoke());
     }
 
+    // Resolve the daemon's live port from the daemon manager. The MCP daemon
+    // manager may bind a daemon to a fallback port when its preferred port is
+    // already taken (e.g. by another process), so the hard-coded data-port is
+    // only a default — always prefer the actual runtime port/endpoint.
+    async resolveLivePort() {
+      try {
+        const getAll = window.electronAPI?.daemon?.getAll;
+        if (typeof getAll !== 'function') return;
+        const all = await getAll();
+        const info = all && all[this.daemon];
+        if (!info) return;
+        let livePort = info.port;
+        if (!livePort && typeof info.endpoint === 'string') {
+          const m = info.endpoint.match(/:(\d+)\b/);
+          if (m) livePort = parseInt(m[1], 10);
+        }
+        if (livePort && Number.isFinite(livePort)) {
+          this.port = livePort;
+        }
+      } catch { /* keep the default port */ }
+    }
+
     async loadTools() {
       const dropdown = this.container.querySelector('.tip-tool-dropdown');
       dropdown.innerHTML = '<option value="">Loading...</option>';
+
+      await this.resolveLivePort();
 
       try {
         // Try IPC first
