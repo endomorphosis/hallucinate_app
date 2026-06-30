@@ -81,6 +81,16 @@ jobs:
           npm ci || npm install
           npm install @capacitor/cli @capacitor/core @capacitor/android
 
+      - name: Initialize UI submodules (SwissKnife + ipfs_kit_py JS SDK)
+        run: |
+          # Top-level (non-recursive) init only: pulls swissknife/web (the
+          # SwissKnife desktop UI) and ipfs_kit_py (the browser JS MCP SDK lives
+          # in a plain dir inside it). Avoid --recursive: the nested vendored
+          # submodules upstream are broken and would fail the checkout.
+          git submodule update --init --depth 1 swissknife ipfs_kit_py \
+            || git submodule update --init swissknife ipfs_kit_py \
+            || echo "WARNING: submodule init failed; build will proceed without SwissKnife/JS-SDK"
+
       - name: Build web assets
         run: npm run build:web
 
@@ -188,6 +198,12 @@ jobs:
         run: |
           npm ci || npm install
           npm install @capacitor/cli @capacitor/core @capacitor/ios
+
+      - name: Initialize UI submodules (SwissKnife + ipfs_kit_py JS SDK)
+        run: |
+          git submodule update --init --depth 1 swissknife ipfs_kit_py \
+            || git submodule update --init swissknife ipfs_kit_py \
+            || echo "WARNING: submodule init failed; build will proceed without SwissKnife/JS-SDK"
 
       - name: Build web assets
         run: npm run build:web
