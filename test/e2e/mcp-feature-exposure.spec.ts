@@ -532,6 +532,33 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
     expect(allStatus?.['ipfs-datasets']?.mcpPlusPlus).toBeTruthy();
     expect(typeof allStatus?.['ipfs-datasets']?.mcpPlusPlus?.available).toBe('boolean');
     expect(allStatus?.['ipfs-datasets']?.mcpPlusPlus?.mode).toBe('optional_bridge');
+
+    // The datasets MCP++ bridge proxies the ipfs_accelerate_py P2P module. Wait
+    // for the live capability probe (not the static launch-plan fallback) and
+    // assert the bridge is genuinely available with its P2P requirements met.
+    // Regression guard: a PeerRegistry/bootstrap_network symbol drift in
+    // ipfs_accelerate_py.mcplusplus_module.p2p once made the bridge report
+    // peer_registry + bootstrap as missing requirements, which the Hallucinate
+    // app surfaced as "MCP++ servers/tools not working".
+    const datasetsBridge = await (async () => {
+      for (let attempt = 0; attempt < 20; attempt += 1) {
+        const status = await window.evaluate(async () =>
+          window?.electronAPI?.daemon?.getAll?.().then((all: any) => all?.['ipfs-datasets']?.mcpPlusPlus ?? null)
+        );
+        if (status?.bridge_capabilities) {
+          return status;
+        }
+        await window.waitForTimeout(500);
+      }
+      throw new Error('ipfs-datasets MCP++ bridge capabilities not reported within timeout');
+    })();
+
+    expect(datasetsBridge.available).toBe(true);
+    expect(datasetsBridge.bridge_capabilities?.peer_registry).toBe(true);
+    expect(datasetsBridge.bridge_capabilities?.bootstrap).toBe(true);
+    expect(datasetsBridge.requirements_ok).toBe(true);
+    expect(datasetsBridge.missing_requirements ?? []).not.toContain('peer_registry');
+    expect(datasetsBridge.missing_requirements ?? []).not.toContain('bootstrap');
   });
 
   test('launch receipts expose daemon startup telemetry for all MCP servers', async () => {
