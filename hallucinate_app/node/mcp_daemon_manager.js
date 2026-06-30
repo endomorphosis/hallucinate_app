@@ -24,6 +24,14 @@ const DEFAULT_HEALTH_INTERVAL_MS = 30000;
 // not working". Give cold starts a realistic budget (override via
 // MCP_DAEMON_STARTUP_TIMEOUT_MS).
 const DEFAULT_STARTUP_TIMEOUT_MS = 45000;
+// Per-probe timeout for the health-endpoint fetch. The MCP servers each run a
+// single Hypercorn worker; while all three boot in parallel (and contend with
+// Electron + the test runner), a `/health/ready` request can legitimately take
+// longer than 1s to come back even though the server is fine. A 1s budget made
+// the probe abort and report the daemon unhealthy under that transient load,
+// which the UI/tests read as "MCP++ servers not working". Give the probe a more
+// forgiving budget (override via MCP_DAEMON_HEALTH_TIMEOUT_MS).
+const DEFAULT_HEALTH_TIMEOUT_MS = 5000;
 const DEFAULT_MAX_RESTARTS = 3;
 const LAUNCH_TASK_ID = 'HAO-442';
 const STARTUP_MESSAGE_PATTERNS = [
@@ -765,6 +773,7 @@ class MCPDaemonManager extends EventEmitter {
     this.baseDir = path.join(__dirname, '..', '..');
     this.healthIntervalMs = Number(options.healthIntervalMs || process.env.MCP_DAEMON_HEALTH_INTERVAL_MS || DEFAULT_HEALTH_INTERVAL_MS);
     this.startupTimeoutMs = Number(options.startupTimeoutMs || process.env.MCP_DAEMON_STARTUP_TIMEOUT_MS || DEFAULT_STARTUP_TIMEOUT_MS);
+    this.healthTimeoutMs = Number(options.healthTimeoutMs || process.env.MCP_DAEMON_HEALTH_TIMEOUT_MS || DEFAULT_HEALTH_TIMEOUT_MS);
     this.maxRestarts = Number(options.maxRestarts || process.env.MCP_DAEMON_MAX_RESTARTS || DEFAULT_MAX_RESTARTS);
     this.pythonCommand = options.pythonCommand || this._resolveDaemonPythonCommand();
     this.controlSurfaceInvocationGate = options.controlSurfaceInvocationGate || new ControlSurfaceInvocationGate({
@@ -1114,18 +1123,29 @@ class MCPDaemonManager extends EventEmitter {
   async startAll() {
     console.log('Starting all MCP daemons...');
     const orderedConfigs = [...this.daemonConfigs].sort((a, b) => a.launchOrder - b.launchOrder);
-    const started = [];
+
+    // Launch daemons concurrently rather than awaiting each one's health before
+    // spawning the next. The servers bind distinct ports and have no hard
+    // startup ordering dependency, so a sequential launch only served to stack
+    // their (10-13s) cold-boot times — e.g. accelerate would not report healthy
+    // until ~30s in, well past the UI/health-probe windows, which surfaced as
+    // "MCP++ servers not working". Spawn in launchOrder for deterministic logs,
+    // but let the cold boots overlap so all three are healthy in ~max(boot),
+    // not ~sum(boot).
+    const launches = [];
     for (const config of orderedConfigs) {
-      const daemon = await this.startDaemon(config.id, { reason: 'app_launch' }).catch(err => {
-        console.error(`Failed to start ${config.name}:`, err);
-        this._recordLaunchReceipt(config, null, 'launch_failed', 'error', {
-          reason: 'app_launch',
-          error: err.message
-        });
-        return null;
-      });
-      started.push(daemon);
+      launches.push(
+        this.startDaemon(config.id, { reason: 'app_launch' }).catch(err => {
+          console.error(`Failed to start ${config.name}:`, err);
+          this._recordLaunchReceipt(config, null, 'launch_failed', 'error', {
+            reason: 'app_launch',
+            error: err.message
+          });
+          return null;
+        })
+      );
     }
+    const started = await Promise.all(launches);
     console.log('All daemons started');
     
     // Start health monitoring
@@ -1167,27 +1187,55 @@ class MCPDaemonManager extends EventEmitter {
    */
   getAllStatus() {
     const status = {};
-    
-    for (const [id, daemon] of this.daemons) {
-      status[id] = {
-        id: daemon.id,
-        name: daemon.name,
-        status: daemon.status,
-        pid: daemon.pid,
-        port: daemon.port,
-        uptime: daemon.status === 'running' ? Date.now() - daemon.startTime : 0,
-        restartCount: daemon.restartCount,
-        lastError: daemon.lastError,
-        lastHealth: daemon.lastHealth,
-        mcpPlusPlus: this._mcpPlusPlusStatus(id, daemon),
-        endpoint: daemon.endpoint,
-        nativeDashboard: this._nativeDashboardStatus(id),
-        packageName: daemon.packageName,
-        launchOrder: daemon.launchOrder,
-        recentLogs: daemon.logs.slice(-10)
-      };
+
+    // Always surface every CONFIGURED daemon, not only the ones already present
+    // in this.daemons. Daemons are registered lazily as startDaemon runs (and
+    // startAll registers them sequentially), so keying solely off started
+    // daemons made the UI render fewer than the three configured cards during
+    // and after startup — which read as "MCP++ servers missing/not working".
+    // Merge live runtime state over a configured-but-not-started baseline.
+    for (const config of this.daemonConfigs) {
+      const id = config.id;
+      const daemon = this.daemons.get(id);
+      if (daemon) {
+        status[id] = {
+          id: daemon.id,
+          name: daemon.name,
+          status: daemon.status,
+          pid: daemon.pid,
+          port: daemon.port,
+          uptime: daemon.status === 'running' ? Date.now() - daemon.startTime : 0,
+          restartCount: daemon.restartCount,
+          lastError: daemon.lastError,
+          lastHealth: daemon.lastHealth,
+          mcpPlusPlus: this._mcpPlusPlusStatus(id, daemon),
+          endpoint: daemon.endpoint,
+          nativeDashboard: this._nativeDashboardStatus(id),
+          packageName: daemon.packageName,
+          launchOrder: daemon.launchOrder,
+          recentLogs: daemon.logs.slice(-10)
+        };
+      } else {
+        status[id] = {
+          id,
+          name: config.name,
+          status: 'stopped',
+          pid: null,
+          port: config.port,
+          uptime: 0,
+          restartCount: this.restartCounts.get(id) || 0,
+          lastError: null,
+          lastHealth: null,
+          mcpPlusPlus: this._mcpPlusPlusStatus(id, null),
+          endpoint: this._daemonEndpoint(config),
+          nativeDashboard: this._nativeDashboardStatus(id),
+          packageName: config.packageName,
+          launchOrder: config.launchOrder,
+          recentLogs: []
+        };
+      }
     }
-    
+
     return status;
   }
 
@@ -1924,7 +1972,18 @@ class MCPDaemonManager extends EventEmitter {
     if (daemon?.mcpPlusPlus) {
       return daemon.mcpPlusPlus;
     }
-    return this.mcpPlusPlusCapabilities.get(daemonId) || null;
+    const live = this.mcpPlusPlusCapabilities.get(daemonId);
+    if (live) {
+      return live;
+    }
+    // Fall back to the statically advertised MCP++ descriptor so dashboards and
+    // status payloads expose the daemon's MCP++ profiles/capabilities even
+    // before it has finished starting (live status is only populated once
+    // startDaemon -> _refreshMcpPlusPlusStatus runs). Without this, opening a
+    // dashboard during/just after startup showed no MCP++ profiles, which read
+    // as the MCP++ surface being unavailable.
+    const config = this.daemonConfigs.find((d) => d.id === daemonId);
+    return config ? this._launchPlanMcpPlusPlus(config) : null;
   }
 
   _launchPlanMcpPlusPlus(config) {
@@ -2166,7 +2225,7 @@ class MCPDaemonManager extends EventEmitter {
 
     if (typeof fetch === 'function') {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 1000);
+      const timeout = setTimeout(() => controller.abort(), this.healthTimeoutMs);
       try {
         const response = await fetch(result.health_url, { signal: controller.signal });
         result.status_code = response.status;
