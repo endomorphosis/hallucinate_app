@@ -756,6 +756,28 @@ const DASHBOARD_TOOL_PROTOCOLS = {
   }
 };
 
+// Real, working HTTP endpoints used to verify live results from each backend.
+// These are intentionally separate from DASHBOARD_TOOL_PROTOCOLS (which encodes the
+// mediation/receipt contract) so the dashboards can prove the underlying MCP server
+// returns working tool data — not just that the health endpoint is reachable.
+const LIVE_TOOL_INVOCATION = {
+  'ipfs-kit': {
+    toolsList: { method: 'GET', path: '/mcp/tools/list' },
+    toolsCall: { method: 'POST', path: '/mcp/tools/call', jsonRpc: true, toolName: 'health_check', arguments: {} }
+  },
+  'ipfs-datasets': {
+    auth: { loginPath: '/auth/login', username: 'hallucinate-app-dashboard', password: 'live-backend-probe' },
+    toolsList: { method: 'GET', path: '/tools/list', requiresAuth: true },
+    toolsCall: { method: 'POST', path: '/tools/execute/tools_list_categories', requiresAuth: true, body: {} }
+  },
+  'ipfs-accelerate': {
+    toolsList: { method: 'GET', path: '/api/mcp/tools' },
+    // Invoke a real, non-mutating MCP tool through the JSON-RPC tools/call
+    // interface so the dashboard exercises the actual MCP tool surface.
+    toolsCall: { method: 'POST', path: '/jsonrpc', jsonRpc: true, toolName: 'hardware_get_info', arguments: {} }
+  }
+};
+
 function stableReceiptCid(value) {
   const canonical = JSON.stringify(value);
   const digest = crypto.createHash('sha256').update(canonical).digest('hex');
@@ -800,9 +822,9 @@ class MCPDaemonManager extends EventEmitter {
         name: 'IPFS Kit MCP',
         launchOrder: 10,
         command: this.pythonCommand,
-        args: ['-m', 'ipfs_kit_py.cli', 'mcp', 'start'],
+        args: ['-m', 'ipfs_kit_py.cli', 'mcp', 'start', '--port', String(Number(process.env.MCP_KIT_PORT) || 8004)],
         cwd: path.join(this.baseDir, 'ipfs_kit_py'),
-        port: 8004,
+        port: Number(process.env.MCP_KIT_PORT) || 8004,
         transport: 'http',
         rpcPath: '/mcp/tools/call',
         healthPath: '/api/mcp/status',
@@ -816,9 +838,9 @@ class MCPDaemonManager extends EventEmitter {
         name: 'IPFS Datasets MCP',
         launchOrder: 20,
         command: this.pythonCommand,
-        args: ['-m', 'ipfs_datasets_py.mcp_server', '--http', '--host', '127.0.0.1', '--port', '3002'],
+        args: ['-m', 'uvicorn', 'ipfs_datasets_py.mcp_server.fastapi_service:app', '--host', '127.0.0.1', '--port', String(Number(process.env.MCP_DATASETS_PORT) || 3002)],
         cwd: path.join(this.baseDir, 'ipfs_datasets_py'),
-        port: 3002,
+        port: Number(process.env.MCP_DATASETS_PORT) || 3002,
         transport: 'http',
         rpcPath: '/datasets/load',
         healthPath: '/health/ready',
@@ -839,9 +861,9 @@ class MCPDaemonManager extends EventEmitter {
         name: 'IPFS Accelerate MCP',
         launchOrder: 30,
         command: this.pythonCommand,
-        args: ['-m', 'ipfs_accelerate_py.cli', 'mcp', 'start', '--port', '3003'],
+        args: ['-m', 'ipfs_accelerate_py.cli', 'mcp', 'start', '--port', String(Number(process.env.MCP_ACCELERATE_PORT) || 3003), '--disable-autoscaler'],
         cwd: path.join(this.baseDir, 'ipfs_accelerate_py'),
-        port: 3003,
+        port: Number(process.env.MCP_ACCELERATE_PORT) || 3003,
         transport: 'http',
         rpcPath: '/mcp',
         healthPath: '/api/mcp/status',
@@ -2081,7 +2103,7 @@ class MCPDaemonManager extends EventEmitter {
 
   async _dashboardTransportProbe(config, toolProtocol, mediation) {
     const health = await this.checkDaemonHealth(config.id);
-    return {
+    const result = {
       ok: health.healthy,
       fail_closed: !health.healthy,
       daemon_id: config.id,
@@ -2091,10 +2113,172 @@ class MCPDaemonManager extends EventEmitter {
       endpoint: this._daemonEndpoint(config),
       url: toolProtocol.url,
       health,
+      // Live verification fields: prove the dashboard exercised the real MCP
+      // backend rather than only checking the health endpoint.
+      live: false,
+      live_ok: false,
       expected_receipt: toolProtocol.safeProbe?.expected_receipt || `${config.id}_${toolProtocol.operation.replace('/', '_')}_probe`,
       mediation_receipt_id: mediation.mediation_receipt.receipt_id,
       mediation_receipt_cid: mediation.mediation_receipt.receipt_cid
     };
+
+    if (health.healthy) {
+      const live = await this._invokeLiveTool(config, toolProtocol.operation);
+      result.live_invocation = live;
+      result.live = !!live.live;
+      result.live_ok = !!live.ok;
+      result.live_status_code = live.status_code ?? null;
+      if (live.live) {
+        if (toolProtocol.operation === 'tools/list' || live.list_proxy) {
+          result.tool_count = live.tool_count;
+          result.tools_sample = live.tools_sample;
+        } else if (live.response_preview) {
+          result.live_response_preview = live.response_preview;
+        }
+      } else if (live.error || live.reason) {
+        result.live_error = live.error || live.reason;
+      }
+    }
+
+    return result;
+  }
+
+  _extractLiveToolList(json) {
+    if (Array.isArray(json)) {
+      return json;
+    }
+    if (Array.isArray(json?.tools)) {
+      return json.tools;
+    }
+    if (Array.isArray(json?.result?.tools)) {
+      return json.result.tools;
+    }
+    if (Array.isArray(json?.data?.tools)) {
+      return json.data.tools;
+    }
+    if (json?.tools && typeof json.tools === 'object') {
+      return Object.keys(json.tools).map((name) => ({ name }));
+    }
+    return [];
+  }
+
+  async _liveAuthToken(config, spec) {
+    if (!this._liveAuthTokens) {
+      this._liveAuthTokens = new Map();
+    }
+    const cached = this._liveAuthTokens.get(config.id);
+    if (cached && cached.expires > Date.now()) {
+      return cached.token;
+    }
+    const url = `${this._daemonEndpoint(config)}${spec.auth.loginPath}`;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 2500);
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ username: spec.auth.username, password: spec.auth.password }),
+        signal: controller.signal
+      });
+      if (!response.ok) {
+        throw new Error(`auth login http ${response.status}`);
+      }
+      const data = await response.json();
+      const token = data.access_token || data.token;
+      if (!token) {
+        throw new Error('auth login returned no access_token');
+      }
+      this._liveAuthTokens.set(config.id, { token, expires: Date.now() + 60000 });
+      return token;
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  /**
+   * Perform a real HTTP request against the underlying MCP backend and return
+   * the live result. This is what lets dashboards verify working results from
+   * the live services instead of relying on mocks or a health check alone.
+   */
+  async _invokeLiveTool(config, operation) {
+    const spec = LIVE_TOOL_INVOCATION[config.id];
+    if (!spec) {
+      return { live: false, supported: false, reason: 'no_live_invocation_spec' };
+    }
+    const opSpec = operation === 'tools/list' ? spec.toolsList : spec.toolsCall;
+    if (!opSpec) {
+      return { live: false, supported: false, reason: 'operation_not_supported' };
+    }
+    if (typeof fetch !== 'function') {
+      return { live: false, supported: true, reason: 'fetch_unavailable' };
+    }
+
+    const url = `${this._daemonEndpoint(config)}${opSpec.path}`;
+    const headers = { 'content-type': 'application/json' };
+    let body;
+
+    try {
+      if (opSpec.requiresAuth) {
+        const token = await this._liveAuthToken(config, spec);
+        headers.authorization = `Bearer ${token}`;
+      }
+      if (opSpec.method === 'POST') {
+        body = opSpec.jsonRpc
+          ? JSON.stringify({ jsonrpc: '2.0', method: 'tools/call', params: { name: opSpec.toolName, arguments: opSpec.arguments || {} }, id: 1 })
+          : JSON.stringify(opSpec.body || {});
+      }
+    } catch (error) {
+      return { live: false, supported: true, url, method: opSpec.method, ok: false, error: error.message };
+    }
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 4000);
+    const started = Date.now();
+    try {
+      const response = await fetch(url, { method: opSpec.method, headers, body, signal: controller.signal });
+      let json = null;
+      let text = null;
+      try {
+        json = await response.json();
+      } catch {
+        try {
+          text = await response.text();
+        } catch {
+          text = null;
+        }
+      }
+      const live = {
+        live: true,
+        supported: true,
+        url,
+        method: opSpec.method,
+        status_code: response.status,
+        ok: response.ok,
+        latency_ms: Date.now() - started,
+        list_proxy: !!opSpec.listProxy
+      };
+      if (operation === 'tools/list' || opSpec.listProxy) {
+        const tools = this._extractLiveToolList(json);
+        live.tool_count = tools.length;
+        live.tools_sample = tools.slice(0, 8).map((t) => (typeof t === 'string' ? t : t?.name)).filter(Boolean);
+        live.ok = response.ok && tools.length > 0;
+      } else {
+        live.response_preview = json ? JSON.stringify(json).slice(0, 400) : String(text || '').slice(0, 400);
+      }
+      return live;
+    } catch (error) {
+      return {
+        live: false,
+        supported: true,
+        url,
+        method: opSpec.method,
+        ok: false,
+        error: error.name === 'AbortError' ? 'timeout' : error.message,
+        latency_ms: Date.now() - started
+      };
+    } finally {
+      clearTimeout(timeout);
+    }
   }
 
   _mcpPlusPlusStatus(daemonId, daemon = null) {

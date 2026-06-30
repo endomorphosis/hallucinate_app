@@ -11,6 +11,22 @@ import url from 'url';
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 /**
+ * Daemon ports are environment-configurable so the app keeps working when a
+ * default port is already taken (e.g. a dev machine where 8004 is in use).
+ * These mirror the defaults/overrides used by mcp_daemon_manager.js so the menu
+ * URLs always point at the port the daemon actually binds.
+ */
+const KIT_PORT = Number(process.env.MCP_KIT_PORT) || 8004;
+const DATASETS_PORT = Number(process.env.MCP_DATASETS_PORT) || 3002;
+const ACCELERATE_PORT = Number(process.env.MCP_ACCELERATE_PORT) || 3003;
+const SWISSKNIFE_PORT = Number(process.env.MCP_SWISSKNIFE_PORT) || 3004;
+const DATASETS_DASHBOARD_PORT = Number(process.env.MCP_DATASETS_DASHBOARD_PORT) || 8899;
+const KIT_BASE = `http://127.0.0.1:${KIT_PORT}`;
+const DATASETS_BASE = `http://127.0.0.1:${DATASETS_PORT}`;
+const ACCELERATE_BASE = `http://127.0.0.1:${ACCELERATE_PORT}`;
+const SWISSKNIFE_BASE = `http://127.0.0.1:${SWISSKNIFE_PORT}`;
+
+/**
  * MCP Server Configuration
  * Each MCP server includes metadata for menu generation and testing
  */
@@ -20,17 +36,17 @@ export const mcpServers = [
     name: 'IPFS Kit MCP',
     displayName: 'IPFS Kit',
     icon: '📦',
-    port: 8004,
+    port: KIT_PORT,
     dashboardPath: 'views/ipfs_kit_dashboard.html',
-    webDashboardUrl: 'http://127.0.0.1:8004/dashboard',
+    webDashboardUrl: `${KIT_BASE}/dashboard`,
     accelerator: 'CmdOrCtrl+Alt+1',
     tools: [
-      { label: 'Add to IPFS', url: 'http://127.0.0.1:8004/tools/add' },
-      { label: 'Get from IPFS', url: 'http://127.0.0.1:8004/tools/get' },
-      { label: 'Pin Content', url: 'http://127.0.0.1:8004/tools/pin' },
-      { label: 'IPFS Status', url: 'http://127.0.0.1:8004/status' },
+      { label: 'Add to IPFS', url: `${KIT_BASE}/tools/add` },
+      { label: 'Get from IPFS', url: `${KIT_BASE}/tools/get` },
+      { label: 'Pin Content', url: `${KIT_BASE}/tools/pin` },
+      { label: 'IPFS Status', url: `${KIT_BASE}/status` },
       { type: 'separator' },
-      { label: 'Configure IPFS Node', url: 'http://127.0.0.1:8004/config' }
+      { label: 'Configure IPFS Node', url: `${KIT_BASE}/config` }
     ]
   },
   {
@@ -38,18 +54,18 @@ export const mcpServers = [
     name: 'IPFS Datasets MCP',
     displayName: 'IPFS Datasets',
     icon: '📚',
-    port: 3002,
+    port: DATASETS_PORT,
     dashboardPath: 'views/ipfs_datasets_dashboard.html',
-    webDashboardUrl: 'http://127.0.0.1:8899/mcp',
+    webDashboardUrl: `http://127.0.0.1:${DATASETS_DASHBOARD_PORT}/mcp`,
     accelerator: 'CmdOrCtrl+Alt+2',
     tools: [
-      { label: 'Load HuggingFace Dataset', url: 'http://127.0.0.1:3002/tools/load' },
-      { label: 'Create Custom Dataset', url: 'http://127.0.0.1:3002/tools/create' },
-      { label: 'Transform Dataset', url: 'http://127.0.0.1:3002/tools/transform' },
-      { label: 'Export Dataset', url: 'http://127.0.0.1:3002/tools/export' },
+      { label: 'Load HuggingFace Dataset', url: `${DATASETS_BASE}/tools/load` },
+      { label: 'Create Custom Dataset', url: `${DATASETS_BASE}/tools/create` },
+      { label: 'Transform Dataset', url: `${DATASETS_BASE}/tools/transform` },
+      { label: 'Export Dataset', url: `${DATASETS_BASE}/tools/export` },
       { type: 'separator' },
-      { label: 'GraphRAG PDF Processing', url: 'http://127.0.0.1:3002/tools/graphrag' },
-      { label: 'Legal Dataset Scraper', url: 'http://127.0.0.1:3002/tools/scraper' }
+      { label: 'GraphRAG PDF Processing', url: `${DATASETS_BASE}/tools/graphrag` },
+      { label: 'Legal Dataset Scraper', url: `${DATASETS_BASE}/tools/scraper` }
     ]
   },
   {
@@ -57,17 +73,17 @@ export const mcpServers = [
     name: 'IPFS Accelerate MCP',
     displayName: 'IPFS Accelerate',
     icon: '⚡',
-    port: 3003,
+    port: ACCELERATE_PORT,
     dashboardPath: 'views/ipfs_accelerate_dashboard.html',
-    webDashboardUrl: 'http://127.0.0.1:3003/dashboard',
+    webDashboardUrl: `${ACCELERATE_BASE}/dashboard`,
     accelerator: 'CmdOrCtrl+Alt+3',
     tools: [
-      { label: 'Model Inference', url: 'http://127.0.0.1:3003/tools/inference' },
-      { label: 'Batch Processing', url: 'http://127.0.0.1:3003/tools/batch' },
-      { label: 'Distributed Training', url: 'http://127.0.0.1:3003/tools/training' },
+      { label: 'Model Inference', url: `${ACCELERATE_BASE}/tools/inference` },
+      { label: 'Batch Processing', url: `${ACCELERATE_BASE}/tools/batch` },
+      { label: 'Distributed Training', url: `${ACCELERATE_BASE}/tools/training` },
       { type: 'separator' },
-      { label: 'GPU Monitor', url: 'http://127.0.0.1:3003/tools/gpu' },
-      { label: 'Performance Metrics', url: 'http://127.0.0.1:3003/metrics' }
+      { label: 'GPU Monitor', url: `${ACCELERATE_BASE}/tools/gpu` },
+      { label: 'Performance Metrics', url: `${ACCELERATE_BASE}/metrics` }
     ]
   },
   {
@@ -75,9 +91,9 @@ export const mcpServers = [
     name: 'SwissKnife MCP',
     displayName: 'SwissKnife',
     icon: '🔪',
-    port: 3004,
+    port: SWISSKNIFE_PORT,
     dashboardPath: null, // Uses special window
-    webDashboardUrl: 'http://127.0.0.1:3004/dashboard',
+    webDashboardUrl: `${SWISSKNIFE_BASE}/dashboard`,
     accelerator: 'CmdOrCtrl+Alt+4',
     tools: [
       { label: 'Terminal', action: 'openSwissKnifeApp', app: 'terminal' },

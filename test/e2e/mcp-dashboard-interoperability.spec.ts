@@ -12,6 +12,32 @@ const __dirname = path.dirname(__filename);
 const { test, expect, _electron: electron } = playwrightTest as unknown as typeof import('@playwright/test');
 const hasElectronDisplay = Boolean(process.env.DISPLAY || process.env.WAYLAND_DISPLAY);
 const electronDescribe = hasElectronDisplay ? test.describe : test.describe.skip;
+
+// The published catalog fixtures snapshot the DEFAULT daemon ports. When a port
+// is overridden (e.g. MCP_KIT_PORT to dodge a busy 8004 locally) the generated
+// catalog legitimately reports the override; normalize back to default ports so
+// the parity check validates schema/content, not the environment's port choice.
+const PORT_NORMALIZATION: Array<[number, number]> = [
+  [Number(process.env.MCP_KIT_PORT) || 8004, 8004],
+  [Number(process.env.MCP_DATASETS_PORT) || 3002, 3002],
+  [Number(process.env.MCP_ACCELERATE_PORT) || 3003, 3003],
+  [Number(process.env.MCP_SWISSKNIFE_PORT) || 3004, 3004],
+  [Number(process.env.MCP_DATASETS_DASHBOARD_PORT) || 8899, 8899],
+];
+
+function normalizeCatalogPorts<T>(value: T): T {
+  let json = JSON.stringify(value);
+  for (const [actual, canonical] of PORT_NORMALIZATION) {
+    if (actual === canonical) {
+      continue;
+    }
+    json = json.split(`:${actual}/`).join(`:${canonical}/`);
+    json = json.split(`:${actual}"`).join(`:${canonical}"`);
+    json = json.split(`"port":${actual}`).join(`"port":${canonical}`);
+  }
+  return JSON.parse(json);
+}
+
 const APP_ROOT = path.join(__dirname, '..', '..');
 const REPO_ROOT = path.resolve(APP_ROOT, '..');
 const HAO_679_INTEROP_FIXTURE = path.join(__dirname, 'fixtures', 'hao-679-mcp-dashboard-interoperability.json');
@@ -763,7 +789,7 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     const catalog = manager.getDashboardCapabilityCatalog();
     const fixture = JSON.parse(fs.readFileSync(VAI_512_CATALOG_FIXTURE, 'utf8'));
 
-    expect(fixture).toEqual(catalog);
+    expect(fixture).toEqual(normalizeCatalogPorts(catalog));
     expect(fixture.validation_task_id).toBe('VAI-512');
     expect(fixture.dashboard_only_mocks).toBe(false);
     expect(fixture.generated_by).toBe('hallucinate_app.node.mcp_daemon_manager.getDashboardCapabilityCatalog');

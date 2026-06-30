@@ -210,6 +210,11 @@
       document.getElementById('tools-call-probe').textContent = safeProbe?.tool_name || 'Not advertised';
       document.getElementById('control-surface-contract').textContent = entry.control_surface_mediation_contract || 'Not advertised';
       document.getElementById('native-dashboard-url').textContent = entry.native_dashboard_url || entry.menu_dashboard_url || 'Not advertised';
+      const packageFrame = document.getElementById('package-dashboard-frame');
+      const nativeDashboardUrl = entry.native_dashboard_url || entry.menu_dashboard_url;
+      if (packageFrame && nativeDashboardUrl && packageFrame.getAttribute('src') !== nativeDashboardUrl) {
+        packageFrame.src = nativeDashboardUrl;
+      }
       const mcp = entry.mcpplusplus || {};
       document.getElementById('mcpplusplus-status').textContent = mcp.available ? 'Available' : (mcp.mode || 'Not advertised');
     }
