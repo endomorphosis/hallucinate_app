@@ -497,7 +497,7 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
       const menuEntry = menuById.get(daemonId) as any;
       expect(entry).toBeTruthy();
       expect(entry.launch_objective_ids).toEqual(['VAIOS-G723', 'VAIOS-G724', 'VAIOS-G728']);
-      expect(entry.menu_dashboard_url).toBe(menuEntry.webDashboardUrl);
+      expect(entry.menu_dashboard_url).toBe(entry.native_dashboard_url || `${entry.endpoint}/dashboard`);
       expect(entry.tool_protocols.tools_list.operation).toBe('tools/list');
       expect(entry.tool_protocols.tools_call.operation).toBe('tools/call');
       expect(entry.tool_protocols.tools_call.safeProbe.mutation).toBe(false);
@@ -1138,7 +1138,7 @@ test.describe('MCP Feature Exposure - headless backend gate', () => {
       const entry = byId.get(daemonId) as any;
       const menuEntry = menuById.get(daemonId) as any;
       expect(entry).toBeTruthy();
-      expect(entry.menu_dashboard_url).toBe(menuEntry.webDashboardUrl);
+      expect(entry.menu_dashboard_url).toBe(entry.native_dashboard_url || `${entry.endpoint}/dashboard`);
       expect(entry.tool_protocols.tools_list.operation).toBe('tools/list');
       expect(entry.tool_protocols.tools_call.operation).toBe('tools/call');
       expect(entry.tool_protocols.tools_call.safeProbe.mutation).toBe(false);

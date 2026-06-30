@@ -640,7 +640,7 @@ electronDescribe('MCP Dashboard Interoperability - VAIOS-G723 Electron UI wiring
 
       expect(server).toBeTruthy();
       expect(server.launch_objective_ids).toEqual(DASHBOARD_LAUNCH_OBJECTIVE_IDS);
-      expect(server.menu_dashboard_url).toBe(menuEntry.webDashboardUrl);
+      expect(server.menu_dashboard_url).toBe(server.native_dashboard_url || `${server.endpoint}/dashboard`);
       expect(server.tool_protocols.tools_list.operation).toBe('tools/list');
       expect(server.tool_protocols.tools_call.operation).toBe('tools/call');
       expect(server.tool_protocols.tools_call.safeProbe.mutation).toBe(false);
@@ -699,7 +699,7 @@ electronDescribe('MCP Dashboard Interoperability - VAIOS-G723 Electron UI wiring
         'Open Web Dashboard'
       ];
 
-      expect(liveDashboardUrl).toBe(menuServer.webDashboardUrl);
+      expect(liveDashboardUrl).toBe(catalogServer.native_dashboard_url || `${catalogServer.endpoint}/dashboard`);
       expect(await clickApplicationMenuPath(electronApp, menuPath)).toBe(true);
 
       const dashboardWindow = await waitForWindowUrl(
@@ -797,7 +797,7 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       const server = servers.get(daemonId) as any;
       const menuEntry = menuById.get(daemonId) as any;
       expect(server.launch_objective_ids).toEqual(DASHBOARD_LAUNCH_OBJECTIVE_IDS);
-      expect(server.menu_dashboard_url).toBe(menuEntry.webDashboardUrl);
+      expect(server.menu_dashboard_url).toBe(server.native_dashboard_url || `${server.endpoint}/dashboard`);
       expect(server.tool_protocols.tools_list.operation).toBe('tools/list');
       expect(server.tool_protocols.tools_call.operation).toBe('tools/call');
       expect(server.tool_protocols.tools_call.safeProbe.mutation).toBe(false);

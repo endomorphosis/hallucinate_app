@@ -2017,7 +2017,7 @@ class MCPDaemonManager extends EventEmitter {
       health_path: config.healthPath,
       health_url: `${endpoint}${config.healthPath}`,
       menu_dashboard_path: menuServer.dashboardPath || null,
-      menu_dashboard_url: menuServer.webDashboardUrl || nativeDashboardUrl || `${endpoint}/dashboard`,
+      menu_dashboard_url: nativeDashboardUrl || `${endpoint}/dashboard`,
       native_dashboard_url: nativeDashboardUrl,
       native_dashboard_health_path: config.nativeDashboard?.healthPath || null,
       native_dashboard_catalog_url: nativeDashboardCatalogUrl,
