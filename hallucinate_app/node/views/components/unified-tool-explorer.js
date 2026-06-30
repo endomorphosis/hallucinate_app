@@ -135,7 +135,8 @@
             const data = await resp.json();
             
             let tools = [];
-            if (Array.isArray(data.tools)) tools = data.tools;
+            if (data && data.result && Array.isArray(data.result.tools)) tools = data.result.tools;
+            else if (Array.isArray(data.tools)) tools = data.tools;
             else if (Array.isArray(data)) tools = data;
             else if (data.endpoints) {
               // Handsfree returns endpoint list

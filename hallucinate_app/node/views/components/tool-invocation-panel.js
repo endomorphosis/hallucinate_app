@@ -22,8 +22,8 @@
 
   const DAEMON_CONFIGS = {
     'ipfs-kit': { port: 8004, toolsListPath: '/mcp/tools/list', toolsCallPath: '/mcp/tools/call' },
-    'ipfs-datasets': { port: 3002, toolsListPath: '/datasets/list', toolsCallPath: '/datasets/load' },
-    'ipfs-accelerate': { port: 3003, toolsListPath: '/models/list', toolsCallPath: '/inference' },
+    'ipfs-datasets': { port: 3002, toolsListPath: '/mcp/tools/list', toolsCallPath: '/mcp/tools/call' },
+    'ipfs-accelerate': { port: 3003, toolsListPath: '/mcp/tools/list', toolsCallPath: '/mcp/tools/call' },
   };
 
   class ToolInvocationPanel {
@@ -146,7 +146,7 @@
           const url = `http://127.0.0.1:${this.port}${this.config.toolsListPath}`;
           const resp = await this.fetchWithTimeout(url);
           const data = await resp.json();
-          tools = data.tools || data || [];
+          tools = (data.result && data.result.tools) || data.tools || data || [];
         }
 
         this.tools = Array.isArray(tools) ? tools : [];
