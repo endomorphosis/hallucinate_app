@@ -21,6 +21,10 @@
 fastapi>=0.100.0
 uvicorn[standard]>=0.23.0
 hypercorn>=0.16.0
+# Required by FastAPI to parse multipart/form-data — the ipfs_kit_py and
+# ipfs_datasets_py dashboards expose file-upload (UploadFile/Form) endpoints, so
+# without this the FastAPI app fails to start with a RuntimeError at route build.
+python-multipart>=0.0.6
 pydantic>=2.0.0
 PyJWT>=2.8.0
 
