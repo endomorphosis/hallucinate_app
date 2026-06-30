@@ -799,10 +799,11 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
   });
 
   test('IPFS dashboard web buttons open catalog-backed native dashboard URLs', async () => {
+    const live = await liveDaemonEndpoints(window);
     const dashboards = [
-      { label: 'IPFS Kit Dashboard', daemonId: 'ipfs-kit', urlPattern: /127\.0\.0\.1:8004\/dashboard/ },
-      { label: 'IPFS Datasets Dashboard', daemonId: 'ipfs-datasets', urlPattern: /127\.0\.0\.1:8899\/mcp/ },
-      { label: 'IPFS Accelerate Dashboard', daemonId: 'ipfs-accelerate', urlPattern: /127\.0\.0\.1:3003\/dashboard/ },
+      { label: 'IPFS Kit Dashboard', daemonId: 'ipfs-kit' },
+      { label: 'IPFS Datasets Dashboard', daemonId: 'ipfs-datasets' },
+      { label: 'IPFS Accelerate Dashboard', daemonId: 'ipfs-accelerate' },
     ];
 
     for (const dashboard of dashboards) {
@@ -810,7 +811,7 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
       await waitForDaemonHealthy(window, dashboard.daemonId);
       await window.locator('#btn-open-web-dashboard').click();
       await waitForTextInSelector(window, '#health-receipt', /navigation\/openDashboard/);
-      await expect(window.locator('#health-receipt')).toContainText(dashboard.urlPattern);
+      await expect(window.locator('#health-receipt')).toContainText(live[dashboard.daemonId].webDashboardUrl);
     }
   });
 
