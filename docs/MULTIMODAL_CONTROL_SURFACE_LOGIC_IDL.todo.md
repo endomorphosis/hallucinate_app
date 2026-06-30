@@ -8916,11 +8916,11 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-728 Resolve merge retry-budget failure for HAO-727
 
-- Status: todo
-- Completion: manual
+- Status: completed
+- Completion: main_checkout_dirty_conflict repair verified HAO-727 implementation commits in hallucinate_app 3d32e4aee89be027e45e76896cf6ee04225b3e51 and swissknife 0bc501a882d80446394497606e330a29e49f4267; completion metadata committed in hallucinate_app 2a0a6ecc9a089740d273895a083a98a1503da093; release HAO-727 from blocked_tasks.
 - Priority: P1
 - Track: ops
 - Depends on: 
 - Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, hallucinate_app, swissknife, docs/launch/phone_desktop_glasses_readiness.md, tests
-- Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-30-hao-728-hao-727-merge-retry-budget.md
-- Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-727. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-30-hao-728-hao-727-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-727 from strategy blocked_tasks.
+- Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-29-hao-728-hao-727-merge-retry-budget.md
+- Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-727. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-29-hao-728-hao-727-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-727 from strategy blocked_tasks.
