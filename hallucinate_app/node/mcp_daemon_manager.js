@@ -15,7 +15,15 @@ import { mcpServers } from './menu_config.js';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 const DEFAULT_HEALTH_INTERVAL_MS = 30000;
-const DEFAULT_STARTUP_TIMEOUT_MS = 5000;
+// The Python MCP servers import heavy dependencies on cold start (duckdb,
+// transformers/HF hub scanners, model managers, hypercorn). Measured cold-boot
+// times to first healthy response: ipfs-kit ~6s, ipfs-datasets ~11s,
+// ipfs-accelerate ~13s — and slower on first run in a packaged app or on
+// constrained hardware. A 5s startup budget marked every server "degraded"
+// before it ever finished booting, which surfaced in the UI as "MCP++ servers
+// not working". Give cold starts a realistic budget (override via
+// MCP_DAEMON_STARTUP_TIMEOUT_MS).
+const DEFAULT_STARTUP_TIMEOUT_MS = 45000;
 const DEFAULT_MAX_RESTARTS = 3;
 const LAUNCH_TASK_ID = 'HAO-442';
 const STARTUP_MESSAGE_PATTERNS = [
@@ -1248,6 +1256,21 @@ class MCPDaemonManager extends EventEmitter {
               console.log(`[${daemon.name}] Auto-restarting (attempt ${daemon.restartCount}/${this.maxRestarts})...`);
               this.startDaemon(id, { reason: 'health_restart' });
             }
+          } else if (health.healthy && daemon.status === 'degraded') {
+            // The process is alive and the endpoint is now responding. A server
+            // that booted slowly (heavy Python imports) and missed its startup
+            // budget was parked in 'degraded'; promote it back to 'running' so
+            // the UI stops reporting a working server as broken.
+            daemon.status = 'running';
+            console.log(`[${daemon.name}] Recovered: endpoint healthy, marking as running`);
+            this.emit('recovered', { daemon: id, port: config.port, health });
+            this.emit('started', { daemon: id, port: config.port, health });
+          } else if (!health.endpoint_ok && daemon.status === 'running') {
+            // Process is alive but the endpoint stopped responding; reflect the
+            // transient degradation instead of continuing to report 'running'.
+            daemon.status = 'degraded';
+            console.warn(`[${daemon.name}] Endpoint not responding (process alive), marking as degraded`);
+            this.emit('degraded', { daemon: id, port: config.port, health });
           }
         }
       }
