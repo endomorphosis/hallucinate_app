@@ -92,6 +92,9 @@
       <label for="boot" style="margin-top:14px">Bootstrap / seed endpoints (optional)</label>
       <input id="boot" type="text" placeholder="https://seed-a:8080, https://seed-b:8080" autocapitalize="off" autocorrect="off" spellcheck="false" />
       <div class="hint">Comma-separated. Used as starting points for relay discovery.</div>
+      <label for="dnsaddr" style="margin-top:14px">dnsaddr domains (optional)</label>
+      <input id="dnsaddr" type="text" placeholder="hallucinate.example.com" autocapitalize="off" autocorrect="off" spellcheck="false" />
+      <div class="hint">Resolves <code>_dnsaddr.&lt;domain&gt;</code> TXT records (over DNS-over-HTTPS) for libp2p bootstrap peers.</div>
       <div id="discStatus"></div>
       <div id="discList"></div>
       <div class="toggle-row">
@@ -157,8 +160,10 @@
 
     // ---- discovery ---------------------------------------------------------
     var LS_BOOT = 'hallucinateBootstrap';
+    var LS_DNSADDR = 'hallucinateDnsaddr';
     var LS_AUTO = 'hallucinateAutoDiscover';
     var bootEl = document.getElementById('boot');
+    var dnsaddrEl = document.getElementById('dnsaddr');
     var autoEl = document.getElementById('autoDisc');
     var discListEl = document.getElementById('discList');
     var discStatusEl = document.getElementById('discStatus');
@@ -166,6 +171,7 @@
 
     try {
       bootEl.value = localStorage.getItem(LS_BOOT) || '';
+      dnsaddrEl.value = localStorage.getItem(LS_DNSADDR) || '';
       autoEl.checked = localStorage.getItem(LS_AUTO) !== 'off';
     } catch (e) {}
 
@@ -174,6 +180,9 @@
     };
     bootEl.onchange = function () {
       try { localStorage.setItem(LS_BOOT, norm(bootEl.value)); } catch (e) {}
+    };
+    dnsaddrEl.onchange = function () {
+      try { localStorage.setItem(LS_DNSADDR, (dnsaddrEl.value || '').trim()); } catch (e) {}
     };
 
     function badgeRow(methods) {
@@ -223,7 +232,7 @@
         discStatusEl.textContent = 'Discovery unavailable in this build.';
         return;
       }
-      try { localStorage.setItem(LS_BOOT, norm(bootEl.value)); } catch (e) {}
+      try { localStorage.setItem(LS_BOOT, norm(bootEl.value)); localStorage.setItem(LS_DNSADDR, (dnsaddrEl.value || '').trim()); } catch (e) {}
       discBtn.disabled = true;
       discListEl.innerHTML = '';
       seenUrls = {};

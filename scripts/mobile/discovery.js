@@ -41,7 +41,7 @@
 (function () {
   'use strict';
 
-  var METHODS = ['mdns', 'dht', 'pubsub', 'rendezvous', 'bootstrap'];
+  var METHODS = ['mdns', 'dht', 'pubsub', 'rendezvous', 'dnsaddr', 'bootstrap'];
 
   // libp2p service types we advertise / look for over mDNS.
   var MDNS_SERVICE_TYPES = [
@@ -53,6 +53,19 @@
 
   // Default REST/MCP ports the backends listen on.
   var DEFAULT_REST_PORTS = [8080, 8000, 8004];
+
+  // DNS-over-HTTPS resolvers (a WebView cannot do raw DNS/UDP, so we resolve
+  // libp2p `_dnsaddr.*` TXT records over HTTPS).
+  var DOH_RESOLVERS = [
+    'https://cloudflare-dns.com/dns-query',
+    'https://dns.google/resolve',
+  ];
+
+  // Default dnsaddr domains to seed libp2p bootstrap discovery from. The app's
+  // own domain can publish backend peers under `_dnsaddr.<host>` for zero-config
+  // discovery; the public libp2p bootstrappers seed the global DHT.
+  var DEFAULT_DNSADDR_DOMAINS = ['bootstrap.libp2p.io'];
+  var MAX_DNSADDR_DEPTH = 4;
 
   function trimSlash(u) {
     return (u || '').replace(/\/+$/, '');
@@ -169,11 +182,11 @@
       pushUnique(out, normOrigin(s.replace(/^ws/i, 'http')));
       return;
     }
-    // multiaddr: /ip4/1.2.3.4/tcp/8080[/http|/ws|/tls/...]
+    // multiaddr: /ip4/1.2.3.4/tcp/8080[/http|/ws|/tls|/wss|/quic|/p2p/<id>...]
     if (s.indexOf('/') === 0) {
       var ip = s.match(/\/ip[46]\/([^/]+)/);
-      var dns = s.match(/\/dns[46]?\/([^/]+)/);
-      var tcp = s.match(/\/tcp\/(\d+)/);
+      var dns = s.match(/\/dns(?:addr|[46])?\/([^/]+)/);
+      var tcp = s.match(/\/(?:tcp|udp)\/(\d+)/);
       var host = (ip && ip[1]) || (dns && dns[1]);
       var secure = /\/(https|tls|wss)(\/|$)/.test(s);
       if (host && tcp) {
@@ -266,6 +279,107 @@
       });
     });
     return out.map(function (u) { return { url: u, method: 'bootstrap' }; });
+  }
+
+  // ---- strategy: dnsaddr / DNS bootstrap (over DNS-over-HTTPS) -------------
+
+  // Resolve a single TXT record set for `name` via DoH. Returns array of TXT
+  // strings (unquoted). Tries each resolver until one answers.
+  function dohTxt(name, timeout) {
+    var fetchFn = (typeof window.__hlNativeFetch === 'function')
+      ? window.__hlNativeFetch : window.fetch.bind(window);
+    var idx = 0;
+    function tryNext() {
+      if (idx >= DOH_RESOLVERS.length) return Promise.resolve([]);
+      var base = DOH_RESOLVERS[idx++];
+      var url = base + '?name=' + encodeURIComponent(name) + '&type=TXT';
+      return withTimeout(
+        fetchFn(url, { method: 'GET', headers: { 'Accept': 'application/dns-json' }, mode: 'cors' })
+          .then(function (r) { return r.ok ? r.json() : null; }),
+        timeout || 4000
+      ).then(function (j) {
+        var answers = (j && (j.Answer || j.answer)) || [];
+        var txt = [];
+        answers.forEach(function (a) {
+          var d = a.data || a.Data || '';
+          // DoH JSON wraps TXT data in quotes; may concatenate chunks.
+          d = String(d).replace(/^"|"$/g, '').replace(/" "/g, '');
+          if (d) txt.push(d);
+        });
+        if (txt.length) return txt;
+        return tryNext();
+      }).catch(function () { return tryNext(); });
+    }
+    return tryNext();
+  }
+
+  // Recursively resolve `_dnsaddr.<host>` records into terminal multiaddrs.
+  // Returns a de-duplicated list of multiaddr strings.
+  function resolveDnsaddrDomain(host, depth, seen, timeout) {
+    host = String(host).replace(/^_dnsaddr\./, '');
+    var key = host + '@' + depth;
+    if (seen.visited[host]) return Promise.resolve([]);
+    seen.visited[host] = true;
+    if (depth <= 0) return Promise.resolve([]);
+    return dohTxt('_dnsaddr.' + host, timeout).then(function (txts) {
+      var maddrs = [];
+      var recursions = [];
+      txts.forEach(function (t) {
+        // Format: dnsaddr=/...   (also tolerate a bare /... multiaddr)
+        var m = t.match(/dnsaddr=(\/\S+)/) || (t.indexOf('/') === 0 ? [null, t] : null);
+        if (!m) return;
+        var maddr = m[1];
+        var nested = maddr.match(/^\/dnsaddr\/([^/]+)/);
+        if (nested) {
+          recursions.push(resolveDnsaddrDomain(nested[1], depth - 1, seen, timeout));
+        } else {
+          if (seen.maddrs.indexOf(maddr) === -1) {
+            seen.maddrs.push(maddr);
+            maddrs.push(maddr);
+          }
+        }
+      });
+      return Promise.all(recursions).then(function (lists) {
+        lists.forEach(function (l) { maddrs = maddrs.concat(l); });
+        return maddrs;
+      });
+    });
+  }
+
+  // Discover via dnsaddr: resolve configured + default domains, yielding
+  // libp2p bootstrap multiaddrs and any http(s)-mappable candidates.
+  function dnsaddrDiscover(opts) {
+    opts = opts || {};
+    var timeout = opts.timeout || 4000;
+    var domains = DEFAULT_DNSADDR_DOMAINS.slice();
+    // Operator-published domain(s) for the app's own backends.
+    var cfg = lsGet('hallucinateDnsaddr') || '';
+    cfg.split(/[\s,]+/).forEach(function (d) { if (d) domains.push(d.replace(/^_dnsaddr\./, '')); });
+    // The app's own host can publish `_dnsaddr.<host>` backend records.
+    try {
+      var h = window.location && window.location.hostname;
+      if (h && /\./.test(h) && !/^\d+\.\d+\.\d+\.\d+$/.test(h)) domains.push(h);
+    } catch (e) {}
+
+    var seen = { visited: {}, maddrs: [] };
+    return Promise.all(domains.map(function (d) {
+      return resolveDnsaddrDomain(d, MAX_DNSADDR_DEPTH, seen, timeout).catch(function () { return []; });
+    })).then(function () {
+      var maddrs = seen.maddrs;
+      // Expose raw bootstrap peers for the in-browser js-libp2p tier.
+      window.HallucinateDiscovery.bootstrapPeers = maddrs.slice();
+      // Map http/https multiaddrs (and explicit gateway ports) to probe URLs;
+      // raw swarm (tcp/4001, quic, wss libp2p) addrs simply fail health checks.
+      var candidates = [];
+      maddrs.forEach(function (ma) {
+        if (/\/(https?|tls|wss)(\/|$)/.test(ma) || /\/(tcp|udp)\/(8080|8000|8004|443|80)(\/|$)/.test(ma)) {
+          extractUrls(ma, []).forEach(function (u) {
+            candidates.push({ url: u, method: 'dnsaddr' });
+          });
+        }
+      });
+      return candidates;
+    });
   }
 
   // ---- strategy: mDNS via capacitor-zeroconf ------------------------------
@@ -387,8 +501,13 @@
   function browserLibp2pDiscover(opts) {
     var L = window.HallucinateLibp2p;
     if (!L || typeof L.discover !== 'function') return Promise.resolve([]);
+    opts = opts || {};
+    // Seed with dnsaddr-resolved bootstrap peers when available.
+    if (!opts.bootstrap && window.HallucinateDiscovery && window.HallucinateDiscovery.bootstrapPeers) {
+      opts.bootstrap = window.HallucinateDiscovery.bootstrapPeers;
+    }
     return Promise.resolve()
-      .then(function () { return L.discover(opts || {}); })
+      .then(function () { return L.discover(opts); })
       .then(function (list) {
         var out = [];
         (list || []).forEach(function (item) {
@@ -477,16 +596,20 @@
       ? (onProgress({ phase: 'start', method: 'mdns', message: 'Browsing mDNS (Bonjour/NSD)…' }), mdnsDiscover({ timeout: Math.max(timeout, 5000) }))
       : Promise.resolve([]);
 
+    var dnsaddrPromise = want_('dnsaddr')
+      ? (onProgress({ phase: 'start', method: 'dnsaddr', message: 'Resolving dnsaddr / DNS bootstrap records…' }), dnsaddrDiscover({ timeout: timeout }).catch(function () { return []; }))
+      : Promise.resolve([]);
+
     var libp2pPromise = (want_('dht') || want_('pubsub') || want_('rendezvous'))
-      ? browserLibp2pDiscover({ timeout: timeout, methods: want })
+      ? dnsaddrPromise.then(function () { return browserLibp2pDiscover({ timeout: timeout, methods: want }); })
       : Promise.resolve([]);
 
     // Kick off initial bootstrap probes immediately.
     var initialProbes = initial.map(function (x) { return probeCandidate(x.c, x.source); });
 
-    // Add mDNS + browser-libp2p candidates as they arrive.
-    var extraProbes = Promise.all([mdnsPromise, libp2pPromise]).then(function (res) {
-      var more = [].concat(res[0] || [], res[1] || []);
+    // Add mDNS + dnsaddr + browser-libp2p candidates as they arrive.
+    var extraProbes = Promise.all([mdnsPromise, dnsaddrPromise, libp2pPromise]).then(function (res) {
+      var more = [].concat(res[0] || [], res[1] || [], res[2] || []);
       return Promise.all(more.map(function (c) { return probeCandidate(c, c.method); }));
     });
 
@@ -531,6 +654,12 @@
     discoverAll: discoverAll,
     probe: probe,
     extractUrls: extractUrls,
+    resolveDnsaddr: function (host, opts) {
+      opts = opts || {};
+      return resolveDnsaddrDomain(host, opts.depth || MAX_DNSADDR_DEPTH, { visited: {}, maddrs: [] }, opts.timeout || 4000);
+    },
+    dnsaddrDiscover: dnsaddrDiscover,
+    bootstrapPeers: [],
     _bootstrapCandidates: bootstrapCandidates,
   };
 })();
