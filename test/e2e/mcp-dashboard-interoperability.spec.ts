@@ -202,6 +202,13 @@ const HAO_724_LAUNCH_GATE_RECEIPT = path.join(
   'discovery',
   '2026-06-28-hao-724-mcp-dashboard-launch-gate.md'
 );
+const HAO_724_ATTEMPT_7_VALIDATION_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'hallucinate_multimodal_control',
+  'discovery',
+  '2026-06-30-hao-724-attempt-7-validation.md'
+);
 const VAI_535_OBJECTIVE_GAP_RECEIPT = path.join(
   REPO_ROOT,
   'data',
@@ -410,6 +417,28 @@ const HAO_727_REQUIRED_EVIDENCE = [
   'tools/call',
   'control_surface receipts',
   'Swissknife applications',
+  'catalog normalization',
+  'dashboard UI wiring',
+  'mediated tool-call receipts',
+  'Swissknife consumers',
+  'Playwright coverage',
+  'supervisor-generated follow-up subtasks',
+  'launch Playwright validation gate'
+];
+const HAO_724_REQUIRED_EVIDENCE = [
+  'hallucinate_app menus',
+  'Hallucinate App MCP dashboard',
+  'dashboard capability catalog',
+  'daemon health',
+  'MCP++ telemetry',
+  'tools/list',
+  'tools/call',
+  'control_surface receipts',
+  'ipfs_accelerate_py MCP server',
+  'ipfs_datasets_py MCP server',
+  'ipfs_kit_py MCP server',
+  'Swissknife applications',
+  'Playwright MCP dashboard interoperability',
   'catalog normalization',
   'dashboard UI wiring',
   'mediated tool-call receipts',
@@ -1920,7 +1949,20 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       sourceGapReceipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-objective-gap-3e00ad2a0074.md',
       launchGateReceipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-mcp-dashboard-launch-gate.md',
       receiptFixture: 'hallucinate_app/test/e2e/fixtures/hao-724-mcp-dashboard-launch-gate.json',
-      heapProof: 'HAO-724 proof'
+      heapProof: 'HAO-724 proof',
+      requiredEvidence: HAO_724_REQUIRED_EVIDENCE,
+      attempt: 7,
+      attemptReceiptPath: HAO_724_ATTEMPT_7_VALIDATION_RECEIPT,
+      attemptReceipt: 'data/hallucinate_multimodal_control/discovery/2026-06-30-hao-724-attempt-7-validation.md',
+      childGoals: [
+        'VAIOS-G724-C1 Catalog normalization',
+        'VAIOS-G724-C2 Dashboard UI wiring',
+        'VAIOS-G724-C3 Mediated tool-call receipts',
+        'VAIOS-G724-C4 Swissknife consumers',
+        'VAIOS-G724-C5 Playwright coverage',
+        'VAIOS-G724-C6 Packet sibling daemon launch alignment'
+      ],
+      followUpSubtasks: ['HAO-724', 'HAO-729', 'HAO-187']
     });
   });
 
@@ -2578,13 +2620,23 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     launchGateReceipt: string;
     receiptFixture: string;
     heapProof: string;
+    requiredEvidence?: string[];
+    attempt?: number;
+    attemptReceiptPath?: string;
+    attemptReceipt?: string;
+    childGoals?: string[];
+    followUpSubtasks?: string[];
   }) {
     const receipt = JSON.parse(fs.readFileSync(expected.fixturePath, 'utf8'));
     const launchGateReceipt = fs.readFileSync(expected.launchGateReceiptPath, 'utf8');
+    const attemptReceipt = expected.attemptReceiptPath
+      ? fs.readFileSync(expected.attemptReceiptPath, 'utf8')
+      : '';
     const objectiveGap = fs.readFileSync(expected.objectiveGapPath, 'utf8');
     const objectiveHeap = fs.readFileSync(MGW_OBJECTIVE_HEAP, 'utf8');
     const catalog = new MCPDaemonManager().getDashboardCapabilityCatalog();
     const serversByPackage = new Map(catalog.servers.map((server: any) => [server.server_package, server]));
+    const requiredEvidence = expected.requiredEvidence || MGW_533_REQUIRED_EVIDENCE;
 
     expect(receipt.schema).toBe('launch_readiness_receipt_v1');
     expect(receipt.task_id).toBe(expected.taskId);
@@ -2599,10 +2651,22 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
       'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
     ]));
-    expect(receipt.required_evidence).toEqual(MGW_533_REQUIRED_EVIDENCE);
+    expect(receipt.required_evidence).toEqual(requiredEvidence);
     expect(receipt.catalog_schema).toBe(catalog.schema);
     expect(receipt.catalog_generated_by).toBe(catalog.generated_by);
     expect(receipt.catalog_launch_objective_ids).toEqual(catalog.launch_objective_ids);
+    if (expected.attempt !== undefined) {
+      expect(receipt.attempt).toBe(expected.attempt);
+      expect(receipt.attempt_receipts).toContain(expected.attemptReceipt);
+      expect(receipt.gate_state).toBe('gate_closed_by_attempt_7_playwright_validation');
+    }
+    if (expected.childGoals) {
+      expect(receipt.child_goals).toEqual(expected.childGoals);
+    }
+    if (expected.followUpSubtasks) {
+      expect(receipt.follow_up_subtasks).toEqual(expected.followUpSubtasks);
+      expect(receipt.supervisor_follow_up_subtasks).toEqual(expected.followUpSubtasks);
+    }
     expect(catalog.launch_validation_gates).toEqual(expect.arrayContaining([
       expect.objectContaining({
         task_id: receipt.task_id,
@@ -2612,7 +2676,17 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
         evidence_term: receipt.evidence_term,
         supervisor_gap_receipt: receipt.source_gap_receipt,
         launch_gate_receipt: receipt.launch_gate_receipt,
-        receipt_fixture: expected.receiptFixture
+        receipt_fixture: expected.receiptFixture,
+        ...(expected.attempt !== undefined
+          ? {
+              attempt: expected.attempt,
+              attempt_receipts: expect.arrayContaining([expected.attemptReceipt]),
+              gate_state: receipt.gate_state,
+              required_evidence: requiredEvidence,
+              child_goals: expected.childGoals,
+              follow_up_subtasks: expected.followUpSubtasks
+            }
+          : {})
       })
     ]));
 
@@ -2632,14 +2706,20 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       expect(catalogServer.swissknife_consumer).toBe(server.swissknife_consumer);
     }
 
-    for (const term of MGW_533_REQUIRED_EVIDENCE) {
+    for (const term of requiredEvidence) {
       expect(objectiveGap).toContain(term);
       expect(launchGateReceipt).toContain(term);
+      if (attemptReceipt) {
+        expect(attemptReceipt).toContain(term);
+      }
     }
 
     expect(objectiveHeap).toContain(expected.heapProof);
     expect(objectiveHeap).toContain(expected.receiptFixture);
     expect(objectiveHeap).toContain(expected.launchGateReceipt);
+    if (expected.attemptReceipt) {
+      expect(objectiveHeap).toContain(expected.attemptReceipt);
+    }
     expect(objectiveHeap).toContain('VAIOS-G728');
   }
 });
