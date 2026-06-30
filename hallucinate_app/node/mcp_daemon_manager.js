@@ -798,7 +798,7 @@ class MCPDaemonManager extends EventEmitter {
         name: 'IPFS Datasets MCP',
         launchOrder: 20,
         command: this.pythonCommand,
-        args: ['-m', 'uvicorn', 'ipfs_datasets_py.mcp_server.fastapi_service:app', '--host', '127.0.0.1', '--port', '3002'],
+        args: ['-m', 'ipfs_datasets_py.mcp_server', '--http', '--host', '127.0.0.1', '--port', '3002'],
         cwd: path.join(this.baseDir, 'ipfs_datasets_py'),
         port: 3002,
         transport: 'http',
