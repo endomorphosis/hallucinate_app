@@ -401,6 +401,10 @@ const HAO_727_LAUNCH_VALIDATION_GATE = {
   launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-727-mcp-dashboard-launch-gate.md',
   hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-727-mcp-dashboard-launch-gate.md',
   receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-727-mcp-dashboard-launch-gate.json',
+  attempt: 5,
+  attempt_receipts: [
+    'data/hallucinate_multimodal_control/discovery/2026-06-30-hao-727-attempt-5-validation.md'
+  ],
   required_backends: [
     'ipfs_kit_py',
     'ipfs_datasets_py',

@@ -503,6 +503,10 @@
       "schema": "launch_readiness_receipt_v1",
       "lineage_id": "VAIOS-G723:hallucinate-mcp-dashboard-interoperability",
       "source_gap_receipt": "data/hallucinate_multimodal_control/discovery/2026-06-28-hao-727-objective-gap-7ea369464239.md",
+      "attempt": 5,
+      "attempt_receipts": [
+        "data/hallucinate_multimodal_control/discovery/2026-06-30-hao-727-attempt-5-validation.md"
+      ],
       "required_backends": [
         "ipfs_kit_py",
         "ipfs_datasets_py",
@@ -624,6 +628,10 @@
       "schema": "launch_readiness_receipt_v1",
       "lineage_id": "VAIOS-G723:hallucinate-mcp-dashboard-interoperability-console",
       "source_gap_receipt": "data/meta_glasses_display_widgets/discovery/2026-06-29-mgw-558-objective-gap-7ea369464239.md",
+      "attempt": 5,
+      "attempt_receipts": [
+        "data/hallucinate_multimodal_control/discovery/2026-06-30-hao-727-attempt-5-validation.md"
+      ],
       "required_backends": [
         "ipfs_kit_py",
         "ipfs_datasets_py",
@@ -746,6 +754,10 @@
       "schema": "launch_readiness_receipt_v1",
       "lineage_id": "VAIOS-G723:hallucinate-mcp-dashboard-interoperability-console",
       "source_gap_receipt": "data/meta_glasses_display_widgets/discovery/2026-06-29-mgw-559-objective-gap-7ea369464239.md",
+      "attempt": 5,
+      "attempt_receipts": [
+        "data/hallucinate_multimodal_control/discovery/2026-06-30-hao-727-attempt-5-validation.md"
+      ],
       "required_backends": [
         "ipfs_kit_py",
         "ipfs_datasets_py",
@@ -868,6 +880,10 @@
       "schema": "launch_readiness_receipt_v1",
       "lineage_id": "VAIOS-G723:hallucinate-mcp-dashboard-interoperability-console",
       "source_gap_receipt": "data/meta_glasses_display_widgets/discovery/2026-06-30-mgw-561-objective-gap-7ea369464239.md",
+      "attempt": 5,
+      "attempt_receipts": [
+        "data/hallucinate_multimodal_control/discovery/2026-06-30-hao-727-attempt-5-validation.md"
+      ],
       "required_backends": [
         "ipfs_kit_py",
         "ipfs_datasets_py",
