@@ -17,7 +17,11 @@ export default defineConfig({
   // Test execution settings
   fullyParallel: false, // Run tests serially for Electron
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
+  // These E2E specs boot three heavy Python MCP daemons alongside Electron, so a
+  // run can occasionally hit transient resource contention (a page/context closing
+  // mid-wait). Retry once locally too (CI already retries) so live-backend
+  // validation stays reliable; deterministic failures still surface on the retry.
+  retries: process.env.CI ? 2 : 1,
   workers: 1, // Single worker for Electron tests
   
   // Reporter configuration
