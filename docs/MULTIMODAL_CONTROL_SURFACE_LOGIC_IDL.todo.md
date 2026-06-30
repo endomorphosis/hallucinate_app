@@ -8870,8 +8870,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-726 Resolve merge retry-budget failure for HAO-724
 
-- Status: todo
-- Completion: manual
+- Status: completed
+- Completion: main_checkout_dirty repair verified HAO-724 implementation commits in hallucinate_app d2d977e3a74dd6fcd24dce2bc1e18e17264c786a and swissknife 3502a83024a7a3a22d4836c1ad8da96787c34e0d; current launch-gate evidence remains present in hallucinate_app 0704325dd9a6addefbf8428e81dfb69abe3cace0 and swissknife a28e1e2b41555666df7618e1c5791101e5a629bf; no semantic merge resolver run was applicable; release HAO-724 from blocked_tasks.
 - Priority: P1
 - Track: ops
 - Depends on: 
