@@ -974,7 +974,7 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       'no dashboard-only mocks',
       'hardware-free Playwright evidence'
     ]));
-    expect(receipt.required_backends.sort()).toEqual(payload.packages);
+    expect([...receipt.required_backends].sort()).toEqual(payload.packages);
     expect(receipt.required_operations).toEqual(expect.arrayContaining(payload.operations));
     expect(receipt.dashboard_servers.map((server: any) => server.server_package).sort()).toEqual(payload.packages);
     expect(payload.packages).toEqual(['ipfs_accelerate_py', 'ipfs_datasets_py', 'ipfs_kit_py']);
@@ -1226,7 +1226,7 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
       'npm --prefix swissknife run test:e2e:mcp'
     ]));
-    expect(receipt.required_backends.sort()).toEqual([
+    expect([...receipt.required_backends].sort()).toEqual([
       'ipfs_accelerate_py',
       'ipfs_datasets_py',
       'ipfs_kit_py'
@@ -1343,7 +1343,7 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
       'npm --prefix swissknife run test:e2e:mcp'
     ]));
-    expect(receipt.required_backends.sort()).toEqual([
+    expect([...receipt.required_backends].sort()).toEqual([
       'ipfs_accelerate_py',
       'ipfs_datasets_py',
       'ipfs_kit_py'
@@ -1462,7 +1462,7 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       'npm --prefix swissknife run test:e2e:mcp',
       'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
     ]));
-    expect(receipt.required_backends.sort()).toEqual([
+    expect([...receipt.required_backends].sort()).toEqual([
       'ipfs_accelerate_py',
       'ipfs_datasets_py',
       'ipfs_kit_py'
@@ -1561,7 +1561,7 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
       'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
     ]));
-    expect(receipt.required_backends.sort()).toEqual([
+    expect([...receipt.required_backends].sort()).toEqual([
       'ipfs_accelerate_py',
       'ipfs_datasets_py',
       'ipfs_kit_py'
@@ -1626,7 +1626,7 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     expect(receipt.validation_commands).toContain(
       'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts'
     );
-    expect(receipt.required_backends.sort()).toEqual([
+    expect([...receipt.required_backends].sort()).toEqual([
       'ipfs_accelerate_py',
       'ipfs_datasets_py',
       'ipfs_kit_py'
@@ -2052,7 +2052,7 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
       'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
     ]));
-    expect(receipt.required_backends.sort()).toEqual([
+    expect([...receipt.required_backends].sort()).toEqual([
       'ipfs_accelerate_py',
       'ipfs_datasets_py',
       'ipfs_kit_py'
@@ -2060,16 +2060,32 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     expect(receipt.child_goals).toEqual(MGW_546_CHILD_GOALS);
     expect(receipt.follow_up_subtasks).toEqual(FOLLOW_UP_TASKS);
     expect(launchGate).toMatchObject({
+      schema: receipt.schema,
       task_id: receipt.task_id,
       goal_id: receipt.goal_id,
+      lineage_id: receipt.lineage_id,
       evidence_term: receipt.evidence_term,
+      gate_state: receipt.gate_state,
+      source_gap_receipt: receipt.source_gap_receipt,
       supervisor_gap_receipt: receipt.source_gap_receipt,
       launch_gate_receipt: receipt.launch_gate_receipt,
+      hallucinate_launch_gate_receipt: receipt.hallucinate_launch_gate_receipt,
       hallucinate_backlog_receipt: receipt.hallucinate_backlog_receipt,
       receipt_fixture: receipt.receipt_fixture,
+      catalog_source: receipt.catalog_source,
+      catalog_schema: receipt.catalog_schema,
+      catalog_generated_by: receipt.catalog_generated_by,
+      catalog_fixture: receipt.catalog_fixture,
       child_goals: receipt.child_goals,
-      follow_up_subtasks: receipt.follow_up_subtasks
+      follow_up_subtasks: receipt.follow_up_subtasks,
+      failure_rule: receipt.failure_rule
     });
+    expect(launchGate.validation_commands).toEqual(receipt.validation_commands);
+    expect(launchGate.required_backends).toEqual(receipt.required_backends);
+    expect(launchGate.required_evidence).toEqual(receipt.required_evidence);
+    expect(launchGate.catalog_launch_objective_ids).toEqual(receipt.catalog_launch_objective_ids);
+    expect(launchGate.receipt_route).toEqual(receipt.receipt_route);
+    expect(launchGate.dashboard_servers).toEqual(receipt.dashboard_servers);
 
     for (const server of receipt.dashboard_servers) {
       const catalogServer = catalog.servers.find((entry: any) => entry.server_package === server.server_package);
@@ -2138,7 +2154,7 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
       'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
     ]));
-    expect(receipt.required_backends.sort()).toEqual([
+    expect([...receipt.required_backends].sort()).toEqual([
       'ipfs_accelerate_py',
       'ipfs_datasets_py',
       'ipfs_kit_py'
@@ -2239,7 +2255,7 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
       'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
     ]));
-    expect(receipt.required_backends.sort()).toEqual([
+    expect([...receipt.required_backends].sort()).toEqual([
       'ipfs_accelerate_py',
       'ipfs_datasets_py',
       'ipfs_kit_py'
@@ -2331,7 +2347,7 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
       'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
     ]));
-    expect(receipt.required_backends.sort()).toEqual([
+    expect([...receipt.required_backends].sort()).toEqual([
       'ipfs_accelerate_py',
       'ipfs_datasets_py',
       'ipfs_kit_py'
@@ -2423,7 +2439,7 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
       'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
     ]));
-    expect(receipt.required_backends.sort()).toEqual([
+    expect([...receipt.required_backends].sort()).toEqual([
       'ipfs_accelerate_py',
       'ipfs_datasets_py',
       'ipfs_kit_py'
@@ -2515,7 +2531,7 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
       'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
     ]));
-    expect(receipt.required_backends.sort()).toEqual([
+    expect([...receipt.required_backends].sort()).toEqual([
       'ipfs_accelerate_py',
       'ipfs_datasets_py',
       'ipfs_kit_py'
