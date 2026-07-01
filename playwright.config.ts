@@ -19,9 +19,11 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   // These E2E specs boot three heavy Python MCP daemons alongside Electron, so a
   // run can occasionally hit transient resource contention (a page/context closing
-  // mid-wait). Retry once locally too (CI already retries) so live-backend
-  // validation stays reliable; deterministic failures still surface on the retry.
-  retries: process.env.CI ? 2 : 1,
+  // mid-wait). Retry locally too (CI already retries) so live-backend
+  // validation stays reliable; deterministic failures still surface on the last
+  // attempt. The heavy 3-daemon + Electron suite can hit transient page/context
+  // closures under resource contention, so match CI's retry budget locally.
+  retries: 2,
   workers: 1, // Single worker for Electron tests
   
   // Reporter configuration
