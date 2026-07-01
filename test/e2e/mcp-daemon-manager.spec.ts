@@ -344,7 +344,11 @@ test.describe('MCP Daemon Manager - CLI Simulation', () => {
     
     expect(configs[0].id).toBe('ipfs-kit');
     expect(configs[0].port).toBe(8004);
-    expect(configs[0].command).toBe('python');
+    // The daemon manager resolves `command` to the provisioned venv/managed
+    // Python interpreter (…/bin/python[.exe]) when one exists, and only falls
+    // back to the bare `python` on PATH otherwise. Accept either form so the
+    // config is considered valid in both packaged and dev environments.
+    expect(configs[0].command).toMatch(/(^|[\\/])python(\.exe)?$/);
     
     expect(configs[1].id).toBe('ipfs-datasets');
     expect(configs[1].port).toBe(3002);
