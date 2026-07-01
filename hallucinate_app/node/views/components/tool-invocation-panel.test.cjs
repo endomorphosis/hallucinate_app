@@ -127,7 +127,7 @@ test('returns null for an error / propertyless / stub / empty result', () => {
 
 // ---- fetchToolSchemaVia (the wire shape that matters) --------------------
 
-test('fetchToolSchemaVia POSTs {name:tools_get_schema, arguments:{category,tool}}', async () => {
+test('fetchToolSchemaVia POSTs the canonical tools/call envelope with {category,tool}', async () => {
   let captured = null;
   const fakeFetch = async (url, opts) => {
     captured = { url, opts };
@@ -146,10 +146,16 @@ test('fetchToolSchemaVia POSTs {name:tools_get_schema, arguments:{category,tool}
   assert.strictEqual(
     captured.opts.headers['Content-Type'], 'application/json');
   const body = JSON.parse(captured.opts.body);
-  assert.strictEqual(body.name, 'tools_get_schema');
+  // Canonical MCP JSON-RPC envelope — args under params.arguments, because
+  // ipfs_kit_py ignores a bare top-level `arguments` key and would otherwise
+  // call tools_get_schema with empty args.
+  assert.strictEqual(body.jsonrpc, '2.0');
+  assert.strictEqual(body.method, 'tools/call');
+  assert.strictEqual(body.params.name, 'tools_get_schema');
+  assert.ok(!('arguments' in body)); // no bare top-level arguments (kit drops it)
   // Must send {category, tool} — NOT {name} (datasets rejects {name}).
-  assert.deepStrictEqual(body.arguments, { category: 'storage', tool: 'pin_add' });
-  assert.ok(!('name' in body.arguments));
+  assert.deepStrictEqual(body.params.arguments, { category: 'storage', tool: 'pin_add' });
+  assert.ok(!('name' in body.params.arguments));
   assert.ok(schema && schema.properties.cid);
 });
 
@@ -160,6 +166,29 @@ test('fetchToolSchemaVia returns null when no resolvable schema comes back', asy
   const schema = await P.fetchToolSchemaVia(
     fakeFetch, 'http://x/mcp/tools/call', 'a', 'b');
   assert.strictEqual(schema, null);
+});
+
+// ---- buildMcpToolCallBody (canonical MCP tools/call envelope) ------------
+
+test('buildMcpToolCallBody wraps name+args in the JSON-RPC tools/call envelope', () => {
+  const body = P.buildMcpToolCallBody('storage.pin_add', { cid: 'bafy' });
+  assert.deepStrictEqual(JSON.parse(JSON.stringify(body)), {
+    jsonrpc: '2.0',
+    method: 'tools/call',
+    params: { name: 'storage.pin_add', arguments: { cid: 'bafy' } },
+  });
+  // Args MUST live under params.arguments — a bare top-level `arguments` key is
+  // silently dropped by ipfs_kit_py's non-JSON-RPC branch.
+  assert.ok(!('arguments' in body));
+  // No `id`: servers keep returning their existing un-enveloped result shape.
+  assert.ok(!('id' in body));
+});
+
+test('buildMcpToolCallBody defaults missing/null args to an empty object', () => {
+  assert.deepStrictEqual(
+    JSON.parse(JSON.stringify(P.buildMcpToolCallBody('x.y').params.arguments)), {});
+  assert.deepStrictEqual(
+    JSON.parse(JSON.stringify(P.buildMcpToolCallBody('x.y', null).params.arguments)), {});
 });
 
 // ---- META_TOOL_NAMES -----------------------------------------------------

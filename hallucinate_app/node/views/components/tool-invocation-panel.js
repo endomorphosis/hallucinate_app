@@ -36,6 +36,23 @@
     'tools_dispatch',
   ]);
 
+  // Build the canonical MCP `tools/call` request body. The arguments MUST live
+  // under `params.arguments`: ipfs_datasets_py / ipfs_accelerate_py read
+  // `params.arguments` (or a top-level `arguments`), but ipfs_kit_py's dashboard
+  // only honours `params`/`args` in its non-JSON-RPC branch and IGNORES a bare
+  // top-level `arguments` key — so a flat `{name, arguments}` body silently sent
+  // kit every tool (and every lazy tools_get_schema) with empty arguments. The
+  // JSON-RPC envelope is the shape all three backends accept. We deliberately
+  // omit `id` so servers keep returning their existing (un-enveloped) result
+  // shape and the response-rendering path is unchanged.
+  function buildMcpToolCallBody(name, args) {
+    return {
+      jsonrpc: '2.0',
+      method: 'tools/call',
+      params: { name, arguments: args || {} },
+    };
+  }
+
   // Split a flat hierarchical tool name ("<category>.<tool>") on the FIRST dot,
   // mirroring the servers' str.partition(".") flat-dispatch (so "data.load.csv"
   // -> {category:"data", tool:"load.csv"}). Returns null for a bare (dot-less)
@@ -94,17 +111,18 @@
   }
 
   // Fetch a single tool's full input schema via the get-schema meta-tool over
-  // REST tools/call. Sends {category, tool} — the arg shape BOTH the
-  // ipfs_kit_py server (accepts category/tool OR a bare/dotted name) and the
-  // ipfs_datasets_py server (strictly requires category/tool) accept, so it is
-  // portable across every hierarchical MCP++ backend. `fetchFn(url, options)`
-  // is injected so this is unit-testable without a DOM.
+  // the MCP `tools/call` endpoint. The get-schema tool receives {category, tool}
+  // — the arg shape BOTH the ipfs_kit_py server (accepts category/tool OR a
+  // bare/dotted name) and the ipfs_datasets_py server (strictly requires
+  // category/tool) accept — wrapped in the canonical JSON-RPC envelope (see
+  // buildMcpToolCallBody) so the arguments survive every backend, including
+  // ipfs_kit_py. `fetchFn(url, options)` is injected so this is unit-testable
+  // without a DOM.
   async function fetchToolSchemaVia(fetchFn, url, category, tool) {
     const resp = await fetchFn(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: 'tools_get_schema', arguments: { category, tool } }),
+      body: JSON.stringify(buildMcpToolCallBody('tools_get_schema', { category, tool })),
     });
     const data = await resp.json();
     return extractSchemaFromToolResult(data);
@@ -464,7 +482,7 @@
         const resp = await this.fetchWithTimeout(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: this.selectedTool.name, arguments: args }),
+          body: JSON.stringify(buildMcpToolCallBody(this.selectedTool.name, args)),
         });
 
         const elapsed = Math.round(performance.now() - startTime);
@@ -577,6 +595,7 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     ToolInvocationPanel,
     META_TOOL_NAMES,
+    buildMcpToolCallBody,
     splitDottedToolName,
     unwrapToolResultEnvelope,
     locateSchema,
