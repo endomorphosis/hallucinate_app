@@ -30,10 +30,10 @@
       "dashboard_menu_label": "IPFS Kit Dashboard",
       "mcp_servers_menu_path": [
         "MCP Servers",
-        "IPFS Kit MCP (Port 8004)",
+        "IPFS Kit MCP (Port 8014)",
         "Open Web Dashboard"
       ],
-      "live_dashboard_url": "http://127.0.0.1:8004/dashboard",
+      "live_dashboard_url": "http://127.0.0.1:8014/dashboard",
       "health_path": "/api/mcp/status",
       "tools_list": {
         "operation": "tools/list",

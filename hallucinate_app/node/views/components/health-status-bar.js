@@ -20,7 +20,7 @@
   const REQUEST_TIMEOUT_MS = 5000;
 
   const SERVERS = [
-    { id: 'ipfs-kit', name: 'IPFS Kit', port: 8004, healthPath: '/api/mcp/status' },
+    { id: 'ipfs-kit', name: 'IPFS Kit', port: 8014, healthPath: '/api/mcp/status' },
     { id: 'ipfs-datasets', name: 'IPFS Datasets', port: 3002, healthPath: '/health/ready' },
     { id: 'ipfs-accelerate', name: 'IPFS Accelerate', port: 3003, healthPath: '/api/mcp/status' },
   ];

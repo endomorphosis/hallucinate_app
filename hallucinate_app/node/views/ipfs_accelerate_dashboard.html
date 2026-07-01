@@ -236,16 +236,16 @@
       
       <div class="status-grid">
         <div class="metric-card">
-          <h3><i class="fas fa-brain"></i> Models Loaded</h3>
-          <p class="value" id="models-loaded">0</p>
+          <h3><i class="fas fa-microchip"></i> CPU Cores</h3>
+          <p class="value" id="models-loaded">--</p>
         </div>
         <div class="metric-card">
-          <h3><i class="fas fa-tachometer-alt"></i> Inference Requests</h3>
-          <p class="value" id="inference-count">0</p>
+          <h3><i class="fas fa-memory"></i> Total Memory</h3>
+          <p class="value" id="inference-count">--</p>
         </div>
         <div class="metric-card">
-          <h3><i class="fas fa-clock"></i> Avg Response Time</h3>
-          <p class="value" id="avg-response">-- ms</p>
+          <h3><i class="fas fa-bolt"></i> Accelerator</h3>
+          <p class="value" id="avg-response">--</p>
         </div>
       </div>
       
@@ -438,6 +438,11 @@
       document.getElementById('tools-call-probe').textContent = safeProbe?.tool_name || 'Not advertised';
       document.getElementById('control-surface-contract').textContent = entry.control_surface_mediation_contract || 'Not advertised';
       document.getElementById('native-dashboard-url').textContent = entry.native_dashboard_url || entry.menu_dashboard_url || 'Not advertised';
+      const packageFrame = document.getElementById('package-dashboard-frame');
+      const nativeDashboardUrl = entry.native_dashboard_url || entry.menu_dashboard_url;
+      if (packageFrame && nativeDashboardUrl && packageFrame.getAttribute('src') !== nativeDashboardUrl) {
+        packageFrame.src = nativeDashboardUrl;
+      }
     }
 
     async function loadDashboardCapability() {
@@ -607,27 +612,39 @@
     loadDashboardCapability();
     updateServerStatus();
     setInterval(updateServerStatus, 5000);
-    
-    // Update metrics periodically
-    setInterval(async () => {
+
+    // Populate the metric widgets through the MCP tool interface: call the
+    // non-mutating `hardware_get_info` tool via JSON-RPC tools/call on whatever
+    // port the daemon bound, so the dashboard reflects real backend results from
+    // the MCP tool surface rather than bespoke REST endpoints.
+    async function updateMetrics() {
+      const base = dashboardCapability?.endpoint || 'http://127.0.0.1:3003';
       try {
-        const response = await fetch('http://localhost:3003/metrics').catch(() => null);
-        if (response && response.ok) {
-          const metrics = await response.json();
-          if (metrics.models_loaded !== undefined) {
-            document.getElementById('models-loaded').textContent = metrics.models_loaded;
+        const resp = await fetch(`${base}/mcp`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ jsonrpc: '2.0', method: 'tools/call', params: { name: 'hardware_get_info', arguments: {} }, id: 1 })
+        }).catch(() => null);
+        if (resp && resp.ok) {
+          const payload = await resp.json();
+          const hw = payload?.result?.structuredContent || payload?.result || {};
+          if (hw.cpu && hw.cpu.count !== undefined) {
+            document.getElementById('models-loaded').textContent = String(hw.cpu.count);
           }
-          if (metrics.inference_count !== undefined) {
-            document.getElementById('inference-count').textContent = metrics.inference_count;
+          if (hw.memory && hw.memory.total_gb !== undefined) {
+            document.getElementById('inference-count').textContent = `${Number(hw.memory.total_gb).toFixed(0)} GB`;
           }
-          if (metrics.avg_response_time !== undefined) {
-            document.getElementById('avg-response').textContent = `${metrics.avg_response_time.toFixed(0)} ms`;
-          }
+          const cuda = hw.accelerators && hw.accelerators.cuda;
+          const accelerator = cuda && cuda.available ? 'CUDA' : (hw.gpu && Object.keys(hw.gpu).length ? 'GPU' : 'CPU');
+          document.getElementById('avg-response').textContent = accelerator;
         }
       } catch (error) {
-        console.error('Failed to fetch metrics:', error);
+        console.error('Failed to fetch hardware info via MCP tool:', error);
       }
-    }, 10000);
+    }
+
+    updateMetrics();
+    setInterval(updateMetrics, 10000);
   </script>
 
   <!-- Hardware Profile & Inference Section -->

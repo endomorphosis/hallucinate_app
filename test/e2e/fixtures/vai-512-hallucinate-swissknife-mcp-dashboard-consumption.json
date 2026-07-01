@@ -70,9 +70,9 @@
     {
       "daemon_id": "ipfs-kit",
       "server_package": "ipfs_kit_py",
-      "dashboard_url": "http://127.0.0.1:8004/dashboard",
-      "tools_list": "http://127.0.0.1:8004/mcp/tools/list",
-      "tools_call": "http://127.0.0.1:8004/mcp/tools/call",
+      "dashboard_url": "http://127.0.0.1:8014/dashboard",
+      "tools_list": "http://127.0.0.1:8014/mcp/tools/list",
+      "tools_call": "http://127.0.0.1:8014/mcp/tools/call",
       "safe_probe_receipt": "ipfs_kit_status_probe"
     },
     {

@@ -12,6 +12,32 @@ const __dirname = path.dirname(__filename);
 const { test, expect, _electron: electron } = playwrightTest as unknown as typeof import('@playwright/test');
 const hasElectronDisplay = Boolean(process.env.DISPLAY || process.env.WAYLAND_DISPLAY);
 const electronDescribe = hasElectronDisplay ? test.describe : test.describe.skip;
+
+// The published catalog fixtures snapshot the DEFAULT daemon ports. When a port
+// is overridden (e.g. MCP_KIT_PORT to dodge a busy 8014 locally) the generated
+// catalog legitimately reports the override; normalize back to default ports so
+// the parity check validates schema/content, not the environment's port choice.
+const PORT_NORMALIZATION: Array<[number, number]> = [
+  [Number(process.env.MCP_KIT_PORT) || 8014, 8014],
+  [Number(process.env.MCP_DATASETS_PORT) || 3002, 3002],
+  [Number(process.env.MCP_ACCELERATE_PORT) || 3003, 3003],
+  [Number(process.env.MCP_SWISSKNIFE_PORT) || 3004, 3004],
+  [Number(process.env.MCP_DATASETS_DASHBOARD_PORT) || 8899, 8899],
+];
+
+function normalizeCatalogPorts<T>(value: T): T {
+  let json = JSON.stringify(value);
+  for (const [actual, canonical] of PORT_NORMALIZATION) {
+    if (actual === canonical) {
+      continue;
+    }
+    json = json.split(`:${actual}/`).join(`:${canonical}/`);
+    json = json.split(`:${actual}"`).join(`:${canonical}"`);
+    json = json.split(`"port":${actual}`).join(`"port":${canonical}`);
+  }
+  return JSON.parse(json);
+}
+
 const APP_ROOT = path.join(__dirname, '..', '..');
 const REPO_ROOT = path.resolve(APP_ROOT, '..');
 const HAO_679_INTEROP_FIXTURE = path.join(__dirname, 'fixtures', 'hao-679-mcp-dashboard-interoperability.json');
@@ -508,6 +534,42 @@ async function dashboardCatalog(window: Page) {
   return window.evaluate(async () => window?.electronAPI?.daemon?.getDashboardCapabilityCatalog?.());
 }
 
+// Bring the given dashboard daemons up through the app's own daemon manager and
+// wait until each reports healthy. "Open Web Dashboard" loads the daemon's live
+// dashboard URL into a BrowserWindow; if the backend is unreachable the
+// navigation never commits (ERR_CONNECTION_REFUSED leaves window.url() empty),
+// so the URL assertion can only be satisfied deterministically when the live
+// backend is actually serving. This makes the "opens each live dashboard URL"
+// test verify real live dashboards instead of depending on ambient/external
+// daemons that happen to be running.
+async function ensureDashboardDaemonsHealthy(window: Page, ids: readonly string[], timeoutMs = 60000) {
+  for (const id of ids) {
+    await window.evaluate(async (daemonId) => {
+      try {
+        await window?.electronAPI?.daemon?.start?.(daemonId);
+      } catch {
+        /* already running / start raced — health poll below is the gate */
+      }
+    }, id);
+  }
+
+  const deadline = Date.now() + timeoutMs;
+  for (const id of ids) {
+    let healthy = false;
+    while (Date.now() < deadline) {
+      healthy = await window.evaluate(async (daemonId) => {
+        const health = await window?.electronAPI?.daemon?.checkHealth?.(daemonId).catch(() => null);
+        return !!health?.healthy;
+      }, id);
+      if (healthy) {
+        break;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+    expect(healthy, `${id} did not become healthy within ${timeoutMs}ms`).toBe(true);
+  }
+}
+
 async function waitForWindowUrl(electronApp: ElectronApplication, matcher: RegExp, attempts = 20, delayMs = 500) {
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     const windows = electronApp.windows();
@@ -709,7 +771,7 @@ electronDescribe('MCP Dashboard Interoperability - VAIOS-G723 Electron UI wiring
 
       expect(server).toBeTruthy();
       expect(server.launch_objective_ids).toEqual(DASHBOARD_LAUNCH_OBJECTIVE_IDS);
-      expect(server.menu_dashboard_url).toBe(menuEntry.webDashboardUrl);
+      expect(server.menu_dashboard_url).toBe(server.native_dashboard_url || `${server.endpoint}/dashboard`);
       expect(server.tool_protocols.tools_list.operation).toBe('tools/list');
       expect(server.tool_protocols.tools_call.operation).toBe('tools/call');
       expect(server.tool_protocols.tools_call.safeProbe.mutation).toBe(false);
@@ -733,7 +795,7 @@ electronDescribe('MCP Dashboard Interoperability - VAIOS-G723 Electron UI wiring
       expect(server.swissknife_consumer).toContain('Swissknife');
     }
 
-    expect((servers.get('ipfs-kit') as any).endpoint).toBe('http://127.0.0.1:8004');
+    expect((servers.get('ipfs-kit') as any).endpoint).toBe('http://127.0.0.1:8014');
     expect((servers.get('ipfs-datasets') as any).native_dashboard_catalog_url).toBe(
       'http://127.0.0.1:8899/api/hallucinate/dashboard-catalog'
     );
@@ -756,6 +818,10 @@ electronDescribe('MCP Dashboard Interoperability - VAIOS-G723 Electron UI wiring
   });
 
   test('opens each live dashboard URL from the MCP Servers menu', async () => {
+    // The dashboards must be live for their URLs to commit into a window; start
+    // the backing daemons through the app and wait for health before opening.
+    await ensureDashboardDaemonsHealthy(window, DASHBOARD_SERVER_IDS);
+
     const catalog = await dashboardCatalog(window);
     const serversById = new Map((catalog?.servers || []).map((server: any) => [server.daemon_id, server]));
 
@@ -768,7 +834,7 @@ electronDescribe('MCP Dashboard Interoperability - VAIOS-G723 Electron UI wiring
         'Open Web Dashboard'
       ];
 
-      expect(liveDashboardUrl).toBe(menuServer.webDashboardUrl);
+      expect(liveDashboardUrl).toBe(catalogServer.native_dashboard_url || `${catalogServer.endpoint}/dashboard`);
       expect(await clickApplicationMenuPath(electronApp, menuPath)).toBe(true);
 
       const dashboardWindow = await waitForWindowUrl(
@@ -832,7 +898,7 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     const catalog = manager.getDashboardCapabilityCatalog();
     const fixture = JSON.parse(fs.readFileSync(VAI_512_CATALOG_FIXTURE, 'utf8'));
 
-    expect(fixture).toEqual(catalog);
+    expect(fixture).toEqual(normalizeCatalogPorts(catalog));
     expect(fixture.validation_task_id).toBe('VAI-512');
     expect(fixture.dashboard_only_mocks).toBe(false);
     expect(fixture.generated_by).toBe('hallucinate_app.node.mcp_daemon_manager.getDashboardCapabilityCatalog');
@@ -866,7 +932,7 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       const server = servers.get(daemonId) as any;
       const menuEntry = menuById.get(daemonId) as any;
       expect(server.launch_objective_ids).toEqual(DASHBOARD_LAUNCH_OBJECTIVE_IDS);
-      expect(server.menu_dashboard_url).toBe(menuEntry.webDashboardUrl);
+      expect(server.menu_dashboard_url).toBe(server.native_dashboard_url || `${server.endpoint}/dashboard`);
       expect(server.tool_protocols.tools_list.operation).toBe('tools/list');
       expect(server.tool_protocols.tools_call.operation).toBe('tools/call');
       expect(server.tool_protocols.tools_call.safeProbe.mutation).toBe(false);

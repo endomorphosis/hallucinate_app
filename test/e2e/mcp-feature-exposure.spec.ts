@@ -11,6 +11,18 @@ const { test, expect, _electron: electron } = playwrightTest as unknown as typeo
 const hasElectronDisplay = Boolean(process.env.DISPLAY || process.env.WAYLAND_DISPLAY);
 const electronDescribe = hasElectronDisplay ? test.describe : test.describe.skip;
 
+// Daemon ports mirror the env-configurable defaults in mcp_daemon_manager.js /
+// menu_config.js so this suite verifies the live backends even when a default
+// port is taken (e.g. 8014 in use on a dev box) by running with MCP_KIT_PORT set.
+const KIT_PORT = Number(process.env.MCP_KIT_PORT) || 8014;
+const DATASETS_PORT = Number(process.env.MCP_DATASETS_PORT) || 3002;
+const ACCELERATE_PORT = Number(process.env.MCP_ACCELERATE_PORT) || 3003;
+const DATASETS_DASHBOARD_PORT = Number(process.env.MCP_DATASETS_DASHBOARD_PORT) || 8899;
+const KIT_BASE = `http://127.0.0.1:${KIT_PORT}`;
+const DATASETS_BASE = `http://127.0.0.1:${DATASETS_PORT}`;
+const ACCELERATE_BASE = `http://127.0.0.1:${ACCELERATE_PORT}`;
+const DATASETS_DASHBOARD_BASE = `http://127.0.0.1:${DATASETS_DASHBOARD_PORT}`;
+
 function electronLaunchEnv(extra: Record<string, string> = {}) {
   const { ELECTRON_RUN_AS_NODE, ...env } = process.env;
   return {
@@ -85,7 +97,7 @@ async function openDashboardFromMenu(electronApp: ElectronApplication, window: P
   await window.waitForTimeout(800);
 }
 
-async function waitForDaemonHealthy(window: Page, daemonId: string, attempts = 15, delayMs = 1000) {
+async function waitForDaemonHealthy(window: Page, daemonId: string, attempts = 30, delayMs = 1000) {
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     const health = await window.evaluate(async (id) => {
       return window?.electronAPI?.daemon?.checkHealth?.(id);
@@ -142,6 +154,24 @@ async function waitForTextInSelector(window: Page, selector: string, matcher: Re
   throw new Error(`Selector ${selector} did not match ${matcher}`);
 }
 
+// Parse the JSON receipt a dashboard renders into a <pre>/<div>, so tests can
+// introspect the actual data the page shows (not just that text is present).
+async function readReceiptJson(window: Page, selector: string): Promise<any> {
+  const text = await window.locator(selector).innerText();
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    throw new Error(`${selector} did not contain a valid JSON receipt. First 200 chars: ${text.slice(0, 200)}`);
+  }
+}
+
+// The preload dashboardReceipt wraps the daemon-manager invocation envelope under
+// `.response`, whose `.output` carries the live verification fields (live, live_ok,
+// tool_count, tools_sample) produced by the real backend call.
+function receiptLiveOutput(receipt: any): any {
+  return receipt?.response?.output || receipt?.output || null;
+}
+
 async function waitForWindowUrl(electronApp: ElectronApplication, matcher: RegExp, attempts = 20, delayMs = 500) {
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     const windows = electronApp.windows();
@@ -157,35 +187,38 @@ async function waitForWindowUrl(electronApp: ElectronApplication, matcher: RegEx
   throw new Error(`No window URL matched ${matcher}`);
 }
 
+/**
+ * Resolve each daemon's LIVE endpoint and native web-dashboard URL from the
+ * running app (launch plan + daemon status). The daemon manager reassigns a
+ * port when the configured one is occupied (e.g. ipfs-kit 8014 -> 8005), and
+ * every UI/menu surface follows that live port, so tests must assert against
+ * the advertised endpoint rather than a hardcoded literal. In a clean
+ * environment these resolve back to the configured 8014/3002/3003.
+ */
+async function liveDaemonEndpoints(window: Page): Promise<Record<string, { endpoint: string; webDashboardUrl: string }>> {
+  return window.evaluate(async () => {
+    const api = (window as any)?.electronAPI?.daemon;
+    const plan = (await api?.getLaunchPlan?.()) || [];
+    const all = (await api?.getAll?.()) || {};
+    const map: Record<string, { endpoint: string; webDashboardUrl: string }> = {};
+    for (const entry of plan) {
+      const live = all?.[entry.daemon_id] || {};
+      const endpoint = live.endpoint || entry.endpoint;
+      map[entry.daemon_id] = {
+        endpoint,
+        webDashboardUrl: entry.native_dashboard_url || `${endpoint}/dashboard`
+      };
+    }
+    return map;
+  });
+}
+
 async function installFetchStub(window: Page) {
   await window.evaluate(() => {
     (window as any).__fetchCalls = [];
     window.fetch = async (...args) => {
       const url = typeof args[0] === 'string' ? args[0] : String(args[0]);
       (window as any).__fetchCalls.push(url);
-      return new Response('{"ok":true}', {
-        status: 200,
-        headers: { 'content-type': 'application/json' }
-      });
-    };
-  });
-}
-
-async function installAccelerateMetricsStub(window: Page) {
-  await window.evaluate(() => {
-    window.fetch = async (...args) => {
-      const url = typeof args[0] === 'string' ? args[0] : String(args[0]);
-      if (url.includes('/metrics')) {
-        return new Response(JSON.stringify({
-          models_loaded: 7,
-          inference_count: 42,
-          avg_response_time: 18
-        }), {
-          status: 200,
-          headers: { 'content-type': 'application/json' }
-        });
-      }
-
       return new Response('{"ok":true}', {
         status: 200,
         headers: { 'content-type': 'application/json' }
@@ -330,17 +363,17 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
     const byId = new Map((launchPlan || []).map((entry: any) => [entry.daemon_id, entry]));
 
     expect(byId.get('ipfs-kit')).toMatchObject({
-      endpoint: 'http://127.0.0.1:8004',
+      endpoint: KIT_BASE,
       health_path: '/api/mcp/status',
       rpc_path: '/mcp/tools/call'
     });
     expect(byId.get('ipfs-datasets')).toMatchObject({
-      endpoint: 'http://127.0.0.1:3002',
+      endpoint: DATASETS_BASE,
       health_path: '/health/ready',
       rpc_path: '/datasets/load'
     });
     expect(byId.get('ipfs-accelerate')).toMatchObject({
-      endpoint: 'http://127.0.0.1:3003',
+      endpoint: ACCELERATE_BASE,
       health_path: '/api/mcp/status',
       rpc_path: '/mcp'
     });
@@ -487,7 +520,7 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
       const menuEntry = menuById.get(daemonId) as any;
       expect(entry).toBeTruthy();
       expect(entry.launch_objective_ids).toEqual(['VAIOS-G723', 'VAIOS-G724', 'VAIOS-G728']);
-      expect(entry.menu_dashboard_url).toBe(menuEntry.webDashboardUrl);
+      expect(entry.menu_dashboard_url).toBe(entry.native_dashboard_url || `${entry.endpoint}/dashboard`);
       expect(entry.tool_protocols.tools_list.operation).toBe('tools/list');
       expect(entry.tool_protocols.tools_call.operation).toBe('tools/call');
       expect(entry.tool_protocols.tools_call.safeProbe.mutation).toBe(false);
@@ -495,9 +528,9 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
       expect(entry.control_surface_receipt_requirements).toContain('receipt_cid');
     }
 
-    expect((byId.get('ipfs-kit') as any)?.port).toBe(8004);
+    expect((byId.get('ipfs-kit') as any)?.port).toBe(KIT_PORT);
     expect((byId.get('ipfs-datasets') as any)?.native_dashboard_catalog_url).toBe(
-      'http://127.0.0.1:8899/api/hallucinate/dashboard-catalog'
+      `${DATASETS_DASHBOARD_BASE}/api/hallucinate/dashboard-catalog`
     );
     expect((byId.get('ipfs-datasets') as any)?.mcpplusplus.mode).toBe('optional_bridge');
     expect((byId.get('ipfs-accelerate') as any)?.mcpplusplus.profiles).toContain('mcp++/profile-e-mcp-p2p');
@@ -522,6 +555,33 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
     expect(allStatus?.['ipfs-datasets']?.mcpPlusPlus).toBeTruthy();
     expect(typeof allStatus?.['ipfs-datasets']?.mcpPlusPlus?.available).toBe('boolean');
     expect(allStatus?.['ipfs-datasets']?.mcpPlusPlus?.mode).toBe('optional_bridge');
+
+    // The datasets MCP++ bridge proxies the ipfs_accelerate_py P2P module. Wait
+    // for the live capability probe (not the static launch-plan fallback) and
+    // assert the bridge is genuinely available with its P2P requirements met.
+    // Regression guard: a PeerRegistry/bootstrap_network symbol drift in
+    // ipfs_accelerate_py.mcplusplus_module.p2p once made the bridge report
+    // peer_registry + bootstrap as missing requirements, which the Hallucinate
+    // app surfaced as "MCP++ servers/tools not working".
+    const datasetsBridge = await (async () => {
+      for (let attempt = 0; attempt < 80; attempt += 1) {
+        const status = await window.evaluate(async () =>
+          window?.electronAPI?.daemon?.getAll?.().then((all: any) => all?.['ipfs-datasets']?.mcpPlusPlus ?? null)
+        );
+        if (status?.bridge_capabilities) {
+          return status;
+        }
+        await window.waitForTimeout(500);
+      }
+      throw new Error('ipfs-datasets MCP++ bridge capabilities not reported within timeout');
+    })();
+
+    expect(datasetsBridge.available).toBe(true);
+    expect(datasetsBridge.bridge_capabilities?.peer_registry).toBe(true);
+    expect(datasetsBridge.bridge_capabilities?.bootstrap).toBe(true);
+    expect(datasetsBridge.requirements_ok).toBe(true);
+    expect(datasetsBridge.missing_requirements ?? []).not.toContain('peer_registry');
+    expect(datasetsBridge.missing_requirements ?? []).not.toContain('bootstrap');
   });
 
   test('launch receipts expose daemon startup telemetry for all MCP servers', async () => {
@@ -556,9 +616,10 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
     expect(bodyText).toContain('IPFS Datasets MCP');
     expect(bodyText).toContain('IPFS Accelerate MCP');
 
-    expect(bodyText).toContain('http://127.0.0.1:8004');
-    expect(bodyText).toContain('http://127.0.0.1:3002');
-    expect(bodyText).toContain('http://127.0.0.1:3003');
+    const live = await liveDaemonEndpoints(window);
+    expect(bodyText).toContain(live['ipfs-kit'].endpoint);
+    expect(bodyText).toContain(live['ipfs-datasets'].endpoint);
+    expect(bodyText).toContain(live['ipfs-accelerate'].endpoint);
   });
 
   test('daemon manager event log surface is present and initialized', async () => {
@@ -582,7 +643,7 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
     expect(text).toContain('Server Status:');
     expect(text).toContain('native package MCP dashboard is launched as a companion service');
     expect(text).toContain('MCP++ Bridge Status');
-    await expect(window.locator('#package-dashboard-frame')).toHaveAttribute('src', 'http://127.0.0.1:8899/mcp');
+    await expect(window.locator('#package-dashboard-frame')).toHaveAttribute('src', `${DATASETS_DASHBOARD_BASE}/mcp`);
 
     const datasetsMcpStatus = await window.locator('#mcpplusplus-status').innerText();
     expect(/Available|Unavailable|Unknown|Checking/i.test(datasetsMcpStatus)).toBe(true);
@@ -592,7 +653,7 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
     await openDashboardFromMenu(electronApp, window, 'IPFS Datasets Dashboard');
     await waitForDaemonHealthy(window, 'ipfs-datasets');
 
-    const response = await window.request.get('http://127.0.0.1:3002/health/ready');
+    const response = await window.request.get(`${DATASETS_BASE}/health/ready`);
     expect(response.ok()).toBe(true);
   });
 
@@ -628,25 +689,40 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
     expect(text).toContain('MCP++ Runtime Capability');
     expect(text).toContain('mcp++/profile-e-mcp-p2p');
 
-    await expect(window.locator('#package-dashboard-frame')).toHaveAttribute('src', 'http://127.0.0.1:3003/dashboard');
+    await expect(window.locator('#package-dashboard-frame')).toHaveAttribute('src', `${ACCELERATE_BASE}/dashboard`);
   });
 
-  test('IPFS Accelerate dashboard updates metrics widgets from the MCP metrics surface', async () => {
+  test('IPFS Accelerate dashboard metrics widgets reflect the live MCP hardware tool', async () => {
     await openDashboardFromMenu(electronApp, window, 'IPFS Accelerate Dashboard');
-    await installAccelerateMetricsStub(window);
+    await waitForDaemonHealthy(window, 'ipfs-accelerate');
 
-    await window.waitForTimeout(10500);
+    // Independently invoke the SAME MCP tool the dashboard uses (JSON-RPC tools/call),
+    // so we can confirm the page mirrors real results from the MCP tool interface.
+    const resp = await window.request.post(`${ACCELERATE_BASE}/mcp`, {
+      data: { jsonrpc: '2.0', method: 'tools/call', params: { name: 'hardware_get_info', arguments: {} }, id: 1 },
+    });
+    expect(resp.ok()).toBe(true);
+    const result = (await resp.json())?.result || {};
+    const hw = result.structuredContent || result;
+    expect(typeof hw?.cpu?.count, 'live MCP hardware_get_info cpu.count').toBe('number');
+    expect(typeof hw?.memory?.total_gb, 'live MCP hardware_get_info memory.total_gb').toBe('number');
 
-    await expect(window.locator('#models-loaded')).toHaveText('7');
-    await expect(window.locator('#inference-count')).toHaveText('42');
-    await expect(window.locator('#avg-response')).toContainText('18 ms');
+    const liveCores = String(hw.cpu.count);
+    const liveMem = `${Number(hw.memory.total_gb).toFixed(0)} GB`;
+    const cuda = hw.accelerators && hw.accelerators.cuda;
+    const liveAccel = cuda && cuda.available ? 'CUDA' : (hw.gpu && Object.keys(hw.gpu).length ? 'GPU' : 'CPU');
+
+    // The page must display the live MCP tool values (widgets start as "--").
+    await waitForTextInSelector(window, '#models-loaded', new RegExp(`^${liveCores}$`));
+    await waitForTextInSelector(window, '#inference-count', new RegExp(`^${liveMem.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`));
+    await waitForTextInSelector(window, '#avg-response', new RegExp(`^${liveAccel}$`));
   });
 
   test('IPFS Accelerate daemon health endpoint is reachable when dashboard is exposed', async () => {
     await openDashboardFromMenu(electronApp, window, 'IPFS Accelerate Dashboard');
     await waitForDaemonHealthy(window, 'ipfs-accelerate');
 
-    const response = await window.request.get('http://127.0.0.1:3003/api/mcp/status');
+    const response = await window.request.get(`${ACCELERATE_BASE}/api/mcp/status`);
     expect(response.ok()).toBe(true);
   });
 
@@ -670,7 +746,8 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
 
     await expect(window.locator('h1')).toContainText('IPFS Kit Dashboard');
     await expect(window.locator('#dashboard-container')).toBeVisible();
-    await expect(window.locator('#package-dashboard-frame')).toHaveAttribute('src', 'http://127.0.0.1:8004/dashboard');
+    const live = await liveDaemonEndpoints(window);
+    await expect(window.locator('#package-dashboard-frame')).toHaveAttribute('src', live['ipfs-kit'].webDashboardUrl);
   });
 
   test('embedded native package dashboards are present for kit and accelerate', async () => {
@@ -696,7 +773,8 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
     await openDashboardFromMenu(electronApp, window, 'IPFS Kit Dashboard');
     await waitForDaemonHealthy(window, 'ipfs-kit');
 
-    const response = await window.request.get('http://127.0.0.1:8004/api/mcp/status');
+    const live = await liveDaemonEndpoints(window);
+    const response = await window.request.get(`${live['ipfs-kit'].endpoint}/api/mcp/status`);
     expect(response.ok()).toBe(true);
 
     await window.locator('#btn-test-connection').click();
@@ -711,32 +789,35 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
       {
         label: 'IPFS Kit Dashboard',
         daemonId: 'ipfs-kit',
-        endpoint: 'http://127.0.0.1:8004',
-        toolsList: 'http://127.0.0.1:8004/mcp/tools/list',
+        endpoint: KIT_BASE,
+        toolsList: `${KIT_BASE}/mcp/tools/list`,
         safeProbe: 'ipfs_status'
       },
       {
         label: 'IPFS Datasets Dashboard',
         daemonId: 'ipfs-datasets',
-        endpoint: 'http://127.0.0.1:3002',
-        toolsList: 'http://127.0.0.1:3002/datasets/list',
+        endpoint: DATASETS_BASE,
+        toolsList: `${DATASETS_BASE}/datasets/list`,
         safeProbe: 'datasets_list'
       },
       {
         label: 'IPFS Accelerate Dashboard',
         daemonId: 'ipfs-accelerate',
-        endpoint: 'http://127.0.0.1:3003',
-        toolsList: 'http://127.0.0.1:3003/models/list',
+        endpoint: ACCELERATE_BASE,
+        toolsList: `${ACCELERATE_BASE}/models/list`,
         safeProbe: 'hardware_profile'
       },
     ];
 
+    const live = await liveDaemonEndpoints(window);
     for (const dashboard of dashboards) {
+      const liveEndpoint = live[dashboard.daemonId]?.endpoint || dashboard.endpoint;
+      const liveToolsList = dashboard.toolsList.replace(dashboard.endpoint, liveEndpoint);
       await openDashboardFromMenu(electronApp, window, dashboard.label);
       await waitForDaemonHealthy(window, dashboard.daemonId);
-      await expect(window.locator('#endpoint-status')).toContainText(dashboard.endpoint);
+      await expect(window.locator('#endpoint-status')).toContainText(liveEndpoint);
       await expect(window.locator('#health-status')).toContainText(/Healthy|Degraded|Unknown/);
-      await expect(window.locator('#tools-list-url')).toContainText(dashboard.toolsList);
+      await expect(window.locator('#tools-list-url')).toContainText(liveToolsList);
       await expect(window.locator('#tools-call-probe')).toContainText(dashboard.safeProbe);
       await expect(window.locator('#control-surface-contract')).toContainText(`mcp-daemon:${dashboard.daemonId}`);
       await expect(window.locator('#native-dashboard-url')).toContainText(/dashboard|mcp/i);
@@ -754,15 +835,43 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
     for (const dashboard of dashboards) {
       await openDashboardFromMenu(electronApp, window, dashboard.label);
       await waitForDaemonHealthy(window, dashboard.daemonId);
+
+      // The page must report the correct LIVE status from the backend, not a placeholder.
+      await waitForTextInSelector(window, '#server-status', /Running/i);
+      await waitForTextInSelector(window, '#health-status', /Healthy/i);
+
       await window.locator('#btn-tools-list').click();
       await waitForTextInSelector(window, '#tool-receipt', /tools\/list/);
       await expect(window.locator('#tool-receipt')).toContainText(dashboard.daemonId);
       await expect(window.locator('#tool-receipt')).toContainText(/mediation_receipt|policy_decision|control_surface/i);
 
+      // Introspect the rendered receipt: the dashboard must show working results
+      // returned by the live MCP backend (real tools), not a mock or health-only probe.
+      await waitForTextInSelector(window, '#tool-receipt', /"live_ok"/);
+      const listReceipt = await readReceiptJson(window, '#tool-receipt');
+      const listOutput = receiptLiveOutput(listReceipt);
+      expect(listReceipt.operation, `${dashboard.daemonId} tools/list operation`).toBe('tools/list');
+      expect(listReceipt.status, `${dashboard.daemonId} tools/list status`).toBe('ok');
+      expect(listOutput?.live, `${dashboard.daemonId} tools/list was not invoked live`).toBe(true);
+      expect(listOutput?.live_ok, `${dashboard.daemonId} tools/list did not return working live results`).toBe(true);
+      expect(Number(listOutput?.tool_count), `${dashboard.daemonId} tools/list tool_count on page`).toBeGreaterThan(0);
+      expect(
+        Array.isArray(listOutput?.tools_sample) && listOutput.tools_sample.length > 0,
+        `${dashboard.daemonId} tools_sample on page`,
+      ).toBe(true);
+
       await window.locator('#btn-tools-call').click();
       await waitForTextInSelector(window, '#tool-receipt', /tools\/call/);
       await expect(window.locator('#tool-receipt')).toContainText('safe_probe');
       await expect(window.locator('#tool-receipt')).toContainText(/mediation_receipt|policy_decision|control_surface/i);
+
+      // The safe tools/call probe must also reach the live backend successfully.
+      await waitForTextInSelector(window, '#tool-receipt', /"live_ok"/);
+      const callReceipt = await readReceiptJson(window, '#tool-receipt');
+      const callOutput = receiptLiveOutput(callReceipt);
+      expect(callReceipt.operation, `${dashboard.daemonId} tools/call operation`).toBe('tools/call');
+      expect(callOutput?.live, `${dashboard.daemonId} tools/call was not invoked live`).toBe(true);
+      expect(callOutput?.live_ok, `${dashboard.daemonId} tools/call did not return a working live result`).toBe(true);
     }
   });
 
@@ -783,10 +892,11 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
   });
 
   test('IPFS dashboard web buttons open catalog-backed native dashboard URLs', async () => {
+    const live = await liveDaemonEndpoints(window);
     const dashboards = [
-      { label: 'IPFS Kit Dashboard', daemonId: 'ipfs-kit', urlPattern: /127\.0\.0\.1:8004\/dashboard/ },
-      { label: 'IPFS Datasets Dashboard', daemonId: 'ipfs-datasets', urlPattern: /127\.0\.0\.1:8899\/mcp/ },
-      { label: 'IPFS Accelerate Dashboard', daemonId: 'ipfs-accelerate', urlPattern: /127\.0\.0\.1:3003\/dashboard/ },
+      { label: 'IPFS Kit Dashboard', daemonId: 'ipfs-kit', urlPattern: new RegExp(`127\\.0\\.0\\.1:${KIT_PORT}\\/dashboard`) },
+      { label: 'IPFS Datasets Dashboard', daemonId: 'ipfs-datasets', urlPattern: new RegExp(`127\\.0\\.0\\.1:${DATASETS_DASHBOARD_PORT}\\/mcp`) },
+      { label: 'IPFS Accelerate Dashboard', daemonId: 'ipfs-accelerate', urlPattern: new RegExp(`127\\.0\\.0\\.1:${ACCELERATE_PORT}\\/dashboard`) },
     ];
 
     for (const dashboard of dashboards) {
@@ -794,7 +904,7 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
       await waitForDaemonHealthy(window, dashboard.daemonId);
       await window.locator('#btn-open-web-dashboard').click();
       await waitForTextInSelector(window, '#health-receipt', /navigation\/openDashboard/);
-      await expect(window.locator('#health-receipt')).toContainText(dashboard.urlPattern);
+      await expect(window.locator('#health-receipt')).toContainText(live[dashboard.daemonId].webDashboardUrl);
     }
   });
 
@@ -836,13 +946,25 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
   test('Tools menu exposes the configured MCP tool URLs for kit, datasets, and accelerate', async () => {
     await installOpenExternalSpy(electronApp);
 
+    const live = await liveDaemonEndpoints(window);
     for (const server of mcpServers.filter((server) => ['ipfs-kit', 'ipfs-datasets', 'ipfs-accelerate'].includes(server.id))) {
+      const livePort = new URL(live[server.id].endpoint).port;
       for (const tool of server.tools.filter((tool: any) => tool.url)) {
+        let expectedUrl = tool.url;
+        try {
+          const parsed = new URL(tool.url);
+          if (parsed.hostname === '127.0.0.1' || parsed.hostname === 'localhost') {
+            parsed.port = String(livePort);
+            expectedUrl = parsed.toString();
+          }
+        } catch {
+          expectedUrl = tool.url;
+        }
         const clicked = await clickApplicationMenuPath(electronApp, ['Tools', `${server.displayName} Tools`, tool.label]);
         expect(clicked).toBe(true);
 
         const calls = await getOpenExternalCalls(electronApp);
-        expect(calls[calls.length - 1]).toBe(tool.url);
+        expect(calls[calls.length - 1]).toBe(expectedUrl);
       }
     }
   });
@@ -850,6 +972,7 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
   test('MCP Servers browser entries use the live dashboard URLs', async () => {
     await installOpenExternalSpy(electronApp);
 
+    const live = await liveDaemonEndpoints(window);
     for (const server of mcpServers.filter((server) => ['ipfs-kit', 'ipfs-datasets', 'ipfs-accelerate'].includes(server.id))) {
       const clicked = await clickApplicationMenuPath(electronApp, [
         'MCP Servers',
@@ -859,12 +982,13 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
       expect(clicked).toBe(true);
 
       const calls = await getOpenExternalCalls(electronApp);
-      expect(calls[calls.length - 1]).toBe(server.webDashboardUrl);
+      expect(calls[calls.length - 1]).toBe(live[server.id].webDashboardUrl);
     }
   });
 
   test('MCP Servers embedded web dashboard entries launch MCP dashboard windows', async () => {
     const targets = mcpServers.filter((server) => ['ipfs-kit', 'ipfs-datasets', 'ipfs-accelerate'].includes(server.id));
+    const live = await liveDaemonEndpoints(window);
 
     for (const target of targets) {
       expect(await clickApplicationMenuPath(electronApp, [
@@ -875,7 +999,7 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
 
       await waitForWindowUrl(
         electronApp,
-        new RegExp(target.webDashboardUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+        new RegExp(live[target.id].webDashboardUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
       );
     }
   });
@@ -960,17 +1084,17 @@ test.describe('MCP Feature Exposure - headless backend gate', () => {
     expect(Array.isArray(launchPlan)).toBe(true);
     expect(launchPlan).toHaveLength(3);
     expect(byId.get('ipfs-kit')).toMatchObject({
-      endpoint: 'http://127.0.0.1:8004',
+      endpoint: KIT_BASE,
       health_path: '/api/mcp/status',
       rpc_path: '/mcp/tools/call'
     });
     expect(byId.get('ipfs-datasets')).toMatchObject({
-      endpoint: 'http://127.0.0.1:3002',
+      endpoint: DATASETS_BASE,
       health_path: '/health/ready',
       rpc_path: '/datasets/load'
     });
     expect(byId.get('ipfs-accelerate')).toMatchObject({
-      endpoint: 'http://127.0.0.1:3003',
+      endpoint: ACCELERATE_BASE,
       health_path: '/api/mcp/status',
       rpc_path: '/mcp'
     });
@@ -1108,7 +1232,7 @@ test.describe('MCP Feature Exposure - headless backend gate', () => {
       const entry = byId.get(daemonId) as any;
       const menuEntry = menuById.get(daemonId) as any;
       expect(entry).toBeTruthy();
-      expect(entry.menu_dashboard_url).toBe(menuEntry.webDashboardUrl);
+      expect(entry.menu_dashboard_url).toBe(entry.native_dashboard_url || `${entry.endpoint}/dashboard`);
       expect(entry.tool_protocols.tools_list.operation).toBe('tools/list');
       expect(entry.tool_protocols.tools_call.operation).toBe('tools/call');
       expect(entry.tool_protocols.tools_call.safeProbe.mutation).toBe(false);
@@ -1122,9 +1246,9 @@ test.describe('MCP Feature Exposure - headless backend gate', () => {
       ]));
     }
 
-    expect((byId.get('ipfs-kit') as any)?.port).toBe(8004);
+    expect((byId.get('ipfs-kit') as any)?.port).toBe(KIT_PORT);
     expect((byId.get('ipfs-datasets') as any)?.native_dashboard_catalog_url).toBe(
-      'http://127.0.0.1:8899/api/hallucinate/dashboard-catalog'
+      `${DATASETS_DASHBOARD_BASE}/api/hallucinate/dashboard-catalog`
     );
     expect((byId.get('ipfs-datasets') as any)?.mcpplusplus.mode).toBe('optional_bridge');
     expect((byId.get('ipfs-accelerate') as any)?.mcpplusplus.profiles).toContain('mcp++/profile-e-mcp-p2p');

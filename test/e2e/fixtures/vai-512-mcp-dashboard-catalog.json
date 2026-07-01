@@ -1240,45 +1240,45 @@
       "display_name": "IPFS Kit",
       "menu_label": "IPFS Kit MCP",
       "startup_order": 10,
-      "port": 8004,
-      "endpoint": "http://127.0.0.1:8004",
+      "port": 8014,
+      "endpoint": "http://127.0.0.1:8014",
       "transport": "http",
       "rpc_path": "/mcp/tools/call",
       "health_path": "/api/mcp/status",
-      "health_url": "http://127.0.0.1:8004/api/mcp/status",
+      "health_url": "http://127.0.0.1:8014/api/mcp/status",
       "menu_dashboard_path": "views/ipfs_kit_dashboard.html",
-      "menu_dashboard_url": "http://127.0.0.1:8004/dashboard",
+      "menu_dashboard_url": "http://127.0.0.1:8014/dashboard",
       "native_dashboard_url": null,
       "native_dashboard_health_path": null,
       "native_dashboard_catalog_url": null,
       "menu_tools": [
         {
           "label": "Add to IPFS",
-          "url": "http://127.0.0.1:8004/tools/add",
+          "url": "http://127.0.0.1:8014/tools/add",
           "action": null,
           "app": null
         },
         {
           "label": "Get from IPFS",
-          "url": "http://127.0.0.1:8004/tools/get",
+          "url": "http://127.0.0.1:8014/tools/get",
           "action": null,
           "app": null
         },
         {
           "label": "Pin Content",
-          "url": "http://127.0.0.1:8004/tools/pin",
+          "url": "http://127.0.0.1:8014/tools/pin",
           "action": null,
           "app": null
         },
         {
           "label": "IPFS Status",
-          "url": "http://127.0.0.1:8004/status",
+          "url": "http://127.0.0.1:8014/status",
           "action": null,
           "app": null
         },
         {
           "label": "Configure IPFS Node",
-          "url": "http://127.0.0.1:8004/config",
+          "url": "http://127.0.0.1:8014/config",
           "action": null,
           "app": null
         }
@@ -1289,7 +1289,7 @@
           "transport": "http",
           "method": "GET",
           "path": "/mcp/tools/list",
-          "url": "http://127.0.0.1:8004/mcp/tools/list"
+          "url": "http://127.0.0.1:8014/mcp/tools/list"
         },
         "tools_call": {
           "operation": "tools/call",
@@ -1302,7 +1302,7 @@
             "mutation": false,
             "expected_receipt": "ipfs_kit_status_probe"
           },
-          "url": "http://127.0.0.1:8004/mcp/tools/call"
+          "url": "http://127.0.0.1:8014/mcp/tools/call"
         }
       },
       "mcpplusplus": {

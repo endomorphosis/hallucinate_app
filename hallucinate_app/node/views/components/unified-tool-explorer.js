@@ -13,7 +13,7 @@
   'use strict';
 
   const ENDPOINTS = [
-    { name: 'IPFS Kit', port: 8004, listPath: '/mcp/tools/list', callPath: '/mcp/tools/call', color: '#3b82f6', category: 'storage' },
+    { name: 'IPFS Kit', port: 8014, listPath: '/mcp/tools/list', callPath: '/mcp/tools/call', color: '#3b82f6', category: 'storage' },
     { name: 'IPFS Datasets', port: 3002, listPath: '/mcp/tools/list', callPath: '/mcp/tools/call', color: '#10b981', category: 'datasets' },
     { name: 'IPFS Accelerate', port: 3003, listPath: '/mcp/tools/list', callPath: '/mcp/tools/call', color: '#f59e0b', category: 'accelerate' },
     { name: 'Handsfree API', port: 8080, listPath: '/v1/ipfs/status', callPath: null, color: '#8b5cf6', category: 'backend' },
@@ -109,11 +109,46 @@
       });
     }
 
+    /**
+     * Override the static ENDPOINTS ports with the live ports reported by the
+     * daemon manager. A daemon whose configured port was occupied may have been
+     * reassigned (e.g. 8014 -> 8005), so we must discover/invoke on the live port.
+     */
+    async resolveLivePorts() {
+      try {
+        const getAll = window.electronAPI?.daemon?.getAll;
+        if (typeof getAll !== 'function') return;
+        const all = await getAll();
+        if (!all) return;
+        const idByName = {
+          'IPFS Kit': 'ipfs-kit',
+          'IPFS Datasets': 'ipfs-datasets',
+          'IPFS Accelerate': 'ipfs-accelerate',
+        };
+        for (const ep of ENDPOINTS) {
+          const id = idByName[ep.name];
+          if (!id) continue;
+          const info = all[id];
+          if (!info) continue;
+          let livePort = info.port;
+          if (!livePort && typeof info.endpoint === 'string') {
+            const m = info.endpoint.match(/:(\d+)\b/);
+            if (m) livePort = parseInt(m[1], 10);
+          }
+          if (livePort && Number.isFinite(livePort)) {
+            ep.port = livePort;
+          }
+        }
+      } catch { /* keep the default ports */ }
+    }
+
     async discover() {
       const statusBar = this.container.querySelector('.ute-daemon-status');
       const countEl = this.container.querySelector('.ute-count');
       this.allTools = [];
       statusBar.innerHTML = '';
+
+      await this.resolveLivePorts();
 
       const results = await Promise.allSettled(
         ENDPOINTS.map(async (ep) => {
@@ -135,7 +170,8 @@
             const data = await resp.json();
             
             let tools = [];
-            if (Array.isArray(data.tools)) tools = data.tools;
+            if (data && data.result && Array.isArray(data.result.tools)) tools = data.result.tools;
+            else if (Array.isArray(data.tools)) tools = data.tools;
             else if (Array.isArray(data)) tools = data;
             else if (data.endpoints) {
               // Handsfree returns endpoint list

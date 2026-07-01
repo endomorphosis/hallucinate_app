@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Backend Settings — Hallucinate App</title>
+  <script src="/mobile/mobile_bridge.js"></script>
+  <script src="/mobile/discovery.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+      color: #fff; min-height: 100vh; padding: 24px 16px;
+    }
+    .wrap { max-width: 560px; margin: 0 auto; }
+    h1 { font-size: 22px; margin-bottom: 6px; }
+    p.sub { opacity: .7; font-size: 14px; margin-bottom: 20px; }
+    label { display: block; font-size: 13px; margin: 16px 0 6px; opacity: .85; }
+    input[type=text] {
+      width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,.2);
+      background: rgba(255,255,255,.06); color: #fff; font-size: 15px;
+    }
+    .hint { font-size: 12px; opacity: .55; margin-top: 4px; }
+    .row { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+    button {
+      flex: 1; min-width: 120px; padding: 12px 16px; border-radius: 8px; border: none;
+      font-size: 15px; font-weight: 600; cursor: pointer;
+    }
+    .save { background: #4CAF50; color: #08210b; }
+    .test { background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.2); }
+    .home { background: transparent; color: #9ad; border: 1px solid rgba(150,200,255,.3); }
+    #status { margin-top: 18px; padding: 12px; border-radius: 8px; font-size: 14px; display: none; }
+    #status.ok { display: block; background: rgba(76,175,80,.18); color: #9be29e; }
+    #status.err { display: block; background: rgba(244,67,54,.18); color: #f3a39c; }
+    .card { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: 20px; }
+    .card + .card { margin-top: 18px; }
+    .disc-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .disc-head h2 { font-size: 17px; }
+    .discBtn { flex: none; min-width: 0; width: auto; padding: 10px 14px; background: #3949ab; color: #fff; }
+    #discList { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+    .disc-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px;
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+    }
+    .disc-item .url { flex: 1; font-size: 14px; word-break: break-all; }
+    .disc-item .lat { font-size: 12px; opacity: .6; white-space: nowrap; }
+    .disc-item button { flex: none; width: auto; min-width: 0; padding: 8px 12px; font-size: 13px; background: #4CAF50; color: #08210b; }
+    .badges { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
+    .badge {
+      font-size: 10px; text-transform: uppercase; letter-spacing: .04em; padding: 2px 6px;
+      border-radius: 10px; background: rgba(99,130,255,.22); color: #b9c6ff; border: 1px solid rgba(99,130,255,.35);
+    }
+    #discStatus { margin-top: 10px; font-size: 13px; opacity: .75; }
+    .toggle-row { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 13px; opacity: .85; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>⚙ Backend Settings</h1>
+    <p class="sub">Point the mobile app at a remote MCP++ / IPFS backend. The
+      desktop app runs these locally; on mobile they must be reached over the
+      network.</p>
+
+    <div class="card">
+      <label for="base">REST gateway URL</label>
+      <input id="base" type="text" placeholder="https://your-host:8080" autocapitalize="off" autocorrect="off" spellcheck="false" />
+      <div class="hint">Serves <code>/v1/ipfs/*</code>. Example: <code>https://backend.example.com:8080</code></div>
+
+      <label for="mcp">MCP++ JSON-RPC URL (optional)</label>
+      <input id="mcp" type="text" placeholder="https://your-host:8014 (defaults to REST URL)" autocapitalize="off" autocorrect="off" spellcheck="false" />
+      <div class="hint">MCP++ tools endpoint. Leave blank to reuse the REST URL.</div>
+
+      <div class="row">
+        <button class="test" id="testBtn">Test connection</button>
+        <button class="save" id="saveBtn">Save</button>
+      </div>
+      <div class="row">
+        <button class="home" id="homeBtn">⌂ Back to Home</button>
+      </div>
+      <div id="status"></div>
+    </div>
+
+    <div class="card">
+      <div class="disc-head">
+        <h2>🔎 Auto-discover backends</h2>
+        <button class="discBtn" id="discBtn">Search</button>
+      </div>
+      <p class="hint" style="margin-top:8px">Searches all libp2p methods — mDNS
+        (Bonjour/NSD), DHT, pubsub, rendezvous and bootstrap seeds — then
+        harvests peers from any reachable node. Tap a result to use it.</p>
+      <label for="boot" style="margin-top:14px">Bootstrap / seed endpoints (optional)</label>
+      <input id="boot" type="text" placeholder="https://seed-a:8080, https://seed-b:8080" autocapitalize="off" autocorrect="off" spellcheck="false" />
+      <div class="hint">Comma-separated. Used as starting points for relay discovery.</div>
+      <label for="dnsaddr" style="margin-top:14px">dnsaddr domains (optional)</label>
+      <input id="dnsaddr" type="text" placeholder="hallucinate.example.com" autocapitalize="off" autocorrect="off" spellcheck="false" />
+      <div class="hint">Resolves <code>_dnsaddr.&lt;domain&gt;</code> TXT records (over DNS-over-HTTPS) for libp2p bootstrap peers.</div>
+      <div id="discStatus"></div>
+      <div id="discList"></div>
+      <div class="toggle-row">
+        <input type="checkbox" id="autoDisc" />
+        <label for="autoDisc" style="margin:0">Auto-discover on launch when no backend is set</label>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var LS_BASE = 'hallucinateBackendUrl';
+    var LS_MCP = 'hallucinateMcpUrl';
+    var baseEl = document.getElementById('base');
+    var mcpEl = document.getElementById('mcp');
+    var statusEl = document.getElementById('status');
+
+    function show(kind, msg) {
+      statusEl.className = kind;
+      statusEl.textContent = msg;
+    }
+    function norm(u) { return (u || '').trim().replace(/\/+$/, ''); }
+
+    // Load existing values.
+    try {
+      baseEl.value = localStorage.getItem(LS_BASE) || '';
+      mcpEl.value = localStorage.getItem(LS_MCP) || '';
+    } catch (e) {}
+
+    document.getElementById('saveBtn').onclick = function () {
+      var base = norm(baseEl.value);
+      if (!base) { show('err', 'Enter a REST gateway URL first.'); return; }
+      try {
+        localStorage.setItem(LS_BASE, base);
+        if (norm(mcpEl.value)) localStorage.setItem(LS_MCP, norm(mcpEl.value));
+        else localStorage.removeItem(LS_MCP);
+        // Keep dashboards' port aligned (host rewrite handled by the bridge).
+        localStorage.setItem('handsfreePort', '8080');
+      } catch (e) { show('err', 'Could not save: ' + e.message); return; }
+      show('ok', 'Saved. Backend = ' + base);
+    };
+
+    document.getElementById('testBtn').onclick = async function () {
+      var base = norm(baseEl.value);
+      if (!base) { show('err', 'Enter a REST gateway URL first.'); return; }
+      show('ok', 'Testing ' + base + ' …');
+      var endpoints = ['/v1/ipfs/status', '/health', '/v1/ipfs/capabilities'];
+      for (var i = 0; i < endpoints.length; i++) {
+        try {
+          // Use the native fetch with an absolute URL (no bridge rewrite needed).
+          var res = await fetch(base + endpoints[i], { method: 'GET' });
+          if (res.ok) {
+            show('ok', '✓ Connected (' + endpoints[i] + ' → ' + res.status + ').');
+            return;
+          }
+        } catch (e) { /* try next */ }
+      }
+      show('err', '✗ Could not reach ' + base + '. Check the URL, that the server is running, and that it allows CORS + HTTPS.');
+    };
+
+    document.getElementById('homeBtn').onclick = function () {
+      window.location.href = '/index.html';
+    };
+
+    // ---- discovery ---------------------------------------------------------
+    var LS_BOOT = 'hallucinateBootstrap';
+    var LS_DNSADDR = 'hallucinateDnsaddr';
+    var LS_AUTO = 'hallucinateAutoDiscover';
+    var bootEl = document.getElementById('boot');
+    var dnsaddrEl = document.getElementById('dnsaddr');
+    var autoEl = document.getElementById('autoDisc');
+    var discListEl = document.getElementById('discList');
+    var discStatusEl = document.getElementById('discStatus');
+    var discBtn = document.getElementById('discBtn');
+
+    try {
+      bootEl.value = localStorage.getItem(LS_BOOT) || '';
+      dnsaddrEl.value = localStorage.getItem(LS_DNSADDR) || '';
+      autoEl.checked = localStorage.getItem(LS_AUTO) !== 'off';
+    } catch (e) {}
+
+    autoEl.onchange = function () {
+      try { localStorage.setItem(LS_AUTO, autoEl.checked ? 'on' : 'off'); } catch (e) {}
+    };
+    bootEl.onchange = function () {
+      try { localStorage.setItem(LS_BOOT, norm(bootEl.value)); } catch (e) {}
+    };
+    dnsaddrEl.onchange = function () {
+      try { localStorage.setItem(LS_DNSADDR, (dnsaddrEl.value || '').trim()); } catch (e) {}
+    };
+
+    function badgeRow(methods) {
+      var wrap = document.createElement('div');
+      wrap.className = 'badges';
+      (methods || []).forEach(function (m) {
+        var b = document.createElement('span');
+        b.className = 'badge';
+        b.textContent = m;
+        wrap.appendChild(b);
+      });
+      return wrap;
+    }
+
+    function renderItem(c) {
+      var item = document.createElement('div');
+      item.className = 'disc-item';
+      var left = document.createElement('div');
+      left.style.flex = '1';
+      var url = document.createElement('div');
+      url.className = 'url';
+      url.textContent = c.url;
+      left.appendChild(url);
+      left.appendChild(badgeRow(c.methods));
+      var lat = document.createElement('span');
+      lat.className = 'lat';
+      lat.textContent = (c.latencyMs != null ? c.latencyMs + ' ms' : '');
+      var use = document.createElement('button');
+      use.textContent = 'Use';
+      use.onclick = function () {
+        baseEl.value = c.url;
+        try {
+          localStorage.setItem(LS_BASE, c.url);
+          localStorage.setItem('handsfreePort', '8080');
+        } catch (e) {}
+        show('ok', 'Backend set to ' + c.url);
+      };
+      item.appendChild(left);
+      item.appendChild(lat);
+      item.appendChild(use);
+      return item;
+    }
+
+    var seenUrls = {};
+    discBtn.onclick = function () {
+      if (!window.HallucinateMobile || !window.HallucinateMobile.discover) {
+        discStatusEl.textContent = 'Discovery unavailable in this build.';
+        return;
+      }
+      try { localStorage.setItem(LS_BOOT, norm(bootEl.value)); localStorage.setItem(LS_DNSADDR, (dnsaddrEl.value || '').trim()); } catch (e) {}
+      discBtn.disabled = true;
+      discListEl.innerHTML = '';
+      seenUrls = {};
+      discStatusEl.textContent = 'Searching mDNS / DHT / pubsub / rendezvous / bootstrap…';
+      window.HallucinateMobile.discover({
+        timeout: 4000,
+        relayHops: 1,
+        onResult: function (c) {
+          if (seenUrls[c.url]) return;
+          seenUrls[c.url] = true;
+          discListEl.appendChild(renderItem(c));
+        },
+        onProgress: function (p) {
+          if (p && p.message) discStatusEl.textContent = p.message;
+        },
+      }).then(function (list) {
+        discBtn.disabled = false;
+        // Re-render in ranked order.
+        discListEl.innerHTML = '';
+        seenUrls = {};
+        (list || []).forEach(function (c) { seenUrls[c.url] = true; discListEl.appendChild(renderItem(c)); });
+        discStatusEl.textContent = list && list.length
+          ? ('Found ' + list.length + ' backend' + (list.length === 1 ? '' : 's') + '.')
+          : 'No backends found on the network. Enter one above or add a bootstrap seed.';
+      }).catch(function (e) {
+        discBtn.disabled = false;
+        discStatusEl.textContent = 'Discovery error: ' + (e && e.message ? e.message : e);
+      });
+    };
+  </script>
+</body>
+</html>

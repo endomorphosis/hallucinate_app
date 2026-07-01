@@ -8,11 +8,11 @@
  * 4. Displays the JSON response and invocation receipt
  *
  * Usage:
- *   <div id="tool-invocation-panel" data-daemon="ipfs-kit" data-port="8004"></div>
+ *   <div id="tool-invocation-panel" data-daemon="ipfs-kit" data-port="8014"></div>
  *   <script src="components/tool-invocation-panel.js"></script>
  *
  * Or create programmatically:
- *   ToolInvocationPanel.create(container, { daemon: 'ipfs-kit', port: 8004 });
+ *   ToolInvocationPanel.create(container, { daemon: 'ipfs-kit', port: 8014 });
  */
 
 (function () {
@@ -21,16 +21,16 @@
   const REQUEST_TIMEOUT_MS = 15000;
 
   const DAEMON_CONFIGS = {
-    'ipfs-kit': { port: 8004, toolsListPath: '/mcp/tools/list', toolsCallPath: '/mcp/tools/call' },
-    'ipfs-datasets': { port: 3002, toolsListPath: '/datasets/list', toolsCallPath: '/datasets/load' },
-    'ipfs-accelerate': { port: 3003, toolsListPath: '/models/list', toolsCallPath: '/inference' },
+    'ipfs-kit': { port: 8014, toolsListPath: '/mcp/tools/list', toolsCallPath: '/mcp/tools/call' },
+    'ipfs-datasets': { port: 3002, toolsListPath: '/mcp/tools/list', toolsCallPath: '/mcp/tools/call' },
+    'ipfs-accelerate': { port: 3003, toolsListPath: '/mcp/tools/list', toolsCallPath: '/mcp/tools/call' },
   };
 
   class ToolInvocationPanel {
     constructor(container, options = {}) {
       this.container = container;
       this.daemon = options.daemon || container.dataset.daemon || 'ipfs-kit';
-      this.port = options.port || parseInt(container.dataset.port) || DAEMON_CONFIGS[this.daemon]?.port || 8004;
+      this.port = options.port || parseInt(container.dataset.port) || DAEMON_CONFIGS[this.daemon]?.port || 8014;
       this.config = DAEMON_CONFIGS[this.daemon] || DAEMON_CONFIGS['ipfs-kit'];
       this.tools = [];
       this.selectedTool = null;
@@ -125,9 +125,33 @@
       this.container.querySelector('.tip-invoke-btn').addEventListener('click', () => this.invoke());
     }
 
+    // Resolve the daemon's live port from the daemon manager. The MCP daemon
+    // manager may bind a daemon to a fallback port when its preferred port is
+    // already taken (e.g. by another process), so the hard-coded data-port is
+    // only a default — always prefer the actual runtime port/endpoint.
+    async resolveLivePort() {
+      try {
+        const getAll = window.electronAPI?.daemon?.getAll;
+        if (typeof getAll !== 'function') return;
+        const all = await getAll();
+        const info = all && all[this.daemon];
+        if (!info) return;
+        let livePort = info.port;
+        if (!livePort && typeof info.endpoint === 'string') {
+          const m = info.endpoint.match(/:(\d+)\b/);
+          if (m) livePort = parseInt(m[1], 10);
+        }
+        if (livePort && Number.isFinite(livePort)) {
+          this.port = livePort;
+        }
+      } catch { /* keep the default port */ }
+    }
+
     async loadTools() {
       const dropdown = this.container.querySelector('.tip-tool-dropdown');
       dropdown.innerHTML = '<option value="">Loading...</option>';
+
+      await this.resolveLivePort();
 
       try {
         // Try IPC first
@@ -146,7 +170,7 @@
           const url = `http://127.0.0.1:${this.port}${this.config.toolsListPath}`;
           const resp = await this.fetchWithTimeout(url);
           const data = await resp.json();
-          tools = data.tools || data || [];
+          tools = (data.result && data.result.tools) || data.tools || data || [];
         }
 
         this.tools = Array.isArray(tools) ? tools : [];

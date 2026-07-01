@@ -51,6 +51,10 @@ const BUNDLED_LOCAL_PACKAGES = ['ipfs_kit_py', 'ipfs_datasets_py', 'ipfs_acceler
 const CORE_REQUIREMENTS = new Set([
   'fastapi',
   'uvicorn',
+  'hypercorn',
+  'anyio',
+  'sniffio',
+  'trio',
   'pydantic',
   'pyjwt',
   'pyarrow',

@@ -142,7 +142,7 @@
           <div class="card-body">
             <div class="status-grid" id="ipfsBackendStatus">
               <div class="status-item">
-                <span class="status-label">IPFS Kit (port 8004):</span>
+                <span class="status-label">IPFS Kit (port 8014):</span>
                 <span class="status-value" id="ipfs-kit-status">Checking...</span>
               </div>
               <div class="status-item">
@@ -999,7 +999,7 @@
 
     // IPFS Backend Health Monitoring
     const BACKEND_SERVICES = [
-      { id: 'ipfs-kit-status', url: 'http://localhost:8004/api/mcp/status', name: 'IPFS Kit' },
+      { id: 'ipfs-kit-status', url: 'http://localhost:8014/api/mcp/status', name: 'IPFS Kit' },
       { id: 'ipfs-datasets-status', url: 'http://localhost:3002/health/ready', name: 'IPFS Datasets' },
       { id: 'ipfs-accelerate-status', url: 'http://localhost:3003/api/mcp/status', name: 'IPFS Accelerate' },
       { id: 'handsfree-backend-status', url: 'http://localhost:8080/v1/ipfs/status', name: 'Handsfree' },

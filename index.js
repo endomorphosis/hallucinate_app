@@ -201,6 +201,28 @@ function startSwissKnifeServer() {
 // Initialize MCP Daemon Manager
 const daemonManager = new MCPDaemonManager();
 
+// Allow the dashboards to verify working LIVE results from the MCP backends.
+// Read-only probes (tools/list and non-mutating tools/call) are permitted so the
+// dashboard can exercise the real services; any mutating operation stays
+// fail-closed (require_confirmation) per the control-surface contract.
+daemonManager.setControlSurfaceRuntimePolicyEvaluator((request) => {
+  const method = request?.method || request?.invocation_payload?.method;
+  const surface = request?.invocation_payload?.surface || 'dashboard';
+  const mutation = request?.invocation_payload?.safe_probe?.mutation;
+  const isReadOnlyProbe =
+    method === 'tools/list' || (method === 'tools/call' && mutation === false);
+  if (isReadOnlyProbe) {
+    return {
+      outcome: 'allow',
+      reasons: [`hallucinate_app ${surface} read-only ${method} probe`]
+    };
+  }
+  return {
+    outcome: 'require_confirmation',
+    reasons: [`hallucinate_app requires confirmation for ${method || 'unknown'} operations`]
+  };
+});
+
 const broadcastDaemonEvent = (type, data = {}) => {
   for (const win of BrowserWindow.getAllWindows()) {
     if (!win.isDestroyed()) {
@@ -2003,7 +2025,7 @@ const createMCPDashboardWindow = (title, url, width = 1200, height = 800) => {
 
 // Create windows for specific MCP dashboards
 const createIPFSKitDashboard = () => {
-  return createMCPDashboardWindow('IPFS Kit MCP Dashboard', 'http://127.0.0.1:8004/dashboard');
+  return createMCPDashboardWindow('IPFS Kit MCP Dashboard', 'http://127.0.0.1:8014/dashboard');
 };
 
 const createIPFSDatasetsDashboard = () => {

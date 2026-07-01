@@ -6,6 +6,7 @@
 import { spawn, spawnSync } from 'child_process';
 import { EventEmitter } from 'events';
 import fs from 'fs';
+import net from 'net';
 import path from 'path';
 import url from 'url';
 import crypto from 'crypto';
@@ -15,7 +16,23 @@ import { mcpServers } from './menu_config.js';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 const DEFAULT_HEALTH_INTERVAL_MS = 30000;
-const DEFAULT_STARTUP_TIMEOUT_MS = 5000;
+// The Python MCP servers import heavy dependencies on cold start (duckdb,
+// transformers/HF hub scanners, model managers, hypercorn). Measured cold-boot
+// times to first healthy response: ipfs-kit ~6s, ipfs-datasets ~11s,
+// ipfs-accelerate ~13s — and slower on first run in a packaged app or on
+// constrained hardware. A 5s startup budget marked every server "degraded"
+// before it ever finished booting, which surfaced in the UI as "MCP++ servers
+// not working". Give cold starts a realistic budget (override via
+// MCP_DAEMON_STARTUP_TIMEOUT_MS).
+const DEFAULT_STARTUP_TIMEOUT_MS = 45000;
+// Per-probe timeout for the health-endpoint fetch. The MCP servers each run a
+// single Hypercorn worker; while all three boot in parallel (and contend with
+// Electron + the test runner), a `/health/ready` request can legitimately take
+// longer than 1s to come back even though the server is fine. A 1s budget made
+// the probe abort and report the daemon unhealthy under that transient load,
+// which the UI/tests read as "MCP++ servers not working". Give the probe a more
+// forgiving budget (override via MCP_DAEMON_HEALTH_TIMEOUT_MS).
+const DEFAULT_HEALTH_TIMEOUT_MS = 5000;
 const DEFAULT_MAX_RESTARTS = 3;
 const LAUNCH_TASK_ID = 'HAO-442';
 const STARTUP_MESSAGE_PATTERNS = [
@@ -784,6 +801,34 @@ const DASHBOARD_TOOL_PROTOCOLS = {
   }
 };
 
+// Real, working HTTP endpoints used to verify live results from each backend.
+// These are intentionally separate from DASHBOARD_TOOL_PROTOCOLS (which encodes the
+// mediation/receipt contract) so the dashboards can prove the underlying MCP server
+// returns working tool data — not just that the health endpoint is reachable.
+const LIVE_TOOL_INVOCATION = {
+  'ipfs-kit': {
+    toolsList: { method: 'GET', path: '/mcp/tools/list' },
+    toolsCall: { method: 'POST', path: '/mcp/tools/call', jsonRpc: true, toolName: 'health_check', arguments: {} }
+  },
+  'ipfs-datasets': {
+    auth: { loginPath: '/auth/login', username: 'hallucinate-app-dashboard', password: 'live-backend-probe' },
+    toolsList: { method: 'GET', path: '/tools/list', requiresAuth: true },
+    toolsCall: { method: 'POST', path: '/tools/execute/tools_list_categories', requiresAuth: true, body: {} }
+  },
+  'ipfs-accelerate': {
+    // The accelerate MCP runtime serves the standard MCP JSON-RPC surface at
+    // /mcp (GET returns {result:{tools:[...]}}, POST accepts JSON-RPC). The old
+    // /api/mcp/tools path returns a status object (no tools) and /jsonrpc 404s,
+    // which made live tools/list report 0 tools and tools/call fail — surfacing
+    // in the app as the accelerate MCP tools "not working". Probe the real MCP
+    // endpoint so the dashboard exercises the same surface external MCP clients use.
+    toolsList: { method: 'GET', path: '/mcp/tools/list' },
+    // Invoke a real, non-mutating MCP tool through the JSON-RPC tools/call
+    // interface so the dashboard exercises the actual MCP tool surface.
+    toolsCall: { method: 'POST', path: '/mcp', jsonRpc: true, toolName: 'hardware_get_info', arguments: {} }
+  }
+};
+
 function stableReceiptCid(value) {
   const canonical = JSON.stringify(value);
   const digest = crypto.createHash('sha256').update(canonical).digest('hex');
@@ -802,6 +847,7 @@ class MCPDaemonManager extends EventEmitter {
     this.baseDir = path.join(__dirname, '..', '..');
     this.healthIntervalMs = Number(options.healthIntervalMs || process.env.MCP_DAEMON_HEALTH_INTERVAL_MS || DEFAULT_HEALTH_INTERVAL_MS);
     this.startupTimeoutMs = Number(options.startupTimeoutMs || process.env.MCP_DAEMON_STARTUP_TIMEOUT_MS || DEFAULT_STARTUP_TIMEOUT_MS);
+    this.healthTimeoutMs = Number(options.healthTimeoutMs || process.env.MCP_DAEMON_HEALTH_TIMEOUT_MS || DEFAULT_HEALTH_TIMEOUT_MS);
     this.maxRestarts = Number(options.maxRestarts || process.env.MCP_DAEMON_MAX_RESTARTS || DEFAULT_MAX_RESTARTS);
     this.pythonCommand = options.pythonCommand || this._resolveDaemonPythonCommand();
     this.controlSurfaceInvocationGate = options.controlSurfaceInvocationGate || new ControlSurfaceInvocationGate({
@@ -827,9 +873,9 @@ class MCPDaemonManager extends EventEmitter {
         name: 'IPFS Kit MCP',
         launchOrder: 10,
         command: this.pythonCommand,
-        args: ['-m', 'ipfs_kit_py.cli', 'mcp', 'start'],
+        args: ['-m', 'ipfs_kit_py.cli', 'mcp', 'start', '--port', String(Number(process.env.MCP_KIT_PORT) || 8014)],
         cwd: path.join(this.baseDir, 'ipfs_kit_py'),
-        port: 8004,
+        port: Number(process.env.MCP_KIT_PORT) || 8014,
         transport: 'http',
         rpcPath: '/mcp/tools/call',
         healthPath: '/api/mcp/status',
@@ -843,9 +889,9 @@ class MCPDaemonManager extends EventEmitter {
         name: 'IPFS Datasets MCP',
         launchOrder: 20,
         command: this.pythonCommand,
-        args: ['-m', 'uvicorn', 'ipfs_datasets_py.mcp_server.fastapi_service:app', '--host', '127.0.0.1', '--port', '3002'],
+        args: ['-m', 'uvicorn', 'ipfs_datasets_py.mcp_server.fastapi_service:app', '--host', '127.0.0.1', '--port', String(Number(process.env.MCP_DATASETS_PORT) || 3002)],
         cwd: path.join(this.baseDir, 'ipfs_datasets_py'),
-        port: 3002,
+        port: Number(process.env.MCP_DATASETS_PORT) || 3002,
         transport: 'http',
         rpcPath: '/datasets/load',
         healthPath: '/health/ready',
@@ -866,9 +912,9 @@ class MCPDaemonManager extends EventEmitter {
         name: 'IPFS Accelerate MCP',
         launchOrder: 30,
         command: this.pythonCommand,
-        args: ['-m', 'ipfs_accelerate_py.cli', 'mcp', 'start', '--port', '3003'],
+        args: ['-m', 'ipfs_accelerate_py.cli', 'mcp', 'start', '--port', String(Number(process.env.MCP_ACCELERATE_PORT) || 3003), '--disable-autoscaler'],
         cwd: path.join(this.baseDir, 'ipfs_accelerate_py'),
-        port: 3003,
+        port: Number(process.env.MCP_ACCELERATE_PORT) || 3003,
         transport: 'http',
         rpcPath: '/mcp',
         healthPath: '/api/mcp/status',
@@ -945,6 +991,47 @@ class MCPDaemonManager extends EventEmitter {
         });
         return existing;
       }
+    }
+
+    // Preflight the port. The configured port may be occupied (a stale daemon
+    // from a prior session, or an unrelated process such as an IDE's dev
+    // server). Without this the daemon would spawn, fail to bind, exit, and the
+    // auto-restart logic would loop forever while the app reported the server
+    // as "not working". Resolve to a usable port and rewrite the launch args so
+    // every downstream consumer (endpoint, health URL, rpc URL, launch plan,
+    // renderer tool panels) follows the live port.
+    const portResolution = await this._resolveDaemonPort(config);
+    if (portResolution.adopted) {
+      console.log(`[${config.name}] Port ${config.port} already serving a healthy ${config.id} daemon; adopting it without spawning.`);
+      const adoptedDaemon = {
+        id: daemonId,
+        name: config.name,
+        packageName: config.packageName,
+        entrypoint: `${config.command} ${config.args.join(' ')}`,
+        process: null,
+        pid: null,
+        port: config.port,
+        status: 'running',
+        adopted: true,
+        startTime: Date.now(),
+        restartCount: this.restartCounts.get(daemonId) || 0,
+        lastError: null,
+        lastHealth: null,
+        launchOrder: config.launchOrder,
+        endpoint: this._daemonEndpoint(config),
+        logs: []
+      };
+      this.daemons.set(daemonId, adoptedDaemon);
+      this._recordLaunchReceipt(config, adoptedDaemon, 'launch_adopted', 'ok', {
+        reason: options.reason || 'manual',
+        health: await this.checkDaemonHealth(daemonId)
+      });
+      this.emit('started', { daemon: daemonId, port: config.port });
+      return adoptedDaemon;
+    } else if (portResolution.reassigned) {
+      console.warn(`[${config.name}] Configured port ${config.port} is in use by another process; falling back to port ${portResolution.port}.`);
+      config.port = portResolution.port;
+      config.args = this._applyPortToArgs(config.args, portResolution.port);
     }
 
     console.log(`[${config.name}] Starting on port ${config.port}...`);
@@ -1151,18 +1238,29 @@ class MCPDaemonManager extends EventEmitter {
   async startAll() {
     console.log('Starting all MCP daemons...');
     const orderedConfigs = [...this.daemonConfigs].sort((a, b) => a.launchOrder - b.launchOrder);
-    const started = [];
+
+    // Launch daemons concurrently rather than awaiting each one's health before
+    // spawning the next. The servers bind distinct ports and have no hard
+    // startup ordering dependency, so a sequential launch only served to stack
+    // their (10-13s) cold-boot times — e.g. accelerate would not report healthy
+    // until ~30s in, well past the UI/health-probe windows, which surfaced as
+    // "MCP++ servers not working". Spawn in launchOrder for deterministic logs,
+    // but let the cold boots overlap so all three are healthy in ~max(boot),
+    // not ~sum(boot).
+    const launches = [];
     for (const config of orderedConfigs) {
-      const daemon = await this.startDaemon(config.id, { reason: 'app_launch' }).catch(err => {
-        console.error(`Failed to start ${config.name}:`, err);
-        this._recordLaunchReceipt(config, null, 'launch_failed', 'error', {
-          reason: 'app_launch',
-          error: err.message
-        });
-        return null;
-      });
-      started.push(daemon);
+      launches.push(
+        this.startDaemon(config.id, { reason: 'app_launch' }).catch(err => {
+          console.error(`Failed to start ${config.name}:`, err);
+          this._recordLaunchReceipt(config, null, 'launch_failed', 'error', {
+            reason: 'app_launch',
+            error: err.message
+          });
+          return null;
+        })
+      );
     }
+    const started = await Promise.all(launches);
     console.log('All daemons started');
     
     // Start health monitoring
@@ -1204,27 +1302,55 @@ class MCPDaemonManager extends EventEmitter {
    */
   getAllStatus() {
     const status = {};
-    
-    for (const [id, daemon] of this.daemons) {
-      status[id] = {
-        id: daemon.id,
-        name: daemon.name,
-        status: daemon.status,
-        pid: daemon.pid,
-        port: daemon.port,
-        uptime: daemon.status === 'running' ? Date.now() - daemon.startTime : 0,
-        restartCount: daemon.restartCount,
-        lastError: daemon.lastError,
-        lastHealth: daemon.lastHealth,
-        mcpPlusPlus: this._mcpPlusPlusStatus(id, daemon),
-        endpoint: daemon.endpoint,
-        nativeDashboard: this._nativeDashboardStatus(id),
-        packageName: daemon.packageName,
-        launchOrder: daemon.launchOrder,
-        recentLogs: daemon.logs.slice(-10)
-      };
+
+    // Always surface every CONFIGURED daemon, not only the ones already present
+    // in this.daemons. Daemons are registered lazily as startDaemon runs (and
+    // startAll registers them sequentially), so keying solely off started
+    // daemons made the UI render fewer than the three configured cards during
+    // and after startup — which read as "MCP++ servers missing/not working".
+    // Merge live runtime state over a configured-but-not-started baseline.
+    for (const config of this.daemonConfigs) {
+      const id = config.id;
+      const daemon = this.daemons.get(id);
+      if (daemon) {
+        status[id] = {
+          id: daemon.id,
+          name: daemon.name,
+          status: daemon.status,
+          pid: daemon.pid,
+          port: daemon.port,
+          uptime: daemon.status === 'running' ? Date.now() - daemon.startTime : 0,
+          restartCount: daemon.restartCount,
+          lastError: daemon.lastError,
+          lastHealth: daemon.lastHealth,
+          mcpPlusPlus: this._mcpPlusPlusStatus(id, daemon),
+          endpoint: daemon.endpoint,
+          nativeDashboard: this._nativeDashboardStatus(id),
+          packageName: daemon.packageName,
+          launchOrder: daemon.launchOrder,
+          recentLogs: daemon.logs.slice(-10)
+        };
+      } else {
+        status[id] = {
+          id,
+          name: config.name,
+          status: 'stopped',
+          pid: null,
+          port: config.port,
+          uptime: 0,
+          restartCount: this.restartCounts.get(id) || 0,
+          lastError: null,
+          lastHealth: null,
+          mcpPlusPlus: this._mcpPlusPlusStatus(id, null),
+          endpoint: this._daemonEndpoint(config),
+          nativeDashboard: this._nativeDashboardStatus(id),
+          packageName: config.packageName,
+          launchOrder: config.launchOrder,
+          recentLogs: []
+        };
+      }
     }
-    
+
     return status;
   }
 
@@ -1293,6 +1419,21 @@ class MCPDaemonManager extends EventEmitter {
               console.log(`[${daemon.name}] Auto-restarting (attempt ${daemon.restartCount}/${this.maxRestarts})...`);
               this.startDaemon(id, { reason: 'health_restart' });
             }
+          } else if (health.healthy && daemon.status === 'degraded') {
+            // The process is alive and the endpoint is now responding. A server
+            // that booted slowly (heavy Python imports) and missed its startup
+            // budget was parked in 'degraded'; promote it back to 'running' so
+            // the UI stops reporting a working server as broken.
+            daemon.status = 'running';
+            console.log(`[${daemon.name}] Recovered: endpoint healthy, marking as running`);
+            this.emit('recovered', { daemon: id, port: config.port, health });
+            this.emit('started', { daemon: id, port: config.port, health });
+          } else if (!health.endpoint_ok && daemon.status === 'running') {
+            // Process is alive but the endpoint stopped responding; reflect the
+            // transient degradation instead of continuing to report 'running'.
+            daemon.status = 'degraded';
+            console.warn(`[${daemon.name}] Endpoint not responding (process alive), marking as degraded`);
+            this.emit('degraded', { daemon: id, port: config.port, health });
           }
         }
       }
@@ -1395,6 +1536,7 @@ class MCPDaemonManager extends EventEmitter {
         startup_order: config.launchOrder,
         entrypoint: `${config.command} ${config.args.join(' ')}`,
         cwd: config.cwd,
+        port: config.port,
         endpoint: this._daemonEndpoint(config),
         transport: config.transport,
         rpc_path: config.rpcPath,
@@ -1779,6 +1921,92 @@ class MCPDaemonManager extends EventEmitter {
     return `http://127.0.0.1:${config.port}`;
   }
 
+  /**
+   * Resolve whether a TCP port on 127.0.0.1 can be bound right now.
+   * Returns true when the port is free, false when something is already
+   * listening on it.
+   */
+  _isPortAvailable(port) {
+    return new Promise((resolve) => {
+      const tester = net.createServer();
+      tester.once('error', (err) => {
+        tester.close(() => {});
+        // EADDRINUSE / EACCES => not available; anything else, assume unusable.
+        resolve(false);
+      });
+      tester.once('listening', () => {
+        tester.close(() => resolve(true));
+      });
+      try {
+        tester.listen(port, '127.0.0.1');
+      } catch (e) {
+        resolve(false);
+      }
+    });
+  }
+
+  /**
+   * Probe whether the process already listening on `port` is one of *our* MCP
+   * daemons by hitting its health path. Lets us adopt a still-running daemon
+   * (e.g. left over from a previous app session) instead of treating it as a
+   * foreign conflict.
+   */
+  async _portServesOurDaemon(config, port) {
+    if (typeof fetch !== 'function') return false;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), this.healthTimeoutMs);
+    try {
+      const resp = await fetch(`http://127.0.0.1:${port}${config.healthPath}`, { signal: controller.signal });
+      return resp.ok;
+    } catch (e) {
+      return false;
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  /**
+   * Find a usable port for a daemon. Prefers the configured port; if it is
+   * occupied by a foreign process, scans forward for the next free port so the
+   * daemon still launches instead of crash-looping on EADDRINUSE.
+   * Returns { port, reassigned, adopted }.
+   */
+  async _resolveDaemonPort(config) {
+    const preferred = config.port;
+    if (await this._isPortAvailable(preferred)) {
+      return { port: preferred, reassigned: false, adopted: false };
+    }
+    // Port is busy — is it our own daemon already serving? If so, adopt it.
+    if (await this._portServesOurDaemon(config, preferred)) {
+      return { port: preferred, reassigned: false, adopted: true };
+    }
+    // Foreign occupant: scan forward for a free port.
+    for (let candidate = preferred + 1; candidate <= preferred + 50; candidate += 1) {
+      if (await this._isPortAvailable(candidate)) {
+        return { port: candidate, reassigned: true, adopted: false };
+      }
+    }
+    // Nothing free in range; fall back to the preferred port and let the
+    // daemon surface its own bind error.
+    return { port: preferred, reassigned: false, adopted: false };
+  }
+
+  /**
+   * Return a copy of `args` with the daemon's `--port` value set to `port`.
+   * Replaces an existing `--port <n>` token, or appends one when the daemon
+   * relies on its built-in default (e.g. ipfs-kit).
+   */
+  _applyPortToArgs(args, port) {
+    const next = Array.isArray(args) ? [...args] : [];
+    const idx = next.indexOf('--port');
+    if (idx !== -1 && idx + 1 < next.length) {
+      next[idx + 1] = String(port);
+    } else {
+      next.push('--port', String(port));
+    }
+    return next;
+  }
+
   _nativeDashboardStatus(daemonId) {
     const sidecar = this.dashboardSidecars.get(daemonId);
     if (!sidecar) {
@@ -1862,7 +2090,7 @@ class MCPDaemonManager extends EventEmitter {
       health_path: config.healthPath,
       health_url: `${endpoint}${config.healthPath}`,
       menu_dashboard_path: menuServer.dashboardPath || null,
-      menu_dashboard_url: menuServer.webDashboardUrl || nativeDashboardUrl || `${endpoint}/dashboard`,
+      menu_dashboard_url: nativeDashboardUrl || `${endpoint}/dashboard`,
       native_dashboard_url: nativeDashboardUrl,
       native_dashboard_health_path: config.nativeDashboard?.healthPath || null,
       native_dashboard_catalog_url: nativeDashboardCatalogUrl,
@@ -1926,7 +2154,7 @@ class MCPDaemonManager extends EventEmitter {
 
   async _dashboardTransportProbe(config, toolProtocol, mediation) {
     const health = await this.checkDaemonHealth(config.id);
-    return {
+    const result = {
       ok: health.healthy,
       fail_closed: !health.healthy,
       daemon_id: config.id,
@@ -1936,17 +2164,199 @@ class MCPDaemonManager extends EventEmitter {
       endpoint: this._daemonEndpoint(config),
       url: toolProtocol.url,
       health,
+      // Live verification fields: prove the dashboard exercised the real MCP
+      // backend rather than only checking the health endpoint.
+      live: false,
+      live_ok: false,
       expected_receipt: toolProtocol.safeProbe?.expected_receipt || `${config.id}_${toolProtocol.operation.replace('/', '_')}_probe`,
       mediation_receipt_id: mediation.mediation_receipt.receipt_id,
       mediation_receipt_cid: mediation.mediation_receipt.receipt_cid
     };
+
+    if (health.healthy) {
+      const live = await this._invokeLiveTool(config, toolProtocol.operation);
+      result.live_invocation = live;
+      result.live = !!live.live;
+      result.live_ok = !!live.ok;
+      result.live_status_code = live.status_code ?? null;
+      if (live.live) {
+        if (toolProtocol.operation === 'tools/list' || live.list_proxy) {
+          result.tool_count = live.tool_count;
+          result.tools_sample = live.tools_sample;
+        } else if (live.response_preview) {
+          result.live_response_preview = live.response_preview;
+        }
+      } else if (live.error || live.reason) {
+        result.live_error = live.error || live.reason;
+      }
+    }
+
+    return result;
+  }
+
+  _extractLiveToolList(json) {
+    if (Array.isArray(json)) {
+      return json;
+    }
+    if (Array.isArray(json?.tools)) {
+      return json.tools;
+    }
+    if (Array.isArray(json?.result?.tools)) {
+      return json.result.tools;
+    }
+    if (Array.isArray(json?.data?.tools)) {
+      return json.data.tools;
+    }
+    if (json?.tools && typeof json.tools === 'object') {
+      return Object.keys(json.tools).map((name) => ({ name }));
+    }
+    return [];
+  }
+
+  async _liveAuthToken(config, spec) {
+    if (!this._liveAuthTokens) {
+      this._liveAuthTokens = new Map();
+    }
+    const cached = this._liveAuthTokens.get(config.id);
+    if (cached && cached.expires > Date.now()) {
+      return cached.token;
+    }
+    const url = `${this._daemonEndpoint(config)}${spec.auth.loginPath}`;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 2500);
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ username: spec.auth.username, password: spec.auth.password }),
+        signal: controller.signal
+      });
+      if (!response.ok) {
+        throw new Error(`auth login http ${response.status}`);
+      }
+      const data = await response.json();
+      const token = data.access_token || data.token;
+      if (!token) {
+        throw new Error('auth login returned no access_token');
+      }
+      this._liveAuthTokens.set(config.id, { token, expires: Date.now() + 60000 });
+      return token;
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  /**
+   * Perform a real HTTP request against the underlying MCP backend and return
+   * the live result. This is what lets dashboards verify working results from
+   * the live services instead of relying on mocks or a health check alone.
+   */
+  async _invokeLiveTool(config, operation) {
+    const spec = LIVE_TOOL_INVOCATION[config.id];
+    if (!spec) {
+      return { live: false, supported: false, reason: 'no_live_invocation_spec' };
+    }
+    const opSpec = operation === 'tools/list' ? spec.toolsList : spec.toolsCall;
+    if (!opSpec) {
+      return { live: false, supported: false, reason: 'operation_not_supported' };
+    }
+    if (typeof fetch !== 'function') {
+      return { live: false, supported: true, reason: 'fetch_unavailable' };
+    }
+
+    const url = `${this._daemonEndpoint(config)}${opSpec.path}`;
+    const headers = { 'content-type': 'application/json' };
+    let body;
+
+    try {
+      if (opSpec.requiresAuth) {
+        const token = await this._liveAuthToken(config, spec);
+        headers.authorization = `Bearer ${token}`;
+      }
+      if (opSpec.method === 'POST') {
+        body = opSpec.jsonRpc
+          ? JSON.stringify({ jsonrpc: '2.0', method: 'tools/call', params: { name: opSpec.toolName, arguments: opSpec.arguments || {} }, id: 1 })
+          : JSON.stringify(opSpec.body || {});
+      }
+    } catch (error) {
+      return { live: false, supported: true, url, method: opSpec.method, ok: false, error: error.message };
+    }
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 4000);
+    const started = Date.now();
+    try {
+      const response = await fetch(url, { method: opSpec.method, headers, body, signal: controller.signal });
+      let json = null;
+      let text = null;
+      try {
+        json = await response.json();
+      } catch {
+        try {
+          text = await response.text();
+        } catch {
+          text = null;
+        }
+      }
+      const live = {
+        live: true,
+        supported: true,
+        url,
+        method: opSpec.method,
+        status_code: response.status,
+        ok: response.ok,
+        latency_ms: Date.now() - started,
+        list_proxy: !!opSpec.listProxy
+      };
+      if (operation === 'tools/list' || opSpec.listProxy) {
+        const tools = this._extractLiveToolList(json);
+        live.tool_count = tools.length;
+        live.tools_sample = tools.slice(0, 8).map((t) => (typeof t === 'string' ? t : t?.name)).filter(Boolean);
+        live.ok = response.ok && tools.length > 0;
+      } else {
+        // A JSON-RPC tools/call returns HTTP 200 even for protocol errors
+        // ({"error": ...}); only treat it as a working result when the backend
+        // returned a non-error JSON-RPC result so live_ok reflects a real call.
+        if (json && typeof json === 'object' && 'jsonrpc' in json) {
+          live.ok = response.ok && !json.error && json.result !== undefined;
+          if (json.error) {
+            live.error = typeof json.error === 'object' ? json.error.message || JSON.stringify(json.error) : String(json.error);
+          }
+        }
+        live.response_preview = json ? JSON.stringify(json).slice(0, 400) : String(text || '').slice(0, 400);
+      }
+      return live;
+    } catch (error) {
+      return {
+        live: false,
+        supported: true,
+        url,
+        method: opSpec.method,
+        ok: false,
+        error: error.name === 'AbortError' ? 'timeout' : error.message,
+        latency_ms: Date.now() - started
+      };
+    } finally {
+      clearTimeout(timeout);
+    }
   }
 
   _mcpPlusPlusStatus(daemonId, daemon = null) {
     if (daemon?.mcpPlusPlus) {
       return daemon.mcpPlusPlus;
     }
-    return this.mcpPlusPlusCapabilities.get(daemonId) || null;
+    const live = this.mcpPlusPlusCapabilities.get(daemonId);
+    if (live) {
+      return live;
+    }
+    // Fall back to the statically advertised MCP++ descriptor so dashboards and
+    // status payloads expose the daemon's MCP++ profiles/capabilities even
+    // before it has finished starting (live status is only populated once
+    // startDaemon -> _refreshMcpPlusPlusStatus runs). Without this, opening a
+    // dashboard during/just after startup showed no MCP++ profiles, which read
+    // as the MCP++ surface being unavailable.
+    const config = this.daemonConfigs.find((d) => d.id === daemonId);
+    return config ? this._launchPlanMcpPlusPlus(config) : null;
   }
 
   _launchPlanMcpPlusPlus(config) {
@@ -2188,7 +2598,7 @@ class MCPDaemonManager extends EventEmitter {
 
     if (typeof fetch === 'function') {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 1000);
+      const timeout = setTimeout(() => controller.abort(), this.healthTimeoutMs);
       try {
         const response = await fetch(result.health_url, { signal: controller.signal });
         result.status_code = response.status;
@@ -2201,6 +2611,11 @@ class MCPDaemonManager extends EventEmitter {
     }
 
     if (config.detachedLauncher && result.endpoint_ok) {
+      result.process_alive = true;
+    }
+    // Adopted daemons (an already-running instance we attached to without
+    // spawning) have no child PID, so trust the endpoint for liveness.
+    if (daemon?.adopted && result.endpoint_ok) {
       result.process_alive = true;
     }
 

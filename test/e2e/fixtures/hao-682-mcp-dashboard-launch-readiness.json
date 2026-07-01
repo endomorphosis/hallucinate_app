@@ -71,7 +71,7 @@
       "server_package": "ipfs_kit_py",
       "daemon_lineage_id": "vaios-g723-daemon-lineage-ipfs-kit-datasets-accelerate",
       "dashboard_menu_label": "IPFS Kit Dashboard",
-      "dashboard_url": "http://127.0.0.1:8004/dashboard",
+      "dashboard_url": "http://127.0.0.1:8014/dashboard",
       "health_path": "/api/mcp/status",
       "mcpplusplus_descriptor_evidence": "mcp++/profile-e-mcp-p2p",
       "tools_list_probe": {

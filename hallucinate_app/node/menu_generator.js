@@ -117,6 +117,32 @@ export class MenuGenerator {
   }
 
   /**
+   * Resolve the live (port-reassignment-aware) view of a server at click time.
+   * The application menu is built once at startup, but a daemon may later be
+   * reassigned to a different port (e.g. ipfs-kit 8014 -> 8005 when 8014 is
+   * occupied). Resolving here ensures "Open Web Dashboard" / "Open in Browser"
+   * / tool URLs always target the daemon's current endpoint instead of the
+   * stale port captured when the menu was constructed.
+   */
+  _liveServer(serverId, fallback = null) {
+    try {
+      const live = this.getMcpServers().find((server) => server.id === serverId);
+      return live || fallback;
+    } catch {
+      return fallback;
+    }
+  }
+
+  _liveToolUrl(serverId, tool) {
+    const live = this._liveServer(serverId);
+    if (!live || !Array.isArray(live.tools)) {
+      return tool.url;
+    }
+    const match = live.tools.find((candidate) => candidate.label === tool.label && candidate.url);
+    return match?.url || tool.url;
+  }
+
+  /**
    * Generate the complete application menu
    */
   generate() {
@@ -290,7 +316,8 @@ export class MenuGenerator {
         accelerator: server.accelerator,
         click: () => {
           if (this.createMCPDashboardWindow) {
-            this.createMCPDashboardWindow(`${server.displayName} MCP Dashboard`, server.webDashboardUrl);
+            const live = this._liveServer(server.id, server);
+            this.createMCPDashboardWindow(`${server.displayName} MCP Dashboard`, live.webDashboardUrl);
           }
         }
       });
@@ -299,7 +326,8 @@ export class MenuGenerator {
     submenu.push({
       label: '🌐 Open in Browser',
       click: () => {
-        shell.openExternal(server.webDashboardUrl);
+        const live = this._liveServer(server.id, server);
+        shell.openExternal(live.webDashboardUrl);
       }
     });
 
@@ -316,7 +344,7 @@ export class MenuGenerator {
           label: tool.label,
           click: () => {
             if (tool.url) {
-              shell.openExternal(tool.url);
+              shell.openExternal(this._liveToolUrl(server.id, tool));
             } else if (tool.action) {
               this.handleAction(tool.action, tool);
             }
@@ -367,7 +395,7 @@ export class MenuGenerator {
             label: tool.label,
             click: () => {
               if (tool.url) {
-                shell.openExternal(tool.url);
+                shell.openExternal(this._liveToolUrl(server.id, tool));
               } else if (tool.action) {
                 this.handleAction(tool.action, tool);
               }
@@ -381,7 +409,8 @@ export class MenuGenerator {
           label: '📊 Open Dashboard',
           click: () => {
             if (this.createMCPDashboardWindow) {
-              this.createMCPDashboardWindow(`${server.displayName} MCP Dashboard`, server.webDashboardUrl);
+              const live = this._liveServer(server.id, server);
+              this.createMCPDashboardWindow(`${server.displayName} MCP Dashboard`, live.webDashboardUrl);
             }
           }
         });

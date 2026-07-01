@@ -21,6 +21,20 @@
 fastapi>=0.100.0
 uvicorn[standard]>=0.23.0
 hypercorn>=0.16.0
+# MCP++ async runtime. The ipfs_kit_py MCP++ server path
+# (mcp/mcp_jsonrpc.serve_hypercorn -> server_bridge -> controllers) imports
+# anyio/sniffio/trio directly at module load. anyio depends on sniffio and the
+# optional trio backend is only pulled in when trio is requested, so pin all
+# three explicitly: a partial install (anyio present, sniffio/trio missing)
+# makes the kit daemon crash on import with ModuleNotFoundError and never
+# become healthy.
+anyio>=4.0.0
+sniffio>=1.3.0
+trio>=0.22.0
+# Required by FastAPI to parse multipart/form-data — the ipfs_kit_py and
+# ipfs_datasets_py dashboards expose file-upload (UploadFile/Form) endpoints, so
+# without this the FastAPI app fails to start with a RuntimeError at route build.
+python-multipart>=0.0.6
 pydantic>=2.0.0
 PyJWT>=2.8.0
 
