@@ -40,6 +40,22 @@ const DASHBOARD_RECEIPT_TASK_ID = 'HAO-680';
 const SWISSKNIFE_DASHBOARD_CONSUMER_TASK_ID = 'HAO-681';
 const DASHBOARD_CATALOG_GOAL_ID = 'VAIOS-G723';
 const DASHBOARD_LAUNCH_OBJECTIVE_IDS = ['VAIOS-G723', 'VAIOS-G724', 'VAIOS-G728'];
+const withoutFields = (value, fieldNames) => Object.fromEntries(
+  Object.entries(value).filter(([key, entry]) => !fieldNames.includes(key) && entry !== undefined)
+);
+const jsonStableCatalogValue = (value) => {
+  if (Array.isArray(value)) {
+    return value.map((entry) => jsonStableCatalogValue(entry));
+  }
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value)
+        .filter(([, entry]) => entry !== undefined)
+        .map(([key, entry]) => [key, jsonStableCatalogValue(entry)])
+    );
+  }
+  return value;
+};
 const SWISSKNIFE_DASHBOARD_CONSUMER_PROOF = {
   task_id: SWISSKNIFE_DASHBOARD_CONSUMER_TASK_ID,
   depends_on: ['HAO-677', 'HAO-680'],
@@ -483,10 +499,13 @@ const HAO_727_LAUNCH_VALIDATION_GATE = {
   supervisor_follow_up_subtasks: ['HAO-678', 'HAO-679', 'HAO-680', 'HAO-681', 'HAO-682', 'HAO-683']
 };
 const MGW_558_LAUNCH_VALIDATION_GATE = {
-  ...HAO_727_LAUNCH_VALIDATION_GATE,
+  ...withoutFields(HAO_727_LAUNCH_VALIDATION_GATE, [
+    'attempt',
+    'attempt_receipts',
+    'goal_packet',
+    'packet_goal_ids'
+  ]),
   task_id: 'MGW-558',
-  goal_packet: undefined,
-  packet_goal_ids: undefined,
   lineage_id: 'VAIOS-G723:hallucinate-mcp-dashboard-interoperability-console',
   source_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-29-mgw-558-objective-gap-7ea369464239.md',
   supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-29-mgw-558-objective-gap-7ea369464239.md',
@@ -1521,7 +1540,7 @@ class MCPDaemonManager extends EventEmitter {
   }
 
   getDashboardCapabilityCatalog() {
-    return {
+    return jsonStableCatalogValue({
       schema: DASHBOARD_CATALOG_SCHEMA,
       task_id: DASHBOARD_CATALOG_TASK_ID,
       validation_task_id: 'VAI-512',
@@ -1544,7 +1563,7 @@ class MCPDaemonManager extends EventEmitter {
       servers: [...this.daemonConfigs]
         .sort((a, b) => a.launchOrder - b.launchOrder)
         .map((config) => this._dashboardCapabilityEntry(config))
-    };
+    });
   }
 
   getDashboardCapability(daemonId) {
