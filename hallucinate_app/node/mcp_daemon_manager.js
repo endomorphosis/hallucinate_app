@@ -816,16 +816,15 @@ const LIVE_TOOL_INVOCATION = {
     toolsCall: { method: 'POST', path: '/tools/execute/tools_list_categories', requiresAuth: true, body: {} }
   },
   'ipfs-accelerate': {
-    // The accelerate MCP runtime serves the standard MCP JSON-RPC surface at
-    // /mcp (GET returns {result:{tools:[...]}}, POST accepts JSON-RPC). The old
-    // /api/mcp/tools path returns a status object (no tools) and /jsonrpc 404s,
-    // which made live tools/list report 0 tools and tools/call fail — surfacing
-    // in the app as the accelerate MCP tools "not working". Probe the real MCP
-    // endpoint so the dashboard exercises the same surface external MCP clients use.
-    toolsList: { method: 'GET', path: '/mcp/tools/list' },
+    // The accelerate MCP runtime (ipfs_accelerate_py.mcp_dashboard / the
+    // http.server fallback) serves a JSON-RPC-only MCP surface at POST /mcp:
+    // there is NO GET /mcp/tools/list (it 404s). Both tools/list and tools/call
+    // must go through JSON-RPC on /mcp so the dashboard exercises the exact same
+    // surface external MCP clients use (initialize -> tools/list -> tools/call).
+    toolsList: { method: 'POST', path: '/mcp', jsonRpc: true, rpcMethod: 'tools/list' },
     // Invoke a real, non-mutating MCP tool through the JSON-RPC tools/call
     // interface so the dashboard exercises the actual MCP tool surface.
-    toolsCall: { method: 'POST', path: '/mcp', jsonRpc: true, toolName: 'hardware_get_info', arguments: {} }
+    toolsCall: { method: 'POST', path: '/mcp', jsonRpc: true, rpcMethod: 'tools/call', toolName: 'hardware_get_info', arguments: {} }
   }
 };
 
@@ -1181,7 +1180,12 @@ class MCPDaemonManager extends EventEmitter {
     });
 
     await this._startNativeDashboardSidecar(config);
-    await this._refreshMcpPlusPlusStatus(config, daemon);
+    // MCP++ capability detection can be slow (datasets imports a ~10s trio/p2p
+    // bridge; the accelerate JSON-RPC surface can take a few seconds to mount),
+    // so kick it off without blocking startup and let convergence update the
+    // cached status in the background for every status reader.
+    this._refreshMcpPlusPlusStatus(config, daemon).catch(() => {});
+    this._scheduleMcpPlusPlusConvergence(config);
 
     return daemon;
   }
@@ -1715,6 +1719,13 @@ class MCPDaemonManager extends EventEmitter {
   async dashboardHealth(daemonId) {
     const config = this._requireDaemonConfig(daemonId);
     const health = await this.checkDaemonHealth(daemonId);
+    // Once the backend is healthy, converge the MCP++ status to the live-verified
+    // value. The initialize handshake can fail at first launch (JSON-RPC surface
+    // not mounted yet); the dashboard polls health, so re-probing here lets the
+    // MCP++ badge reflect the real negotiated capability instead of a stale value.
+    if (health.healthy) {
+      await this._maybeRefreshMcpPlusPlusStatus(daemonId);
+    }
     const entry = this._dashboardCapabilityEntry(config);
     const receipt = {
       receipt_schema: 'mcp_dashboard_health_receipt_v1',
@@ -2274,9 +2285,18 @@ class MCPDaemonManager extends EventEmitter {
         headers.authorization = `Bearer ${token}`;
       }
       if (opSpec.method === 'POST') {
-        body = opSpec.jsonRpc
-          ? JSON.stringify({ jsonrpc: '2.0', method: 'tools/call', params: { name: opSpec.toolName, arguments: opSpec.arguments || {} }, id: 1 })
-          : JSON.stringify(opSpec.body || {});
+        if (opSpec.jsonRpc) {
+          const rpcMethod = opSpec.rpcMethod || 'tools/call';
+          const rpc = { jsonrpc: '2.0', method: rpcMethod, id: 1 };
+          if (rpcMethod === 'tools/call') {
+            rpc.params = { name: opSpec.toolName, arguments: opSpec.arguments || {} };
+          } else if (opSpec.params) {
+            rpc.params = opSpec.params;
+          }
+          body = JSON.stringify(rpc);
+        } else {
+          body = JSON.stringify(opSpec.body || {});
+        }
       }
     } catch (error) {
       return { live: false, supported: true, url, method: opSpec.method, ok: false, error: error.message };
@@ -2383,25 +2403,233 @@ class MCPDaemonManager extends EventEmitter {
   }
 
   async _refreshMcpPlusPlusStatus(config, daemon) {
-    const status = this._collectMcpPlusPlusStatus(config);
-    this.mcpPlusPlusCapabilities.set(config.id, status);
-    if (daemon) {
-      daemon.mcpPlusPlus = status;
+    // Deduplicate concurrent probes for the same daemon: the initial fire-and-
+    // forget probe from startDaemon and the background convergence tick can
+    // otherwise stack multiple ~10s subprocess probes on top of each other.
+    if (!this._mcpPlusPlusProbesInFlight) {
+      this._mcpPlusPlusProbesInFlight = new Map();
     }
-    return status;
+    const existing = this._mcpPlusPlusProbesInFlight.get(config.id);
+    if (existing) {
+      return existing;
+    }
+    const promise = (async () => {
+      const status = await this._collectMcpPlusPlusStatus(config);
+      this.mcpPlusPlusCapabilities.set(config.id, status);
+      if (daemon) {
+        daemon.mcpPlusPlus = status;
+      } else {
+        const tracked = this.daemons.get(config.id);
+        if (tracked) {
+          tracked.mcpPlusPlus = status;
+        }
+      }
+      return status;
+    })();
+    this._mcpPlusPlusProbesInFlight.set(config.id, promise);
+    try {
+      return await promise;
+    } finally {
+      this._mcpPlusPlusProbesInFlight.delete(config.id);
+    }
   }
 
-  _collectMcpPlusPlusStatus(config) {
+  /**
+   * Re-run the MCP++ capability probe only when it hasn't already resolved to a
+   * live/available state. This keeps the dashboard health poll cheap (no repeated
+   * subprocess/handshake once verified) while still letting a slow-to-mount
+   * MCP++ surface converge to its real status.
+   */
+  async _maybeRefreshMcpPlusPlusStatus(daemonId) {
+    const current = this.mcpPlusPlusCapabilities.get(daemonId);
+    if (current && (current.live_verified === true || current.available === true)) {
+      return current;
+    }
+    const config = this._requireDaemonConfig(daemonId);
+    return this._refreshMcpPlusPlusStatus(config, this.daemons.get(daemonId)).catch(() => current);
+  }
+
+  /**
+   * The accelerate MCP++ JSON-RPC surface can take several seconds after the
+   * health endpoint reports ready to finish mounting (heavy model-manager init).
+   * Re-probe the live `initialize` handshake in the background until it verifies
+   * so EVERY status reader (getAll status payload, dashboard health poll, launch
+   * receipts) converges to the real MCP++ capability instead of the initial
+   * unverified value. Timers are unref'd so they never keep the process alive.
+   */
+  _scheduleMcpPlusPlusConvergence(config, { maxAttempts = 20, delayMs = 2000 } = {}) {
+    const current = this.mcpPlusPlusCapabilities.get(config.id);
+    if (current && current.available === true) {
+      return;
+    }
+    // kit exposes no MCP++ surface; only accelerate (live initialize handshake)
+    // and datasets (async trio/p2p bridge probe) resolve asynchronously.
+    if (config.id !== 'ipfs-accelerate' && config.id !== 'ipfs-datasets') {
+      return;
+    }
+    let attempts = 0;
+    const tick = async () => {
+      attempts += 1;
+      const daemon = this.daemons.get(config.id);
+      if (!daemon || daemon.status === 'stopped') {
+        return;
+      }
+      const status = await this._refreshMcpPlusPlusStatus(config, daemon).catch(() => null);
+      if (status && status.available === true) {
+        return;
+      }
+      if (attempts < maxAttempts) {
+        const timer = setTimeout(tick, delayMs);
+        if (typeof timer.unref === 'function') {
+          timer.unref();
+        }
+      }
+    };
+    const first = setTimeout(tick, delayMs);
+    if (typeof first.unref === 'function') {
+      first.unref();
+    }
+  }
+
+  /**
+   * Run a short Python capability probe asynchronously (never blocking the event
+   * loop) and resolve its stdout/stderr. MCP++ bridge detection imports a heavy
+   * trio/p2p stack that can take ~10s, so a synchronous probe with a short cap
+   * both blocked the UI and got killed before producing output.
+   */
+  _spawnCapabilityProbe(config, script, timeoutMs) {
+    return new Promise((resolve) => {
+      let stdout = '';
+      let stderr = '';
+      let settled = false;
+      const finish = (result) => {
+        if (!settled) {
+          settled = true;
+          resolve(result);
+        }
+      };
+      let child;
+      try {
+        child = spawn(config.command, ['-c', script], {
+          cwd: config.cwd,
+          env: this._buildDaemonEnv(config)
+        });
+      } catch (error) {
+        finish({ stdout: '', stderr: error.message });
+        return;
+      }
+      const timer = setTimeout(() => {
+        try {
+          child.kill('SIGKILL');
+        } catch {
+          /* already exited */
+        }
+        finish({ stdout: '', stderr: `capability probe timed out after ${timeoutMs}ms` });
+      }, timeoutMs);
+      if (typeof timer.unref === 'function') {
+        timer.unref();
+      }
+      child.stdout.on('data', (chunk) => { stdout += chunk.toString(); });
+      child.stderr.on('data', (chunk) => { stderr += chunk.toString(); });
+      child.on('error', (error) => { clearTimeout(timer); finish({ stdout: '', stderr: error.message }); });
+      child.on('close', () => { clearTimeout(timer); finish({ stdout, stderr }); });
+    });
+  }
+
+  /**
+   * Speak the newer MCP++ protocol to the live backend: perform the JSON-RPC
+   * `initialize` handshake (advertising the MCP++ experimental capabilities) and
+   * read back the server's negotiated capabilities + serverInfo. This is what
+   * lets the JS SDK verify MCP++ support against the running server instead of
+   * statically assuming it. Tries the canonical /mcp endpoint first, then the
+   * legacy /jsonrpc alias.
+   */
+  async _probeMcpPlusPlusInitialize(config) {
+    if (typeof fetch !== 'function') {
+      return null;
+    }
+    const experimental = {};
+    for (const profile of ACCELERATE_MCPPLUSPLUS_PROFILES) {
+      experimental[profile] = true;
+    }
+    const endpoint = this._daemonEndpoint(config);
+    const payload = JSON.stringify({
+      jsonrpc: '2.0',
+      id: 1,
+      method: 'initialize',
+      params: { protocolVersion: '2024-11-05', capabilities: { experimental } }
+    });
+    for (const path of ['/mcp', '/jsonrpc']) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 3000);
+      try {
+        const response = await fetch(`${endpoint}${path}`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: payload,
+          signal: controller.signal
+        });
+        if (!response.ok) {
+          continue;
+        }
+        const json = await response.json().catch(() => null);
+        const result = json && json.result;
+        if (!result) {
+          continue;
+        }
+        const serverInfo = result.serverInfo || {};
+        const negotiated = (result.capabilities && result.capabilities.experimental) || {};
+        return {
+          endpoint_path: path,
+          server_name: serverInfo.name || null,
+          server_version: serverInfo.version || null,
+          protocol_version: result.protocolVersion || null,
+          negotiated_capabilities: Object.keys(negotiated),
+          is_mcpplusplus: serverInfo.name === 'mcp++'
+        };
+      } catch {
+        /* try the next candidate endpoint */
+      } finally {
+        clearTimeout(timeout);
+      }
+    }
+    return null;
+  }
+
+  async _collectMcpPlusPlusStatus(config) {
     if (config.id === 'ipfs-accelerate') {
+      const handshake = await this._probeMcpPlusPlusInitialize(config);
+      if (handshake && handshake.is_mcpplusplus) {
+        return {
+          provider: 'ipfs_accelerate_py.mcp_dashboard.jsonrpc.initialize',
+          available: true,
+          state: 'available',
+          live_verified: true,
+          supports_profile_negotiation: true,
+          mode: 'optional_additive',
+          profiles: [...ACCELERATE_MCPPLUSPLUS_PROFILES],
+          active_profile: ACCELERATE_MCPPLUSPLUS_PROFILES[0],
+          protocol_version: handshake.protocol_version,
+          server_info: { name: handshake.server_name, version: handshake.server_version },
+          negotiated_capabilities: handshake.negotiated_capabilities,
+          handshake_endpoint: handshake.endpoint_path,
+          message: `Live MCP++ initialize handshake negotiated with ${handshake.server_name} ${handshake.server_version || ''}`.trim()
+        };
+      }
+      // The handshake did not confirm a live mcp++ server (still starting, or the
+      // running variant lacks the JSON-RPC surface). Advertise the profiles the
+      // runtime supports, but do NOT claim live availability — this replaces the
+      // previous hardcoded available:true "mock" with the real, unverified state.
       return {
         provider: 'ipfs_accelerate_py.mcp_server.server.get_unified_supported_profiles',
-        available: true,
-        state: 'available',
+        available: false,
+        state: 'degraded',
+        live_verified: false,
         supports_profile_negotiation: true,
         mode: 'optional_additive',
         profiles: [...ACCELERATE_MCPPLUSPLUS_PROFILES],
         active_profile: ACCELERATE_MCPPLUSPLUS_PROFILES[0],
-        message: 'Unified MCP++ profiles are advertised by the accelerate MCP runtime.'
+        message: 'MCP++ initialize handshake did not confirm a live mcp++ server; showing advertised profiles only.'
       };
     }
 
@@ -2438,12 +2666,11 @@ class MCPDaemonManager extends EventEmitter {
       ].join('\n');
 
       try {
-        const result = spawnSync(config.command, ['-c', probeScript], {
-          cwd: config.cwd,
-          env: this._buildDaemonEnv(config),
-          encoding: 'utf8',
-          timeout: 4000
-        });
+        // The datasets MCP++ bridge imports a trio/p2p stack that can take ~10s
+        // to load, so this probe runs async (never blocking the event loop) with
+        // a timeout well above that import cost. A 4s cap previously killed it,
+        // making the live bridge report as unavailable ("empty capability probe").
+        const result = await this._spawnCapabilityProbe(config, probeScript, 25000);
 
         const raw = String(result.stdout || '').trim();
         if (raw) {

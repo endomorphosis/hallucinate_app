@@ -123,6 +123,36 @@ test.describe('MCP Live Backend Verification', () => {
     });
   }
 
+  test('MCP++ protocol — accelerate negotiates a live mcp++ initialize handshake', async () => {
+    const daemonId = 'ipfs-accelerate';
+    const health = await waitForHealthy(manager, daemonId, HEALTH_TIMEOUT_MS);
+    expect(health?.healthy, `${daemonId} did not become healthy: ${JSON.stringify(health)}`).toBe(true);
+
+    // The JS SDK must speak the newer MCP++ protocol: perform the JSON-RPC
+    // `initialize` handshake against the live backend and read back serverInfo +
+    // the negotiated experimental capabilities (not a static assumption).
+    const config = manager._requireDaemonConfig(daemonId);
+    const handshake = await manager._probeMcpPlusPlusInitialize(config);
+    expect(handshake, 'accelerate MCP++ initialize handshake returned nothing').toBeTruthy();
+    expect(handshake.is_mcpplusplus, `serverInfo.name was ${handshake?.server_name}`).toBe(true);
+    expect(handshake.server_name, 'MCP++ serverInfo.name').toBe('mcp++');
+    expect(handshake.protocol_version, 'MCP++ handshake protocolVersion').toBeTruthy();
+
+    // The dashboard capability entry must reflect the LIVE-verified MCP++ status,
+    // replacing the previous hardcoded available:true assumption. The dashboard
+    // reaches this via its periodic health poll, so drive the same path here.
+    await manager.dashboardHealth(daemonId);
+    const entry = manager.getDashboardCapability(daemonId);
+    expect(entry?.mcpplusplus?.available, 'accelerate MCP++ not marked available').toBe(true);
+    expect(entry?.mcpplusplus?.live_verified, 'accelerate MCP++ not live-verified').toBe(true);
+    expect(entry?.mcpplusplus?.server_info?.name, 'accelerate MCP++ server_info.name').toBe('mcp++');
+
+    liveResults.push({ daemonId, mcpplusplus: entry.mcpplusplus, handshake });
+    console.log(
+      `mcp++ ${daemonId}: server=${handshake.server_name}@${handshake.server_version} proto=${handshake.protocol_version} caps=${JSON.stringify(handshake.negotiated_capabilities)}`,
+    );
+  });
+
   test('at least one MCP server returns working live results', async () => {
     const working = liveResults.filter((r) => r.toolsList?.ok && (r.toolsList?.toolCount || 0) > 0);
     expect(working.length, `No live backend returned working tool results: ${JSON.stringify(liveResults)}`).toBeGreaterThan(0);

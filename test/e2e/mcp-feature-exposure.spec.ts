@@ -127,19 +127,24 @@ async function waitForDaemonStatus(window: Page, daemonId: string, expectedStatu
   throw new Error(`Daemon ${daemonId} did not reach status ${expectedStatus}`);
 }
 
-async function waitForDaemonMcpPlusPlus(window: Page, daemonId: string, attempts = 20, delayMs = 500) {
+async function waitForDaemonMcpPlusPlus(window: Page, daemonId: string, attempts = 45, delayMs = 1000) {
+  let last: any = null;
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     const status = await window.evaluate(async (id) => {
       return window?.electronAPI?.daemon?.getAll?.().then((all: any) => all?.[id]?.mcpPlusPlus ?? null);
     }, daemonId);
 
-    if (status) {
+    last = status;
+    // The MCP++ status is resolved by a live probe (accelerate initialize
+    // handshake / datasets trio-p2p bridge import) that converges a few seconds
+    // after the daemon is healthy, so wait for the verified available state.
+    if (status && status.available === true) {
       return status;
     }
     await window.waitForTimeout(delayMs);
   }
 
-  throw new Error(`Daemon ${daemonId} did not expose MCP++ telemetry within timeout`);
+  throw new Error(`Daemon ${daemonId} did not report available MCP++ telemetry within timeout (last: ${JSON.stringify(last)})`);
 }
 
 async function waitForTextInSelector(window: Page, selector: string, matcher: RegExp, attempts = 20, delayMs = 500) {
@@ -537,6 +542,9 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
   });
 
   test('daemon status payload exposes MCP++ capability telemetry for accelerate and datasets', async () => {
+    // MCP++ status is resolved by live probes that converge ~10s after health
+    // (accelerate initialize handshake + datasets trio/p2p bridge import).
+    test.setTimeout(120000);
     await waitForDaemonHealthy(window, 'ipfs-datasets');
     await waitForDaemonHealthy(window, 'ipfs-accelerate');
     await waitForDaemonMcpPlusPlus(window, 'ipfs-datasets');
