@@ -26,6 +26,90 @@
     'ipfs-accelerate': { port: 3003, toolsListPath: '/mcp/tools/list', toolsCallPath: '/mcp/tools/call' },
   };
 
+  // The four hierarchical facade meta-tools. These are plumbing, not real
+  // domain tools; their own inputSchema is real (category/tool params) so they
+  // never need — and must never trigger — a lazy per-tool schema fetch.
+  const META_TOOL_NAMES = new Set([
+    'tools_list_categories',
+    'tools_list_tools',
+    'tools_get_schema',
+    'tools_dispatch',
+  ]);
+
+  // Split a flat hierarchical tool name ("<category>.<tool>") on the FIRST dot,
+  // mirroring the servers' str.partition(".") flat-dispatch (so "data.load.csv"
+  // -> {category:"data", tool:"load.csv"}). Returns null for a bare (dot-less)
+  // or malformed name so callers can skip the schema fetch.
+  function splitDottedToolName(name) {
+    if (typeof name !== 'string') return null;
+    const dot = name.indexOf('.');
+    if (dot <= 0 || dot >= name.length - 1) return null;
+    return { category: name.slice(0, dot), tool: name.slice(dot + 1) };
+  }
+
+  // Unwrap a tools/call response envelope (JSON-RPC result and/or MCP
+  // CallToolResult) down to the raw tool payload. Prefers structuredContent,
+  // falls back to parsing the first text content block.
+  function unwrapToolResultEnvelope(data) {
+    let obj = data;
+    if (obj && typeof obj === 'object' && obj.result !== undefined &&
+        (obj.jsonrpc !== undefined || obj.id !== undefined)) {
+      obj = obj.result;
+    }
+    if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+      if (obj.structuredContent && typeof obj.structuredContent === 'object') {
+        return obj.structuredContent;
+      }
+      if (Array.isArray(obj.content)) {
+        const textBlock = obj.content.find(
+          (c) => c && c.type === 'text' && typeof c.text === 'string');
+        if (textBlock) {
+          try { return JSON.parse(textBlock.text); } catch { /* not JSON */ }
+        }
+      }
+    }
+    return obj;
+  }
+
+  // Locate an object-schema (one carrying a non-empty `properties` map) inside
+  // an unwrapped get-schema payload. The get-schema meta-tool returns
+  // {status,schema} on ipfs_datasets_py; other servers may return the schema
+  // object directly or under inputSchema/input_schema.
+  function locateSchema(payload) {
+    if (!payload || typeof payload !== 'object') return null;
+    const candidates = [
+      payload.schema, payload, payload.inputSchema, payload.input_schema];
+    for (const c of candidates) {
+      if (c && typeof c === 'object' && c.properties &&
+          typeof c.properties === 'object' &&
+          Object.keys(c.properties).length > 0) {
+        return c;
+      }
+    }
+    return null;
+  }
+
+  function extractSchemaFromToolResult(data) {
+    return locateSchema(unwrapToolResultEnvelope(data));
+  }
+
+  // Fetch a single tool's full input schema via the get-schema meta-tool over
+  // REST tools/call. Sends {category, tool} — the arg shape BOTH the
+  // ipfs_kit_py server (accepts category/tool OR a bare/dotted name) and the
+  // ipfs_datasets_py server (strictly requires category/tool) accept, so it is
+  // portable across every hierarchical MCP++ backend. `fetchFn(url, options)`
+  // is injected so this is unit-testable without a DOM.
+  async function fetchToolSchemaVia(fetchFn, url, category, tool) {
+    const resp = await fetchFn(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: 'tools_get_schema', arguments: { category, tool } }),
+    });
+    const data = await resp.json();
+    return extractSchemaFromToolResult(data);
+  }
+
   class ToolInvocationPanel {
     constructor(container, options = {}) {
       this.container = container;
@@ -191,7 +275,7 @@
       }
     }
 
-    onToolSelected(toolName) {
+    async onToolSelected(toolName) {
       this.selectedTool = this.tools.find(t => t.name === toolName) || null;
       const invokeBtn = this.container.querySelector('.tip-invoke-btn');
       const argsContainer = this.container.querySelector('.tip-arguments');
@@ -214,20 +298,68 @@
         schemaInfo.style.display = 'none';
       }
 
-      // Auto-generate form from inputSchema
+      // Auto-generate the form from the inline inputSchema when it carries real
+      // fields. Hierarchical <category>.<tool> tools ship a stub schema
+      // ({type:object}, no properties) so tools/list stays small, so lazily
+      // fetch the real schema via the get-schema meta-tool and build the form
+      // from that instead of dropping the user into a blank JSON textarea.
       const schema = this.selectedTool.inputSchema;
       if (schema && schema.properties) {
         argsContainer.innerHTML = this.generateFormFromSchema(schema);
-      } else {
-        argsContainer.innerHTML = `
-          <label style="font-size: 12px; font-weight: 600; color: #475569; display: block; margin-bottom: 4px;">
-            Arguments (JSON)
-          </label>
-          <textarea class="tip-raw-args" style="
-            width: 100%; height: 80px; padding: 8px; border: 1px solid #cbd5e0;
-            border-radius: 4px; font-family: monospace; font-size: 12px; resize: vertical;
-          " placeholder='{}'>{}</textarea>
-        `;
+        return;
+      }
+
+      if (this.shouldFetchSchema(this.selectedTool)) {
+        argsContainer.innerHTML =
+          '<div style="font-size:12px;color:#94a3b8;">Loading tool schema…</div>';
+        const fetched = await this.fetchToolSchema(this.selectedTool.name);
+        // The selection may have changed while the fetch was in flight.
+        if (!this.selectedTool || this.selectedTool.name !== toolName) return;
+        if (fetched && fetched.properties) {
+          this.selectedTool.inputSchema = fetched;
+          argsContainer.innerHTML = this.generateFormFromSchema(fetched);
+          return;
+        }
+      }
+
+      argsContainer.innerHTML = this.rawArgsHtml();
+    }
+
+    rawArgsHtml() {
+      return `
+        <label style="font-size: 12px; font-weight: 600; color: #475569; display: block; margin-bottom: 4px;">
+          Arguments (JSON)
+        </label>
+        <textarea class="tip-raw-args" style="
+          width: 100%; height: 80px; padding: 8px; border: 1px solid #cbd5e0;
+          border-radius: 4px; font-family: monospace; font-size: 12px; resize: vertical;
+        " placeholder='{}'>{}</textarea>
+      `;
+    }
+
+    // A tool needs a lazy schema fetch only when it is a hierarchical
+    // <category>.<tool> tool (dotted, not one of the meta-tools) whose inline
+    // schema lacked usable properties.
+    shouldFetchSchema(tool) {
+      if (!tool || META_TOOL_NAMES.has(tool.name)) return false;
+      return splitDottedToolName(tool.name) !== null;
+    }
+
+    async fetchToolSchema(toolName) {
+      if (!this._schemaCache) this._schemaCache = {};
+      if (this._schemaCache[toolName]) return this._schemaCache[toolName];
+      const parts = splitDottedToolName(toolName);
+      if (!parts) return null;
+      try {
+        const url = `http://127.0.0.1:${this.port}${this.config.toolsCallPath}`;
+        const schema = await fetchToolSchemaVia(
+          (u, o) => this.fetchWithTimeout(u, o), url, parts.category, parts.tool);
+        if (schema && schema.properties) {
+          this._schemaCache[toolName] = schema;
+        }
+        return schema;
+      } catch {
+        return null;
       }
     }
 
@@ -425,12 +557,31 @@
     }
   }
 
-  // Expose globally
+// Expose globally (browser only)
+if (typeof window !== 'undefined') {
   window.ToolInvocationPanel = ToolInvocationPanel;
+}
 
+// Auto-initialize panels with data attributes (browser only)
+if (typeof document !== 'undefined') {
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
   }
+}
+
+// Export pure helpers for headless unit tests (Node/CommonJS). Guarded so the
+// browser IIFE is unaffected.
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    ToolInvocationPanel,
+    META_TOOL_NAMES,
+    splitDottedToolName,
+    unwrapToolResultEnvelope,
+    locateSchema,
+    extractSchemaFromToolResult,
+    fetchToolSchemaVia,
+  };
+}
 })();
