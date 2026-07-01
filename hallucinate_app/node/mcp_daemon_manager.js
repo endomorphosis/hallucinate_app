@@ -13,6 +13,15 @@ import crypto from 'crypto';
 import { getReporter, ErrorSource, ErrorLevel } from './github_issue_reporter.js';
 import { ControlSurfaceInvocationGate } from './control_surface_invocation.js';
 import { mcpServers } from './menu_config.js';
+// Shared, dependency-free MCP tool-catalog helper. The dashboards load this same
+// file as a classic browser <script> (window.MCPToolCatalog); importing it here
+// for its side effect registers globalThis.MCPToolCatalog so this main-process
+// live-probe telemetry computes the SAME true hierarchical tool count the unified
+// tool explorer shows, instead of a naive tools/list length that (a) miscounts
+// the 4 facade meta-tools and (b) under-reports reduced servers whose real total
+// lives in tools_list_categories. See node/views/components/mcp-tool-catalog.js.
+import './views/components/mcp-tool-catalog.js';
+const MCPToolCatalog = (typeof globalThis !== 'undefined' && globalThis.MCPToolCatalog) || null;
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 const DEFAULT_HEALTH_INTERVAL_MS = 30000;
@@ -813,7 +822,13 @@ const LIVE_TOOL_INVOCATION = {
   'ipfs-datasets': {
     auth: { loginPath: '/auth/login', username: 'hallucinate-app-dashboard', password: 'live-backend-probe' },
     toolsList: { method: 'GET', path: '/tools/list', requiresAuth: true },
-    toolsCall: { method: 'POST', path: '/tools/execute/tools_list_categories', requiresAuth: true, body: {} }
+    toolsCall: { method: 'POST', path: '/tools/execute/tools_list_categories', requiresAuth: true, body: {} },
+    // The datasets server exposes the hierarchical facade: GET /tools/list
+    // returns only the 4 meta-tools (a "reduced" surface), so the true total
+    // lives in tools_list_categories. When the live tools/list probe comes back
+    // reduced, follow up with this call once to recover the real count — exactly
+    // as the unified tool explorer does for the visible report.
+    categoriesProbe: { method: 'POST', path: '/tools/execute/tools_list_categories', requiresAuth: true, body: {} }
   },
   'ipfs-accelerate': {
     // The accelerate MCP runtime (ipfs_accelerate_py.mcp_dashboard / the
@@ -2224,6 +2239,72 @@ class MCPDaemonManager extends EventEmitter {
     return [];
   }
 
+  /**
+   * Compute the TRUE tool catalog for a live tools/list response using the same
+   * shared helper the dashboards use. Excludes the 4 hierarchical facade
+   * meta-tools, honors an inline total/categories the server reports, and sums
+   * per-category counts from a fetched tools_list_categories payload.
+   *
+   * Falls back to a meta-tool-excluding flat count if the shared helper is not
+   * available, so the daemon manager never depends on the browser bundle being
+   * importable.
+   */
+  _summarizeLiveTools(listJson, categoriesJson) {
+    if (MCPToolCatalog && typeof MCPToolCatalog.summarize === 'function') {
+      return MCPToolCatalog.summarize(listJson, categoriesJson);
+    }
+    const META = new Set(['tools_list_categories', 'tools_list_tools', 'tools_get_schema', 'tools_dispatch']);
+    const domainTools = this._extractLiveToolList(listJson).filter((t) => {
+      const name = typeof t === 'string' ? t : t?.name;
+      return name ? !META.has(name) : true;
+    });
+    return {
+      total: domainTools.length,
+      domainTools,
+      metaTools: [],
+      categories: [],
+      hierarchical: false,
+      reduced: false,
+      source: 'fallback_flat'
+    };
+  }
+
+  /**
+   * Fetch a server's tools_list_categories once so a reduced hierarchical
+   * tools/list (meta-tools only) can be resolved to its true total. Uses the
+   * daemon's `categoriesProbe` spec; returns the parsed JSON or null on any
+   * failure (the caller keeps the reduced summary in that case).
+   */
+  async _fetchLiveCategories(config, spec) {
+    const probe = spec && spec.categoriesProbe;
+    if (!probe || typeof fetch !== 'function') {
+      return null;
+    }
+    const url = `${this._daemonEndpoint(config)}${probe.path}`;
+    const headers = { 'content-type': 'application/json' };
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 4000);
+    try {
+      if (probe.requiresAuth) {
+        headers.authorization = `Bearer ${await this._liveAuthToken(config, spec)}`;
+      }
+      const response = await fetch(url, {
+        method: probe.method || 'POST',
+        headers,
+        body: probe.method === 'GET' ? undefined : JSON.stringify(probe.body || {}),
+        signal: controller.signal
+      });
+      if (!response.ok) {
+        return null;
+      }
+      return await response.json();
+    } catch {
+      return null;
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
   async _liveAuthToken(config, spec) {
     if (!this._liveAuthTokens) {
       this._liveAuthTokens = new Map();
@@ -2329,10 +2410,36 @@ class MCPDaemonManager extends EventEmitter {
         list_proxy: !!opSpec.listProxy
       };
       if (operation === 'tools/list' || opSpec.listProxy) {
-        const tools = this._extractLiveToolList(json);
-        live.tool_count = tools.length;
-        live.tools_sample = tools.slice(0, 8).map((t) => (typeof t === 'string' ? t : t?.name)).filter(Boolean);
-        live.ok = response.ok && tools.length > 0;
+        const rawTools = this._extractLiveToolList(json);
+        let summary = this._summarizeLiveTools(json);
+        // A reduced hierarchical server returns only the 4 facade meta-tools in
+        // tools/list; its true total lives in tools_list_categories. Fetch that
+        // once (mirroring the unified tool explorer) so this telemetry matches
+        // the visible tool report instead of under-reporting.
+        if (summary.reduced && spec && spec.categoriesProbe) {
+          const categoriesJson = await this._fetchLiveCategories(config, spec);
+          if (categoriesJson) {
+            summary = this._summarizeLiveTools(json, categoriesJson);
+          }
+        }
+        live.tool_count = summary.total;
+        live.tool_count_source = summary.source;
+        const domainNames = (summary.domainTools || [])
+          .map((t) => (typeof t === 'string' ? t : t?.name)).filter(Boolean);
+        const categoryNames = (summary.categories || [])
+          .map((c) => c && c.name).filter(Boolean);
+        let sample = domainNames.length ? domainNames : categoryNames;
+        if (!sample.length) {
+          // Last resort: fall back to whatever the raw list held (may be the
+          // meta-tools on a reduced server we couldn't augment).
+          sample = rawTools.map((t) => (typeof t === 'string' ? t : t?.name)).filter(Boolean);
+        }
+        live.tools_sample = sample.slice(0, 8);
+        // Preserve the existing "the list endpoint works" gate: the tools/list
+        // call returned at least one descriptor (a reduced meta-only surface
+        // still proves the endpoint is live). Keeping this independent of the
+        // true count means the categories follow-up can never flip live_ok.
+        live.ok = response.ok && rawTools.length > 0;
       } else {
         // A JSON-RPC tools/call returns HTTP 200 even for protocol errors
         // ({"error": ...}); only treat it as a working result when the backend
