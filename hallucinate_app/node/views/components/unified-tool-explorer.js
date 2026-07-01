@@ -146,62 +146,26 @@
       const statusBar = this.container.querySelector('.ute-daemon-status');
       const countEl = this.container.querySelector('.ute-count');
       this.allTools = [];
+      this.daemonTotals = {};
       statusBar.innerHTML = '';
 
       await this.resolveLivePorts();
 
       const results = await Promise.allSettled(
-        ENDPOINTS.map(async (ep) => {
-          const badge = document.createElement('span');
-          badge.style.cssText = `
-            display: inline-flex; align-items: center; gap: 4px;
-            padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
-            background: ${ep.color}15; color: ${ep.color}; border: 1px solid ${ep.color}40;
-          `;
-          badge.innerHTML = `<span style="width:6px;height:6px;border-radius:50%;background:#94a3b8;"></span> ${ep.name}`;
-          statusBar.appendChild(badge);
-
-          try {
-            const ctrl = new AbortController();
-            setTimeout(() => ctrl.abort(), 5000);
-            const resp = await fetch(`http://127.0.0.1:${ep.port}${ep.listPath}`, { signal: ctrl.signal });
-            
-            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-            const data = await resp.json();
-            
-            let tools = [];
-            if (data && data.result && Array.isArray(data.result.tools)) tools = data.result.tools;
-            else if (Array.isArray(data.tools)) tools = data.tools;
-            else if (Array.isArray(data)) tools = data;
-            else if (data.endpoints) {
-              // Handsfree returns endpoint list
-              tools = Object.entries(data).map(([k, v]) => ({
-                name: k,
-                description: typeof v === 'string' ? v : JSON.stringify(v),
-              }));
-            }
-
-            // Tag each tool with its source daemon
-            tools.forEach(t => { t._source = ep.name; t._color = ep.color; });
-            
-            // Update badge to green
-            badge.querySelector('span').style.background = '#10b981';
-            badge.innerHTML = `<span style="width:6px;height:6px;border-radius:50%;background:#10b981;"></span> ${ep.name} (${tools.length})`;
-            
-            return tools;
-          } catch (e) {
-            badge.querySelector('span').style.background = '#ef4444';
-            badge.innerHTML = `<span style="width:6px;height:6px;border-radius:50%;background:#ef4444;"></span> ${ep.name} (offline)`;
-            return [];
-          }
-        })
+        ENDPOINTS.map((ep) => this.discoverEndpoint(ep, statusBar))
       );
 
-      results.forEach(r => {
-        if (r.status === 'fulfilled') this.allTools.push(...r.value);
+      let grandTotal = 0;
+      results.forEach((r) => {
+        if (r.status === 'fulfilled' && r.value) {
+          this.allTools.push(...r.value.tools);
+          this.daemonTotals[r.value.name] = r.value.total;
+          grandTotal += r.value.total;
+        }
       });
 
       // Inject extended tool categories from handsfree backend
+      let extendedAdded = 0;
       EXTENDED_CATEGORIES.forEach(cat => {
         cat.tools.forEach(toolName => {
           // Only add if not already discovered from a daemon
@@ -213,12 +177,140 @@
               _color: cat.color,
               _category: cat.name,
             });
+            extendedAdded += 1;
           }
         });
       });
 
-      countEl.textContent = `${this.allTools.length} tools found`;
+      // The grand total honors each server's TRUE tool surface (hierarchical
+      // servers report the real count via tools_list_categories, and the four
+      // plumbing meta-tools are excluded), not the raw tools/list length.
+      const total = grandTotal + extendedAdded;
+      countEl.textContent = `${total} tool${total === 1 ? '' : 's'} found`;
       this.applyFilters();
+    }
+
+    /**
+     * Discover one endpoint, returning { name, total, tools }. `total` is the
+     * TRUE tool count (hierarchical-aware, meta-tools excluded); `tools` are the
+     * displayable entries. Degrades to the legacy flat count if the catalog
+     * helper is unavailable so the panel never breaks.
+     */
+    async discoverEndpoint(ep, statusBar) {
+      const Catalog = (typeof window !== 'undefined' && window.MCPToolCatalog) || null;
+      const badge = document.createElement('span');
+      badge.style.cssText = `
+        display: inline-flex; align-items: center; gap: 4px;
+        padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
+        background: ${ep.color}15; color: ${ep.color}; border: 1px solid ${ep.color}40;
+      `;
+      badge.innerHTML = `<span style="width:6px;height:6px;border-radius:50%;background:#94a3b8;"></span> ${ep.name}`;
+      statusBar.appendChild(badge);
+
+      try {
+        const data = await this.fetchJson(`http://127.0.0.1:${ep.port}${ep.listPath}`, undefined, 5000);
+
+        // Non-MCP endpoints (Handsfree) surface an endpoint map, not tools.
+        if (!ep.callPath) {
+          let tools = [];
+          if (data && data.endpoints) {
+            tools = Object.entries(data).map(([k, v]) => ({
+              name: k,
+              description: typeof v === 'string' ? v : JSON.stringify(v),
+            }));
+          } else if (Array.isArray(data && data.tools)) {
+            tools = data.tools;
+          }
+          this.tagTools(tools, ep);
+          this.setBadge(badge, ep, tools.length, true);
+          return { name: ep.name, total: tools.length, tools };
+        }
+
+        let summary = Catalog ? Catalog.summarize(data) : this.legacySummary(data);
+        let tools = (summary.domainTools || []).slice();
+
+        // A hierarchical server that returned only the reduced meta-tool set
+        // hides its true count behind tools_list_categories — fetch it so the
+        // report is correct (current full-flat servers skip this path).
+        if (Catalog && summary.reduced && ep.callPath) {
+          const catData = await this.callMeta(ep, 'tools_list_categories', { include_count: true });
+          if (catData) {
+            summary = Catalog.summarize(data, catData);
+            tools = (summary.categories || [])
+              .filter((c) => c && c.name)
+              .map((c) => ({
+                name: c.name,
+                description: `${c.count == null ? 'category' : c.count + ' tool' + (c.count === 1 ? '' : 's')} · dispatch via tools_dispatch`,
+                _category: c.name,
+                _isCategory: true,
+              }));
+          }
+        }
+
+        this.tagTools(tools, ep);
+        this.setBadge(badge, ep, summary.total, true);
+        return { name: ep.name, total: summary.total, tools };
+      } catch (e) {
+        this.setBadge(badge, ep, 0, false);
+        return { name: ep.name, total: 0, tools: [] };
+      }
+    }
+
+    tagTools(tools, ep) {
+      tools.forEach((t) => { t._source = ep.name; t._color = ep.color; });
+    }
+
+    setBadge(badge, ep, count, ok) {
+      const dot = ok ? '#10b981' : '#ef4444';
+      const label = ok ? `${ep.name} (${count})` : `${ep.name} (offline)`;
+      badge.innerHTML = `<span style="width:6px;height:6px;border-radius:50%;background:${dot};"></span> ${label}`;
+    }
+
+    async fetchJson(url, options, timeoutMs) {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), timeoutMs || 5000);
+      try {
+        const resp = await fetch(url, Object.assign({ signal: ctrl.signal }, options || {}));
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        return await resp.json();
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+
+    /** POST a meta-tool over /mcp/tools/call ({name, arguments}) — the same
+     *  contract the tool invocation panel uses. Returns null on any failure. */
+    async callMeta(ep, name, args) {
+      try {
+        return await this.fetchJson(
+          `http://127.0.0.1:${ep.port}${ep.callPath}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, arguments: args || {} }),
+          },
+          5000
+        );
+      } catch (_e) {
+        return null;
+      }
+    }
+
+    /** Fallback when window.MCPToolCatalog is unavailable: flat count that at
+     *  least excludes the four hierarchical meta-tools. */
+    legacySummary(data) {
+      const META = ['tools_list_categories', 'tools_list_tools', 'tools_get_schema', 'tools_dispatch'];
+      let raw = [];
+      if (data && data.result && Array.isArray(data.result.tools)) raw = data.result.tools;
+      else if (Array.isArray(data && data.tools)) raw = data.tools;
+      else if (Array.isArray(data)) raw = data;
+      const domainTools = raw.filter((t) => {
+        const n = typeof t === 'string' ? t : (t && t.name);
+        return n && META.indexOf(n) === -1;
+      });
+      const inline = Number(data && (data.total || data.total_tools || data.tool_count));
+      const total = Number.isFinite(inline) && inline > 0 ? inline : domainTools.length;
+      return { total, domainTools, metaTools: [], categories: [], hierarchical: raw.length !== domainTools.length, reduced: false, source: 'legacy' };
     }
 
     applyFilters() {
@@ -253,9 +345,14 @@
       let html = '';
       for (const [source, tools] of Object.entries(grouped)) {
         const color = tools[0]._color || '#6b7280';
+        const trueTotal = (this.daemonTotals && this.daemonTotals[source] != null)
+          ? this.daemonTotals[source]
+          : tools.length;
+        const shown = tools.length;
+        const countLabel = (trueTotal !== shown) ? `${shown} shown · ${trueTotal} total` : `${trueTotal}`;
         html += `<div style="margin-bottom: 16px;">
           <div style="font-size: 11px; font-weight: 700; color: ${color}; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">
-            ${source} (${tools.length})
+            ${source} (${countLabel})
           </div>`;
         
         tools.forEach(t => {
