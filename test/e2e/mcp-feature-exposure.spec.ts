@@ -548,7 +548,7 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
     // peer_registry + bootstrap as missing requirements, which the Hallucinate
     // app surfaced as "MCP++ servers/tools not working".
     const datasetsBridge = await (async () => {
-      for (let attempt = 0; attempt < 20; attempt += 1) {
+      for (let attempt = 0; attempt < 80; attempt += 1) {
         const status = await window.evaluate(async () =>
           window?.electronAPI?.daemon?.getAll?.().then((all: any) => all?.['ipfs-datasets']?.mcpPlusPlus ?? null)
         );
@@ -682,11 +682,12 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
 
     // Independently invoke the SAME MCP tool the dashboard uses (JSON-RPC tools/call),
     // so we can confirm the page mirrors real results from the MCP tool interface.
-    const resp = await window.request.post(`${ACCELERATE_BASE}/jsonrpc`, {
+    const resp = await window.request.post(`${ACCELERATE_BASE}/mcp`, {
       data: { jsonrpc: '2.0', method: 'tools/call', params: { name: 'hardware_get_info', arguments: {} }, id: 1 },
     });
     expect(resp.ok()).toBe(true);
-    const hw = (await resp.json())?.result || {};
+    const result = (await resp.json())?.result || {};
+    const hw = result.structuredContent || result;
     expect(typeof hw?.cpu?.count, 'live MCP hardware_get_info cpu.count').toBe('number');
     expect(typeof hw?.memory?.total_gb, 'live MCP hardware_get_info memory.total_gb').toBe('number');
 

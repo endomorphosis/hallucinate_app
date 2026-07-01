@@ -620,14 +620,14 @@
     async function updateMetrics() {
       const base = dashboardCapability?.endpoint || 'http://127.0.0.1:3003';
       try {
-        const resp = await fetch(`${base}/jsonrpc`, {
+        const resp = await fetch(`${base}/mcp`, {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({ jsonrpc: '2.0', method: 'tools/call', params: { name: 'hardware_get_info', arguments: {} }, id: 1 })
         }).catch(() => null);
         if (resp && resp.ok) {
           const payload = await resp.json();
-          const hw = payload?.result || {};
+          const hw = payload?.result?.structuredContent || payload?.result || {};
           if (hw.cpu && hw.cpu.count !== undefined) {
             document.getElementById('models-loaded').textContent = String(hw.cpu.count);
           }
