@@ -385,12 +385,26 @@ const MGW_563_LAUNCH_GATE_RECEIPT = path.join(
   'discovery',
   '2026-07-01-mgw-563-launch-playwright-validation-gate.md'
 );
+const MGW_563_ATTEMPT_2_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'meta_glasses_display_widgets',
+  'discovery',
+  '2026-07-01-mgw-563-attempt-2-launch-playwright-validation-gate.md'
+);
 const MGW_563_HALLUCINATE_LAUNCH_GATE_RECEIPT = path.join(
   REPO_ROOT,
   'data',
   'hallucinate_multimodal_control',
   'discovery',
   '2026-07-01-mgw-563-mcp-dashboard-launch-gate.md'
+);
+const MGW_563_HALLUCINATE_ATTEMPT_2_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'hallucinate_multimodal_control',
+  'discovery',
+  '2026-07-01-mgw-563-attempt-2-validation.md'
 );
 const MGW_OBJECTIVE_HEAP = path.join(
   REPO_ROOT,
@@ -2603,7 +2617,9 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
   test('binds MGW-563 objective gap evidence to the VAIOS-G723 dashboard launch Playwright gate', () => {
     const receipt = JSON.parse(fs.readFileSync(MGW_563_LAUNCH_GATE_FIXTURE, 'utf8'));
     const launchGateReceipt = fs.readFileSync(MGW_563_LAUNCH_GATE_RECEIPT, 'utf8');
+    const attempt2LaunchGateReceipt = fs.readFileSync(MGW_563_ATTEMPT_2_LAUNCH_GATE_RECEIPT, 'utf8');
     const hallucinateLaunchGateReceipt = fs.readFileSync(MGW_563_HALLUCINATE_LAUNCH_GATE_RECEIPT, 'utf8');
+    const hallucinateAttempt2Receipt = fs.readFileSync(MGW_563_HALLUCINATE_ATTEMPT_2_RECEIPT, 'utf8');
     const objectiveGap = fs.readFileSync(MGW_563_OBJECTIVE_GAP_RECEIPT, 'utf8');
     const objectiveHeap = fs.readFileSync(MGW_OBJECTIVE_HEAP, 'utf8');
     const readinessDoc = fs.readFileSync(LAUNCH_READINESS_DOC, 'utf8');
@@ -2617,6 +2633,7 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       goal_id: 'VAIOS-G723',
       lineage_id: 'VAIOS-G723:hallucinate-mcp-dashboard-interoperability-console',
       evidence_term: 'launch Playwright validation gate',
+      attempt: 2,
       source_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-01-mgw-563-objective-gap-7ea369464239.md',
       launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-01-mgw-563-launch-playwright-validation-gate.md',
       hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-01-mgw-563-mcp-dashboard-launch-gate.md',
@@ -2625,6 +2642,10 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       catalog_source: catalog.generated_by,
       catalog_generated_by: catalog.generated_by
     });
+    expect(receipt.attempt_receipts).toEqual([
+      'data/meta_glasses_display_widgets/discovery/2026-07-01-mgw-563-attempt-2-launch-playwright-validation-gate.md',
+      'data/hallucinate_multimodal_control/discovery/2026-07-01-mgw-563-attempt-2-validation.md'
+    ]);
     expect(receipt.playwright_specs).toEqual(expect.arrayContaining([
       'hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts',
       'hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts'
@@ -2655,6 +2676,8 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       launch_gate_receipt: receipt.launch_gate_receipt,
       hallucinate_backlog_receipt: receipt.hallucinate_backlog_receipt,
       receipt_fixture: receipt.receipt_fixture,
+      attempt: receipt.attempt,
+      attempt_receipts: receipt.attempt_receipts,
       child_goals: receipt.child_goals,
       follow_up_subtasks: receipt.follow_up_subtasks,
       required_evidence: receipt.required_evidence
@@ -2678,7 +2701,9 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     for (const term of receipt.required_evidence) {
       expect(objectiveGap).toContain(term);
       expect(launchGateReceipt).toContain(term);
+      expect(attempt2LaunchGateReceipt).toContain(term);
       expect(hallucinateLaunchGateReceipt).toContain(term);
+      expect(hallucinateAttempt2Receipt).toContain(term);
       expect(objectiveHeap).toContain(term);
       expect(readinessDoc).toContain(term);
     }
@@ -2687,10 +2712,14 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     expect(objectiveHeap).toContain(receipt.receipt_fixture);
     expect(objectiveHeap).toContain(receipt.launch_gate_receipt);
     expect(objectiveHeap).toContain(receipt.hallucinate_backlog_receipt);
+    expect(objectiveHeap).toContain(receipt.attempt_receipts[0]);
+    expect(objectiveHeap).toContain(receipt.attempt_receipts[1]);
     expect(readinessDoc).toContain('MGW-563');
     expect(readinessDoc).toContain(receipt.receipt_fixture);
     expect(readinessDoc).toContain(receipt.launch_gate_receipt);
     expect(readinessDoc).toContain(receipt.hallucinate_backlog_receipt);
+    expect(readinessDoc).toContain(receipt.attempt_receipts[0]);
+    expect(readinessDoc).toContain(receipt.attempt_receipts[1]);
   });
 
   function validateDashboardLaunchGateReceipt(expected: {
