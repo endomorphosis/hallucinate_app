@@ -4,7 +4,7 @@
  * The desktop (Electron) build runs the Python backends (ipfs_kit_py,
  * ipfs_datasets_py, ipfs_accelerate_py) and the SwissKnife static server
  * locally, and the dashboards reach them via hardcoded localhost URLs
- * (REST gateway on :8080, MCP++ JSON-RPC on :8004, SwissKnife static on
+ * (REST gateway on :8080, MCP++ JSON-RPC on :8014, SwissKnife static on
  * :8765) or, in a couple of places, via window.electronAPI IPC.
  *
  * On mobile there is no local Python runtime and no Electron, so those
@@ -63,7 +63,7 @@
 
   // Backend localhost ports used by the bundled dashboards.
   var REST_PORTS = ['8080']; // /v1/ipfs/* REST gateway (handsfreePort default)
-  var MCP_PORTS = ['8004']; // MCP++ JSON-RPC
+  var MCP_PORTS = ['8014']; // MCP++ JSON-RPC
   var STATIC_PORTS = ['8765']; // SwissKnife static server -> the bundled app origin
   var LOCAL_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0'];
 

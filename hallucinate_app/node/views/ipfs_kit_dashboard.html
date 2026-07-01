@@ -90,9 +90,9 @@
         <h2 style="margin: 0 0 0.75rem 0; font-size: 1.2rem; color: #2d3748;">MCP Server Status</h2>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem;">
           <div><strong>Status:</strong> <span id="server-status">Checking...</span></div>
-          <div><strong>Port:</strong> 8004</div>
+          <div><strong>Port:</strong> 8014</div>
           <div><strong>Health:</strong> <span id="health-status">Unknown</span></div>
-          <div><strong>Endpoint:</strong> <span id="endpoint-status">http://127.0.0.1:8004</span></div>
+          <div><strong>Endpoint:</strong> <span id="endpoint-status">http://127.0.0.1:8014</span></div>
           <div><strong>Package:</strong> <span id="package-status">ipfs_kit_py</span></div>
           <div><strong>MCP++:</strong> <span id="mcpplusplus-status">Checking...</span></div>
         </div>
@@ -146,7 +146,7 @@
         <iframe
           id="package-dashboard-frame"
           title="IPFS Kit Native Dashboard"
-          src="http://127.0.0.1:8004/dashboard"
+          src="http://127.0.0.1:8014/dashboard"
           style="width: 100%; min-height: 720px; border: 1px solid #cbd5e0; border-radius: 8px; background: white;"
         ></iframe>
       </div>
@@ -167,7 +167,7 @@
       // ipfs_kit_py serves its native dashboard at <endpoint>/dashboard on the
       // same port as the MCP endpoint (no separate sidecar). Always prefer the
       // LIVE endpoint so the embedded frame follows port reassignment (e.g.
-      // 8004 -> 8005 when 8004 is occupied) instead of pinning the stale
+      // 8014 -> 8005 when 8014 is occupied) instead of pinning the stale
       // build-time port advertised in native_dashboard_url / menu_dashboard_url.
       const base = liveEndpoint || entry?.endpoint;
       if (base) {
@@ -244,12 +244,12 @@
         if (kitStatus && kitStatus.status === 'running') {
           serverStatus.textContent = 'Running';
           serverStatus.style.color = '#2f855a';
-          endpointStatus.textContent = kitStatus.endpoint || dashboardCapability?.endpoint || 'http://127.0.0.1:8004';
+          endpointStatus.textContent = kitStatus.endpoint || dashboardCapability?.endpoint || 'http://127.0.0.1:8014';
           syncNativeDashboardFrame(dashboardCapability, kitStatus.endpoint);
         } else {
           serverStatus.textContent = 'Stopped';
           serverStatus.style.color = '#c53030';
-          endpointStatus.textContent = dashboardCapability?.endpoint || 'http://127.0.0.1:8004';
+          endpointStatus.textContent = dashboardCapability?.endpoint || 'http://127.0.0.1:8014';
         }
 
         const healthState = await daemonApi.dashboardHealth(DAEMON_ID);
@@ -386,7 +386,7 @@
 
   <!-- Tool Invocation Panel -->
   <div style="padding: 1.25rem; border-top: 1px solid #e2e8f0;">
-    <div id="tool-invocation-panel" data-daemon="ipfs-kit" data-port="8004"></div>
+    <div id="tool-invocation-panel" data-daemon="ipfs-kit" data-port="8014"></div>
   </div>
 
   </div><!-- close flex container -->

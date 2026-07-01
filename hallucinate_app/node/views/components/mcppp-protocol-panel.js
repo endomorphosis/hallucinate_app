@@ -21,7 +21,7 @@
   ];
 
   const DAEMONS = [
-    { id: 'ipfs-kit', name: 'IPFS Kit', port: 8004 },
+    { id: 'ipfs-kit', name: 'IPFS Kit', port: 8014 },
     { id: 'ipfs-datasets', name: 'IPFS Datasets', port: 3002 },
     { id: 'ipfs-accelerate', name: 'IPFS Accelerate', port: 3003 },
   ];

@@ -119,7 +119,7 @@ export class MenuGenerator {
   /**
    * Resolve the live (port-reassignment-aware) view of a server at click time.
    * The application menu is built once at startup, but a daemon may later be
-   * reassigned to a different port (e.g. ipfs-kit 8004 -> 8005 when 8004 is
+   * reassigned to a different port (e.g. ipfs-kit 8014 -> 8005 when 8014 is
    * occupied). Resolving here ensures "Open Web Dashboard" / "Open in Browser"
    * / tool URLs always target the daemon's current endpoint instead of the
    * stale port captured when the menu was constructed.

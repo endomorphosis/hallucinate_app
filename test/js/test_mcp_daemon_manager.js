@@ -98,7 +98,7 @@ async function runTests() {
   
   // Test 7: Ports configured
   console.log('\nTest 7: Port assignments');
-  const expectedPorts = [8004, 3002, 3003];
+  const expectedPorts = [8014, 3002, 3003];
   const actualPorts = manager.daemonConfigs.map(c => c.port);
   const portsMatch = expectedPorts.every(port => actualPorts.includes(port));
   
@@ -119,7 +119,7 @@ async function runTests() {
   const launchPlanById = new Map(launchPlan.map(entry => [entry.daemon_id, entry]));
   const launchPlanOk =
     launchPlan.length === 3 &&
-    launchPlanById.get('ipfs-kit')?.endpoint === 'http://127.0.0.1:8004' &&
+    launchPlanById.get('ipfs-kit')?.endpoint === 'http://127.0.0.1:8014' &&
     launchPlanById.get('ipfs-kit')?.health_path === '/api/mcp/status' &&
     launchPlanById.get('ipfs-kit')?.rpc_path === '/mcp/tools/call' &&
     launchPlanById.get('ipfs-datasets')?.endpoint === 'http://127.0.0.1:3002' &&
@@ -155,8 +155,8 @@ async function runTests() {
     );
   });
   const catalogSpecificsOk =
-    catalogById.get('ipfs-kit')?.port === 8004 &&
-    catalogById.get('ipfs-kit')?.menu_dashboard_url === 'http://127.0.0.1:8004/dashboard' &&
+    catalogById.get('ipfs-kit')?.port === 8014 &&
+    catalogById.get('ipfs-kit')?.menu_dashboard_url === 'http://127.0.0.1:8014/dashboard' &&
     catalogById.get('ipfs-datasets')?.native_dashboard_catalog_url === 'http://127.0.0.1:8899/api/hallucinate/dashboard-catalog' &&
     catalogById.get('ipfs-datasets')?.mcpplusplus?.mode === 'optional_bridge' &&
     catalogById.get('ipfs-accelerate')?.mcpplusplus?.profiles?.includes('mcp++/profile-e-mcp-p2p');

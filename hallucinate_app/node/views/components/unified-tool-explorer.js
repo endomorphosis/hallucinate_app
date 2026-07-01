@@ -13,7 +13,7 @@
   'use strict';
 
   const ENDPOINTS = [
-    { name: 'IPFS Kit', port: 8004, listPath: '/mcp/tools/list', callPath: '/mcp/tools/call', color: '#3b82f6', category: 'storage' },
+    { name: 'IPFS Kit', port: 8014, listPath: '/mcp/tools/list', callPath: '/mcp/tools/call', color: '#3b82f6', category: 'storage' },
     { name: 'IPFS Datasets', port: 3002, listPath: '/mcp/tools/list', callPath: '/mcp/tools/call', color: '#10b981', category: 'datasets' },
     { name: 'IPFS Accelerate', port: 3003, listPath: '/mcp/tools/list', callPath: '/mcp/tools/call', color: '#f59e0b', category: 'accelerate' },
     { name: 'Handsfree API', port: 8080, listPath: '/v1/ipfs/status', callPath: null, color: '#8b5cf6', category: 'backend' },
@@ -112,7 +112,7 @@
     /**
      * Override the static ENDPOINTS ports with the live ports reported by the
      * daemon manager. A daemon whose configured port was occupied may have been
-     * reassigned (e.g. 8004 -> 8005), so we must discover/invoke on the live port.
+     * reassigned (e.g. 8014 -> 8005), so we must discover/invoke on the live port.
      */
     async resolveLivePorts() {
       try {

@@ -19,7 +19,7 @@ class BackendConnector {
     const settings = this._loadSettings();
     this.ports = {
       handsfree: options.handsfreePort || settings.handsfreePort || 8080,
-      ipfsKit: options.ipfsKitPort || settings.ipfsKitPort || 8004,
+      ipfsKit: options.ipfsKitPort || settings.ipfsKitPort || 8014,
       ipfsDatasets: options.ipfsDatasetsPort || settings.ipfsDatasetsPort || 3002,
       ipfsAccelerate: options.ipfsAcceleratePort || settings.ipfsAcceleratePort || 3003,
       swissknife: options.swissKnifePort || settings.swissKnifePort || 8765,

@@ -52,7 +52,7 @@
   ];
 
   // Default REST/MCP ports the backends listen on.
-  var DEFAULT_REST_PORTS = [8080, 8000, 8004];
+  var DEFAULT_REST_PORTS = [8080, 8000, 8014];
 
   // DNS-over-HTTPS resolvers (a WebView cannot do raw DNS/UDP, so we resolve
   // libp2p `_dnsaddr.*` TXT records over HTTPS).
@@ -372,7 +372,7 @@
       // raw swarm (tcp/4001, quic, wss libp2p) addrs simply fail health checks.
       var candidates = [];
       maddrs.forEach(function (ma) {
-        if (/\/(https?|tls|wss)(\/|$)/.test(ma) || /\/(tcp|udp)\/(8080|8000|8004|443|80)(\/|$)/.test(ma)) {
+        if (/\/(https?|tls|wss)(\/|$)/.test(ma) || /\/(tcp|udp)\/(8080|8000|8014|443|80)(\/|$)/.test(ma)) {
           extractUrls(ma, []).forEach(function (u) {
             candidates.push({ url: u, method: 'dnsaddr' });
           });

@@ -13,8 +13,8 @@ const electronDescribe = hasElectronDisplay ? test.describe : test.describe.skip
 
 // Daemon ports mirror the env-configurable defaults in mcp_daemon_manager.js /
 // menu_config.js so this suite verifies the live backends even when a default
-// port is taken (e.g. 8004 in use on a dev box) by running with MCP_KIT_PORT set.
-const KIT_PORT = Number(process.env.MCP_KIT_PORT) || 8004;
+// port is taken (e.g. 8014 in use on a dev box) by running with MCP_KIT_PORT set.
+const KIT_PORT = Number(process.env.MCP_KIT_PORT) || 8014;
 const DATASETS_PORT = Number(process.env.MCP_DATASETS_PORT) || 3002;
 const ACCELERATE_PORT = Number(process.env.MCP_ACCELERATE_PORT) || 3003;
 const DATASETS_DASHBOARD_PORT = Number(process.env.MCP_DATASETS_DASHBOARD_PORT) || 8899;
@@ -190,10 +190,10 @@ async function waitForWindowUrl(electronApp: ElectronApplication, matcher: RegEx
 /**
  * Resolve each daemon's LIVE endpoint and native web-dashboard URL from the
  * running app (launch plan + daemon status). The daemon manager reassigns a
- * port when the configured one is occupied (e.g. ipfs-kit 8004 -> 8005), and
+ * port when the configured one is occupied (e.g. ipfs-kit 8014 -> 8005), and
  * every UI/menu surface follows that live port, so tests must assert against
  * the advertised endpoint rather than a hardcoded literal. In a clean
- * environment these resolve back to the configured 8004/3002/3003.
+ * environment these resolve back to the configured 8014/3002/3003.
  */
 async function liveDaemonEndpoints(window: Page): Promise<Record<string, { endpoint: string; webDashboardUrl: string }>> {
   return window.evaluate(async () => {

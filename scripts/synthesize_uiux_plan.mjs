@@ -174,7 +174,7 @@ function generateImprovementPlan(auditReport, matrix, analyses) {
     priority: 'P0',
     category: 'Backend Connectivity',
     title: 'Add unified health status bar to all dashboards',
-    description: 'Every dashboard should show real-time connectivity status for all 3 MCP servers (ipfs-kit:8004, ipfs-datasets:3002, ipfs-accelerate:3003) with color-coded indicators.',
+    description: 'Every dashboard should show real-time connectivity status for all 3 MCP servers (ipfs-kit:8014, ipfs-datasets:3002, ipfs-accelerate:3003) with color-coded indicators.',
     implementation: 'Create a shared `<health-status-bar>` web component that polls /api/mcp/status on each server. Include it at the top of every dashboard HTML file.',
     effort: 'Medium',
   });
@@ -358,7 +358,7 @@ All dashboards should share these reusable components:
 | Surface | Backend URL | Purpose |
 |---------|------------|---------|
 | Health Bar | \`http://127.0.0.1:8080/v1/ipfs/status\` | Unified health aggregation |
-| IPFS Kit Tools | \`http://127.0.0.1:8004/mcp/tools/list\` | Available kit operations |
+| IPFS Kit Tools | \`http://127.0.0.1:8014/mcp/tools/list\` | Available kit operations |
 | Datasets Tools | \`http://127.0.0.1:3002/datasets/list\` | Available dataset operations |
 | Accelerate Tools | \`http://127.0.0.1:3003/models/list\` | Available accelerate operations |
 | Capabilities | \`http://127.0.0.1:8080/v1/ipfs/capabilities\` | Hardware profile |

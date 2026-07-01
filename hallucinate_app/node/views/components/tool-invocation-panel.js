@@ -8,11 +8,11 @@
  * 4. Displays the JSON response and invocation receipt
  *
  * Usage:
- *   <div id="tool-invocation-panel" data-daemon="ipfs-kit" data-port="8004"></div>
+ *   <div id="tool-invocation-panel" data-daemon="ipfs-kit" data-port="8014"></div>
  *   <script src="components/tool-invocation-panel.js"></script>
  *
  * Or create programmatically:
- *   ToolInvocationPanel.create(container, { daemon: 'ipfs-kit', port: 8004 });
+ *   ToolInvocationPanel.create(container, { daemon: 'ipfs-kit', port: 8014 });
  */
 
 (function () {
@@ -21,7 +21,7 @@
   const REQUEST_TIMEOUT_MS = 15000;
 
   const DAEMON_CONFIGS = {
-    'ipfs-kit': { port: 8004, toolsListPath: '/mcp/tools/list', toolsCallPath: '/mcp/tools/call' },
+    'ipfs-kit': { port: 8014, toolsListPath: '/mcp/tools/list', toolsCallPath: '/mcp/tools/call' },
     'ipfs-datasets': { port: 3002, toolsListPath: '/mcp/tools/list', toolsCallPath: '/mcp/tools/call' },
     'ipfs-accelerate': { port: 3003, toolsListPath: '/mcp/tools/list', toolsCallPath: '/mcp/tools/call' },
   };
@@ -30,7 +30,7 @@
     constructor(container, options = {}) {
       this.container = container;
       this.daemon = options.daemon || container.dataset.daemon || 'ipfs-kit';
-      this.port = options.port || parseInt(container.dataset.port) || DAEMON_CONFIGS[this.daemon]?.port || 8004;
+      this.port = options.port || parseInt(container.dataset.port) || DAEMON_CONFIGS[this.daemon]?.port || 8014;
       this.config = DAEMON_CONFIGS[this.daemon] || DAEMON_CONFIGS['ipfs-kit'];
       this.tools = [];
       this.selectedTool = null;

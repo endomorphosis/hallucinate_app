@@ -14,11 +14,11 @@ const hasElectronDisplay = Boolean(process.env.DISPLAY || process.env.WAYLAND_DI
 const electronDescribe = hasElectronDisplay ? test.describe : test.describe.skip;
 
 // The published catalog fixtures snapshot the DEFAULT daemon ports. When a port
-// is overridden (e.g. MCP_KIT_PORT to dodge a busy 8004 locally) the generated
+// is overridden (e.g. MCP_KIT_PORT to dodge a busy 8014 locally) the generated
 // catalog legitimately reports the override; normalize back to default ports so
 // the parity check validates schema/content, not the environment's port choice.
 const PORT_NORMALIZATION: Array<[number, number]> = [
-  [Number(process.env.MCP_KIT_PORT) || 8004, 8004],
+  [Number(process.env.MCP_KIT_PORT) || 8014, 8014],
   [Number(process.env.MCP_DATASETS_PORT) || 3002, 3002],
   [Number(process.env.MCP_ACCELERATE_PORT) || 3003, 3003],
   [Number(process.env.MCP_SWISSKNIFE_PORT) || 3004, 3004],
@@ -726,7 +726,7 @@ electronDescribe('MCP Dashboard Interoperability - VAIOS-G723 Electron UI wiring
       expect(server.swissknife_consumer).toContain('Swissknife');
     }
 
-    expect((servers.get('ipfs-kit') as any).endpoint).toBe('http://127.0.0.1:8004');
+    expect((servers.get('ipfs-kit') as any).endpoint).toBe('http://127.0.0.1:8014');
     expect((servers.get('ipfs-datasets') as any).native_dashboard_catalog_url).toBe(
       'http://127.0.0.1:8899/api/hallucinate/dashboard-catalog'
     );

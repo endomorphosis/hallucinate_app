@@ -12,11 +12,11 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 /**
  * Daemon ports are environment-configurable so the app keeps working when a
- * default port is already taken (e.g. a dev machine where 8004 is in use).
+ * default port is already taken (e.g. a dev machine where 8014 is in use).
  * These mirror the defaults/overrides used by mcp_daemon_manager.js so the menu
  * URLs always point at the port the daemon actually binds.
  */
-const KIT_PORT = Number(process.env.MCP_KIT_PORT) || 8004;
+const KIT_PORT = Number(process.env.MCP_KIT_PORT) || 8014;
 const DATASETS_PORT = Number(process.env.MCP_DATASETS_PORT) || 3002;
 const ACCELERATE_PORT = Number(process.env.MCP_ACCELERATE_PORT) || 3003;
 const SWISSKNIFE_PORT = Number(process.env.MCP_SWISSKNIFE_PORT) || 3004;

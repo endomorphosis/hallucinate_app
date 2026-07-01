@@ -2025,7 +2025,7 @@ const createMCPDashboardWindow = (title, url, width = 1200, height = 800) => {
 
 // Create windows for specific MCP dashboards
 const createIPFSKitDashboard = () => {
-  return createMCPDashboardWindow('IPFS Kit MCP Dashboard', 'http://127.0.0.1:8004/dashboard');
+  return createMCPDashboardWindow('IPFS Kit MCP Dashboard', 'http://127.0.0.1:8014/dashboard');
 };
 
 const createIPFSDatasetsDashboard = () => {
