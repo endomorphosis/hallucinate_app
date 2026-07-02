@@ -1330,6 +1330,33 @@
         "test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses",
         "test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts"
       ]
+    },
+    {
+      "task_id": "MGW-564",
+      "goal_id": "VAIOS-G724",
+      "goal_packet": "goal_packet/launch/hallucinate_app/44dceea6bc53",
+      "packet_goal_ids": [
+        "VAIOS-G724",
+        "VAIOS-G728"
+      ],
+      "evidence_term": "launch Playwright validation gate",
+      "playwright_specs": [
+        "hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts",
+        "hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts"
+      ],
+      "validation_command": "npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts",
+      "supervisor_gap_receipt": "data/meta_glasses_display_widgets/discovery/2026-07-02-mgw-564-objective-gap-3e00ad2a0074.md",
+      "launch_gate_receipt": "data/meta_glasses_display_widgets/discovery/2026-07-02-mgw-564-launch-playwright-validation-gate.md",
+      "receipt_fixture": "hallucinate_app/test/e2e/fixtures/mgw-564-mcp-dashboard-launch-gate.json",
+      "gate_state": "gate_closed_by_playwright_validation",
+      "packet_sibling_goal_id": "VAIOS-G728",
+      "validation_commands": [
+        "npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts",
+        "test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses",
+        "test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts"
+      ],
+      "source_gap_receipt": "data/meta_glasses_display_widgets/discovery/2026-07-02-mgw-564-objective-gap-3e00ad2a0074.md",
+      "failure_rule": "Any missing MGW-564 launch Playwright validation gate, catalog, daemon health, tools/list, tools/call, Swissknife consumer, or packet sibling evidence remains supervisor-fed launch work for VAIOS-G724 and VAIOS-G728."
     }
   ],
   "dashboard_interoperability_validation_gate": {
