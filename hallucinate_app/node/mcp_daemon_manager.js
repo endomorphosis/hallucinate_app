@@ -675,6 +675,17 @@ const MGW_563_LAUNCH_VALIDATION_GATE = {
   ],
   failure_rule: 'Any MGW-563 dashboard catalog, UI wiring, mediated tools/list, mediated tools/call, Swissknife consumer, backend validation, or Playwright failure remains supervisor-generated follow-up work for VAIOS-G723.'
 };
+const VAI_550_LAUNCH_VALIDATION_GATE = {
+  ...MGW_558_LAUNCH_VALIDATION_GATE,
+  task_id: 'VAI-550',
+  source_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-02-vai-550-objective-gap-7ea369464239.md',
+  supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-02-vai-550-objective-gap-7ea369464239.md',
+  launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-02-vai-550-mcp-dashboard-launch-gate.md',
+  hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-02-vai-550-mcp-dashboard-launch-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-550-mcp-dashboard-launch-gate.json',
+  merge_retry_budget_repairs: ['VAI-551', 'VAI-552'],
+  failure_rule: 'Any dashboard catalog, UI wiring, mediated tools/list, mediated tools/call, Swissknife consumer, backend validation, or Playwright failure remains supervisor-generated follow-up work for VAIOS-G723.'
+};
 const MGW_555_LAUNCH_VALIDATION_GATE = {
   ...MGW_533_LAUNCH_VALIDATION_GATE,
   task_id: 'MGW-555',
@@ -712,7 +723,8 @@ const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   MGW_561_LAUNCH_VALIDATION_GATE,
   MGW_562_LAUNCH_VALIDATION_GATE,
   MGW_563_LAUNCH_VALIDATION_GATE,
-  MGW_555_LAUNCH_VALIDATION_GATE
+  MGW_555_LAUNCH_VALIDATION_GATE,
+  VAI_550_LAUNCH_VALIDATION_GATE
 ];
 const DAEMON_LAUNCH_GATE_TASK_ID = 'MGW-535';
 const DAEMON_LAUNCH_GATE_VAI_TASK_ID = 'VAI-519';
