@@ -608,6 +608,14 @@ const MGW_555_LAUNCH_VALIDATION_GATE = {
     'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
   ]
 };
+const MGW_564_LAUNCH_VALIDATION_GATE = {
+  ...MGW_555_LAUNCH_VALIDATION_GATE,
+  task_id: 'MGW-564',
+  supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-02-mgw-564-objective-gap-3e00ad2a0074.md',
+  launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-02-mgw-564-launch-playwright-validation-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-564-mcp-dashboard-launch-gate.json',
+  failure_rule: 'Any missing MGW-564 launch Playwright validation gate, catalog, daemon health, tools/list, tools/call, Swissknife consumer, external IPFS MCP backend, or packet sibling evidence remains supervisor-fed launch work for VAIOS-G724 and VAIOS-G728.'
+};
 const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   MGW_533_LAUNCH_VALIDATION_GATE,
   MGW_546_LAUNCH_VALIDATION_GATE,
@@ -630,7 +638,8 @@ const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   MGW_561_LAUNCH_VALIDATION_GATE,
   MGW_562_LAUNCH_VALIDATION_GATE,
   MGW_563_LAUNCH_VALIDATION_GATE,
-  MGW_555_LAUNCH_VALIDATION_GATE
+  MGW_555_LAUNCH_VALIDATION_GATE,
+  MGW_564_LAUNCH_VALIDATION_GATE
 ];
 const DAEMON_LAUNCH_GATE_TASK_ID = 'MGW-535';
 const DAEMON_LAUNCH_GATE_VAI_TASK_ID = 'VAI-519';
