@@ -286,6 +286,21 @@ const VAI_548_LAUNCH_GATE_RECEIPT = path.join(
   'discovery',
   '2026-07-02-vai-548-mcp-dashboard-launch-gate.md'
 );
+const VAI_554_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-554-mcp-dashboard-launch-gate.json');
+const VAI_554_OBJECTIVE_GAP_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-07-02-vai-554-objective-gap-3e00ad2a0074.md'
+);
+const VAI_554_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-07-02-vai-554-mcp-dashboard-launch-gate.md'
+);
 const VAI_543_OBJECTIVE_GAP_RECEIPT = path.join(
   REPO_ROOT,
   'data',
@@ -1101,6 +1116,48 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     expect(launchReceipt).toContain('Task: VAI-548');
     expect(launchReceipt).toContain('hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts');
     expect(launchReceipt).toContain('swissknife/scripts/test-mcp-dashboard-consumer.cjs');
+  });
+
+  test('binds the VAI-554 objective gap to the dashboard launch Playwright gate', () => {
+    const manager = new MCPDaemonManager();
+    const catalog = manager.getDashboardCapabilityCatalog();
+    const gate = catalog.launch_validation_gates.find((candidate: any) => candidate.task_id === 'VAI-554') as any;
+    const fixture = JSON.parse(fs.readFileSync(VAI_554_LAUNCH_GATE_FIXTURE, 'utf8'));
+    const gapReceipt = fs.readFileSync(VAI_554_OBJECTIVE_GAP_RECEIPT, 'utf8');
+    const launchReceipt = fs.readFileSync(VAI_554_LAUNCH_GATE_RECEIPT, 'utf8');
+
+    expect(gate).toBeTruthy();
+    expect(fixture).toEqual(gate);
+    expect(gate.goal_id).toBe('VAIOS-G724');
+    expect(gate.packet_goal_ids).toEqual(['VAIOS-G724', 'VAIOS-G728']);
+    expect(gate.source_gap_receipt).toBe('data/virtual_ai_os/discovery/2026-07-02-vai-554-objective-gap-3e00ad2a0074.md');
+    expect(gate.launch_gate_receipt).toBe('data/virtual_ai_os/discovery/2026-07-02-vai-554-mcp-dashboard-launch-gate.md');
+    expect(gate.required_backends).toEqual(['ipfs_kit_py', 'ipfs_datasets_py', 'ipfs_accelerate_py']);
+    expect(gate.required_evidence).toEqual(expect.arrayContaining(MGW_533_REQUIRED_EVIDENCE));
+    expect(gate.validation_commands).toEqual(expect.arrayContaining([
+      'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
+      'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
+      'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
+    ]));
+    expect(gapReceipt).toContain('Goal id: VAIOS-G724');
+    expect(gapReceipt).toContain('launch Playwright validation gate');
+    expect(launchReceipt).toContain('Task: VAI-554');
+    expect(launchReceipt).toContain('hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts');
+    expect(launchReceipt).toContain('swissknife/scripts/test-mcp-dashboard-consumer.cjs');
+  });
+
+  test('closes the VAI-554 objective gap with the current Hallucinate launch Playwright validation gate', () => {
+    validateDashboardLaunchGateReceipt({
+      fixturePath: VAI_554_LAUNCH_GATE_FIXTURE,
+      launchGateReceiptPath: VAI_554_LAUNCH_GATE_RECEIPT,
+      objectiveGapPath: VAI_554_OBJECTIVE_GAP_RECEIPT,
+      taskId: 'VAI-554',
+      sourceGapReceipt: 'data/virtual_ai_os/discovery/2026-07-02-vai-554-objective-gap-3e00ad2a0074.md',
+      launchGateReceipt: 'data/virtual_ai_os/discovery/2026-07-02-vai-554-mcp-dashboard-launch-gate.md',
+      receiptFixture: 'hallucinate_app/test/e2e/fixtures/vai-554-mcp-dashboard-launch-gate.json',
+      heapProof: 'VAI-554 proof',
+      gateState: 'gate_open_until_playwright_passes'
+    });
   });
 
   test('lets Swissknife consume the same dashboard catalog without duplicate schemas or mocks', () => {
