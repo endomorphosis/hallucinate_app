@@ -495,6 +495,16 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
         ]
       }),
       expect.objectContaining({
+        task_id: 'VAI-550',
+        goal_id: 'VAIOS-G723',
+        evidence_term: 'launch Playwright validation gate',
+        source_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-02-vai-550-objective-gap-7ea369464239.md',
+        supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-02-vai-550-objective-gap-7ea369464239.md',
+        launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-02-vai-550-mcp-dashboard-launch-gate.md',
+        hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-02-vai-550-mcp-dashboard-launch-gate.md',
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-550-mcp-dashboard-launch-gate.json'
+      }),
+      expect.objectContaining({
         task_id: 'VAI-529',
         goal_id: 'VAIOS-G724',
         goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
@@ -1243,6 +1253,16 @@ test.describe('MCP Feature Exposure - headless backend gate', () => {
           'data/meta_glasses_display_widgets/discovery/2026-07-02-mgw-563-attempt-3-launch-playwright-validation-gate.md',
           'data/hallucinate_multimodal_control/discovery/2026-07-02-mgw-563-attempt-3-validation.md'
         ]
+      }),
+      expect.objectContaining({
+        task_id: 'VAI-550',
+        goal_id: 'VAIOS-G723',
+        evidence_term: 'launch Playwright validation gate',
+        source_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-02-vai-550-objective-gap-7ea369464239.md',
+        supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-02-vai-550-objective-gap-7ea369464239.md',
+        launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-02-vai-550-mcp-dashboard-launch-gate.md',
+        hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-02-vai-550-mcp-dashboard-launch-gate.md',
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-550-mcp-dashboard-launch-gate.json'
       }),
       expect.objectContaining({
         task_id: 'VAI-529',
