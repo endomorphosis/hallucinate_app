@@ -138,12 +138,18 @@ async function runTests() {
   console.log('\nTest 9: Dashboard capability catalog');
   const catalog = manager.getDashboardCapabilityCatalog();
   const catalogById = new Map((catalog.servers || []).map(entry => [entry.daemon_id, entry]));
+  const mgw566DashboardGate = (catalog.launch_validation_gates || []).find(gate => gate.task_id === 'MGW-566');
   const requiredIds = ['ipfs-kit', 'ipfs-datasets', 'ipfs-accelerate'];
   const catalogBaseOk =
     catalog.schema === 'hallucinate_app.mcp_dashboard_capability_catalog.v1' &&
     catalog.task_id === 'HAO-677' &&
     catalog.goal_id === 'VAIOS-G723' &&
-    requiredIds.every(id => catalogById.has(id));
+    requiredIds.every(id => catalogById.has(id)) &&
+    mgw566DashboardGate?.goal_id === 'VAIOS-G723' &&
+    mgw566DashboardGate?.evidence_term === 'launch Playwright validation gate' &&
+    mgw566DashboardGate?.launch_gate_receipt === 'data/meta_glasses_display_widgets/discovery/2026-07-02-mgw-566-launch-playwright-validation-gate.md' &&
+    mgw566DashboardGate?.hallucinate_backlog_receipt === 'data/hallucinate_multimodal_control/discovery/2026-07-02-mgw-566-mcp-dashboard-launch-gate.md' &&
+    mgw566DashboardGate?.receipt_fixture === 'hallucinate_app/test/e2e/fixtures/mgw-566-mcp-dashboard-launch-gate.json';
   const catalogEntriesOk = requiredIds.every(id => {
     const entry = catalogById.get(id);
     return (
