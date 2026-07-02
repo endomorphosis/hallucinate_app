@@ -1,26 +1,29 @@
 {
-  "schema": "launch_readiness_receipt_v1",
-  "task_id": "MGW-555",
+  "task_id": "VAI-548",
   "goal_id": "VAIOS-G724",
   "goal_packet": "goal_packet/launch/hallucinate_app/44dceea6bc53",
   "packet_goal_ids": [
     "VAIOS-G724",
     "VAIOS-G728"
   ],
-  "lineage_id": "VAIOS-G724:hallucinate-mcp-dashboard-capability-catalog",
-  "source_gap_receipt": "data/meta_glasses_display_widgets/discovery/2026-06-28-mgw-555-objective-gap-3e00ad2a0074.md",
-  "launch_gate_receipt": "data/meta_glasses_display_widgets/discovery/2026-06-28-mgw-555-launch-playwright-validation-gate.md",
   "evidence_term": "launch Playwright validation gate",
-  "gate_state": "gate_closed_by_playwright_validation",
   "playwright_specs": [
     "hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts",
     "hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts"
   ],
+  "validation_command": "npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts",
+  "supervisor_gap_receipt": "data/virtual_ai_os/discovery/2026-07-02-vai-548-objective-gap-3e00ad2a0074.md",
+  "schema": "launch_readiness_receipt_v1",
+  "lineage_id": "VAIOS-G724:hallucinate-mcp-dashboard-capability-catalog",
+  "source_gap_receipt": "data/virtual_ai_os/discovery/2026-07-02-vai-548-objective-gap-3e00ad2a0074.md",
+  "launch_gate_receipt": "data/virtual_ai_os/discovery/2026-07-02-vai-548-mcp-dashboard-launch-gate.md",
+  "receipt_fixture": "hallucinate_app/test/e2e/fixtures/vai-548-mcp-dashboard-launch-gate.json",
   "validation_commands": [
     "npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts",
     "test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses",
     "test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts"
   ],
+  "gate_state": "gate_open_until_playwright_passes",
   "required_backends": [
     "ipfs_kit_py",
     "ipfs_datasets_py",
@@ -48,7 +51,8 @@
     "VAIOS-G724",
     "VAIOS-G728"
   ],
-  "interoperability_fixture": "hallucinate_app/test/e2e/fixtures/mgw-533-mcp-dashboard-launch-gate.json",
+  "interoperability_fixture": "hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts",
+  "swissknife_consumer_fixture": "swissknife/test/e2e/fixtures/hao-681-mcp-dashboard-catalog-consumer.json",
   "supervisor_heap": "implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md",
   "receipt_route": [
     "Hallucinate App dashboard action",
@@ -56,13 +60,16 @@
     "interaction_envelope",
     "policy_decision",
     "mediation_receipt",
-    "supervised MCP server transport"
+    "supervised MCP server transport",
+    "Swissknife MCP dashboard capability registry"
   ],
   "dashboard_servers": [
     {
       "daemon_id": "ipfs-kit",
       "server_package": "ipfs_kit_py",
       "health_path": "/api/mcp/status",
+      "tools_list": "tools/list",
+      "tools_call": "tools/call",
       "safe_probe_receipt": "ipfs_kit_status_probe",
       "swissknife_consumer": "Swissknife IPFS storage, pin dashboard, and backend health surfaces"
     },
@@ -70,6 +77,8 @@
       "daemon_id": "ipfs-datasets",
       "server_package": "ipfs_datasets_py",
       "health_path": "/health/ready",
+      "tools_list": "tools/list",
+      "tools_call": "tools/call",
       "safe_probe_receipt": "ipfs_datasets_list_probe",
       "swissknife_consumer": "Swissknife dataset, content, index, provenance, and background task surfaces"
     },
@@ -77,9 +86,11 @@
       "daemon_id": "ipfs-accelerate",
       "server_package": "ipfs_accelerate_py",
       "health_path": "/api/mcp/status",
+      "tools_list": "tools/list",
+      "tools_call": "tools/call",
       "safe_probe_receipt": "ipfs_accelerate_hardware_profile_probe",
       "swissknife_consumer": "Swissknife hardware profile, inference job, job status, and telemetry surfaces"
     }
   ],
-  "failure_rule": "Any missing MGW-555 launch Playwright validation gate, catalog, daemon health, tools/list, tools/call, Swissknife consumer, or packet sibling evidence remains supervisor-fed launch work for VAIOS-G724 and VAIOS-G728."
+  "failure_rule": "Any missing VAI-548 launch Playwright validation gate, catalog, daemon health, tools/list, tools/call, Swissknife consumer, or packet sibling evidence remains supervisor-fed launch work for VAIOS-G724 and VAIOS-G728."
 }
