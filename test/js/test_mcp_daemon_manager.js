@@ -185,18 +185,21 @@ async function runTests() {
     launchGate.vai_task_ids?.includes('VAI-540') &&
     launchGate.vai_task_ids?.includes('VAI-549') &&
     launchGate.vai_task_ids?.includes('VAI-555') &&
+    launchGate.vai_task_ids?.includes('VAI-557') &&
     launchGate.discovery_receipts?.includes('data/virtual_ai_os/discovery/2026-06-27-vai-530-daemon-launch-health-gate.md') &&
     launchGate.discovery_receipts?.includes('data/virtual_ai_os/discovery/2026-06-28-vai-536-daemon-launch-health-gate.md') &&
     launchGate.discovery_receipts?.includes('data/virtual_ai_os/discovery/2026-06-28-vai-538-daemon-launch-health-gate.md') &&
     launchGate.discovery_receipts?.includes('data/virtual_ai_os/discovery/2026-06-28-vai-540-daemon-launch-health-gate.md') &&
     launchGate.discovery_receipts?.includes('data/virtual_ai_os/discovery/2026-07-02-vai-549-daemon-launch-health-gate.md') &&
     launchGate.discovery_receipts?.includes('data/virtual_ai_os/discovery/2026-07-02-vai-555-daemon-launch-health-gate.md') &&
+    launchGate.discovery_receipts?.includes('data/virtual_ai_os/discovery/2026-07-02-vai-557-daemon-launch-health-gate.md') &&
     launchGate.objective_gap_receipts?.includes('data/virtual_ai_os/discovery/2026-06-27-vai-530-objective-gap-b023c8de5b69.md') &&
     launchGate.objective_gap_receipts?.includes('data/virtual_ai_os/discovery/2026-06-28-vai-536-objective-gap-b023c8de5b69.md') &&
     launchGate.objective_gap_receipts?.includes('data/virtual_ai_os/discovery/2026-06-28-vai-538-objective-gap-b023c8de5b69.md') &&
     launchGate.objective_gap_receipts?.includes('data/virtual_ai_os/discovery/2026-06-28-vai-540-objective-gap-b023c8de5b69.md') &&
     launchGate.objective_gap_receipts?.includes('data/virtual_ai_os/discovery/2026-07-02-vai-549-objective-gap-b023c8de5b69.md') &&
     launchGate.objective_gap_receipts?.includes('data/virtual_ai_os/discovery/2026-07-02-vai-555-objective-gap-b023c8de5b69.md') &&
+    launchGate.objective_gap_receipts?.includes('data/virtual_ai_os/discovery/2026-07-02-vai-557-objective-gap-b023c8de5b69.md') &&
     launchGate.packet_goals?.includes('VAIOS-G724') &&
     launchGate.packet_goals?.includes('VAIOS-G728') &&
     launchGate.backlog_task_ids?.includes('HAO-713') &&
@@ -259,6 +262,14 @@ async function runTests() {
       gate.objective_gap_receipt === 'data/virtual_ai_os/discovery/2026-07-02-vai-555-objective-gap-b023c8de5b69.md' &&
       gate.launch_gate_receipt === 'data/virtual_ai_os/discovery/2026-07-02-vai-555-daemon-launch-health-gate.md' &&
       gate.receipt_fixture === 'hallucinate_app/test/e2e/fixtures/vai-555-daemon-launch-health-gate.json' &&
+      gate.validation_commands?.includes('test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts')
+    ) &&
+    launchGates.some(gate =>
+      gate.task_id === 'VAI-557' &&
+      gate.goal_id === 'VAIOS-G728' &&
+      gate.objective_gap_receipt === 'data/virtual_ai_os/discovery/2026-07-02-vai-557-objective-gap-b023c8de5b69.md' &&
+      gate.launch_gate_receipt === 'data/virtual_ai_os/discovery/2026-07-02-vai-557-daemon-launch-health-gate.md' &&
+      gate.receipt_fixture === 'hallucinate_app/test/e2e/fixtures/vai-557-daemon-launch-health-gate.json' &&
       gate.validation_commands?.includes('test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts')
     );
 
