@@ -395,6 +395,87 @@ const VAI_539_LAUNCH_VALIDATION_GATE = {
   launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-539-mcp-dashboard-launch-gate.md',
   receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-539-mcp-dashboard-launch-gate.json'
 };
+const VAI_548_LAUNCH_VALIDATION_GATE = {
+  ...MGW_533_LAUNCH_VALIDATION_GATE,
+  schema: 'launch_readiness_receipt_v1',
+  task_id: 'VAI-548',
+  lineage_id: 'VAIOS-G724:hallucinate-mcp-dashboard-capability-catalog',
+  source_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-02-vai-548-objective-gap-3e00ad2a0074.md',
+  supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-02-vai-548-objective-gap-3e00ad2a0074.md',
+  launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-02-vai-548-mcp-dashboard-launch-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-548-mcp-dashboard-launch-gate.json',
+  validation_commands: [
+    'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
+    'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
+    'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
+  ],
+  gate_state: 'gate_open_until_playwright_passes',
+  required_backends: [
+    'ipfs_kit_py',
+    'ipfs_datasets_py',
+    'ipfs_accelerate_py'
+  ],
+  required_evidence: [
+    'hallucinate_app menus',
+    'Hallucinate App MCP dashboard',
+    'dashboard capability catalog',
+    'daemon health',
+    'tools/list',
+    'tools/call',
+    'ipfs_accelerate_py MCP server',
+    'ipfs_datasets_py MCP server',
+    'ipfs_kit_py MCP server',
+    'Swissknife applications',
+    'Playwright MCP dashboard interoperability',
+    'launch Playwright validation gate'
+  ],
+  catalog_schema: DASHBOARD_CATALOG_SCHEMA,
+  catalog_generated_by: 'hallucinate_app.node.mcp_daemon_manager.getDashboardCapabilityCatalog',
+  catalog_fixture: 'hallucinate_app/test/e2e/fixtures/vai-512-mcp-dashboard-catalog.json',
+  catalog_launch_objective_ids: DASHBOARD_LAUNCH_OBJECTIVE_IDS,
+  interoperability_fixture: 'hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts',
+  swissknife_consumer_fixture: 'swissknife/test/e2e/fixtures/hao-681-mcp-dashboard-catalog-consumer.json',
+  supervisor_heap: 'implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md',
+  receipt_route: [
+    'Hallucinate App dashboard action',
+    'dashboard capability catalog',
+    'interaction_envelope',
+    'policy_decision',
+    'mediation_receipt',
+    'supervised MCP server transport',
+    'Swissknife MCP dashboard capability registry'
+  ],
+  dashboard_servers: [
+    {
+      daemon_id: 'ipfs-kit',
+      server_package: 'ipfs_kit_py',
+      health_path: '/api/mcp/status',
+      tools_list: 'tools/list',
+      tools_call: 'tools/call',
+      safe_probe_receipt: 'ipfs_kit_status_probe',
+      swissknife_consumer: 'Swissknife IPFS storage, pin dashboard, and backend health surfaces'
+    },
+    {
+      daemon_id: 'ipfs-datasets',
+      server_package: 'ipfs_datasets_py',
+      health_path: '/health/ready',
+      tools_list: 'tools/list',
+      tools_call: 'tools/call',
+      safe_probe_receipt: 'ipfs_datasets_list_probe',
+      swissknife_consumer: 'Swissknife dataset, content, index, provenance, and background task surfaces'
+    },
+    {
+      daemon_id: 'ipfs-accelerate',
+      server_package: 'ipfs_accelerate_py',
+      health_path: '/api/mcp/status',
+      tools_list: 'tools/list',
+      tools_call: 'tools/call',
+      safe_probe_receipt: 'ipfs_accelerate_hardware_profile_probe',
+      swissknife_consumer: 'Swissknife hardware profile, inference job, job status, and telemetry surfaces'
+    }
+  ],
+  failure_rule: 'Any missing VAI-548 launch Playwright validation gate, catalog, daemon health, tools/list, tools/call, Swissknife consumer, or packet sibling evidence remains supervisor-fed launch work for VAIOS-G724 and VAIOS-G728.'
+};
 const VAI_542_LAUNCH_VALIDATION_GATE = {
   ...MGW_533_LAUNCH_VALIDATION_GATE,
   task_id: 'VAI-542',
@@ -622,6 +703,7 @@ const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   VAI_535_LAUNCH_VALIDATION_GATE,
   VAI_537_LAUNCH_VALIDATION_GATE,
   VAI_539_LAUNCH_VALIDATION_GATE,
+  VAI_548_LAUNCH_VALIDATION_GATE,
   VAI_542_LAUNCH_VALIDATION_GATE,
   VAI_543_LAUNCH_VALIDATION_GATE,
   HAO_727_LAUNCH_VALIDATION_GATE,
@@ -634,7 +716,7 @@ const DASHBOARD_LAUNCH_VALIDATION_GATES = [
 ];
 const DAEMON_LAUNCH_GATE_TASK_ID = 'MGW-535';
 const DAEMON_LAUNCH_GATE_VAI_TASK_ID = 'VAI-519';
-const DAEMON_LAUNCH_GATE_VAI_TASK_IDS = ['VAI-519', 'VAI-530', 'VAI-536', 'VAI-538', 'VAI-540'];
+const DAEMON_LAUNCH_GATE_VAI_TASK_IDS = ['VAI-519', 'VAI-530', 'VAI-536', 'VAI-538', 'VAI-540', 'VAI-549'];
 const DAEMON_LAUNCH_GATE_BACKLOG_TASK_ID = 'HAO-702';
 const DAEMON_LAUNCH_GATE_BACKLOG_TASK_IDS = ['HAO-702', 'HAO-713', 'HAO-719', 'HAO-721'];
 const DAEMON_LAUNCH_GATE_GOAL_ID = 'VAIOS-G728';
@@ -651,6 +733,7 @@ const DAEMON_LAUNCH_GATE_DISCOVERY_RECEIPTS = [
   'data/virtual_ai_os/discovery/2026-06-28-vai-536-daemon-launch-health-gate.md',
   'data/virtual_ai_os/discovery/2026-06-28-vai-538-daemon-launch-health-gate.md',
   'data/virtual_ai_os/discovery/2026-06-28-vai-540-daemon-launch-health-gate.md',
+  'data/virtual_ai_os/discovery/2026-07-02-vai-549-daemon-launch-health-gate.md',
   'data/meta_glasses_display_widgets/discovery/2026-06-26-mgw-535-daemon-launch-health-gate.md',
   'data/meta_glasses_display_widgets/discovery/2026-06-28-mgw-551-daemon-launch-health-gate.md'
 ];
@@ -660,6 +743,7 @@ const DAEMON_LAUNCH_GATE_OBJECTIVE_GAP_RECEIPTS = [
   'data/virtual_ai_os/discovery/2026-06-28-vai-536-objective-gap-b023c8de5b69.md',
   'data/virtual_ai_os/discovery/2026-06-28-vai-538-objective-gap-b023c8de5b69.md',
   'data/virtual_ai_os/discovery/2026-06-28-vai-540-objective-gap-b023c8de5b69.md',
+  'data/virtual_ai_os/discovery/2026-07-02-vai-549-objective-gap-b023c8de5b69.md',
   'data/meta_glasses_display_widgets/discovery/2026-06-27-mgw-551-objective-gap-b023c8de5b69.md'
 ];
 const DAEMON_LAUNCH_GATE_SUPERVISOR_GAP_RECEIPTS = [
@@ -732,6 +816,19 @@ const VAI_540_DAEMON_LAUNCH_VALIDATION_GATE = {
     'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
     'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts',
     'npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts'
+  ]
+};
+const VAI_549_DAEMON_LAUNCH_VALIDATION_GATE = {
+  task_id: 'VAI-549',
+  objective_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-02-vai-549-objective-gap-b023c8de5b69.md',
+  launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-02-vai-549-daemon-launch-health-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-549-daemon-launch-health-gate.json',
+  validation_commands: [
+    'PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q',
+    'npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts',
+    'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
+    'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
+    'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
   ]
 };
 const HAO_719_DAEMON_LAUNCH_VALIDATION_GATE = {
@@ -1550,6 +1647,14 @@ class MCPDaemonManager extends EventEmitter {
             launch_gate_receipt: VAI_540_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt
           },
           {
+            task_id: VAI_549_DAEMON_LAUNCH_VALIDATION_GATE.task_id,
+            goal_id: DAEMON_LAUNCH_GATE_GOAL_ID,
+            evidence_term: 'launch Playwright validation gate',
+            playwright_spec: 'hallucinate_app/test/e2e/daemon-launch-health.spec.ts',
+            objective_gap_receipt: VAI_549_DAEMON_LAUNCH_VALIDATION_GATE.objective_gap_receipt,
+            launch_gate_receipt: VAI_549_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt
+          },
+          {
             task_id: HAO_719_DAEMON_LAUNCH_VALIDATION_GATE.task_id,
             goal_id: DAEMON_LAUNCH_GATE_GOAL_ID,
             evidence_term: 'launch Playwright validation gate',
@@ -1694,6 +1799,12 @@ class MCPDaemonManager extends EventEmitter {
         shared_packet_task_id: DAEMON_LAUNCH_GATE_TASK_ID,
         discovery_receipts: [...DAEMON_LAUNCH_GATE_DISCOVERY_RECEIPTS],
         objective_gap_receipt: VAI_540_DAEMON_LAUNCH_VALIDATION_GATE.objective_gap_receipt
+      }),
+      this.getDaemonLaunchValidationGate({
+        ...VAI_549_DAEMON_LAUNCH_VALIDATION_GATE,
+        shared_packet_task_id: DAEMON_LAUNCH_GATE_TASK_ID,
+        discovery_receipts: [...DAEMON_LAUNCH_GATE_DISCOVERY_RECEIPTS],
+        objective_gap_receipt: VAI_549_DAEMON_LAUNCH_VALIDATION_GATE.objective_gap_receipt
       }),
       this.getDaemonLaunchValidationGate({
         ...HAO_719_DAEMON_LAUNCH_VALIDATION_GATE,
