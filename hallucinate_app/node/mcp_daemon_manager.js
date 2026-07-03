@@ -714,6 +714,15 @@ const VAI_556_LAUNCH_VALIDATION_GATE = {
   packet_sibling_goal_id: 'VAIOS-G728',
   failure_rule: 'Any missing VAI-556 launch Playwright validation gate, catalog, daemon health, tools/list, tools/call, Swissknife consumer, or packet sibling evidence remains supervisor-fed launch work for VAIOS-G724 and VAIOS-G728.'
 };
+const VAI_550_LAUNCH_VALIDATION_GATE = {
+  ...VAI_543_LAUNCH_VALIDATION_GATE,
+  task_id: 'VAI-550',
+  supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-02-vai-550-objective-gap-7ea369464239.md',
+  launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-02-vai-550-mcp-dashboard-launch-gate.md',
+  hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-02-vai-550-mcp-dashboard-launch-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-550-mcp-dashboard-launch-gate.json',
+  gate_state: 'gate_closed_by_playwright_validation'
+};
 const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   MGW_533_LAUNCH_VALIDATION_GATE,
   MGW_546_LAUNCH_VALIDATION_GATE,
@@ -739,7 +748,8 @@ const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   MGW_563_LAUNCH_VALIDATION_GATE,
   MGW_555_LAUNCH_VALIDATION_GATE,
   MGW_564_LAUNCH_VALIDATION_GATE,
-  VAI_556_LAUNCH_VALIDATION_GATE
+  VAI_556_LAUNCH_VALIDATION_GATE,
+  VAI_550_LAUNCH_VALIDATION_GATE
 ];
 const DAEMON_LAUNCH_GATE_TASK_ID = 'MGW-535';
 const DAEMON_LAUNCH_GATE_VAI_TASK_ID = 'VAI-519';

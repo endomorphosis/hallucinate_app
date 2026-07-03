@@ -372,6 +372,28 @@ const VAI_556_LAUNCH_GATE_RECEIPT = path.join(
   'discovery',
   '2026-07-02-vai-556-mcp-dashboard-launch-gate.md'
 );
+const VAI_550_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-550-mcp-dashboard-launch-gate.json');
+const VAI_550_OBJECTIVE_GAP_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-07-02-vai-550-objective-gap-7ea369464239.md'
+);
+const VAI_550_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-07-02-vai-550-mcp-dashboard-launch-gate.md'
+);
+const VAI_550_HALLUCINATE_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'hallucinate_multimodal_control',
+  'discovery',
+  '2026-07-02-vai-550-mcp-dashboard-launch-gate.md'
+);
 const MGW_558_OBJECTIVE_GAP_RECEIPT = path.join(
   REPO_ROOT,
   'data',
@@ -2357,6 +2379,90 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     expect(objectiveHeap).toContain('hallucinate_app/test/e2e/fixtures/vai-543-mcp-dashboard-launch-gate.json');
     expect(objectiveHeap).toContain('data/virtual_ai_os/discovery/2026-06-28-vai-543-mcp-dashboard-launch-gate.md');
     expect(readinessDoc).toContain('VAI-543');
+    expect(readinessDoc).toContain('mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts');
+  });
+
+  test('closes the VAI-550 objective gap with a dashboard interoperability launch gate receipt', () => {
+    const receipt = JSON.parse(fs.readFileSync(VAI_550_LAUNCH_GATE_FIXTURE, 'utf8'));
+    const launchGateReceipt = fs.readFileSync(VAI_550_LAUNCH_GATE_RECEIPT, 'utf8');
+    const hallucinateLaunchGateReceipt = fs.readFileSync(VAI_550_HALLUCINATE_LAUNCH_GATE_RECEIPT, 'utf8');
+    const objectiveGap = fs.readFileSync(VAI_550_OBJECTIVE_GAP_RECEIPT, 'utf8');
+    const objectiveHeap = fs.readFileSync(MGW_OBJECTIVE_HEAP, 'utf8');
+    const readinessDoc = fs.readFileSync(LAUNCH_READINESS_DOC, 'utf8');
+    const catalog = new MCPDaemonManager().getDashboardCapabilityCatalog();
+    const launchGate = catalog.launch_validation_gates?.find((gate: any) => gate.task_id === 'VAI-550');
+
+    expect(receipt).toMatchObject({
+      schema: 'mcp_dashboard_interoperability_gate_v1',
+      task_id: 'VAI-550',
+      goal_id: 'VAIOS-G723',
+      lineage_id: 'VAIOS-G723:mcp-dashboard-interoperability',
+      evidence_term: 'launch Playwright validation gate',
+      source_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-02-vai-550-objective-gap-7ea369464239.md',
+      launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-02-vai-550-mcp-dashboard-launch-gate.md',
+      hallucinate_launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-02-vai-550-mcp-dashboard-launch-gate.md',
+      catalog_schema: catalog.schema,
+      catalog_source: catalog.generated_by
+    });
+    expect(receipt.playwright_specs).toEqual(expect.arrayContaining([
+      'hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts',
+      'hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts'
+    ]));
+    expect(receipt.validation_commands).toEqual(expect.arrayContaining([
+      'npm --prefix hallucinate_app run test:daemon-manager',
+      'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
+      'npm --prefix swissknife run test:e2e:mcp',
+      'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
+      'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
+    ]));
+    expect(receipt.required_backends.sort()).toEqual([
+      'ipfs_accelerate_py',
+      'ipfs_datasets_py',
+      'ipfs_kit_py'
+    ]);
+    expect(receipt.child_goals).toEqual(MGW_546_CHILD_GOALS);
+    expect(receipt.follow_up_subtasks).toEqual(FOLLOW_UP_TASKS);
+    expect(launchGate).toMatchObject({
+      task_id: receipt.task_id,
+      goal_id: receipt.goal_id,
+      evidence_term: receipt.evidence_term,
+      supervisor_gap_receipt: receipt.source_gap_receipt,
+      launch_gate_receipt: receipt.launch_gate_receipt,
+      hallucinate_backlog_receipt: receipt.hallucinate_backlog_receipt,
+      receipt_fixture: receipt.receipt_fixture,
+      child_goals: receipt.child_goals,
+      follow_up_subtasks: receipt.follow_up_subtasks
+    });
+
+    for (const server of receipt.dashboard_servers) {
+      const catalogServer = catalog.servers.find((entry: any) => entry.server_package === server.server_package);
+      expect(catalogServer, server.server_package).toBeTruthy();
+      expect(catalogServer.daemon_id).toBe(server.daemon_id);
+      expect(catalogServer.health_path).toBe(server.health_path);
+      expect(catalogServer.tool_protocols.tools_list.operation).toBe(server.tools_list);
+      expect(catalogServer.tool_protocols.tools_call.operation).toBe(server.tools_call);
+      expect(catalogServer.tool_protocols.tools_call.safeProbe.expected_receipt).toBe(server.safe_probe_receipt);
+      expect(catalogServer.dashboard_receipt_consumer_refs).toEqual(expect.arrayContaining([
+        'hallucinate_app.swissknife.mcp_capability_registry',
+        'launch_readiness_packet:VAIOS-G723'
+      ]));
+      expect(catalogServer.swissknife_consumer).toBe(server.swissknife_consumer);
+    }
+
+    for (const term of receipt.gap_scan_evidence) {
+      expect(objectiveGap).toContain(term);
+    }
+
+    for (const term of receipt.required_evidence) {
+      expect(launchGateReceipt).toContain(term);
+      expect(hallucinateLaunchGateReceipt).toContain(term);
+      expect(objectiveHeap).toContain(term);
+      expect(readinessDoc).toContain(term);
+    }
+    expect(objectiveHeap).toContain('VAI-550 proof');
+    expect(objectiveHeap).toContain('hallucinate_app/test/e2e/fixtures/vai-550-mcp-dashboard-launch-gate.json');
+    expect(objectiveHeap).toContain('data/virtual_ai_os/discovery/2026-07-02-vai-550-mcp-dashboard-launch-gate.md');
+    expect(readinessDoc).toContain('VAI-550');
     expect(readinessDoc).toContain('mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts');
   });
 
