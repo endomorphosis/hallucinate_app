@@ -698,10 +698,10 @@ const VAI_563_LAUNCH_VALIDATION_GATE = {
   launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-03-vai-563-mcp-dashboard-launch-gate.md',
   hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-03-vai-563-mcp-dashboard-launch-gate.md',
   receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-563-mcp-dashboard-launch-gate.json',
-  attempt: 1,
+  attempt: 2,
   attempt_receipts: [
-    'data/virtual_ai_os/discovery/2026-07-03-vai-563-mcp-dashboard-launch-gate.md',
-    'data/hallucinate_multimodal_control/discovery/2026-07-03-vai-563-mcp-dashboard-launch-gate.md'
+    'data/virtual_ai_os/discovery/2026-07-03-vai-563-attempt-2-launch-playwright-validation-gate.md',
+    'data/hallucinate_multimodal_control/discovery/2026-07-03-vai-563-attempt-2-validation.md'
   ],
   failure_rule: 'Any VAI-563 dashboard catalog, UI wiring, mediated tools/list, mediated tools/call, Swissknife consumer, backend validation, or Playwright failure remains supervisor-generated follow-up work for VAIOS-G723.'
 };

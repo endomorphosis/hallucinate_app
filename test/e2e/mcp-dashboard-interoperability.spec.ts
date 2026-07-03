@@ -549,6 +549,20 @@ const VAI_563_HALLUCINATE_LAUNCH_GATE_RECEIPT = path.join(
   '2026-07-03-vai-563-mcp-dashboard-launch-gate.md'
 );
 const VAI_563_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-563-mcp-dashboard-launch-gate.json');
+const VAI_563_ATTEMPT_2_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-07-03-vai-563-attempt-2-launch-playwright-validation-gate.md'
+);
+const VAI_563_ATTEMPT_2_HALLUCINATE_VALIDATION_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'hallucinate_multimodal_control',
+  'discovery',
+  '2026-07-03-vai-563-attempt-2-validation.md'
+);
 const MGW_OBJECTIVE_HEAP = path.join(
   REPO_ROOT,
   'implementation_plan',
@@ -3106,6 +3120,8 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     const receipt = JSON.parse(fs.readFileSync(VAI_563_LAUNCH_GATE_FIXTURE, 'utf8'));
     const launchGateReceipt = fs.readFileSync(VAI_563_LAUNCH_GATE_RECEIPT, 'utf8');
     const hallucinateLaunchGateReceipt = fs.readFileSync(VAI_563_HALLUCINATE_LAUNCH_GATE_RECEIPT, 'utf8');
+    const attempt2LaunchGateReceipt = fs.readFileSync(VAI_563_ATTEMPT_2_LAUNCH_GATE_RECEIPT, 'utf8');
+    const attempt2HallucinateValidationReceipt = fs.readFileSync(VAI_563_ATTEMPT_2_HALLUCINATE_VALIDATION_RECEIPT, 'utf8');
     const objectiveGap = fs.readFileSync(VAI_563_OBJECTIVE_GAP_RECEIPT, 'utf8');
     const objectiveHeap = fs.readFileSync(MGW_OBJECTIVE_HEAP, 'utf8');
     const readinessDoc = fs.readFileSync(LAUNCH_READINESS_DOC, 'utf8');
@@ -3158,10 +3174,10 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       launch_gate_receipt: receipt.launch_gate_receipt,
       hallucinate_backlog_receipt: receipt.hallucinate_backlog_receipt,
       receipt_fixture: receipt.receipt_fixture,
-      attempt: 1,
+      attempt: 2,
       attempt_receipts: [
-        'data/virtual_ai_os/discovery/2026-07-03-vai-563-mcp-dashboard-launch-gate.md',
-        'data/hallucinate_multimodal_control/discovery/2026-07-03-vai-563-mcp-dashboard-launch-gate.md'
+        'data/virtual_ai_os/discovery/2026-07-03-vai-563-attempt-2-launch-playwright-validation-gate.md',
+        'data/hallucinate_multimodal_control/discovery/2026-07-03-vai-563-attempt-2-validation.md'
       ],
       child_goals: receipt.child_goals,
       follow_up_subtasks: receipt.follow_up_subtasks
@@ -3191,11 +3207,20 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       expect(objectiveGap).toContain(term);
       expect(launchGateReceipt).toContain(term);
       expect(hallucinateLaunchGateReceipt).toContain(term);
+      expect(attempt2LaunchGateReceipt).toContain(term);
+      expect(attempt2HallucinateValidationReceipt).toContain(term);
       expect(objectiveHeap).toContain(term);
       expect(readinessDoc).toContain(term);
     }
 
     expect(objectiveHeap).toContain('VAI-563 proof');
+    expect(objectiveHeap).toContain('VAI-563 attempt 2 validation');
+    expect(objectiveHeap).toContain('2026-07-03-vai-563-attempt-2-launch-playwright-validation-gate.md');
+    expect(readinessDoc).toContain('2026-07-03-vai-563-attempt-2-validation.md');
+    expect(attempt2LaunchGateReceipt).toContain('127 passed, 1 warning');
+    expect(attempt2LaunchGateReceipt).toContain('38 passed');
+    expect(attempt2LaunchGateReceipt).toContain('missing_xvfb_for_electron_playwright');
+    expect(attempt2HallucinateValidationReceipt).toContain('5 passed');
     expect(objectiveHeap).toContain(receipt.receipt_fixture);
     expect(objectiveHeap).toContain(receipt.launch_gate_receipt);
     expect(objectiveHeap).toContain(receipt.hallucinate_backlog_receipt);

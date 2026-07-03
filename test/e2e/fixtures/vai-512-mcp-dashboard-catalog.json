@@ -1701,10 +1701,10 @@
         "HAO-682",
         "HAO-683"
       ],
-      "attempt": 1,
+      "attempt": 2,
       "attempt_receipts": [
-        "data/virtual_ai_os/discovery/2026-07-03-vai-563-mcp-dashboard-launch-gate.md",
-        "data/hallucinate_multimodal_control/discovery/2026-07-03-vai-563-mcp-dashboard-launch-gate.md"
+        "data/virtual_ai_os/discovery/2026-07-03-vai-563-attempt-2-launch-playwright-validation-gate.md",
+        "data/hallucinate_multimodal_control/discovery/2026-07-03-vai-563-attempt-2-validation.md"
       ]
     }
   ],
