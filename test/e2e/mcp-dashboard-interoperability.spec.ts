@@ -549,6 +549,21 @@ const VAI_563_HALLUCINATE_LAUNCH_GATE_RECEIPT = path.join(
   '2026-07-03-vai-563-mcp-dashboard-launch-gate.md'
 );
 const VAI_563_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-563-mcp-dashboard-launch-gate.json');
+const VAI_564_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-564-mcp-dashboard-launch-gate.json');
+const VAI_564_OBJECTIVE_GAP_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-07-03-vai-564-objective-gap-3e00ad2a0074.md'
+);
+const VAI_564_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-07-03-vai-564-mcp-dashboard-launch-gate.md'
+);
 const MGW_OBJECTIVE_HEAP = path.join(
   REPO_ROOT,
   'implementation_plan',
@@ -2334,6 +2349,28 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       heapProof: 'VAI-556 proof',
       gateState: 'gate_closed_by_playwright_validation'
     });
+  });
+
+  test('closes the VAI-564 objective gap with the current Hallucinate launch Playwright validation gate', () => {
+    validateDashboardLaunchGateReceipt({
+      fixturePath: VAI_564_LAUNCH_GATE_FIXTURE,
+      launchGateReceiptPath: VAI_564_LAUNCH_GATE_RECEIPT,
+      objectiveGapPath: VAI_564_OBJECTIVE_GAP_RECEIPT,
+      taskId: 'VAI-564',
+      sourceGapReceipt: 'data/virtual_ai_os/discovery/2026-07-03-vai-564-objective-gap-3e00ad2a0074.md',
+      launchGateReceipt: 'data/virtual_ai_os/discovery/2026-07-03-vai-564-mcp-dashboard-launch-gate.md',
+      receiptFixture: 'hallucinate_app/test/e2e/fixtures/vai-564-mcp-dashboard-launch-gate.json',
+      heapProof: 'VAI-564 proof',
+      gateState: 'gate_closed_by_playwright_validation'
+    });
+
+    // The shared VAI-512 catalog fixture must expose the same VAI-564 gate so
+    // catalog regeneration never silently drops a launch_validation_gates entry.
+    const catalog = new MCPDaemonManager().getDashboardCapabilityCatalog();
+    const liveGate = catalog.launch_validation_gates.find((gate: any) => gate.task_id === 'VAI-564');
+    const vai512Catalog = JSON.parse(fs.readFileSync(VAI_512_CATALOG_FIXTURE, 'utf8'));
+    const catalogGate = vai512Catalog.launch_validation_gates.find((gate: any) => gate.task_id === 'VAI-564');
+    expect(catalogGate).toEqual(liveGate);
   });
 
   test('closes the VAI-543 objective gap with a dashboard interoperability launch gate receipt', () => {
