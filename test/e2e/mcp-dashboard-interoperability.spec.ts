@@ -527,6 +527,20 @@ const MGW_566_ATTEMPT_2_HALLUCINATE_VALIDATION_RECEIPT = path.join(
   'discovery',
   '2026-07-02-mgw-566-attempt-2-validation.md'
 );
+const MGW_566_ATTEMPT_3_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'meta_glasses_display_widgets',
+  'discovery',
+  '2026-07-03-mgw-566-attempt-3-launch-playwright-validation-gate.md'
+);
+const MGW_566_ATTEMPT_3_HALLUCINATE_VALIDATION_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'hallucinate_multimodal_control',
+  'discovery',
+  '2026-07-03-mgw-566-attempt-3-validation.md'
+);
 const VAI_563_OBJECTIVE_GAP_RECEIPT = path.join(
   REPO_ROOT,
   'data',
@@ -2998,8 +3012,8 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     const receipt = JSON.parse(fs.readFileSync(MGW_566_LAUNCH_GATE_FIXTURE, 'utf8'));
     const launchGateReceipt = fs.readFileSync(MGW_566_LAUNCH_GATE_RECEIPT, 'utf8');
     const hallucinateLaunchGateReceipt = fs.readFileSync(MGW_566_HALLUCINATE_LAUNCH_GATE_RECEIPT, 'utf8');
-    const attempt2LaunchGateReceipt = fs.readFileSync(MGW_566_ATTEMPT_2_LAUNCH_GATE_RECEIPT, 'utf8');
-    const attempt2HallucinateValidationReceipt = fs.readFileSync(MGW_566_ATTEMPT_2_HALLUCINATE_VALIDATION_RECEIPT, 'utf8');
+    const attempt3LaunchGateReceipt = fs.readFileSync(MGW_566_ATTEMPT_3_LAUNCH_GATE_RECEIPT, 'utf8');
+    const attempt3HallucinateValidationReceipt = fs.readFileSync(MGW_566_ATTEMPT_3_HALLUCINATE_VALIDATION_RECEIPT, 'utf8');
     const objectiveGap = fs.readFileSync(MGW_566_OBJECTIVE_GAP_RECEIPT, 'utf8');
     const objectiveHeap = fs.readFileSync(MGW_OBJECTIVE_HEAP, 'utf8');
     const readinessDoc = fs.readFileSync(LAUNCH_READINESS_DOC, 'utf8');
@@ -3051,10 +3065,10 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       launch_gate_receipt: receipt.launch_gate_receipt,
       hallucinate_backlog_receipt: receipt.hallucinate_backlog_receipt,
       receipt_fixture: receipt.receipt_fixture,
-      attempt: 2,
+      attempt: 3,
       attempt_receipts: [
-        'data/meta_glasses_display_widgets/discovery/2026-07-02-mgw-566-attempt-2-launch-playwright-validation-gate.md',
-        'data/hallucinate_multimodal_control/discovery/2026-07-02-mgw-566-attempt-2-validation.md'
+        'data/meta_glasses_display_widgets/discovery/2026-07-03-mgw-566-attempt-3-launch-playwright-validation-gate.md',
+        'data/hallucinate_multimodal_control/discovery/2026-07-03-mgw-566-attempt-3-validation.md'
       ],
       child_goals: receipt.child_goals,
       follow_up_subtasks: receipt.follow_up_subtasks
@@ -3079,20 +3093,20 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       expect(objectiveGap).toContain(term);
       expect(launchGateReceipt).toContain(term);
       expect(hallucinateLaunchGateReceipt).toContain(term);
-      expect(attempt2LaunchGateReceipt).toContain(term);
-      expect(attempt2HallucinateValidationReceipt).toContain(term);
+      expect(attempt3LaunchGateReceipt).toContain(term);
+      expect(attempt3HallucinateValidationReceipt).toContain(term);
       expect(objectiveHeap).toContain(term);
       expect(readinessDoc).toContain(term);
     }
 
     expect(objectiveHeap).toContain('MGW-566 proof');
-    expect(objectiveHeap).toContain('MGW-566 attempt 2 validation');
-    expect(objectiveHeap).toContain('2026-07-02-mgw-566-attempt-2-launch-playwright-validation-gate.md');
-    expect(readinessDoc).toContain('2026-07-02-mgw-566-attempt-2-validation.md');
-    expect(attempt2LaunchGateReceipt).toContain('127 passed, 1 warning');
-    expect(attempt2LaunchGateReceipt).toContain('34 passed');
-    expect(attempt2LaunchGateReceipt).toContain('missing_xvfb_for_electron_playwright');
-    expect(attempt2HallucinateValidationReceipt).toContain('5 passed');
+    expect(objectiveHeap).toContain('MGW-566 attempt 3 validation');
+    expect(objectiveHeap).toContain('2026-07-03-mgw-566-attempt-3-launch-playwright-validation-gate.md');
+    expect(readinessDoc).toContain('2026-07-03-mgw-566-attempt-3-validation.md');
+    expect(attempt3LaunchGateReceipt).toContain('127 passed, 1 warning');
+    expect(attempt3LaunchGateReceipt).toContain('37 passed');
+    expect(attempt3LaunchGateReceipt).toContain('missing_xvfb_for_electron_playwright');
+    expect(attempt3HallucinateValidationReceipt).toContain('5 passed');
     expect(objectiveHeap).toContain(receipt.receipt_fixture);
     expect(objectiveHeap).toContain(receipt.launch_gate_receipt);
     expect(objectiveHeap).toContain(receipt.hallucinate_backlog_receipt);

@@ -1574,10 +1574,10 @@
         "HAO-682",
         "HAO-683"
       ],
-      "attempt": 2,
+      "attempt": 3,
       "attempt_receipts": [
-        "data/meta_glasses_display_widgets/discovery/2026-07-02-mgw-566-attempt-2-launch-playwright-validation-gate.md",
-        "data/hallucinate_multimodal_control/discovery/2026-07-02-mgw-566-attempt-2-validation.md"
+        "data/meta_glasses_display_widgets/discovery/2026-07-03-mgw-566-attempt-3-launch-playwright-validation-gate.md",
+        "data/hallucinate_multimodal_control/discovery/2026-07-03-mgw-566-attempt-3-validation.md"
       ]
     },
     {

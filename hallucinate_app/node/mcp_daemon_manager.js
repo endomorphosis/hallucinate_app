@@ -683,10 +683,10 @@ const MGW_566_LAUNCH_VALIDATION_GATE = {
   launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-02-mgw-566-launch-playwright-validation-gate.md',
   hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-02-mgw-566-mcp-dashboard-launch-gate.md',
   receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-566-mcp-dashboard-launch-gate.json',
-  attempt: 2,
+  attempt: 3,
   attempt_receipts: [
-    'data/meta_glasses_display_widgets/discovery/2026-07-02-mgw-566-attempt-2-launch-playwright-validation-gate.md',
-    'data/hallucinate_multimodal_control/discovery/2026-07-02-mgw-566-attempt-2-validation.md'
+    'data/meta_glasses_display_widgets/discovery/2026-07-03-mgw-566-attempt-3-launch-playwright-validation-gate.md',
+    'data/hallucinate_multimodal_control/discovery/2026-07-03-mgw-566-attempt-3-validation.md'
   ],
   failure_rule: 'Any MGW-566 dashboard catalog, UI wiring, mediated tools/list, mediated tools/call, Swissknife consumer, backend validation, or Playwright failure remains supervisor-generated follow-up work for VAIOS-G723.'
 };
