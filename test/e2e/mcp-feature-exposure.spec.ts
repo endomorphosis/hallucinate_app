@@ -615,6 +615,20 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
         gate_state: 'gate_closed_by_playwright_validation',
         packet_sibling_goal_id: 'VAIOS-G728',
         packet_sibling_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-574-daemon-launch-health-gate.md'
+      }),
+      expect.objectContaining({
+        task_id: 'VAI-576',
+        goal_id: 'VAIOS-G724',
+        goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
+        packet_goal_ids: ['VAIOS-G724', 'VAIOS-G728'],
+        evidence_term: 'launch Playwright validation gate',
+        source_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-576-objective-gap-3e00ad2a0074.md',
+        supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-576-objective-gap-3e00ad2a0074.md',
+        launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-576-mcp-dashboard-launch-gate.md',
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-576-mcp-dashboard-launch-gate.json',
+        gate_state: 'gate_closed_by_playwright_validation',
+        packet_sibling_goal_id: 'VAIOS-G728',
+        packet_sibling_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-577-daemon-launch-health-gate.md'
       })
     ]));
     expect(catalog?.control_surface_route).toContain('mediation_receipt');
