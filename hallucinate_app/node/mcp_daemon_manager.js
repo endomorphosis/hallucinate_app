@@ -1418,6 +1418,7 @@ const VAI_599_DAEMON_LAUNCH_VALIDATION_GATE = {
   objective_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-599-objective-gap-b023c8de5b69.md',
   launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-599-daemon-launch-health-gate.md',
   receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-599-daemon-launch-health-gate.json',
+  gate_state: 'gate_closed_by_playwright_validation',
   validation_commands: [
     'PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q',
     'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts',
@@ -2406,7 +2407,7 @@ class MCPDaemonManager extends EventEmitter {
       packet_goals: [...DAEMON_LAUNCH_GATE_PACKET_GOALS],
       evidence_term: 'launch Playwright validation gate',
       launch_key: 'hallucinate-daemon-launch-orchestration',
-      gate_state: 'gate_open_until_playwright_passes',
+      gate_state: overrides.gate_state || 'gate_open_until_playwright_passes',
       discovery_receipts: overrides.discovery_receipts || [...DAEMON_LAUNCH_GATE_DISCOVERY_RECEIPTS],
       objective_gap_receipt: overrides.objective_gap_receipt || 'data/virtual_ai_os/discovery/2026-06-26-vai-519-objective-gap-b023c8de5b69.md',
       objective_gap_receipts: Array.from(new Set([
