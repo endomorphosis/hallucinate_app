@@ -839,6 +839,21 @@ const VAI_579_LAUNCH_GATE_RECEIPT = path.join(
   '2026-07-04-vai-579-mcp-dashboard-launch-gate.md'
 );
 const VAI_579_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-579-mcp-dashboard-launch-gate.json');
+const VAI_582_OBJECTIVE_GAP_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-07-04-vai-582-objective-gap-3e00ad2a0074.md'
+);
+const VAI_582_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-07-04-vai-582-mcp-dashboard-launch-gate.md'
+);
+const VAI_582_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-582-mcp-dashboard-launch-gate.json');
 const VAI_576_OBJECTIVE_GAP_RECEIPT = path.join(
   REPO_ROOT,
   'data',
@@ -2747,6 +2762,20 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       launchGateReceipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-579-mcp-dashboard-launch-gate.md',
       receiptFixture: 'hallucinate_app/test/e2e/fixtures/vai-579-mcp-dashboard-launch-gate.json',
       heapProof: 'VAI-579 proof',
+      gateState: 'gate_closed_by_playwright_validation'
+    });
+  });
+
+  test('closes the VAI-582 objective gap with the current Hallucinate launch Playwright validation gate', () => {
+    validateDashboardLaunchGateReceipt({
+      fixturePath: VAI_582_LAUNCH_GATE_FIXTURE,
+      launchGateReceiptPath: VAI_582_LAUNCH_GATE_RECEIPT,
+      objectiveGapPath: VAI_582_OBJECTIVE_GAP_RECEIPT,
+      taskId: 'VAI-582',
+      sourceGapReceipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-582-objective-gap-3e00ad2a0074.md',
+      launchGateReceipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-582-mcp-dashboard-launch-gate.md',
+      receiptFixture: 'hallucinate_app/test/e2e/fixtures/vai-582-mcp-dashboard-launch-gate.json',
+      heapProof: 'VAI-582 proof',
       gateState: 'gate_closed_by_playwright_validation'
     });
   });
