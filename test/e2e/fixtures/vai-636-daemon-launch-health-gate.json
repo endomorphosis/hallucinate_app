@@ -1,7 +1,7 @@
 {
   "schema": "hallucinate_app.daemon_launch_validation_gate.v1",
   "receipt_schema": "launch_readiness_receipt_v1",
-  "task_id": "VAI-624",
+  "task_id": "VAI-636",
   "vai_task_id": "VAI-519",
   "vai_task_ids": [
     "VAI-519",
@@ -88,7 +88,7 @@
     "data/meta_glasses_display_widgets/discovery/2026-06-26-mgw-535-daemon-launch-health-gate.md",
     "data/meta_glasses_display_widgets/discovery/2026-06-28-mgw-551-daemon-launch-health-gate.md"
   ],
-  "objective_gap_receipt": "data/virtual_ai_os/discovery/2026-07-04-vai-624-objective-gap-b023c8de5b69.md",
+  "objective_gap_receipt": "data/virtual_ai_os/discovery/2026-07-04-vai-636-objective-gap-b023c8de5b69.md",
   "objective_gap_receipts": [
     "data/virtual_ai_os/discovery/2026-06-26-vai-519-objective-gap-b023c8de5b69.md",
     "data/virtual_ai_os/discovery/2026-06-27-vai-530-objective-gap-b023c8de5b69.md",
@@ -137,8 +137,8 @@
     "data/hallucinate_multimodal_control/discovery/2026-06-28-hao-719-daemon-launch-health-gate.md",
     "data/hallucinate_multimodal_control/discovery/2026-06-28-hao-721-daemon-launch-health-gate.md"
   ],
-  "launch_gate_receipt": "data/virtual_ai_os/discovery/2026-07-04-vai-624-daemon-launch-health-gate.md",
-  "receipt_fixture": "hallucinate_app/test/e2e/fixtures/vai-624-daemon-launch-health-gate.json",
+  "launch_gate_receipt": "data/virtual_ai_os/discovery/2026-07-04-vai-636-daemon-launch-health-gate.md",
+  "receipt_fixture": "hallucinate_app/test/e2e/fixtures/vai-636-daemon-launch-health-gate.json",
   "validation_commands": [
     "PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q",
     "test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts",
