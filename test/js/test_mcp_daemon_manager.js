@@ -171,7 +171,7 @@ async function runTests() {
   }
 
   // Test 10: MGW-535 daemon launch validation gate
-  console.log('\nTest 10: MGW-535, MGW-551, and MGW-556 daemon launch validation gates');
+  console.log('\nTest 10: MGW-535, MGW-551, MGW-556, and VAI-568 daemon launch validation gates');
   const launchGate = manager.getDaemonLaunchValidationGate();
   const launchGates = manager.getDaemonLaunchValidationGates();
   const launchGateOk =
@@ -187,6 +187,7 @@ async function runTests() {
     launchGate.vai_task_ids?.includes('VAI-555') &&
     launchGate.vai_task_ids?.includes('VAI-557') &&
     launchGate.vai_task_ids?.includes('VAI-565') &&
+    launchGate.vai_task_ids?.includes('VAI-568') &&
     launchGate.discovery_receipts?.includes('data/virtual_ai_os/discovery/2026-06-27-vai-530-daemon-launch-health-gate.md') &&
     launchGate.discovery_receipts?.includes('data/virtual_ai_os/discovery/2026-06-28-vai-536-daemon-launch-health-gate.md') &&
     launchGate.discovery_receipts?.includes('data/virtual_ai_os/discovery/2026-06-28-vai-538-daemon-launch-health-gate.md') &&
@@ -195,6 +196,7 @@ async function runTests() {
     launchGate.discovery_receipts?.includes('data/virtual_ai_os/discovery/2026-07-02-vai-555-daemon-launch-health-gate.md') &&
     launchGate.discovery_receipts?.includes('data/virtual_ai_os/discovery/2026-07-02-vai-557-daemon-launch-health-gate.md') &&
     launchGate.discovery_receipts?.includes('data/virtual_ai_os/discovery/2026-07-03-vai-565-daemon-launch-health-gate.md') &&
+    launchGate.discovery_receipts?.includes('data/virtual_ai_os/discovery/2026-07-04-vai-568-daemon-launch-health-gate.md') &&
     launchGate.objective_gap_receipts?.includes('data/virtual_ai_os/discovery/2026-06-27-vai-530-objective-gap-b023c8de5b69.md') &&
     launchGate.objective_gap_receipts?.includes('data/virtual_ai_os/discovery/2026-06-28-vai-536-objective-gap-b023c8de5b69.md') &&
     launchGate.objective_gap_receipts?.includes('data/virtual_ai_os/discovery/2026-06-28-vai-538-objective-gap-b023c8de5b69.md') &&
@@ -203,6 +205,7 @@ async function runTests() {
     launchGate.objective_gap_receipts?.includes('data/virtual_ai_os/discovery/2026-07-02-vai-555-objective-gap-b023c8de5b69.md') &&
     launchGate.objective_gap_receipts?.includes('data/virtual_ai_os/discovery/2026-07-02-vai-557-objective-gap-b023c8de5b69.md') &&
     launchGate.objective_gap_receipts?.includes('data/virtual_ai_os/discovery/2026-07-03-vai-565-objective-gap-b023c8de5b69.md') &&
+    launchGate.objective_gap_receipts?.includes('data/virtual_ai_os/discovery/2026-07-04-vai-568-objective-gap-b023c8de5b69.md') &&
     launchGate.packet_goals?.includes('VAIOS-G724') &&
     launchGate.packet_goals?.includes('VAIOS-G728') &&
     launchGate.backlog_task_ids?.includes('HAO-713') &&
@@ -282,10 +285,18 @@ async function runTests() {
       gate.launch_gate_receipt === 'data/virtual_ai_os/discovery/2026-07-03-vai-565-daemon-launch-health-gate.md' &&
       gate.receipt_fixture === 'hallucinate_app/test/e2e/fixtures/vai-565-daemon-launch-health-gate.json' &&
       gate.validation_commands?.includes('test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts')
+    ) &&
+    launchGates.some(gate =>
+      gate.task_id === 'VAI-568' &&
+      gate.goal_id === 'VAIOS-G728' &&
+      gate.objective_gap_receipt === 'data/virtual_ai_os/discovery/2026-07-04-vai-568-objective-gap-b023c8de5b69.md' &&
+      gate.launch_gate_receipt === 'data/virtual_ai_os/discovery/2026-07-04-vai-568-daemon-launch-health-gate.md' &&
+      gate.receipt_fixture === 'hallucinate_app/test/e2e/fixtures/vai-568-daemon-launch-health-gate.json' &&
+      gate.validation_commands?.includes('test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts')
     );
 
   if (launchGateOk) {
-    console.log('✅ MGW-535, MGW-551, and MGW-556 daemon launch validation gates are scanner-visible');
+    console.log('✅ MGW-535, MGW-551, MGW-556, and VAI-568 daemon launch validation gates are scanner-visible');
     testsPassed++;
   } else {
     console.log('❌ Daemon launch validation gate incomplete');
