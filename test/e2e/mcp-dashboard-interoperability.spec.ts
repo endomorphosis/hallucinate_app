@@ -1691,6 +1691,21 @@ const VAI_629_LAUNCH_GATE_RECEIPT = path.join(
   '2026-07-04-vai-629-mcp-dashboard-launch-gate.md'
 );
 const VAI_629_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-629-mcp-dashboard-launch-gate.json');
+const VAI_631_OBJECTIVE_GAP_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-07-04-vai-631-objective-gap-7ea369464239.md'
+);
+const VAI_631_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-07-04-vai-631-mcp-dashboard-launch-gate.md'
+);
+const VAI_631_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-631-mcp-dashboard-launch-gate.json');
 const VAI_576_OBJECTIVE_GAP_RECEIPT = path.join(
   REPO_ROOT,
   'data',
@@ -3843,6 +3858,74 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
         'external/ipfs_kit'
       ]
     });
+  });
+
+  test('closes the VAI-631 objective gap with the current Hallucinate MCP dashboard launch gate', () => {
+    const receipt = JSON.parse(fs.readFileSync(VAI_631_LAUNCH_GATE_FIXTURE, 'utf8'));
+    const launchGateReceipt = fs.readFileSync(VAI_631_LAUNCH_GATE_RECEIPT, 'utf8');
+    const objectiveGap = fs.readFileSync(VAI_631_OBJECTIVE_GAP_RECEIPT, 'utf8');
+    const objectiveHeap = fs.readFileSync(MGW_OBJECTIVE_HEAP, 'utf8');
+    const readinessDoc = fs.readFileSync(LAUNCH_READINESS_DOC, 'utf8');
+    const catalog = new MCPDaemonManager().getDashboardCapabilityCatalog();
+    const launchGate = catalog.launch_validation_gates?.find((gate: any) => gate.task_id === 'VAI-631');
+
+    expect(receipt.schema).toBe('launch_readiness_receipt_v1');
+    expect(receipt.task_id).toBe('VAI-631');
+    expect(receipt.goal_id).toBe('VAIOS-G723');
+    expect(receipt.source_gap_receipt).toBe(
+      'data/virtual_ai_os/discovery/2026-07-04-vai-631-objective-gap-7ea369464239.md'
+    );
+    expect(receipt.launch_gate_receipt).toBe(
+      'data/virtual_ai_os/discovery/2026-07-04-vai-631-mcp-dashboard-launch-gate.md'
+    );
+    expect(receipt.hallucinate_backlog_receipt).toBe(
+      'data/hallucinate_multimodal_control/discovery/2026-07-04-vai-631-mcp-dashboard-launch-gate.md'
+    );
+    expect(receipt.receipt_fixture).toBe('hallucinate_app/test/e2e/fixtures/vai-631-mcp-dashboard-launch-gate.json');
+    expect(receipt.catalog_schema).toBe(catalog.schema);
+    expect(receipt.catalog_generated_by).toBe(catalog.generated_by);
+    expect(receipt.catalog_launch_objective_ids).toEqual(catalog.launch_objective_ids);
+    expect(receipt.child_goals).toEqual([
+      'VAIOS-G723-C1 Catalog normalization',
+      'VAIOS-G723-C2 Dashboard UI wiring',
+      'VAIOS-G723-C3 Mediated tool-call receipts',
+      'VAIOS-G723-C4 Swissknife consumers',
+      'VAIOS-G723-C5 Playwright coverage',
+      'VAIOS-G723-C6 Supervisor-generated follow-up subtasks'
+    ]);
+    expect(receipt.attempt_receipts).toEqual([
+      'data/virtual_ai_os/discovery/2026-07-04-vai-631-attempt-1-launch-playwright-validation-gate.md',
+      'data/hallucinate_multimodal_control/discovery/2026-07-04-vai-631-attempt-1-validation.md'
+    ]);
+    expect(launchGate).toMatchObject({
+      goal_id: 'VAIOS-G723',
+      supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-631-objective-gap-7ea369464239.md',
+      launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-631-mcp-dashboard-launch-gate.md',
+      hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-04-vai-631-mcp-dashboard-launch-gate.md',
+      receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-631-mcp-dashboard-launch-gate.json',
+      attempt: 1
+    });
+    for (const term of receipt.required_evidence) {
+      expect(launchGateReceipt).toContain(term);
+      expect(readinessDoc).toContain(term);
+    }
+    for (const term of [
+      'Hallucinate App MCP dashboard',
+      'dashboard capability catalog',
+      'daemon health',
+      'tools/list',
+      'tools/call',
+      'ipfs_accelerate_py MCP server',
+      'ipfs_datasets_py MCP server',
+      'ipfs_kit_py MCP server',
+      'Swissknife applications',
+      'launch Playwright validation gate'
+    ]) {
+      expect(objectiveGap).toContain(term);
+    }
+    expect(objectiveHeap).toContain('VAI-631 proof');
+    expect(objectiveHeap).toContain(receipt.receipt_fixture);
+    expect(objectiveHeap).toContain(receipt.launch_gate_receipt);
   });
 
   test('closes the VAI-543 objective gap with a dashboard interoperability launch gate receipt', () => {
