@@ -916,7 +916,11 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
         gate_state: 'gate_closed_by_playwright_validation',
         packet_sibling_goal_id: 'VAIOS-G728',
         packet_sibling_task_id: 'VAI-639',
-        packet_sibling_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-639-daemon-launch-health-gate.md'
+        packet_sibling_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-639-daemon-launch-health-gate.md',
+        attempt: 1,
+        attempt_receipts: [
+          'data/virtual_ai_os/discovery/2026-07-04-vai-638-attempt-1-launch-playwright-validation-gate.md'
+        ]
       }),
       expect.objectContaining({
         task_id: 'VAI-622',

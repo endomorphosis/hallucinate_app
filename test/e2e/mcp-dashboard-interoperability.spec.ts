@@ -1736,6 +1736,13 @@ const VAI_638_LAUNCH_GATE_RECEIPT = path.join(
   '2026-07-04-vai-638-mcp-dashboard-launch-gate.md'
 );
 const VAI_638_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-638-mcp-dashboard-launch-gate.json');
+const VAI_638_ATTEMPT_1_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-07-04-vai-638-attempt-1-launch-playwright-validation-gate.md'
+);
 const VAI_631_OBJECTIVE_GAP_RECEIPT = path.join(
   REPO_ROOT,
   'data',
@@ -4055,6 +4062,8 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     });
 
     const receipt = JSON.parse(fs.readFileSync(VAI_638_LAUNCH_GATE_FIXTURE, 'utf8'));
+    const attemptReceipt = fs.readFileSync(VAI_638_ATTEMPT_1_LAUNCH_GATE_RECEIPT, 'utf8');
+    const objectiveHeap = fs.readFileSync(MGW_OBJECTIVE_HEAP, 'utf8');
     const catalog = new MCPDaemonManager().getDashboardCapabilityCatalog();
     const launchGate = catalog.launch_validation_gates?.find((gate: any) => gate.task_id === 'VAI-638');
 
@@ -4062,9 +4071,23 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     expect(receipt.packet_sibling_gate_receipt).toBe(
       'data/virtual_ai_os/discovery/2026-07-04-vai-639-daemon-launch-health-gate.md'
     );
+    expect(receipt.attempt).toBe(1);
+    expect(receipt.attempt_receipts).toEqual([
+      'data/virtual_ai_os/discovery/2026-07-04-vai-638-attempt-1-launch-playwright-validation-gate.md'
+    ]);
+    expect(attemptReceipt).toContain('launch Playwright validation gate');
+    expect(attemptReceipt).toContain('gate_closed_by_playwright_validation');
+    expect(attemptReceipt).toContain('VAIOS-G724');
+    expect(attemptReceipt).toContain('VAIOS-G728');
+    expect(objectiveHeap).toContain('VAI-638 attempt 1 validation');
+    expect(objectiveHeap).toContain('data/virtual_ai_os/discovery/2026-07-04-vai-638-attempt-1-launch-playwright-validation-gate.md');
     expect(launchGate).toMatchObject({
       packet_sibling_task_id: 'VAI-639',
       packet_sibling_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-639-daemon-launch-health-gate.md',
+      attempt: 1,
+      attempt_receipts: [
+        'data/virtual_ai_os/discovery/2026-07-04-vai-638-attempt-1-launch-playwright-validation-gate.md'
+      ],
       external_backend_surfaces: [
         'external/ipfs_accelerate',
         'external/ipfs_datasets',
