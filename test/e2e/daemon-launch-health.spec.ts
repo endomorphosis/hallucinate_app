@@ -47,6 +47,7 @@ const VAI_636_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-636-daemon-la
 const VAI_639_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-639-daemon-launch-health-gate.json');
 const VAI_641_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-641-daemon-launch-health-gate.json');
 const VAI_643_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-643-daemon-launch-health-gate.json');
+const VAI_645_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-645-daemon-launch-health-gate.json');
 const HAO_719_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-719-daemon-launch-health-gate.json');
 const HAO_721_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-721-daemon-launch-health-gate.json');
 const HAO_715_REPAIR_RECEIPT = path.join(
@@ -283,6 +284,7 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
       'VAI-639',
       'VAI-641',
       'VAI-643',
+      'VAI-645',
       'HAO-719',
       'HAO-721'
     ]);
@@ -472,7 +474,7 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
     expect(receipt.failure_rule).toBe(gate.failure_rule);
   });
 
-  test('binds the rolling VAI daemon objective gap receipts through VAI-643 to the daemon launch Playwright gate', () => {
+  test('binds the rolling VAI daemon objective gap receipts through VAI-645 to the daemon launch Playwright gate', () => {
     const manager = new MCPDaemonManager();
     const gate = manager.getDaemonLaunchValidationGate();
     const gates = manager.getDaemonLaunchValidationGates();
@@ -693,6 +695,13 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
         fixturePath: VAI_643_GATE_FIXTURE,
         gapReceipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-643-objective-gap-b023c8de5b69.md',
         launchReceipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-643-daemon-launch-health-gate.md',
+        daemonLaunchCommand: 'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts'
+      },
+      {
+        taskId: 'VAI-645',
+        fixturePath: VAI_645_GATE_FIXTURE,
+        gapReceipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-645-objective-gap-b023c8de5b69.md',
+        launchReceipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-645-daemon-launch-health-gate.md',
         daemonLaunchCommand: 'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts'
       }
     ];
