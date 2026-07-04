@@ -42,6 +42,7 @@ const VAI_621_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-621-daemon-la
 const VAI_624_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-624-daemon-launch-health-gate.json');
 const VAI_627_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-627-daemon-launch-health-gate.json');
 const VAI_630_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-630-daemon-launch-health-gate.json');
+const VAI_633_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-633-daemon-launch-health-gate.json');
 const HAO_719_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-719-daemon-launch-health-gate.json');
 const HAO_721_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-721-daemon-launch-health-gate.json');
 const HAO_715_REPAIR_RECEIPT = path.join(
@@ -100,7 +101,8 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
       'VAI-621',
       'VAI-624',
       'VAI-627',
-      'VAI-630'
+      'VAI-630',
+      'VAI-633'
     ]);
     expect(gate.backlog_task_ids).toEqual(['HAO-702', 'HAO-713', 'HAO-719', 'HAO-721']);
     expect(gate.goal_id).toBe('VAIOS-G728');
@@ -261,6 +263,7 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
       'VAI-624',
       'VAI-627',
       'VAI-630',
+      'VAI-633',
       'HAO-719',
       'HAO-721'
     ]);
@@ -450,7 +453,7 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
     expect(receipt.failure_rule).toBe(gate.failure_rule);
   });
 
-  test('binds the VAI-538, VAI-540, VAI-549, VAI-555, VAI-557, VAI-565, VAI-568, VAI-574, VAI-577, VAI-580, VAI-583, VAI-586, VAI-589, VAI-593, VAI-596, VAI-599, VAI-602, VAI-605, VAI-608, VAI-612, VAI-615, VAI-618, VAI-621, VAI-624, VAI-627, and VAI-630 objective gap receipts to the daemon launch Playwright gate', () => {
+  test('binds the VAI-538, VAI-540, VAI-549, VAI-555, VAI-557, VAI-565, VAI-568, VAI-574, VAI-577, VAI-580, VAI-583, VAI-586, VAI-589, VAI-593, VAI-596, VAI-599, VAI-602, VAI-605, VAI-608, VAI-612, VAI-615, VAI-618, VAI-621, VAI-624, VAI-627, VAI-630, and VAI-633 objective gap receipts to the daemon launch Playwright gate', () => {
     const manager = new MCPDaemonManager();
     const gate = manager.getDaemonLaunchValidationGate();
     const gates = manager.getDaemonLaunchValidationGates();
@@ -635,6 +638,13 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
         fixturePath: VAI_630_GATE_FIXTURE,
         gapReceipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-630-objective-gap-b023c8de5b69.md',
         launchReceipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-630-daemon-launch-health-gate.md',
+        daemonLaunchCommand: 'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts'
+      },
+      {
+        taskId: 'VAI-633',
+        fixturePath: VAI_633_GATE_FIXTURE,
+        gapReceipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-633-objective-gap-b023c8de5b69.md',
+        launchReceipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-633-daemon-launch-health-gate.md',
         daemonLaunchCommand: 'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts'
       }
     ];

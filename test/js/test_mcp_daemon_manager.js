@@ -177,6 +177,13 @@ async function runTests() {
       gate.goal_id === 'VAIOS-G723' &&
       gate.receipt_fixture === 'hallucinate_app/test/e2e/fixtures/vai-628-mcp-dashboard-launch-gate.json' &&
       gate.attempt_receipts?.includes('data/hallucinate_multimodal_control/discovery/2026-07-04-vai-628-attempt-1-validation.md')
+    ) &&
+    catalog.launch_validation_gates?.some(gate =>
+      gate.task_id === 'VAI-632' &&
+      gate.goal_id === 'VAIOS-G724' &&
+      gate.receipt_fixture === 'hallucinate_app/test/e2e/fixtures/vai-632-mcp-dashboard-launch-gate.json' &&
+      gate.packet_sibling_task_id === 'VAI-633' &&
+      gate.packet_sibling_gate_receipt === 'data/virtual_ai_os/discovery/2026-07-04-vai-633-daemon-launch-health-gate.md'
     );
 
   if (catalogBaseOk && catalogEntriesOk && catalogSpecificsOk) {
@@ -446,6 +453,15 @@ async function runTests() {
       gate.objective_gap_receipt === 'data/virtual_ai_os/discovery/2026-07-04-vai-618-objective-gap-b023c8de5b69.md' &&
       gate.launch_gate_receipt === 'data/virtual_ai_os/discovery/2026-07-04-vai-618-daemon-launch-health-gate.md' &&
       gate.receipt_fixture === 'hallucinate_app/test/e2e/fixtures/vai-618-daemon-launch-health-gate.json' &&
+      gate.validation_commands?.includes('test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts')
+    ) &&
+    launchGates.some(gate =>
+      gate.task_id === 'VAI-633' &&
+      gate.goal_id === 'VAIOS-G728' &&
+      gate.gate_state === 'gate_closed_by_playwright_validation' &&
+      gate.objective_gap_receipt === 'data/virtual_ai_os/discovery/2026-07-04-vai-633-objective-gap-b023c8de5b69.md' &&
+      gate.launch_gate_receipt === 'data/virtual_ai_os/discovery/2026-07-04-vai-633-daemon-launch-health-gate.md' &&
+      gate.receipt_fixture === 'hallucinate_app/test/e2e/fixtures/vai-633-daemon-launch-health-gate.json' &&
       gate.validation_commands?.includes('test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts')
     );
 

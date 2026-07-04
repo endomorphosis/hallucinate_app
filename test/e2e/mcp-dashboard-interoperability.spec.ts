@@ -1691,6 +1691,21 @@ const VAI_629_LAUNCH_GATE_RECEIPT = path.join(
   '2026-07-04-vai-629-mcp-dashboard-launch-gate.md'
 );
 const VAI_629_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-629-mcp-dashboard-launch-gate.json');
+const VAI_632_OBJECTIVE_GAP_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-07-04-vai-632-objective-gap-3e00ad2a0074.md'
+);
+const VAI_632_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-07-04-vai-632-mcp-dashboard-launch-gate.md'
+);
+const VAI_632_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-632-mcp-dashboard-launch-gate.json');
 const VAI_631_OBJECTIVE_GAP_RECEIPT = path.join(
   REPO_ROOT,
   'data',
@@ -3852,6 +3867,38 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     expect(launchGate).toMatchObject({
       packet_sibling_task_id: 'VAI-630',
       packet_sibling_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-630-daemon-launch-health-gate.md',
+      external_backend_surfaces: [
+        'external/ipfs_accelerate',
+        'external/ipfs_datasets',
+        'external/ipfs_kit'
+      ]
+    });
+  });
+
+  test('closes the VAI-632 objective gap with the shared VAIOS-G724/VAIOS-G728 launch packet gate', () => {
+    validateDashboardLaunchGateReceipt({
+      fixturePath: VAI_632_LAUNCH_GATE_FIXTURE,
+      launchGateReceiptPath: VAI_632_LAUNCH_GATE_RECEIPT,
+      objectiveGapPath: VAI_632_OBJECTIVE_GAP_RECEIPT,
+      taskId: 'VAI-632',
+      sourceGapReceipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-632-objective-gap-3e00ad2a0074.md',
+      launchGateReceipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-632-mcp-dashboard-launch-gate.md',
+      receiptFixture: 'hallucinate_app/test/e2e/fixtures/vai-632-mcp-dashboard-launch-gate.json',
+      heapProof: 'VAI-632 proof',
+      gateState: 'gate_closed_by_playwright_validation'
+    });
+
+    const receipt = JSON.parse(fs.readFileSync(VAI_632_LAUNCH_GATE_FIXTURE, 'utf8'));
+    const catalog = new MCPDaemonManager().getDashboardCapabilityCatalog();
+    const launchGate = catalog.launch_validation_gates?.find((gate: any) => gate.task_id === 'VAI-632');
+
+    expect(receipt.packet_sibling_task_id).toBe('VAI-633');
+    expect(receipt.packet_sibling_gate_receipt).toBe(
+      'data/virtual_ai_os/discovery/2026-07-04-vai-633-daemon-launch-health-gate.md'
+    );
+    expect(launchGate).toMatchObject({
+      packet_sibling_task_id: 'VAI-633',
+      packet_sibling_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-633-daemon-launch-health-gate.md',
       external_backend_surfaces: [
         'external/ipfs_accelerate',
         'external/ipfs_datasets',
