@@ -45,6 +45,7 @@ const VAI_630_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-630-daemon-la
 const VAI_633_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-633-daemon-launch-health-gate.json');
 const VAI_636_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-636-daemon-launch-health-gate.json');
 const VAI_639_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-639-daemon-launch-health-gate.json');
+const VAI_641_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-641-daemon-launch-health-gate.json');
 const HAO_719_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-719-daemon-launch-health-gate.json');
 const HAO_721_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-721-daemon-launch-health-gate.json');
 const HAO_715_REPAIR_RECEIPT = path.join(
@@ -106,7 +107,8 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
       'VAI-630',
       'VAI-633',
       'VAI-636',
-      'VAI-639'
+      'VAI-639',
+      'VAI-641'
     ]);
     expect(gate.backlog_task_ids).toEqual(['HAO-702', 'HAO-713', 'HAO-719', 'HAO-721']);
     expect(gate.goal_id).toBe('VAIOS-G728');
@@ -145,6 +147,7 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
     expect(gate.objective_gap_receipts).toContain('data/virtual_ai_os/discovery/2026-07-04-vai-633-objective-gap-b023c8de5b69.md');
     expect(gate.objective_gap_receipts).toContain('data/virtual_ai_os/discovery/2026-07-04-vai-636-objective-gap-b023c8de5b69.md');
     expect(gate.objective_gap_receipts).toContain('data/virtual_ai_os/discovery/2026-07-04-vai-639-objective-gap-b023c8de5b69.md');
+    expect(gate.objective_gap_receipts).toContain('data/virtual_ai_os/discovery/2026-07-04-vai-641-objective-gap-b023c8de5b69.md');
     expect(gate.discovery_receipts).toContain('data/virtual_ai_os/discovery/2026-06-26-vai-519-daemon-launch-health-gate.md');
     expect(gate.discovery_receipts).toContain('data/virtual_ai_os/discovery/2026-06-27-vai-530-daemon-launch-health-gate.md');
     expect(gate.discovery_receipts).toContain('data/virtual_ai_os/discovery/2026-06-28-vai-536-daemon-launch-health-gate.md');
@@ -176,6 +179,7 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
     expect(gate.discovery_receipts).toContain('data/virtual_ai_os/discovery/2026-07-04-vai-633-daemon-launch-health-gate.md');
     expect(gate.discovery_receipts).toContain('data/virtual_ai_os/discovery/2026-07-04-vai-636-daemon-launch-health-gate.md');
     expect(gate.discovery_receipts).toContain('data/virtual_ai_os/discovery/2026-07-04-vai-639-daemon-launch-health-gate.md');
+    expect(gate.discovery_receipts).toContain('data/virtual_ai_os/discovery/2026-07-04-vai-641-daemon-launch-health-gate.md');
     expect(gate.supervisor_gap_receipts).toContain('data/hallucinate_multimodal_control/discovery/2026-06-27-hao-713-objective-gap-b023c8de5b69.md');
     expect(gate.supervisor_gap_receipts).toContain('data/hallucinate_multimodal_control/discovery/2026-06-28-hao-719-objective-gap-b023c8de5b69.md');
     expect(gate.supervisor_gap_receipts).toContain('data/hallucinate_multimodal_control/discovery/2026-06-28-hao-721-objective-gap-b023c8de5b69.md');
@@ -276,6 +280,7 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
       'VAI-633',
       'VAI-636',
       'VAI-639',
+      'VAI-641',
       'HAO-719',
       'HAO-721'
     ]);
@@ -672,6 +677,13 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
         fixturePath: VAI_639_GATE_FIXTURE,
         gapReceipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-639-objective-gap-b023c8de5b69.md',
         launchReceipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-639-daemon-launch-health-gate.md',
+        daemonLaunchCommand: 'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts'
+      },
+      {
+        taskId: 'VAI-641',
+        fixturePath: VAI_641_GATE_FIXTURE,
+        gapReceipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-641-objective-gap-b023c8de5b69.md',
+        launchReceipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-641-daemon-launch-health-gate.md',
         daemonLaunchCommand: 'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts'
       }
     ];
