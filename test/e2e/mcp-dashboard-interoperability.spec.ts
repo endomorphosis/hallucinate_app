@@ -788,6 +788,21 @@ const VAI_578_ATTEMPT_1_HALLUCINATE_VALIDATION_RECEIPT = path.join(
   'discovery',
   '2026-07-04-vai-578-attempt-1-validation.md'
 );
+const VAI_579_OBJECTIVE_GAP_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-07-04-vai-579-objective-gap-3e00ad2a0074.md'
+);
+const VAI_579_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-07-04-vai-579-mcp-dashboard-launch-gate.md'
+);
+const VAI_579_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-579-mcp-dashboard-launch-gate.json');
 const VAI_576_OBJECTIVE_GAP_RECEIPT = path.join(
   REPO_ROOT,
   'data',
@@ -1206,6 +1221,20 @@ electronDescribe('MCP Dashboard Interoperability - VAIOS-G723 Electron UI wiring
         receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-567-mcp-dashboard-launch-gate.json',
         gate_state: 'gate_closed_by_playwright_validation',
         packet_sibling_goal_id: 'VAIOS-G728'
+      }),
+      expect.objectContaining({
+        task_id: 'VAI-579',
+        goal_id: 'VAIOS-G724',
+        goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
+        packet_goal_ids: ['VAIOS-G724', 'VAIOS-G728'],
+        evidence_term: 'launch Playwright validation gate',
+        source_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-579-objective-gap-3e00ad2a0074.md',
+        supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-579-objective-gap-3e00ad2a0074.md',
+        launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-579-mcp-dashboard-launch-gate.md',
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-579-mcp-dashboard-launch-gate.json',
+        gate_state: 'gate_closed_by_playwright_validation',
+        packet_sibling_goal_id: 'VAIOS-G728',
+        packet_sibling_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-580-daemon-launch-health-gate.md'
       })
     ]));
     expect(catalog?.swissknife_catalog_consumer_proof).toMatchObject({
@@ -2668,6 +2697,20 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       launchGateReceipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-576-mcp-dashboard-launch-gate.md',
       receiptFixture: 'hallucinate_app/test/e2e/fixtures/vai-576-mcp-dashboard-launch-gate.json',
       heapProof: 'VAI-576 proof',
+      gateState: 'gate_closed_by_playwright_validation'
+    });
+  });
+
+  test('closes the VAI-579 objective gap with the current Hallucinate launch Playwright validation gate', () => {
+    validateDashboardLaunchGateReceipt({
+      fixturePath: VAI_579_LAUNCH_GATE_FIXTURE,
+      launchGateReceiptPath: VAI_579_LAUNCH_GATE_RECEIPT,
+      objectiveGapPath: VAI_579_OBJECTIVE_GAP_RECEIPT,
+      taskId: 'VAI-579',
+      sourceGapReceipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-579-objective-gap-3e00ad2a0074.md',
+      launchGateReceipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-579-mcp-dashboard-launch-gate.md',
+      receiptFixture: 'hallucinate_app/test/e2e/fixtures/vai-579-mcp-dashboard-launch-gate.json',
+      heapProof: 'VAI-579 proof',
       gateState: 'gate_closed_by_playwright_validation'
     });
   });
