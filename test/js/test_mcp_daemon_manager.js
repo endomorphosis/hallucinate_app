@@ -225,6 +225,7 @@ async function runTests() {
     launchGate.vai_task_ids?.includes('VAI-602') &&
     launchGate.vai_task_ids?.includes('VAI-615') &&
     launchGate.vai_task_ids?.includes('VAI-618') &&
+    launchGate.vai_task_ids?.includes('VAI-639') &&
     launchGate.discovery_receipts?.includes('data/virtual_ai_os/discovery/2026-06-27-vai-530-daemon-launch-health-gate.md') &&
     launchGate.discovery_receipts?.includes('data/virtual_ai_os/discovery/2026-06-28-vai-536-daemon-launch-health-gate.md') &&
     launchGate.discovery_receipts?.includes('data/virtual_ai_os/discovery/2026-06-28-vai-538-daemon-launch-health-gate.md') &&
@@ -246,6 +247,7 @@ async function runTests() {
     launchGate.discovery_receipts?.includes('data/virtual_ai_os/discovery/2026-07-04-vai-602-daemon-launch-health-gate.md') &&
     launchGate.discovery_receipts?.includes('data/virtual_ai_os/discovery/2026-07-04-vai-615-daemon-launch-health-gate.md') &&
     launchGate.discovery_receipts?.includes('data/virtual_ai_os/discovery/2026-07-04-vai-618-daemon-launch-health-gate.md') &&
+    launchGate.discovery_receipts?.includes('data/virtual_ai_os/discovery/2026-07-04-vai-639-daemon-launch-health-gate.md') &&
     launchGate.objective_gap_receipts?.includes('data/virtual_ai_os/discovery/2026-06-27-vai-530-objective-gap-b023c8de5b69.md') &&
     launchGate.objective_gap_receipts?.includes('data/virtual_ai_os/discovery/2026-06-28-vai-536-objective-gap-b023c8de5b69.md') &&
     launchGate.objective_gap_receipts?.includes('data/virtual_ai_os/discovery/2026-06-28-vai-538-objective-gap-b023c8de5b69.md') &&
@@ -267,6 +269,7 @@ async function runTests() {
     launchGate.objective_gap_receipts?.includes('data/virtual_ai_os/discovery/2026-07-04-vai-602-objective-gap-b023c8de5b69.md') &&
     launchGate.objective_gap_receipts?.includes('data/virtual_ai_os/discovery/2026-07-04-vai-615-objective-gap-b023c8de5b69.md') &&
     launchGate.objective_gap_receipts?.includes('data/virtual_ai_os/discovery/2026-07-04-vai-618-objective-gap-b023c8de5b69.md') &&
+    launchGate.objective_gap_receipts?.includes('data/virtual_ai_os/discovery/2026-07-04-vai-639-objective-gap-b023c8de5b69.md') &&
     launchGate.packet_goals?.includes('VAIOS-G724') &&
     launchGate.packet_goals?.includes('VAIOS-G728') &&
     launchGate.backlog_task_ids?.includes('HAO-713') &&
