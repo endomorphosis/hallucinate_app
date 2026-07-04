@@ -457,6 +457,7 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
     const manager = new MCPDaemonManager();
     const gate = manager.getDaemonLaunchValidationGate();
     const gates = manager.getDaemonLaunchValidationGates();
+    const launchPlan = manager.getLaunchPlan();
     const fixtures = [
       {
         taskId: 'VAI-538',
@@ -680,6 +681,20 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
       expect(receipt.daemon_health_paths).toEqual(gate.daemon_health_paths);
       expect(receipt.swissknife_handoff).toEqual(gate.swissknife_handoff);
       expect(receipt.failure_rule).toBe(gate.failure_rule);
+
+      for (const entry of launchPlan) {
+        const launchPlanGate = entry.launch_validation_gates.find(
+          (candidate: any) => candidate.task_id === fixture.taskId
+        );
+        expect(launchPlanGate).toMatchObject({
+          task_id: receipt.task_id,
+          goal_id: receipt.goal_id,
+          evidence_term: receipt.evidence_term,
+          playwright_spec: 'hallucinate_app/test/e2e/daemon-launch-health.spec.ts',
+          objective_gap_receipt: receipt.objective_gap_receipt,
+          launch_gate_receipt: receipt.launch_gate_receipt
+        });
+      }
     }
   });
 
