@@ -30,7 +30,8 @@
     "VAI-615",
     "VAI-618",
     "VAI-621",
-    "VAI-624"
+    "VAI-624",
+    "VAI-627"
   ],
   "backlog_task_id": "HAO-702",
   "backlog_task_ids": [
@@ -77,6 +78,7 @@
     "data/virtual_ai_os/discovery/2026-07-04-vai-618-daemon-launch-health-gate.md",
     "data/virtual_ai_os/discovery/2026-07-04-vai-621-daemon-launch-health-gate.md",
     "data/virtual_ai_os/discovery/2026-07-04-vai-624-daemon-launch-health-gate.md",
+    "data/virtual_ai_os/discovery/2026-07-04-vai-627-daemon-launch-health-gate.md",
     "data/meta_glasses_display_widgets/discovery/2026-06-26-mgw-535-daemon-launch-health-gate.md",
     "data/meta_glasses_display_widgets/discovery/2026-06-28-mgw-551-daemon-launch-health-gate.md",
     "data/hallucinate_multimodal_control/discovery/2026-06-28-hao-721-daemon-launch-health-gate.md"
@@ -110,6 +112,7 @@
     "data/virtual_ai_os/discovery/2026-07-04-vai-618-objective-gap-b023c8de5b69.md",
     "data/virtual_ai_os/discovery/2026-07-04-vai-621-objective-gap-b023c8de5b69.md",
     "data/virtual_ai_os/discovery/2026-07-04-vai-624-objective-gap-b023c8de5b69.md",
+    "data/virtual_ai_os/discovery/2026-07-04-vai-627-objective-gap-b023c8de5b69.md",
     "data/meta_glasses_display_widgets/discovery/2026-06-27-mgw-551-objective-gap-b023c8de5b69.md",
     "data/hallucinate_multimodal_control/discovery/2026-06-28-hao-721-objective-gap-b023c8de5b69.md"
   ],
