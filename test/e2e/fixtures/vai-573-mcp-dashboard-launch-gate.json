@@ -94,5 +94,5 @@
   ],
   "failure_rule": "Any missing VAI-573 launch Playwright validation gate, catalog, daemon health, tools/list, tools/call, Swissknife consumer, external backend handoff, or packet sibling evidence remains supervisor-fed launch work for VAIOS-G724 and VAIOS-G728.",
   "packet_sibling_goal_id": "VAIOS-G728",
-  "packet_sibling_gate_receipt": "data/virtual_ai_os/discovery/2026-07-04-vai-568-daemon-launch-health-gate.md"
+  "packet_sibling_gate_receipt": "data/virtual_ai_os/discovery/2026-07-04-vai-574-daemon-launch-health-gate.md"
 }

@@ -614,7 +614,7 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
         receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-573-mcp-dashboard-launch-gate.json',
         gate_state: 'gate_closed_by_playwright_validation',
         packet_sibling_goal_id: 'VAIOS-G728',
-        packet_sibling_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-568-daemon-launch-health-gate.md'
+        packet_sibling_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-574-daemon-launch-health-gate.md'
       })
     ]));
     expect(catalog?.control_surface_route).toContain('mediation_receipt');
@@ -1424,7 +1424,7 @@ test.describe('MCP Feature Exposure - headless backend gate', () => {
         receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-573-mcp-dashboard-launch-gate.json',
         gate_state: 'gate_closed_by_playwright_validation',
         packet_sibling_goal_id: 'VAIOS-G728',
-        packet_sibling_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-568-daemon-launch-health-gate.md'
+        packet_sibling_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-574-daemon-launch-health-gate.md'
       })
     ]));
     expect(catalog?.control_surface_route).toContain('mediation_receipt');
