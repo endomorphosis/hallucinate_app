@@ -165,6 +165,12 @@ async function runTests() {
       gate.goal_id === 'VAIOS-G723' &&
       gate.receipt_fixture === 'hallucinate_app/test/e2e/fixtures/vai-622-mcp-dashboard-launch-gate.json' &&
       gate.attempt_receipts?.includes('data/hallucinate_multimodal_control/discovery/2026-07-04-vai-622-attempt-1-validation.md')
+    ) &&
+    catalog.launch_validation_gates?.some(gate =>
+      gate.task_id === 'VAI-625' &&
+      gate.goal_id === 'VAIOS-G723' &&
+      gate.receipt_fixture === 'hallucinate_app/test/e2e/fixtures/vai-625-mcp-dashboard-launch-gate.json' &&
+      gate.attempt_receipts?.includes('data/hallucinate_multimodal_control/discovery/2026-07-04-vai-625-attempt-1-validation.md')
     );
 
   if (catalogBaseOk && catalogEntriesOk && catalogSpecificsOk) {
