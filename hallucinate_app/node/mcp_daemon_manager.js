@@ -1351,6 +1351,24 @@ const VAI_626_LAUNCH_VALIDATION_GATE = {
   packet_sibling_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-627-daemon-launch-health-gate.md',
   failure_rule: 'Any missing VAI-626 launch Playwright validation gate, catalog, daemon health, tools/list, tools/call, Swissknife consumer, external backend handoff, or packet sibling evidence remains supervisor-fed launch work for VAIOS-G724 and VAIOS-G728.'
 };
+const VAI_629_LAUNCH_VALIDATION_GATE = {
+  ...VAI_548_LAUNCH_VALIDATION_GATE,
+  task_id: 'VAI-629',
+  source_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-629-objective-gap-3e00ad2a0074.md',
+  supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-629-objective-gap-3e00ad2a0074.md',
+  launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-629-mcp-dashboard-launch-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-629-mcp-dashboard-launch-gate.json',
+  gate_state: 'gate_closed_by_playwright_validation',
+  external_backend_surfaces: [
+    'external/ipfs_accelerate',
+    'external/ipfs_datasets',
+    'external/ipfs_kit'
+  ],
+  packet_sibling_goal_id: 'VAIOS-G728',
+  packet_sibling_task_id: 'VAI-630',
+  packet_sibling_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-630-objective-gap-b023c8de5b69.md',
+  failure_rule: 'Any missing VAI-629 launch Playwright validation gate, catalog, daemon health, tools/list, tools/call, Swissknife consumer, external backend handoff, or VAI-630 packet sibling evidence remains supervisor-fed launch work for VAIOS-G724 and VAIOS-G728.'
+};
 const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   MGW_533_LAUNCH_VALIDATION_GATE,
   MGW_546_LAUNCH_VALIDATION_GATE,
@@ -1421,7 +1439,8 @@ const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   VAI_617_LAUNCH_VALIDATION_GATE,
   VAI_620_LAUNCH_VALIDATION_GATE,
   VAI_623_LAUNCH_VALIDATION_GATE,
-  VAI_626_LAUNCH_VALIDATION_GATE
+  VAI_626_LAUNCH_VALIDATION_GATE,
+  VAI_629_LAUNCH_VALIDATION_GATE
 ];
 const DAEMON_LAUNCH_GATE_TASK_ID = 'MGW-535';
 const DAEMON_LAUNCH_GATE_VAI_TASK_ID = 'VAI-519';
