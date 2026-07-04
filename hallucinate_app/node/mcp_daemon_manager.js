@@ -2678,6 +2678,14 @@ class MCPDaemonManager extends EventEmitter {
             launch_gate_receipt: VAI_612_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt
           },
           {
+            task_id: VAI_615_DAEMON_LAUNCH_VALIDATION_GATE.task_id,
+            goal_id: DAEMON_LAUNCH_GATE_GOAL_ID,
+            evidence_term: 'launch Playwright validation gate',
+            playwright_spec: 'hallucinate_app/test/e2e/daemon-launch-health.spec.ts',
+            objective_gap_receipt: VAI_615_DAEMON_LAUNCH_VALIDATION_GATE.objective_gap_receipt,
+            launch_gate_receipt: VAI_615_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt
+          },
+          {
             task_id: VAI_618_DAEMON_LAUNCH_VALIDATION_GATE.task_id,
             goal_id: DAEMON_LAUNCH_GATE_GOAL_ID,
             evidence_term: 'launch Playwright validation gate',

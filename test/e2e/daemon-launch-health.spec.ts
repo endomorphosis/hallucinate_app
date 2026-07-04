@@ -272,27 +272,11 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
       'Swissknife applications',
       'launch Playwright validation gate'
     ]));
+    const expectedLaunchGateIds = gates.map((candidate: any) => candidate.task_id);
     expect(launchPlan.every((entry: any) => (
-      entry.launch_validation_gates.some((candidate: any) => candidate.task_id === 'MGW-551') &&
-      entry.launch_validation_gates.some((candidate: any) => candidate.task_id === 'MGW-535') &&
-      entry.launch_validation_gates.some((candidate: any) => candidate.task_id === 'VAI-536') &&
-      entry.launch_validation_gates.some((candidate: any) => candidate.task_id === 'VAI-538') &&
-      entry.launch_validation_gates.some((candidate: any) => candidate.task_id === 'VAI-540') &&
-      entry.launch_validation_gates.some((candidate: any) => candidate.task_id === 'VAI-549') &&
-      entry.launch_validation_gates.some((candidate: any) => candidate.task_id === 'VAI-555') &&
-      entry.launch_validation_gates.some((candidate: any) => candidate.task_id === 'VAI-557') &&
-      entry.launch_validation_gates.some((candidate: any) => candidate.task_id === 'VAI-565') &&
-      entry.launch_validation_gates.some((candidate: any) => candidate.task_id === 'VAI-568') &&
-      entry.launch_validation_gates.some((candidate: any) => candidate.task_id === 'VAI-574') &&
-      entry.launch_validation_gates.some((candidate: any) => candidate.task_id === 'VAI-577') &&
-      entry.launch_validation_gates.some((candidate: any) => candidate.task_id === 'VAI-580') &&
-      entry.launch_validation_gates.some((candidate: any) => candidate.task_id === 'VAI-583') &&
-      entry.launch_validation_gates.some((candidate: any) => candidate.task_id === 'VAI-586') &&
-      entry.launch_validation_gates.some((candidate: any) => candidate.task_id === 'VAI-589') &&
-      entry.launch_validation_gates.some((candidate: any) => candidate.task_id === 'VAI-593') &&
-      entry.launch_validation_gates.some((candidate: any) => candidate.task_id === 'VAI-596') &&
-      entry.launch_validation_gates.some((candidate: any) => candidate.task_id === 'HAO-719') &&
-      entry.launch_validation_gates.some((candidate: any) => candidate.task_id === 'HAO-721')
+      expectedLaunchGateIds.every((taskId: string) => (
+        entry.launch_validation_gates.some((candidate: any) => candidate.task_id === taskId)
+      ))
     ))).toBe(true);
     expect(gate.daemon_health_paths.map((entry: any) => entry.daemon_id)).toEqual(DAEMON_IDS);
     expect(gate.required_backends).toEqual(BACKEND_PACKAGES);
