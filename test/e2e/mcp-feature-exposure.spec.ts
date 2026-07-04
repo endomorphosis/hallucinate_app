@@ -671,6 +671,21 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
         gate_state: 'gate_closed_by_playwright_validation',
         packet_sibling_goal_id: 'VAIOS-G728',
         packet_sibling_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-586-daemon-launch-health-gate.md'
+      }),
+      expect.objectContaining({
+        task_id: 'VAI-590',
+        goal_id: 'VAIOS-G723',
+        evidence_term: 'launch Playwright validation gate',
+        source_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-590-objective-gap-7ea369464239.md',
+        supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-590-objective-gap-7ea369464239.md',
+        launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-590-mcp-dashboard-launch-gate.md',
+        hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-04-vai-590-mcp-dashboard-launch-gate.md',
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-590-mcp-dashboard-launch-gate.json',
+        attempt: 1,
+        attempt_receipts: [
+          'data/virtual_ai_os/discovery/2026-07-04-vai-590-attempt-1-launch-playwright-validation-gate.md',
+          'data/hallucinate_multimodal_control/discovery/2026-07-04-vai-590-attempt-1-validation.md'
+        ]
       })
     ]));
     expect(catalog?.control_surface_route).toContain('mediation_receipt');
@@ -1509,6 +1524,21 @@ test.describe('MCP Feature Exposure - headless backend gate', () => {
         gate_state: 'gate_closed_by_playwright_validation',
         packet_sibling_goal_id: 'VAIOS-G728',
         packet_sibling_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-586-daemon-launch-health-gate.md'
+      }),
+      expect.objectContaining({
+        task_id: 'VAI-590',
+        goal_id: 'VAIOS-G723',
+        evidence_term: 'launch Playwright validation gate',
+        source_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-590-objective-gap-7ea369464239.md',
+        supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-590-objective-gap-7ea369464239.md',
+        launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-04-vai-590-mcp-dashboard-launch-gate.md',
+        hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-04-vai-590-mcp-dashboard-launch-gate.md',
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-590-mcp-dashboard-launch-gate.json',
+        attempt: 1,
+        attempt_receipts: [
+          'data/virtual_ai_os/discovery/2026-07-04-vai-590-attempt-1-launch-playwright-validation-gate.md',
+          'data/hallucinate_multimodal_control/discovery/2026-07-04-vai-590-attempt-1-validation.md'
+        ]
       })
     ]));
     expect(catalog?.control_surface_route).toContain('mediation_receipt');
