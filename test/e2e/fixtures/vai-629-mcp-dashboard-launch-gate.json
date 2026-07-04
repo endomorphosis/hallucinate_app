@@ -100,5 +100,5 @@
   ],
   "packet_sibling_goal_id": "VAIOS-G728",
   "packet_sibling_task_id": "VAI-630",
-  "packet_sibling_gap_receipt": "data/virtual_ai_os/discovery/2026-07-04-vai-630-objective-gap-b023c8de5b69.md"
+  "packet_sibling_gate_receipt": "data/virtual_ai_os/discovery/2026-07-04-vai-630-daemon-launch-health-gate.md"
 }
