@@ -1893,6 +1893,36 @@ const VAI_650_DAEMON_LAUNCH_GATE_RECEIPT = path.join(
   '2026-07-05-vai-650-daemon-launch-health-gate.md'
 );
 const VAI_650_DAEMON_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-650-daemon-launch-health-gate.json');
+const VAI_651_OBJECTIVE_GAP_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-07-05-vai-651-objective-gap-3e00ad2a0074.md'
+);
+const VAI_651_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-07-05-vai-651-mcp-dashboard-launch-gate.md'
+);
+const VAI_651_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-651-mcp-dashboard-launch-gate.json');
+const VAI_651_ATTEMPT_1_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-07-05-vai-651-attempt-1-launch-playwright-validation-gate.md'
+);
+const VAI_652_DAEMON_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-07-05-vai-652-daemon-launch-health-gate.md'
+);
+const VAI_652_DAEMON_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-652-daemon-launch-health-gate.json');
 const VAI_631_OBJECTIVE_GAP_RECEIPT = path.join(
   REPO_ROOT,
   'data',
@@ -4609,6 +4639,79 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     expect(objectiveHeap).toContain('VAI-649 attempt 2 validation');
     expect(objectiveHeap).toContain('VAI-650 daemon gate proof');
     expect(objectiveHeap).toContain('VAI-650 attempt 1 validation');
+  });
+
+  test('closes the VAI-651 objective gap with the shared VAIOS-G724/VAIOS-G728 launch packet gate', () => {
+    validateDashboardLaunchGateReceipt({
+      fixturePath: VAI_651_LAUNCH_GATE_FIXTURE,
+      launchGateReceiptPath: VAI_651_LAUNCH_GATE_RECEIPT,
+      objectiveGapPath: VAI_651_OBJECTIVE_GAP_RECEIPT,
+      taskId: 'VAI-651',
+      sourceGapReceipt: 'data/virtual_ai_os/discovery/2026-07-05-vai-651-objective-gap-3e00ad2a0074.md',
+      launchGateReceipt: 'data/virtual_ai_os/discovery/2026-07-05-vai-651-mcp-dashboard-launch-gate.md',
+      receiptFixture: 'hallucinate_app/test/e2e/fixtures/vai-651-mcp-dashboard-launch-gate.json',
+      heapProof: 'VAI-651 proof',
+      gateState: 'gate_closed_by_playwright_validation'
+    });
+
+    const receipt = JSON.parse(fs.readFileSync(VAI_651_LAUNCH_GATE_FIXTURE, 'utf8'));
+    const attemptReceipt = fs.readFileSync(VAI_651_ATTEMPT_1_LAUNCH_GATE_RECEIPT, 'utf8');
+    const daemonReceipt = fs.readFileSync(VAI_652_DAEMON_LAUNCH_GATE_RECEIPT, 'utf8');
+    const daemonFixture = JSON.parse(fs.readFileSync(VAI_652_DAEMON_LAUNCH_GATE_FIXTURE, 'utf8'));
+    const objectiveHeap = fs.readFileSync(MGW_OBJECTIVE_HEAP, 'utf8');
+    const catalog = new MCPDaemonManager().getDashboardCapabilityCatalog();
+    const launchGate = catalog.launch_validation_gates?.find((gate: any) => gate.task_id === 'VAI-651');
+    const daemonGate = new MCPDaemonManager()
+      .getDaemonLaunchValidationGates()
+      .find((gate: any) => gate.task_id === 'VAI-652');
+
+    expect(receipt.packet_sibling_task_id).toBe('VAI-652');
+    expect(receipt.packet_sibling_gate_receipt).toBe(
+      'data/virtual_ai_os/discovery/2026-07-05-vai-652-daemon-launch-health-gate.md'
+    );
+    expect(receipt.attempt).toBe(1);
+    expect(receipt.attempt_receipts).toEqual([
+      'data/virtual_ai_os/discovery/2026-07-05-vai-651-attempt-1-launch-playwright-validation-gate.md'
+    ]);
+    expect(launchGate).toMatchObject({
+      packet_sibling_task_id: 'VAI-652',
+      packet_sibling_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-05-vai-652-daemon-launch-health-gate.md',
+      attempt: 1,
+      attempt_receipts: receipt.attempt_receipts,
+      external_backend_surfaces: [
+        'external/ipfs_accelerate',
+        'external/ipfs_datasets',
+        'external/ipfs_kit'
+      ]
+    });
+    expect(daemonGate).toEqual(daemonFixture);
+    expect(daemonGate).toMatchObject({
+      task_id: 'VAI-652',
+      goal_id: 'VAIOS-G728',
+      objective_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-05-vai-652-objective-gap-b023c8de5b69.md',
+      launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-05-vai-652-daemon-launch-health-gate.md',
+      receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-652-daemon-launch-health-gate.json',
+      gate_state: 'gate_closed_by_playwright_validation'
+    });
+
+    for (const term of [
+      'launch Playwright validation gate',
+      'gate_closed_by_playwright_validation',
+      'VAIOS-G724',
+      'VAIOS-G728',
+      'goal_packet/launch/hallucinate_app/44dceea6bc53',
+      'external/ipfs_accelerate',
+      'external/ipfs_datasets',
+      'external/ipfs_kit'
+    ]) {
+      expect(attemptReceipt).toContain(term);
+      expect(daemonReceipt).toContain(term);
+      expect(objectiveHeap).toContain(term);
+    }
+    expect(objectiveHeap).toContain('VAI-651 proof');
+    expect(objectiveHeap).toContain('VAI-651 attempt 1 validation');
+    expect(objectiveHeap).toContain('VAI-652 daemon gate proof');
+    expect(objectiveHeap).toContain('VAI-652 attempt 1 validation');
   });
 
   test('closes the VAI-631 objective gap with the current Hallucinate MCP dashboard launch gate', () => {
