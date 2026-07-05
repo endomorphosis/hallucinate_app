@@ -53,6 +53,13 @@ const VAI_650_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-650-daemon-la
 const VAI_652_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-652-daemon-launch-health-gate.json');
 const VAI_654_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-654-daemon-launch-health-gate.json');
 const VAI_656_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-656-daemon-launch-health-gate.json');
+const VAI_656_ATTEMPT_RECEIPT = path.join(
+  repoRoot,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-07-05-vai-656-attempt-1-launch-playwright-validation-gate.md'
+);
 const HAO_719_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-719-daemon-launch-health-gate.json');
 const HAO_721_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-721-daemon-launch-health-gate.json');
 const HAO_715_REPAIR_RECEIPT = path.join(
@@ -61,6 +68,12 @@ const HAO_715_REPAIR_RECEIPT = path.join(
   'hallucinate_multimodal_control',
   'discovery',
   '2026-06-27-hao-715-hao-713-retry-budget-repair.md'
+);
+const OBJECTIVE_HEAP = path.join(
+  repoRoot,
+  'implementation_plan',
+  'docs',
+  '23-virtual-ai-os-objective-goal-heap.md'
 );
 const DAEMON_IDS = ['ipfs-kit', 'ipfs-datasets', 'ipfs-accelerate'];
 const BACKEND_PACKAGES = ['ipfs_kit_py', 'ipfs_datasets_py', 'ipfs_accelerate_py'];
@@ -852,6 +865,40 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
       expect(receipt.swissknife_handoff).toEqual(gate.swissknife_handoff);
       expect(receipt.failure_rule).toBe(gate.failure_rule);
     }
+  });
+
+  test('keeps the VAI-656 discovery receipt and objective heap aligned with the Playwright gate', () => {
+    const manager = new MCPDaemonManager();
+    const gates = manager.getDaemonLaunchValidationGates();
+    const vai656Gate = gates.find((candidate: any) => candidate.task_id === 'VAI-656') as any;
+    const receipt = fs.readFileSync(VAI_656_ATTEMPT_RECEIPT, 'utf8');
+    const objectiveHeap = fs.readFileSync(OBJECTIVE_HEAP, 'utf8');
+
+    expect(vai656Gate).toBeTruthy();
+    expect(receipt).toContain('VAI-656 attempt 1 records the daemon launch Playwright validation gate');
+    expect(receipt).toContain(vai656Gate.objective_gap_receipt);
+    expect(receipt).toContain(vai656Gate.launch_gate_receipt);
+    expect(receipt).toContain('hallucinate_app/test/e2e/fixtures/vai-655-mcp-dashboard-launch-gate.json');
+    expect(receipt).toContain('swissknife/test/e2e/meta-glasses-virtual-os.spec.ts');
+
+    for (const term of [
+      'launch Playwright validation gate',
+      'gate_closed_by_playwright_validation',
+      'external/ipfs_accelerate',
+      'external/ipfs_datasets',
+      'external/ipfs_kit',
+      'dashboard capability catalog',
+      'Swissknife applications',
+      'VAIOS-G724',
+      'VAIOS-G728'
+    ]) {
+      expect(receipt).toContain(term);
+    }
+
+    expect(objectiveHeap).toContain('VAI-656 attempt 1 validation');
+    expect(objectiveHeap).toContain(vai656Gate.receipt_fixture);
+    expect(objectiveHeap).toContain(vai656Gate.launch_gate_receipt);
+    expect(objectiveHeap).toContain('No additional child goals are needed because VAI-656 reuses the existing daemon launch');
   });
 
   test('keeps HAO-715 retry-budget repair aligned with headless-safe launch specs', () => {
