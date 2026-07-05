@@ -1848,12 +1848,12 @@ const VAI_647_LAUNCH_GATE_RECEIPT = path.join(
   '2026-07-05-vai-647-mcp-dashboard-launch-gate.md'
 );
 const VAI_647_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-647-mcp-dashboard-launch-gate.json');
-const VAI_647_ATTEMPT_1_LAUNCH_GATE_RECEIPT = path.join(
+const VAI_647_ATTEMPT_2_LAUNCH_GATE_RECEIPT = path.join(
   REPO_ROOT,
   'data',
   'virtual_ai_os',
   'discovery',
-  '2026-07-05-vai-647-attempt-1-launch-playwright-validation-gate.md'
+  '2026-07-05-vai-647-attempt-2-launch-playwright-validation-gate.md'
 );
 const VAI_648_DAEMON_LAUNCH_GATE_RECEIPT = path.join(
   REPO_ROOT,
@@ -4449,7 +4449,7 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     });
 
     const receipt = JSON.parse(fs.readFileSync(VAI_647_LAUNCH_GATE_FIXTURE, 'utf8'));
-    const attemptReceipt = fs.readFileSync(VAI_647_ATTEMPT_1_LAUNCH_GATE_RECEIPT, 'utf8');
+    const attemptReceipt = fs.readFileSync(VAI_647_ATTEMPT_2_LAUNCH_GATE_RECEIPT, 'utf8');
     const daemonReceipt = fs.readFileSync(VAI_648_DAEMON_LAUNCH_GATE_RECEIPT, 'utf8');
     const daemonFixture = JSON.parse(fs.readFileSync(VAI_648_DAEMON_LAUNCH_GATE_FIXTURE, 'utf8'));
     const objectiveHeap = fs.readFileSync(MGW_OBJECTIVE_HEAP, 'utf8');
@@ -4463,14 +4463,14 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     expect(receipt.packet_sibling_gate_receipt).toBe(
       'data/virtual_ai_os/discovery/2026-07-05-vai-648-daemon-launch-health-gate.md'
     );
-    expect(receipt.attempt).toBe(1);
+    expect(receipt.attempt).toBe(2);
     expect(receipt.attempt_receipts).toEqual([
-      'data/virtual_ai_os/discovery/2026-07-05-vai-647-attempt-1-launch-playwright-validation-gate.md'
+      'data/virtual_ai_os/discovery/2026-07-05-vai-647-attempt-2-launch-playwright-validation-gate.md'
     ]);
     expect(launchGate).toMatchObject({
       packet_sibling_task_id: 'VAI-648',
       packet_sibling_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-05-vai-648-daemon-launch-health-gate.md',
-      attempt: 1,
+      attempt: 2,
       attempt_receipts: receipt.attempt_receipts,
       external_backend_surfaces: [
         'external/ipfs_accelerate',
@@ -4503,7 +4503,7 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       expect(objectiveHeap).toContain(term);
     }
     expect(objectiveHeap).toContain('VAI-647 proof');
-    expect(objectiveHeap).toContain('VAI-647 attempt 1 validation');
+    expect(objectiveHeap).toContain('VAI-647 attempt 2 validation');
     expect(objectiveHeap).toContain('VAI-648 daemon gate proof');
     expect(objectiveHeap).toContain('VAI-648 attempt 1 validation');
   });
