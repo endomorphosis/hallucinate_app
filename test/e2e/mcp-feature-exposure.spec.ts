@@ -1101,6 +1101,10 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
         evidence_term: 'launch Playwright validation gate',
         source_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-05-vai-657-objective-gap-3e00ad2a0074.md',
         supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-05-vai-657-objective-gap-3e00ad2a0074.md',
+        todo_source: {
+          file: 'implementation_plan/docs/19-virtual-ai-os-submodule-integration.todo.md',
+          source_line: 8696
+        },
         launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-05-vai-657-mcp-dashboard-launch-gate.md',
         receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-657-mcp-dashboard-launch-gate.json',
         gate_state: 'gate_closed_by_playwright_validation',

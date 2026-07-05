@@ -8370,6 +8370,10 @@
         }
       ],
       "failure_rule": "Any missing VAI-657 launch Playwright validation gate, catalog, daemon health, tools/list, tools/call, Swissknife consumer, external backend handoff, or VAI-658 packet sibling evidence remains supervisor-fed launch work for VAIOS-G724 and VAIOS-G728.",
+      "todo_source": {
+        "file": "implementation_plan/docs/19-virtual-ai-os-submodule-integration.todo.md",
+        "source_line": 8696
+      },
       "external_backend_surfaces": [
         "external/ipfs_accelerate",
         "external/ipfs_datasets",

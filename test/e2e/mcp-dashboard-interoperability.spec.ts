@@ -4982,9 +4982,14 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     expect(receipt.attempt_receipts).toEqual([
       'data/virtual_ai_os/discovery/2026-07-05-vai-657-attempt-2-launch-playwright-validation-gate.md'
     ]);
+    expect(receipt.todo_source).toEqual({
+      file: 'implementation_plan/docs/19-virtual-ai-os-submodule-integration.todo.md',
+      source_line: 8696
+    });
     expect(launchGate).toMatchObject({
       packet_sibling_task_id: 'VAI-658',
       packet_sibling_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-05-vai-658-daemon-launch-health-gate.md',
+      todo_source: receipt.todo_source,
       attempt: 2,
       attempt_receipts: receipt.attempt_receipts,
       external_backend_surfaces: [

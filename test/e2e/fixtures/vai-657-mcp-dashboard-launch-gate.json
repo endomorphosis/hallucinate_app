@@ -13,6 +13,10 @@
   ],
   "validation_command": "npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts",
   "supervisor_gap_receipt": "data/virtual_ai_os/discovery/2026-07-05-vai-657-objective-gap-3e00ad2a0074.md",
+  "todo_source": {
+    "file": "implementation_plan/docs/19-virtual-ai-os-submodule-integration.todo.md",
+    "source_line": 8696
+  },
   "schema": "launch_readiness_receipt_v1",
   "lineage_id": "VAIOS-G724:hallucinate-mcp-dashboard-capability-catalog",
   "source_gap_receipt": "data/virtual_ai_os/discovery/2026-07-05-vai-657-objective-gap-3e00ad2a0074.md",
