@@ -999,6 +999,25 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
         ]
       }),
       expect.objectContaining({
+        task_id: 'VAI-649',
+        goal_id: 'VAIOS-G724',
+        goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
+        packet_goal_ids: ['VAIOS-G724', 'VAIOS-G728'],
+        evidence_term: 'launch Playwright validation gate',
+        source_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-05-vai-649-objective-gap-3e00ad2a0074.md',
+        supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-05-vai-649-objective-gap-3e00ad2a0074.md',
+        launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-05-vai-649-mcp-dashboard-launch-gate.md',
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-649-mcp-dashboard-launch-gate.json',
+        gate_state: 'gate_closed_by_playwright_validation',
+        packet_sibling_goal_id: 'VAIOS-G728',
+        packet_sibling_task_id: 'VAI-650',
+        packet_sibling_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-05-vai-650-daemon-launch-health-gate.md',
+        attempt: 1,
+        attempt_receipts: [
+          'data/virtual_ai_os/discovery/2026-07-05-vai-649-attempt-1-launch-playwright-validation-gate.md'
+        ]
+      }),
+      expect.objectContaining({
         task_id: 'VAI-622',
         goal_id: 'VAIOS-G723',
         evidence_term: 'launch Playwright validation gate',
