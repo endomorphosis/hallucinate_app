@@ -1576,9 +1576,9 @@ const VAI_649_LAUNCH_VALIDATION_GATE = {
   packet_sibling_goal_id: 'VAIOS-G728',
   packet_sibling_task_id: 'VAI-650',
   packet_sibling_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-05-vai-650-daemon-launch-health-gate.md',
-  attempt: 1,
+  attempt: 2,
   attempt_receipts: [
-    'data/virtual_ai_os/discovery/2026-07-05-vai-649-attempt-1-launch-playwright-validation-gate.md'
+    'data/virtual_ai_os/discovery/2026-07-05-vai-649-attempt-2-launch-playwright-validation-gate.md'
   ],
   failure_rule: 'Any missing VAI-649 launch Playwright validation gate, catalog, daemon health, tools/list, tools/call, Swissknife consumer, external backend handoff, or VAI-650 packet sibling evidence remains supervisor-fed launch work for VAIOS-G724 and VAIOS-G728.'
 };
