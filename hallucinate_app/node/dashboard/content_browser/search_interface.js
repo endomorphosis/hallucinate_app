@@ -28,6 +28,39 @@ export const HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT = {
   required_artifacts: ['interaction_envelope', 'policy_decision', 'mediation_receipt'],
 };
 
+export const HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR = {
+  descriptor_id: 'hallucinate-app-mobile-interop@0.1.0',
+  interface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT,
+  schema_refs: {
+    search_interface:
+      'hallucinate_app/hallucinate_app/node/dashboard/content_browser/search_interface.js',
+    test_interface_fixture: 'hallucinate_app/hallucinate_app/node/views/test_interface.html',
+    time_series_schema:
+      'hallucinate_app/ipfs_accelerate_py/data/duckdb/db_schema/time_series_schema.sql',
+    benchmark_schema_script:
+      'hallucinate_app/ipfs_accelerate_py/data/duckdb/scripts/create_benchmark_schema.py',
+    mobile_orb_descriptor: 'mobile/src/orb/metaGlassesOrbDescriptors.js',
+  },
+  runtime_handoff: {
+    source_surface: 'hallucinate_app',
+    target_surface: 'mobile',
+    event_name: 'hallucinate-app:mobile-interop-handoff',
+    mobile_orb_route: '/v1/mobile/orb/invoke_service',
+    mobile_orb_operation: 'invoke_service',
+    result_targets: ['mobile_card', 'meta_glasses_display', 'audio_summary'],
+    receipt_table: 'hallucinate_app_mobile_interop_receipts',
+  },
+  validation: {
+    task_id: 'MGW-579',
+    goal_id: 'VAIOS-G707',
+    objective_gap_ref:
+      'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-579-objective-gap-7edb316279e5.md',
+    validation_repair_ref:
+      'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-579-objective-validation-repair.md',
+    evidence: 'objective validation repair',
+  },
+};
+
 /**
  * Build the normalized mobile ORB handoff payload for a desktop search.
  *
@@ -329,6 +362,7 @@ export class SearchInterface {
     if (this.eventBus) {
       this.eventBus.emit('content-browser:search', this.currentQuery);
       this.eventBus.emit('hallucinate_app-mobile:handoff', mobileHandoff);
+      this.eventBus.emit('hallucinate-app:mobile-interop-handoff', mobileHandoff);
     }
     
     // Emit event for direct listeners
