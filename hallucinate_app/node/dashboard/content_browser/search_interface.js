@@ -7,6 +7,54 @@
  * @module dashboard/content_browser/search_interface
  */
 
+export const HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT =
+  'interface contract hallucinate_app mobile';
+
+export const HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR = {
+  name: 'hallucinate_app_mobile_content_browser',
+  namespace: 'handsfree.hallucinate_app.mobile',
+  version: '0.1.0',
+  objective_id: 'VAIOS-G707',
+  contract: HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT,
+  methods: [
+    'ingest_content_search',
+    'apply_content_filter',
+    'open_module_test_interface',
+    'record_benchmark_timeseries_sample',
+  ],
+  event: 'hallucinate-app:mobile-interop-handoff',
+  source_surface: 'hallucinate_app',
+  target_surface: 'mobile',
+};
+
+export function buildHallucinateAppMobileSearchHandoff({
+  query = '',
+  filter = {},
+  sourceView = 'content_browser.search_interface',
+  timestamp = new Date().toISOString(),
+  resultLimit = null,
+} = {}) {
+  return {
+    contract: HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT,
+    objective_id: 'VAIOS-G707',
+    descriptor: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR,
+    source: 'hallucinate_app',
+    target: 'mobile',
+    source_view: sourceView,
+    action: 'ingest_content_search',
+    query: String(query || ''),
+    filter: filter && typeof filter === 'object' && !Array.isArray(filter) ? filter : {},
+    result_limit: Number.isInteger(resultLimit) && resultLimit > 0 ? resultLimit : null,
+    timestamp,
+    mobile_payload: {
+      route: 'mobile://hallucinate_app/content-browser/search',
+      action_id: 'hallucinate_app_mobile_content_search',
+      query: String(query || ''),
+      filter: filter && typeof filter === 'object' && !Array.isArray(filter) ? filter : {},
+    },
+  };
+}
+
 export class SearchInterface {
   /**
    * Create a new SearchInterface component
@@ -81,6 +129,7 @@ export class SearchInterface {
     this._handleSearchHistorySelect = this._handleSearchHistorySelect.bind(this);
     this._initSavedSearches = this._initSavedSearches.bind(this);
     this._initSearchHistory = this._initSearchHistory.bind(this);
+    this.buildMobileInteropHandoff = this.buildMobileInteropHandoff.bind(this);
   }
   
   /**
@@ -253,9 +302,15 @@ export class SearchInterface {
     if (this.eventBus) {
       this.eventBus.emit('content-browser:search', this.currentQuery);
     }
+
+    const mobileHandoff = this.buildMobileInteropHandoff();
+    if (this.eventBus) {
+      this.eventBus.emit(HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.event, mobileHandoff);
+    }
     
     // Emit event for direct listeners
     this.emit('search', this.currentQuery);
+    this.emit('mobile-interop-handoff', mobileHandoff);
   }
   
   /**
@@ -274,9 +329,36 @@ export class SearchInterface {
     if (this.eventBus) {
       this.eventBus.emit('content-browser:filter', this.currentFilter);
     }
+
+    const mobileHandoff = this.buildMobileInteropHandoff({
+      action: 'apply_content_filter',
+    });
+    if (this.eventBus) {
+      this.eventBus.emit(HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.event, mobileHandoff);
+    }
     
     // Emit event for direct listeners
     this.emit('filter-change', this.currentFilter);
+    this.emit('mobile-interop-handoff', mobileHandoff);
+  }
+
+  /**
+   * Build the descriptor-shaped handoff consumed by the mobile ORB bridge.
+   * @param {Object} overrides - Optional payload overrides
+   * @returns {Object} Mobile interop handoff payload
+   */
+  buildMobileInteropHandoff(overrides = {}) {
+    const handoff = buildHallucinateAppMobileSearchHandoff({
+      query: this.currentQuery,
+      filter: this.currentFilter,
+      resultLimit: this.config.mobileResultLimit,
+      ...overrides,
+    });
+    if (overrides.action) {
+      handoff.action = overrides.action;
+      handoff.mobile_payload.action_id = `hallucinate_app_mobile_${overrides.action}`;
+    }
+    return handoff;
   }
   
   /**

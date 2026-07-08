@@ -657,6 +657,49 @@
       ipcRenderer.send('check-services-status');
     });
   </script>
+  <script type="application/json" id="hallucinate-app-mobile-interop-contract">
+    {
+      "contract": "interface contract hallucinate_app mobile",
+      "objective_id": "VAIOS-G707",
+      "descriptor": {
+        "name": "hallucinate_app_mobile_content_browser",
+        "namespace": "handsfree.hallucinate_app.mobile",
+        "version": "0.1.0",
+        "methods": [
+          "ingest_content_search",
+          "apply_content_filter",
+          "open_module_test_interface",
+          "record_benchmark_timeseries_sample"
+        ]
+      },
+      "mobile_route": "mobile://hallucinate_app/content-browser/search",
+      "dashboard_event": "hallucinate-app:mobile-interop-handoff"
+    }
+  </script>
+  <script>
+    window.hallucinateAppMobileInteropContract = {
+      contract: 'interface contract hallucinate_app mobile',
+      objectiveId: 'VAIOS-G707',
+      sourceSurface: 'hallucinate_app',
+      targetSurface: 'mobile',
+      dashboardEvent: 'hallucinate-app:mobile-interop-handoff',
+      buildModuleTestHandoff(moduleId, environment = 'mock') {
+        return {
+          contract: 'interface contract hallucinate_app mobile',
+          objective_id: 'VAIOS-G707',
+          source: 'hallucinate_app',
+          target: 'mobile',
+          action: 'open_module_test_interface',
+          module_id: moduleId,
+          environment,
+          mobile_payload: {
+            route: 'mobile://hallucinate_app/module-tests',
+            action_id: 'hallucinate_app_mobile_open_module_test_interface',
+          },
+        };
+      },
+    };
+  </script>
   <!-- Backend integration for real endpoint testing -->
   <script src="components/backend-connector.js"></script>
   <script>
