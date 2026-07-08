@@ -9102,7 +9102,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-734 Close objective gap: Interoperate swissknife with Mcp-Plus-Plus
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: interoperability
@@ -9454,7 +9454,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-744 Close objective gap: Hallucinate App MCP dashboard capability catalog
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P0
 - Track: launch
