@@ -2160,6 +2160,42 @@ const VAI_637_ATTEMPT_1_HALLUCINATE_VALIDATION_RECEIPT = path.join(
   '2026-07-04-vai-637-attempt-1-validation.md'
 );
 const VAI_637_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-637-mcp-dashboard-launch-gate.json');
+const VAI_682_OBJECTIVE_GAP_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-07-08-vai-682-objective-gap-7ea369464239.md'
+);
+const VAI_682_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-07-08-vai-682-mcp-dashboard-launch-gate.md'
+);
+const VAI_682_HALLUCINATE_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'hallucinate_multimodal_control',
+  'discovery',
+  '2026-07-08-vai-682-mcp-dashboard-launch-gate.md'
+);
+const VAI_682_ATTEMPT_1_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'virtual_ai_os',
+  'discovery',
+  '2026-07-08-vai-682-attempt-1-launch-playwright-validation-gate.md'
+);
+const VAI_682_ATTEMPT_1_HALLUCINATE_VALIDATION_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'hallucinate_multimodal_control',
+  'discovery',
+  '2026-07-08-vai-682-attempt-1-validation.md'
+);
+const VAI_682_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-682-mcp-dashboard-launch-gate.json');
 const VAI_576_OBJECTIVE_GAP_RECEIPT = path.join(
   REPO_ROOT,
   'data',
@@ -5453,6 +5489,90 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     expect(objectiveHeap).toContain('VAI-637 proof');
     expect(objectiveHeap).toContain('VAI-637 attempt 1 validation');
     expect(readinessDoc).toContain('VAI-637');
+    expect(readinessDoc).toContain(receipt.receipt_fixture);
+    expect(readinessDoc).toContain(receipt.launch_gate_receipt);
+    expect(readinessDoc).toContain(receipt.hallucinate_backlog_receipt);
+    expect(attempt1LaunchGateReceipt).toContain('missing_xvfb_for_electron_playwright');
+    expect(attempt1HallucinateValidationReceipt).toContain('control_surface gate');
+  });
+
+  test('closes the VAI-682 objective gap with the current Hallucinate MCP dashboard launch gate', () => {
+    const receipt = JSON.parse(fs.readFileSync(VAI_682_LAUNCH_GATE_FIXTURE, 'utf8'));
+    const launchGateReceipt = fs.readFileSync(VAI_682_LAUNCH_GATE_RECEIPT, 'utf8');
+    const hallucinateLaunchGateReceipt = fs.readFileSync(VAI_682_HALLUCINATE_LAUNCH_GATE_RECEIPT, 'utf8');
+    const attempt1LaunchGateReceipt = fs.readFileSync(VAI_682_ATTEMPT_1_LAUNCH_GATE_RECEIPT, 'utf8');
+    const attempt1HallucinateValidationReceipt = fs.readFileSync(VAI_682_ATTEMPT_1_HALLUCINATE_VALIDATION_RECEIPT, 'utf8');
+    const objectiveGap = fs.readFileSync(VAI_682_OBJECTIVE_GAP_RECEIPT, 'utf8');
+    const objectiveHeap = fs.readFileSync(MGW_OBJECTIVE_HEAP, 'utf8');
+    const readinessDoc = fs.readFileSync(LAUNCH_READINESS_DOC, 'utf8');
+    const catalog = new MCPDaemonManager().getDashboardCapabilityCatalog();
+    const launchGate = catalog.launch_validation_gates?.find((gate: any) => gate.task_id === 'VAI-682');
+    const vai512Catalog = JSON.parse(fs.readFileSync(VAI_512_CATALOG_FIXTURE, 'utf8'));
+
+    expect(receipt).toMatchObject({
+      schema: 'launch_readiness_receipt_v1',
+      task_id: 'VAI-682',
+      goal_id: 'VAIOS-G723',
+      lineage_id: 'VAIOS-G723:hallucinate-mcp-dashboard-interoperability-console',
+      evidence_term: 'launch Playwright validation gate',
+      source_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-08-vai-682-objective-gap-7ea369464239.md',
+      launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-08-vai-682-mcp-dashboard-launch-gate.md',
+      hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-vai-682-mcp-dashboard-launch-gate.md',
+      receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-682-mcp-dashboard-launch-gate.json',
+      catalog_schema: catalog.schema,
+      catalog_source: catalog.generated_by,
+      catalog_generated_by: catalog.generated_by
+    });
+    expect(receipt.required_evidence).toEqual(HAO_727_REQUIRED_EVIDENCE);
+    expect(receipt.child_goals).toEqual(MGW_546_CHILD_GOALS);
+    expect(receipt.follow_up_subtasks).toEqual(FOLLOW_UP_TASKS);
+    expect(receipt.supervisor_follow_up_subtasks).toEqual(FOLLOW_UP_TASKS);
+    expect(receipt.attempt_receipts).toEqual([
+      'data/virtual_ai_os/discovery/2026-07-08-vai-682-attempt-1-launch-playwright-validation-gate.md',
+      'data/hallucinate_multimodal_control/discovery/2026-07-08-vai-682-attempt-1-validation.md'
+    ]);
+    expect(launchGate).toMatchObject({
+      task_id: receipt.task_id,
+      goal_id: receipt.goal_id,
+      evidence_term: receipt.evidence_term,
+      supervisor_gap_receipt: receipt.source_gap_receipt,
+      launch_gate_receipt: receipt.launch_gate_receipt,
+      hallucinate_backlog_receipt: receipt.hallucinate_backlog_receipt,
+      receipt_fixture: receipt.receipt_fixture,
+      attempt: 1,
+      attempt_receipts: receipt.attempt_receipts,
+      child_goals: receipt.child_goals,
+      follow_up_subtasks: receipt.follow_up_subtasks
+    });
+    expect(vai512Catalog.launch_validation_gates.find((gate: any) => gate.task_id === 'VAI-682')).toEqual(launchGate);
+
+    for (const term of [
+      'Hallucinate App MCP dashboard',
+      'dashboard capability catalog',
+      'daemon health',
+      'tools/list',
+      'tools/call',
+      'ipfs_accelerate_py MCP server',
+      'ipfs_datasets_py MCP server',
+      'ipfs_kit_py MCP server',
+      'Swissknife applications',
+      'launch Playwright validation gate'
+    ]) {
+      expect(objectiveGap).toContain(term);
+    }
+
+    for (const term of receipt.required_evidence) {
+      expect(launchGateReceipt).toContain(term);
+      expect(hallucinateLaunchGateReceipt).toContain(term);
+      expect(attempt1LaunchGateReceipt).toContain(term);
+      expect(attempt1HallucinateValidationReceipt).toContain(term);
+      expect(objectiveHeap).toContain(term);
+      expect(readinessDoc).toContain(term);
+    }
+
+    expect(objectiveHeap).toContain('VAI-682 proof');
+    expect(objectiveHeap).toContain('VAI-682 attempt 1 validation');
+    expect(readinessDoc).toContain('VAI-682');
     expect(readinessDoc).toContain(receipt.receipt_fixture);
     expect(readinessDoc).toContain(receipt.launch_gate_receipt);
     expect(readinessDoc).toContain(receipt.hallucinate_backlog_receipt);
