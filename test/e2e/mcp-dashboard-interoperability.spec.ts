@@ -79,6 +79,7 @@ const MGW_562_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-562-mc
 const MGW_563_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-563-mcp-dashboard-launch-gate.json');
 const MGW_564_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-564-mcp-dashboard-launch-gate.json');
 const MGW_566_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-566-mcp-dashboard-launch-gate.json');
+const MGW_591_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-591-mcp-dashboard-launch-gate.json');
 const HAO_681_SWISSKNIFE_CONSUMER_FIXTURE = path.join(
   REPO_ROOT,
   'swissknife',
@@ -601,6 +602,27 @@ const MGW_566_ATTEMPT_2_HALLUCINATE_VALIDATION_RECEIPT = path.join(
   'hallucinate_multimodal_control',
   'discovery',
   '2026-07-02-mgw-566-attempt-2-validation.md'
+);
+const MGW_591_OBJECTIVE_GAP_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'meta_glasses_display_widgets',
+  'discovery',
+  '2026-07-08-mgw-591-objective-gap-7ea369464239.md'
+);
+const MGW_591_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'meta_glasses_display_widgets',
+  'discovery',
+  '2026-07-08-mgw-591-launch-playwright-validation-gate.md'
+);
+const MGW_591_HALLUCINATE_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'hallucinate_multimodal_control',
+  'discovery',
+  '2026-07-08-mgw-591-mcp-dashboard-launch-gate.md'
 );
 const VAI_563_OBJECTIVE_GAP_RECEIPT = path.join(
   REPO_ROOT,
@@ -6221,6 +6243,65 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     expect(objectiveHeap).toContain(receipt.launch_gate_receipt);
     expect(objectiveHeap).toContain(receipt.hallucinate_backlog_receipt);
     expect(readinessDoc).toContain('MGW-566');
+    expect(readinessDoc).toContain(receipt.receipt_fixture);
+    expect(readinessDoc).toContain(receipt.launch_gate_receipt);
+    expect(readinessDoc).toContain(receipt.hallucinate_backlog_receipt);
+  });
+
+  test('binds MGW-591 objective gap evidence to the VAIOS-G723 dashboard launch Playwright gate', () => {
+    const receipt = JSON.parse(fs.readFileSync(MGW_591_LAUNCH_GATE_FIXTURE, 'utf8'));
+    const objectiveGap = fs.readFileSync(MGW_591_OBJECTIVE_GAP_RECEIPT, 'utf8');
+    const launchGateReceipt = fs.readFileSync(MGW_591_LAUNCH_GATE_RECEIPT, 'utf8');
+    const hallucinateLaunchGateReceipt = fs.readFileSync(MGW_591_HALLUCINATE_LAUNCH_GATE_RECEIPT, 'utf8');
+    const objectiveHeap = fs.readFileSync(MGW_OBJECTIVE_HEAP, 'utf8');
+    const readinessDoc = fs.readFileSync(LAUNCH_READINESS_DOC, 'utf8');
+    const catalog = new MCPDaemonManager().getDashboardCapabilityCatalog();
+    const vai512Catalog = normalizeCatalogPorts(JSON.parse(fs.readFileSync(VAI_512_CATALOG_FIXTURE, 'utf8')));
+    const launchGate = catalog.launch_validation_gates?.find((gate: any) => gate.task_id === 'MGW-591');
+
+    expect(receipt).toMatchObject({
+      schema: 'launch_readiness_receipt_v1',
+      task_id: 'MGW-591',
+      goal_id: 'VAIOS-G723',
+      evidence_term: 'launch Playwright validation gate',
+      source_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-591-objective-gap-7ea369464239.md',
+      launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-591-launch-playwright-validation-gate.md',
+      hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-mgw-591-mcp-dashboard-launch-gate.md',
+      receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-591-mcp-dashboard-launch-gate.json',
+      catalog_schema: catalog.schema,
+      catalog_source: catalog.generated_by,
+      catalog_generated_by: catalog.generated_by
+    });
+    expect(receipt.playwright_specs).toEqual(expect.arrayContaining([
+      'hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts',
+      'hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts'
+    ]));
+    expect(receipt.validation_commands).toEqual(expect.arrayContaining([
+      'PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py tests/test_virtual_ai_os_todo_queue.py -q',
+      'npm --prefix hallucinate_app run test:daemon-manager',
+      'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
+      'npm --prefix swissknife run test:e2e:mcp'
+    ]));
+    expect(receipt.required_evidence).toEqual(HAO_727_REQUIRED_EVIDENCE);
+    expect(receipt.child_goals).toEqual(MGW_546_CHILD_GOALS);
+    expect(receipt.follow_up_subtasks).toEqual(FOLLOW_UP_TASKS);
+    expect(receipt.supervisor_follow_up_subtasks).toEqual(FOLLOW_UP_TASKS);
+    expect(launchGate).toEqual(receipt);
+    expect(vai512Catalog.launch_validation_gates.find((gate: any) => gate.task_id === 'MGW-591')).toEqual(receipt);
+
+    for (const term of receipt.required_evidence) {
+      expect(objectiveGap).toContain(term);
+      expect(launchGateReceipt).toContain(term);
+      expect(hallucinateLaunchGateReceipt).toContain(term);
+      expect(objectiveHeap).toContain(term);
+      expect(readinessDoc).toContain(term);
+    }
+
+    expect(objectiveHeap).toContain('MGW-591 proof');
+    expect(objectiveHeap).toContain(receipt.receipt_fixture);
+    expect(objectiveHeap).toContain(receipt.launch_gate_receipt);
+    expect(objectiveHeap).toContain(receipt.hallucinate_backlog_receipt);
+    expect(readinessDoc).toContain('MGW-591');
     expect(readinessDoc).toContain(receipt.receipt_fixture);
     expect(readinessDoc).toContain(receipt.launch_gate_receipt);
     expect(readinessDoc).toContain(receipt.hallucinate_backlog_receipt);
