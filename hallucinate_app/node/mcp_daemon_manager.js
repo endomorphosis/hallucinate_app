@@ -453,6 +453,22 @@ const HAO_742_LAUNCH_VALIDATION_GATE = {
   ],
   failure_rule: 'Any missing HAO-742 launch Playwright validation gate, catalog, daemon health, tools/list, tools/call, Swissknife consumer, or HAO-743 packet sibling evidence remains supervisor-fed launch work for VAIOS-G724 and VAIOS-G728.'
 };
+const HAO_744_LAUNCH_VALIDATION_GATE = {
+  ...HAO_742_LAUNCH_VALIDATION_GATE,
+  task_id: 'HAO-744',
+  packet_sibling_task_id: 'HAO-745',
+  packet_sibling_goal_id: 'VAIOS-G728',
+  source_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-744-objective-gap-3e00ad2a0074.md',
+  supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-744-objective-gap-3e00ad2a0074.md',
+  launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-744-mcp-dashboard-launch-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-744-mcp-dashboard-launch-gate.json',
+  external_backend_surfaces: [
+    'external/ipfs_accelerate',
+    'external/ipfs_datasets',
+    'external/ipfs_kit'
+  ],
+  failure_rule: 'Any missing HAO-744 launch Playwright validation gate, catalog, daemon health, tools/list, tools/call, Swissknife consumer, external backend surface, or HAO-745 packet sibling evidence remains supervisor-fed launch work for VAIOS-G724 and VAIOS-G728.'
+};
 const VAI_529_LAUNCH_VALIDATION_GATE = {
   ...MGW_533_LAUNCH_VALIDATION_GATE,
   task_id: 'VAI-529',
@@ -1797,6 +1813,7 @@ const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   HAO_720_LAUNCH_VALIDATION_GATE,
   HAO_724_LAUNCH_VALIDATION_GATE,
   HAO_742_LAUNCH_VALIDATION_GATE,
+  HAO_744_LAUNCH_VALIDATION_GATE,
   VAI_529_LAUNCH_VALIDATION_GATE,
   VAI_535_LAUNCH_VALIDATION_GATE,
   VAI_537_LAUNCH_VALIDATION_GATE,
@@ -2576,6 +2593,20 @@ const HAO_743_DAEMON_LAUNCH_VALIDATION_GATE = {
   launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-743-daemon-launch-health-gate.md',
   hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-743-daemon-launch-health-gate.md',
   receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-743-daemon-launch-health-gate.json',
+  validation_commands: [
+    'PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q',
+    'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts',
+    'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
+    'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
+  ]
+};
+const HAO_745_DAEMON_LAUNCH_VALIDATION_GATE = {
+  task_id: 'HAO-745',
+  objective_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-objective-gap-b023c8de5b69.md',
+  supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-objective-gap-b023c8de5b69.md',
+  launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-daemon-launch-health-gate.md',
+  hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-daemon-launch-health-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-745-daemon-launch-health-gate.json',
   validation_commands: [
     'PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q',
     'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts',
@@ -3689,6 +3720,14 @@ class MCPDaemonManager extends EventEmitter {
             playwright_spec: 'hallucinate_app/test/e2e/daemon-launch-health.spec.ts',
             supervisor_gap_receipt: HAO_743_DAEMON_LAUNCH_VALIDATION_GATE.supervisor_gap_receipt,
             launch_gate_receipt: HAO_743_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt
+          },
+          {
+            task_id: HAO_745_DAEMON_LAUNCH_VALIDATION_GATE.task_id,
+            goal_id: DAEMON_LAUNCH_GATE_GOAL_ID,
+            evidence_term: 'launch Playwright validation gate',
+            playwright_spec: 'hallucinate_app/test/e2e/daemon-launch-health.spec.ts',
+            supervisor_gap_receipt: HAO_745_DAEMON_LAUNCH_VALIDATION_GATE.supervisor_gap_receipt,
+            launch_gate_receipt: HAO_745_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt
           }
         ],
         daemon_id: config.id,
@@ -4283,6 +4322,31 @@ class MCPDaemonManager extends EventEmitter {
         hallucinate_backlog_receipts: [
           ...DAEMON_LAUNCH_GATE_HALLUCINATE_BACKLOG_RECEIPTS,
           HAO_743_DAEMON_LAUNCH_VALIDATION_GATE.hallucinate_backlog_receipt
+        ]
+      }),
+      this.getDaemonLaunchValidationGate({
+        ...HAO_745_DAEMON_LAUNCH_VALIDATION_GATE,
+        shared_packet_task_id: DAEMON_LAUNCH_GATE_TASK_ID,
+        discovery_receipts: [
+          ...DAEMON_LAUNCH_GATE_DISCOVERY_RECEIPTS,
+          HAO_743_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt,
+          HAO_745_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt
+        ],
+        objective_gap_receipt: HAO_745_DAEMON_LAUNCH_VALIDATION_GATE.objective_gap_receipt,
+        backlog_task_ids: [
+          ...DAEMON_LAUNCH_GATE_BACKLOG_TASK_IDS,
+          HAO_743_DAEMON_LAUNCH_VALIDATION_GATE.task_id,
+          HAO_745_DAEMON_LAUNCH_VALIDATION_GATE.task_id
+        ],
+        supervisor_gap_receipts: [
+          ...DAEMON_LAUNCH_GATE_SUPERVISOR_GAP_RECEIPTS,
+          HAO_743_DAEMON_LAUNCH_VALIDATION_GATE.supervisor_gap_receipt,
+          HAO_745_DAEMON_LAUNCH_VALIDATION_GATE.supervisor_gap_receipt
+        ],
+        hallucinate_backlog_receipts: [
+          ...DAEMON_LAUNCH_GATE_HALLUCINATE_BACKLOG_RECEIPTS,
+          HAO_743_DAEMON_LAUNCH_VALIDATION_GATE.hallucinate_backlog_receipt,
+          HAO_745_DAEMON_LAUNCH_VALIDATION_GATE.hallucinate_backlog_receipt
         ]
       })
     ];
