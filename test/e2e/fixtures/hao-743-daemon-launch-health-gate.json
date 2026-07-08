@@ -45,6 +45,7 @@
     "HAO-719",
     "HAO-721",
     "HAO-743",
+    "HAO-745",
     "HAO-755"
   ],
   "shared_packet_task_id": "MGW-535",
@@ -94,6 +95,7 @@
     "data/meta_glasses_display_widgets/discovery/2026-06-26-mgw-535-daemon-launch-health-gate.md",
     "data/meta_glasses_display_widgets/discovery/2026-06-28-mgw-551-daemon-launch-health-gate.md",
     "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-743-daemon-launch-health-gate.md",
+    "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-daemon-launch-health-gate.md",
     "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-daemon-launch-health-gate.md"
   ],
   "objective_gap_receipt": "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-743-objective-gap-b023c8de5b69.md",
@@ -133,6 +135,7 @@
     "data/virtual_ai_os/discovery/2026-07-04-vai-641-objective-gap-b023c8de5b69.md",
     "data/meta_glasses_display_widgets/discovery/2026-06-27-mgw-551-objective-gap-b023c8de5b69.md",
     "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-743-objective-gap-b023c8de5b69.md",
+    "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-objective-gap-b023c8de5b69.md",
     "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-objective-gap-b023c8de5b69.md"
   ],
   "supervisor_gap_receipt": "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-743-objective-gap-b023c8de5b69.md",
@@ -142,6 +145,7 @@
     "data/hallucinate_multimodal_control/discovery/2026-06-28-hao-719-objective-gap-b023c8de5b69.md",
     "data/hallucinate_multimodal_control/discovery/2026-06-28-hao-721-objective-gap-b023c8de5b69.md",
     "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-743-objective-gap-b023c8de5b69.md",
+    "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-objective-gap-b023c8de5b69.md",
     "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-objective-gap-b023c8de5b69.md"
   ],
   "hallucinate_backlog_receipt": "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-743-daemon-launch-health-gate.md",
@@ -151,6 +155,7 @@
     "data/hallucinate_multimodal_control/discovery/2026-06-28-hao-719-daemon-launch-health-gate.md",
     "data/hallucinate_multimodal_control/discovery/2026-06-28-hao-721-daemon-launch-health-gate.md",
     "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-743-daemon-launch-health-gate.md",
+    "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-daemon-launch-health-gate.md",
     "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-daemon-launch-health-gate.md"
   ],
   "launch_gate_receipt": "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-743-daemon-launch-health-gate.md",

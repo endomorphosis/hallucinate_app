@@ -1,7 +1,7 @@
 {
   "schema": "hallucinate_app.daemon_launch_validation_gate.v1",
   "receipt_schema": "launch_readiness_receipt_v1",
-  "task_id": "HAO-755",
+  "task_id": "HAO-745",
   "vai_task_id": "VAI-519",
   "vai_task_ids": [
     "VAI-519",
@@ -98,7 +98,7 @@
     "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-daemon-launch-health-gate.md",
     "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-daemon-launch-health-gate.md"
   ],
-  "objective_gap_receipt": "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-objective-gap-b023c8de5b69.md",
+  "objective_gap_receipt": "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-objective-gap-b023c8de5b69.md",
   "objective_gap_receipts": [
     "data/virtual_ai_os/discovery/2026-06-26-vai-519-objective-gap-b023c8de5b69.md",
     "data/virtual_ai_os/discovery/2026-06-27-vai-530-objective-gap-b023c8de5b69.md",
@@ -138,7 +138,7 @@
     "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-objective-gap-b023c8de5b69.md",
     "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-objective-gap-b023c8de5b69.md"
   ],
-  "supervisor_gap_receipt": "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-objective-gap-b023c8de5b69.md",
+  "supervisor_gap_receipt": "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-objective-gap-b023c8de5b69.md",
   "supervisor_gap_receipts": [
     "data/hallucinate_multimodal_control/discovery/2026-06-26-hao-702-objective-gap-b023c8de5b69.md",
     "data/hallucinate_multimodal_control/discovery/2026-06-27-hao-713-objective-gap-b023c8de5b69.md",
@@ -148,7 +148,7 @@
     "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-objective-gap-b023c8de5b69.md",
     "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-objective-gap-b023c8de5b69.md"
   ],
-  "hallucinate_backlog_receipt": "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-daemon-launch-health-gate.md",
+  "hallucinate_backlog_receipt": "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-daemon-launch-health-gate.md",
   "hallucinate_backlog_receipts": [
     "data/hallucinate_multimodal_control/discovery/2026-06-26-hao-702-daemon-launch-health-gate.md",
     "data/hallucinate_multimodal_control/discovery/2026-06-27-hao-713-daemon-launch-health-gate.md",
@@ -158,8 +158,8 @@
     "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-daemon-launch-health-gate.md",
     "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-daemon-launch-health-gate.md"
   ],
-  "launch_gate_receipt": "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-daemon-launch-health-gate.md",
-  "receipt_fixture": "hallucinate_app/test/e2e/fixtures/hao-755-daemon-launch-health-gate.json",
+  "launch_gate_receipt": "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-daemon-launch-health-gate.md",
+  "receipt_fixture": "hallucinate_app/test/e2e/fixtures/hao-745-daemon-launch-health-gate.json",
   "validation_commands": [
     "PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q",
     "test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts",

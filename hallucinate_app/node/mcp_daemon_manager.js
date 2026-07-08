@@ -1925,7 +1925,7 @@ const DAEMON_LAUNCH_GATE_VAI_TASK_IDS = [
   'VAI-641'
 ];
 const DAEMON_LAUNCH_GATE_BACKLOG_TASK_ID = 'HAO-702';
-const DAEMON_LAUNCH_GATE_BACKLOG_TASK_IDS = ['HAO-702', 'HAO-713', 'HAO-719', 'HAO-721', 'HAO-743', 'HAO-755'];
+const DAEMON_LAUNCH_GATE_BACKLOG_TASK_IDS = ['HAO-702', 'HAO-713', 'HAO-719', 'HAO-721', 'HAO-743', 'HAO-745', 'HAO-755'];
 const DAEMON_LAUNCH_GATE_GOAL_ID = 'VAIOS-G728';
 const DAEMON_LAUNCH_GATE_PACKET_ID = 'goal_packet/launch/hallucinate_app/44dceea6bc53';
 const DAEMON_LAUNCH_GATE_PACKET_GOALS = ['VAIOS-G724', 'VAIOS-G728'];
@@ -1971,6 +1971,7 @@ const DAEMON_LAUNCH_GATE_DISCOVERY_RECEIPTS = [
   'data/meta_glasses_display_widgets/discovery/2026-06-26-mgw-535-daemon-launch-health-gate.md',
   'data/meta_glasses_display_widgets/discovery/2026-06-28-mgw-551-daemon-launch-health-gate.md',
   'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-743-daemon-launch-health-gate.md',
+  'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-daemon-launch-health-gate.md',
   'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-daemon-launch-health-gate.md'
 ];
 const DAEMON_LAUNCH_GATE_OBJECTIVE_GAP_RECEIPTS = [
@@ -2009,6 +2010,7 @@ const DAEMON_LAUNCH_GATE_OBJECTIVE_GAP_RECEIPTS = [
   'data/virtual_ai_os/discovery/2026-07-04-vai-641-objective-gap-b023c8de5b69.md',
   'data/meta_glasses_display_widgets/discovery/2026-06-27-mgw-551-objective-gap-b023c8de5b69.md',
   'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-743-objective-gap-b023c8de5b69.md',
+  'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-objective-gap-b023c8de5b69.md',
   'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-objective-gap-b023c8de5b69.md'
 ];
 const DAEMON_LAUNCH_GATE_SUPERVISOR_GAP_RECEIPTS = [
@@ -2017,6 +2019,7 @@ const DAEMON_LAUNCH_GATE_SUPERVISOR_GAP_RECEIPTS = [
   'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-719-objective-gap-b023c8de5b69.md',
   'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-721-objective-gap-b023c8de5b69.md',
   'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-743-objective-gap-b023c8de5b69.md',
+  'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-objective-gap-b023c8de5b69.md',
   'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-objective-gap-b023c8de5b69.md'
 ];
 const DAEMON_LAUNCH_GATE_HALLUCINATE_BACKLOG_RECEIPTS = [
@@ -2025,6 +2028,7 @@ const DAEMON_LAUNCH_GATE_HALLUCINATE_BACKLOG_RECEIPTS = [
   'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-719-daemon-launch-health-gate.md',
   'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-721-daemon-launch-health-gate.md',
   'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-743-daemon-launch-health-gate.md',
+  'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-daemon-launch-health-gate.md',
   'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-daemon-launch-health-gate.md'
 ];
 const MGW_551_DAEMON_LAUNCH_VALIDATION_GATE = {
@@ -2595,6 +2599,20 @@ const HAO_743_DAEMON_LAUNCH_VALIDATION_GATE = {
   launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-743-daemon-launch-health-gate.md',
   hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-743-daemon-launch-health-gate.md',
   receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-743-daemon-launch-health-gate.json',
+  validation_commands: [
+    'PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q',
+    'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts',
+    'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
+    'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
+  ]
+};
+const HAO_745_DAEMON_LAUNCH_VALIDATION_GATE = {
+  task_id: 'HAO-745',
+  objective_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-objective-gap-b023c8de5b69.md',
+  supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-objective-gap-b023c8de5b69.md',
+  launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-daemon-launch-health-gate.md',
+  hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-daemon-launch-health-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-745-daemon-launch-health-gate.json',
   validation_commands: [
     'PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q',
     'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts',
@@ -3724,6 +3742,15 @@ class MCPDaemonManager extends EventEmitter {
             launch_gate_receipt: HAO_743_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt
           },
           {
+            task_id: HAO_745_DAEMON_LAUNCH_VALIDATION_GATE.task_id,
+            goal_id: DAEMON_LAUNCH_GATE_GOAL_ID,
+            evidence_term: 'launch Playwright validation gate',
+            playwright_spec: 'hallucinate_app/test/e2e/daemon-launch-health.spec.ts',
+            objective_gap_receipt: HAO_745_DAEMON_LAUNCH_VALIDATION_GATE.objective_gap_receipt,
+            supervisor_gap_receipt: HAO_745_DAEMON_LAUNCH_VALIDATION_GATE.supervisor_gap_receipt,
+            launch_gate_receipt: HAO_745_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt
+          },
+          {
             task_id: HAO_755_DAEMON_LAUNCH_VALIDATION_GATE.task_id,
             goal_id: DAEMON_LAUNCH_GATE_GOAL_ID,
             evidence_term: 'launch Playwright validation gate',
@@ -4338,6 +4365,14 @@ class MCPDaemonManager extends EventEmitter {
           ...DAEMON_LAUNCH_GATE_DISCOVERY_RECEIPTS
         ],
         objective_gap_receipt: HAO_743_DAEMON_LAUNCH_VALIDATION_GATE.objective_gap_receipt
+      }),
+      this.getDaemonLaunchValidationGate({
+        ...HAO_745_DAEMON_LAUNCH_VALIDATION_GATE,
+        shared_packet_task_id: DAEMON_LAUNCH_GATE_TASK_ID,
+        discovery_receipts: [
+          ...DAEMON_LAUNCH_GATE_DISCOVERY_RECEIPTS
+        ],
+        objective_gap_receipt: HAO_745_DAEMON_LAUNCH_VALIDATION_GATE.objective_gap_receipt
       }),
       this.getDaemonLaunchValidationGate({
         ...HAO_755_DAEMON_LAUNCH_VALIDATION_GATE,
