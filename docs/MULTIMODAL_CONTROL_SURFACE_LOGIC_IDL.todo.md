@@ -9554,3 +9554,14 @@ UI-plane participants and runtime-plane targets.
 - Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, tests/integration/test_mobile_external_ipfs_accelerate_interop.py, docs/integration/mobile-external_ipfs_accelerate.md, mobile, external/ipfs_accelerate, external/ipfs_accelerate/data/duckdb/db_schema/time_series_schema.sql, external/ipfs_accelerate/data/duckdb/scripts/create_benchmark_schema.py, external/ipfs_accelerate/data/duckdb/utils/check_database_schema.py, external/ipfs_accelerate/data/duckdb/utils/check_db_schema.py
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-08-hao-748-hao-741-merge-retry-budget.md
 - Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-741. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-08-hao-748-hao-741-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-741 from strategy blocked_tasks.
+
+## HAO-749 Resolve merge retry-budget failure for HAO-730
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: ops
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, tests/integration/test_swissknife_mobile_interop.py, docs/integration/swissknife-mobile.md, swissknife, mobile, mobile/src/orb/metaGlassesOrbDescriptors.js, mobile/src/utils/metaWearablesDatDisplayWidgetContract.js, swissknife/contracts/control_surface_contract.schema.json, swissknife/contracts/interaction_envelope.schema.json
+- Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-08-hao-749-hao-730-merge-retry-budget.md
+- Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-730. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-08-hao-749-hao-730-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-730 from strategy blocked_tasks.
