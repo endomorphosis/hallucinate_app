@@ -9,6 +9,35 @@
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+  <script type="application/json" id="hallucinate-app-mobile-interop-fixture">
+    {
+      "contract": "interface contract hallucinate_app mobile",
+      "event": "hallucinate-app:mobile-interop-handoff",
+      "descriptor": "HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR",
+      "mobileInterface": "handsfree.meta_glasses.mobile.hallucinate_app_mobile_interop@0.1.0",
+      "source": "hallucinate_app.content_browser.search_interface",
+      "route": {
+        "from": "hallucinate_app",
+        "to": "mobile",
+        "transport": "mobile_orb_bridge",
+        "target_surface": "meta_glasses_display"
+      },
+      "persistence": {
+        "duckdbTable": "hallucinate_app_mobile_interop_events",
+        "schemaPath": "hallucinate_app/ipfs_accelerate_py/data/duckdb/db_schema/time_series_schema.sql"
+      },
+      "samplePayload": {
+        "action": "search",
+        "query": "show saved model artifacts on glasses",
+        "filter": {
+          "mimetype": "application/json",
+          "metadata": {
+            "surface": "mobile"
+          }
+        }
+      }
+    }
+  </script>
   <div class="app-container">
     <!-- Header -->
     <header class="header">
