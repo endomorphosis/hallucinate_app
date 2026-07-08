@@ -79,6 +79,7 @@ const VAI_660_ATTEMPT_RECEIPT = path.join(
 const HAO_719_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-719-daemon-launch-health-gate.json');
 const HAO_721_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-721-daemon-launch-health-gate.json');
 const HAO_743_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-743-daemon-launch-health-gate.json');
+const HAO_755_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-755-daemon-launch-health-gate.json');
 const HAO_715_REPAIR_RECEIPT = path.join(
   repoRoot,
   'data',
@@ -329,7 +330,8 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
       'VAI-660',
       'HAO-719',
       'HAO-721',
-      'HAO-743'
+      'HAO-743',
+      'HAO-755'
     ]);
     expect(gate.goal_id).toBe('VAIOS-G728');
     expect(gate.goal_packet).toBe('goal_packet/launch/hallucinate_app/44dceea6bc53');
@@ -870,6 +872,13 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
         fixturePath: HAO_743_GATE_FIXTURE,
         gapReceipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-743-objective-gap-b023c8de5b69.md',
         launchReceipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-743-daemon-launch-health-gate.md',
+        daemonLaunchCommand: 'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts'
+      },
+      {
+        taskId: 'HAO-755',
+        fixturePath: HAO_755_GATE_FIXTURE,
+        gapReceipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-objective-gap-b023c8de5b69.md',
+        launchReceipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-daemon-launch-health-gate.md',
         daemonLaunchCommand: 'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts'
       }
     ];
