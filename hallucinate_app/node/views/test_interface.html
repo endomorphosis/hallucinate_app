@@ -82,25 +82,40 @@
           </div>
         </div>
 
-        <div class="card" id="hallucinate-app-mobile-interop-contract" data-contract-id="interface contract hallucinate_app mobile">
+        <!-- VAI-674 / VAIOS-G707 objective validation repair: this fixture is the
+             machine-readable proof that `interface contract hallucinate_app mobile`
+             is scanner-visible and testable. It mirrors
+             mobile/src/orb/metaGlassesOrbDescriptors.js::HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR
+             and
+             hallucinate_app/hallucinate_app/node/dashboard/content_browser/search_interface.js::HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR. -->
+        <div class="card" id="hallucinate-app-mobile-interop-contract" data-contract-id="interface contract hallucinate_app mobile" data-event-name="hallucinate-app:mobile-interop-handoff" data-receipt-table="hallucinate_app_mobile_interop_receipts" data-vai-task-id="VAI-674" data-goal-id="VAIOS-G707">
           <div class="card-header">
             <h2>Hallucinate App Mobile Handoff</h2>
           </div>
           <div class="card-body">
             <div class="form-group">
               <label for="mobileInteropContract">Interface descriptor:</label>
-              <textarea id="mobileInteropContract" rows="9" readonly>{
+              <textarea id="mobileInteropContract" rows="14" readonly>{
   "contract_id": "interface contract hallucinate_app mobile",
   "source_surface": "hallucinate_app",
   "target_surface": "mobile",
   "control_surface_contract_ref": "control_surface_contract:hallucinate-app:remote-client",
+  "event_name": "hallucinate-app:mobile-interop-handoff",
+  "receipt_table": "hallucinate_app_mobile_interop_receipts",
   "routes": [
     "/v1/mobile/orb/register_edge_capabilities",
     "/v1/mobile/orb/invoke_service",
     "/v1/mobile/orb/dispatch_glasses_response",
     "/v1/mobile/orb/diagnostics"
   ],
-  "artifacts": ["interaction_envelope", "policy_decision", "mediation_receipt"]
+  "artifacts": ["interaction_envelope", "policy_decision", "mediation_receipt"],
+  "validation": {
+    "task_id": "VAI-674",
+    "goal_id": "VAIOS-G707",
+    "objective_gap_ref": "data/virtual_ai_os/discovery/2026-07-08-vai-674-objective-gap-7edb316279e5.md",
+    "validation_repair_ref": "data/virtual_ai_os/discovery/2026-07-08-vai-674-objective-validation-repair.md",
+    "evidence": "objective validation repair"
+  }
 }</textarea>
             </div>
             <div class="module-test-results">
