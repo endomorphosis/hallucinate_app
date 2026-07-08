@@ -1191,6 +1191,34 @@ const VAI_637_LAUNCH_VALIDATION_GATE = {
   ],
   failure_rule: 'Any VAI-637 dashboard catalog, UI wiring, mediated tools/list, mediated tools/call, Swissknife consumer, backend validation, Playwright coverage, or supervisor follow-up failure remains supervisor-generated follow-up work for VAIOS-G723.'
 };
+const VAI_682_LAUNCH_VALIDATION_GATE = {
+  ...MGW_566_LAUNCH_VALIDATION_GATE,
+  task_id: 'VAI-682',
+  source_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-08-vai-682-objective-gap-7ea369464239.md',
+  supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-08-vai-682-objective-gap-7ea369464239.md',
+  launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-08-vai-682-mcp-dashboard-launch-gate.md',
+  hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-vai-682-mcp-dashboard-launch-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-682-mcp-dashboard-launch-gate.json',
+  attempt: 1,
+  todo_source: {
+    file: 'implementation_plan/docs/19-virtual-ai-os-submodule-integration.todo.md',
+    source_line: 9430
+  },
+  attempt_receipts: [
+    'data/virtual_ai_os/discovery/2026-07-08-vai-682-attempt-1-launch-playwright-validation-gate.md',
+    'data/hallucinate_multimodal_control/discovery/2026-07-08-vai-682-attempt-1-validation.md'
+  ],
+  validation_commands: [
+    'PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py tests/test_virtual_ai_os_todo_queue.py -q',
+    'npm --prefix hallucinate_app run test:daemon-manager',
+    'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
+    'cd hallucinate_app && (env -u DISPLAY -u WAYLAND_DISPLAY HALLUCINATE_APP_E2E_NO_BOOTSTRAP=true node scripts/run_playwright_test.mjs --help || test $? -eq 78)',
+    'npm --prefix swissknife run test:e2e:mcp',
+    'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
+    'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
+  ],
+  failure_rule: 'Any VAI-682 dashboard catalog normalization, dashboard UI wiring, mediated tools/list, mediated tools/call, Swissknife consumer, backend validation, Playwright coverage, or supervisor-generated follow-up subtask failure remains launch work for VAIOS-G723.'
+};
 const MGW_555_LAUNCH_VALIDATION_GATE = {
   ...MGW_533_LAUNCH_VALIDATION_GATE,
   task_id: 'MGW-555',
@@ -1861,6 +1889,7 @@ const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   VAI_631_LAUNCH_VALIDATION_GATE,
   VAI_634_LAUNCH_VALIDATION_GATE,
   VAI_637_LAUNCH_VALIDATION_GATE,
+  VAI_682_LAUNCH_VALIDATION_GATE,
   VAI_595_LAUNCH_VALIDATION_GATE,
   VAI_598_LAUNCH_VALIDATION_GATE,
   VAI_601_LAUNCH_VALIDATION_GATE,
