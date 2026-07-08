@@ -8962,7 +8962,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-730 Close objective gap: Interoperate swissknife with mobile
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: interoperability
