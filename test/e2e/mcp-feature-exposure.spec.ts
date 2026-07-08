@@ -482,6 +482,16 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
         receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-558-mcp-dashboard-launch-gate.json'
       }),
       expect.objectContaining({
+        task_id: 'MGW-581',
+        goal_id: 'VAIOS-G723',
+        evidence_term: 'launch Playwright validation gate',
+        supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-581-objective-gap-7ea369464239.md',
+        launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-581-launch-playwright-validation-gate.md',
+        hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-mgw-581-mcp-dashboard-launch-gate.md',
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-581-mcp-dashboard-launch-gate.json',
+        attempt: 1
+      }),
+      expect.objectContaining({
         task_id: 'MGW-559',
         goal_id: 'VAIOS-G723',
         evidence_term: 'launch Playwright validation gate',
