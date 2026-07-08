@@ -8959,3 +8959,423 @@ UI-plane participants and runtime-plane targets.
 - Candidate kind: validation_gate
 - Todo vector key: 423c5c08373fafe1
 - Acceptance: Objective scan filed this gap for VAIOS-G723. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-06-30-hao-729-objective-gap-7ea369464239.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (launch Playwright validation gate), and keep the supervisor-fed backlog aligned with the objective heap.  Add child goals for catalog normalization, dashboard UI wiring, mediated tool-call receipts, Swissknife consumers, Playwright coverage, and supervisor-generated follow-up subtasks if any dashboard or backend validation fails.
+
+## HAO-730 Close objective gap: Interoperate swissknife with mobile
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: interoperability
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, tests/integration/test_swissknife_mobile_interop.py, docs/integration/swissknife-mobile.md, swissknife, mobile, mobile/src/orb/metaGlassesOrbDescriptors.js, mobile/src/utils/metaWearablesDatDisplayWidgetContract.js, swissknife/contracts/control_surface_contract.schema.json, swissknife/contracts/interaction_envelope.schema.json
+- Validation: python -m pytest tests/integration -q
+- Bundle: objective/interoperability/swissknife-mobile
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-interoperability-swissknife-mobile.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G000
+- Graph depth: 1
+- Parallel lane: objective/interoperability/swissknife-mobile
+- Conflict policy: keep pair-specific integration edits isolated; use the LLM merge resolver for conflicts
+- Goal id: VAIOS-G700
+- Missing evidence: objective validation repair
+- Embedding query: swissknife mobile interoperability integration test interface descriptor Bio PIL __future__ argparse asyncio base64 collections concurrent contextlib cross cross_browser_model_sharding dataclasses
+- AST query: swissknife, mobile, interface contract, integration test, Bio, PIL, __future__, argparse, asyncio, base64, collections, concurrent, contextlib, cross, cross_browser_model_sharding, dataclasses
+- Surplus group: objective/VAIOS-G700
+- Merge key: 51d2d704bb124dec
+- Merge family: goal_packet/interoperability/swissknife/06921590135c
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair; goal_subgoal_packet
+- Goal packet: goal_packet/interoperability/swissknife/06921590135c
+- Goal packet role: packet_anchor
+- Goal packet goals: VAIOS-G700, VAIOS-G701, VAIOS-G702, VAIOS-G703, VAIOS-G704, VAIOS-G705, VAIOS-G706
+- Goal packet task count: 7
+- Goal packet work item count: 7
+- Candidate kind: validation_gate
+- Todo vector key: 6f5ab1cbfcdc3026
+- Acceptance: Objective scan filed this gap for VAIOS-G700. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-08-hao-730-objective-gap-d33307f93408.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/interoperability/swissknife/06921590135c; implement a complete, cohesive change that fully advances the packet goals (VAIOS-G700, VAIOS-G701, VAIOS-G702, VAIOS-G703, VAIOS-G704, VAIOS-G705, VAIOS-G706) and covers all the shared packet evidence in one comprehensive pass. Refine the objective heap if the gap needs smaller child goals.
+
+## HAO-731 Close objective gap: Interoperate swissknife with external/ipfs_accelerate
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: interoperability
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, tests/integration/test_swissknife_external_ipfs_accelerate_interop.py, docs/integration/swissknife-external_ipfs_accelerate.md, swissknife, external/ipfs_accelerate, external/ipfs_accelerate/data/duckdb/db_schema/time_series_schema.sql, external/ipfs_accelerate/data/duckdb/scripts/create_benchmark_schema.py, external/ipfs_accelerate/data/duckdb/utils/check_database_schema.py, external/ipfs_accelerate/data/duckdb/utils/check_db_schema.py
+- Validation: python -m pytest tests/integration -q
+- Bundle: objective/interoperability/swissknife-external_ipfs_accelerate
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-interoperability-swissknife-external_ipfs_accelerate.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G000
+- Graph depth: 1
+- Parallel lane: objective/interoperability/swissknife-external_ipfs_accelerate
+- Conflict policy: keep pair-specific integration edits isolated; use the LLM merge resolver for conflicts
+- Goal id: VAIOS-G701
+- Missing evidence: objective validation repair
+- Embedding query: swissknife external/ipfs_accelerate interoperability integration test interface descriptor Bio PIL __future__ _jsonnet abc anyio argparse ast asyncio atexit base64 boto3
+- AST query: swissknife, external/ipfs_accelerate, interface contract, integration test, Bio, PIL, __future__, _jsonnet, abc, anyio, argparse, ast, asyncio, atexit, base64, boto3
+- Surplus group: objective/VAIOS-G701
+- Merge key: 73a289c5baecf2dc
+- Merge family: goal_packet/interoperability/swissknife/06921590135c
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair; goal_subgoal_packet
+- Goal packet: goal_packet/interoperability/swissknife/06921590135c
+- Goal packet role: packet_member
+- Goal packet goals: VAIOS-G700, VAIOS-G701, VAIOS-G702, VAIOS-G703, VAIOS-G704, VAIOS-G705, VAIOS-G706
+- Goal packet task count: 7
+- Goal packet work item count: 7
+- Candidate kind: validation_gate
+- Todo vector key: 7114ccc7230426cd
+- Acceptance: Objective scan filed this gap for VAIOS-G701. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-08-hao-731-objective-gap-2394e45d2012.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/interoperability/swissknife/06921590135c; implement a complete, cohesive change that fully advances the packet goals (VAIOS-G700, VAIOS-G701, VAIOS-G702, VAIOS-G703, VAIOS-G704, VAIOS-G705, VAIOS-G706) and covers all the shared packet evidence in one comprehensive pass. Refine the objective heap if the gap needs smaller child goals.
+
+## HAO-732 Close objective gap: Interoperate swissknife with external/ipfs_datasets
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: interoperability
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, tests/integration/test_swissknife_external_ipfs_datasets_interop.py, docs/integration/swissknife-external_ipfs_datasets.md, swissknife, external/ipfs_datasets, external/ipfs_datasets/.tools/ipfs_kit_py/data/deprecations_report.schema.json, external/ipfs_datasets/.tools/ipfs_kit_py/docs/implementation/BUCKET_VFS_INTERFACES_COMPLETE.md, external/ipfs_datasets/.tools/ipfs_kit_py/examples/demo_bucket_vfs_interfaces.py, external/ipfs_datasets/.tools/ipfs_kit_py/examples/demo_unified_bucket_interface.py
+- Validation: python -m pytest tests/integration -q
+- Bundle: objective/interoperability/swissknife-external_ipfs_datasets
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-interoperability-swissknife-external_ipfs_datasets.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G000
+- Graph depth: 1
+- Parallel lane: objective/interoperability/swissknife-external_ipfs_datasets
+- Conflict policy: keep pair-specific integration edits isolated; use the LLM merge resolver for conflicts
+- Goal id: VAIOS-G702
+- Missing evidence: objective validation repair
+- Embedding query: swissknife external/ipfs_datasets interoperability integration test interface descriptor Bio PIL __future__ _jsonnet abc anyio argparse ast asyncio atexit base64 boto3
+- AST query: swissknife, external/ipfs_datasets, interface contract, integration test, Bio, PIL, __future__, _jsonnet, abc, anyio, argparse, ast, asyncio, atexit, base64, boto3
+- Surplus group: objective/VAIOS-G702
+- Merge key: 2c80d7fe82fec311
+- Merge family: goal_packet/interoperability/swissknife/06921590135c
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair; goal_subgoal_packet
+- Goal packet: goal_packet/interoperability/swissknife/06921590135c
+- Goal packet role: packet_member
+- Goal packet goals: VAIOS-G700, VAIOS-G701, VAIOS-G702, VAIOS-G703, VAIOS-G704, VAIOS-G705, VAIOS-G706
+- Goal packet task count: 7
+- Goal packet work item count: 7
+- Candidate kind: validation_gate
+- Todo vector key: bf639e7f481bbb5a
+- Acceptance: Objective scan filed this gap for VAIOS-G702. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-08-hao-732-objective-gap-c21adb3eb488.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/interoperability/swissknife/06921590135c; implement a complete, cohesive change that fully advances the packet goals (VAIOS-G700, VAIOS-G701, VAIOS-G702, VAIOS-G703, VAIOS-G704, VAIOS-G705, VAIOS-G706) and covers all the shared packet evidence in one comprehensive pass. Refine the objective heap if the gap needs smaller child goals.
+
+## HAO-733 Close objective gap: Interoperate swissknife with external/ipfs_kit
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: interoperability
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, tests/integration/test_swissknife_external_ipfs_kit_interop.py, docs/integration/swissknife-external_ipfs_kit.md, swissknife, external/ipfs_kit, external/ipfs_kit/archive/archive_clutter/fix_scripts/fix_mcp_schema.py, external/ipfs_kit/backup/archive_clutter/fix_scripts/fix_mcp_schema.py, external/ipfs_kit/backup/patches/fixes/fix_mcp_schema.py, external/ipfs_kit/data/deprecations_report.schema.json
+- Validation: python -m pytest tests/integration -q
+- Bundle: objective/interoperability/swissknife-external_ipfs_kit
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-interoperability-swissknife-external_ipfs_kit.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G000
+- Graph depth: 1
+- Parallel lane: objective/interoperability/swissknife-external_ipfs_kit
+- Conflict policy: keep pair-specific integration edits isolated; use the LLM merge resolver for conflicts
+- Goal id: VAIOS-G703
+- Missing evidence: objective validation repair
+- Embedding query: swissknife external/ipfs_kit interoperability integration test interface descriptor Bio PIL __future__ aiofiles aiohttp anyio argparse ast asyncio atexit base64 binascii
+- AST query: swissknife, external/ipfs_kit, interface contract, integration test, Bio, PIL, __future__, aiofiles, aiohttp, anyio, argparse, ast, asyncio, atexit, base64, binascii
+- Surplus group: objective/VAIOS-G703
+- Merge key: 5a95a3711a64a61f
+- Merge family: goal_packet/interoperability/swissknife/06921590135c
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair; goal_subgoal_packet
+- Goal packet: goal_packet/interoperability/swissknife/06921590135c
+- Goal packet role: packet_member
+- Goal packet goals: VAIOS-G700, VAIOS-G701, VAIOS-G702, VAIOS-G703, VAIOS-G704, VAIOS-G705, VAIOS-G706
+- Goal packet task count: 7
+- Goal packet work item count: 7
+- Candidate kind: validation_gate
+- Todo vector key: 0756dbe3aed2c834
+- Acceptance: Objective scan filed this gap for VAIOS-G703. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-08-hao-733-objective-gap-f463532ba4e3.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/interoperability/swissknife/06921590135c; implement a complete, cohesive change that fully advances the packet goals (VAIOS-G700, VAIOS-G701, VAIOS-G702, VAIOS-G703, VAIOS-G704, VAIOS-G705, VAIOS-G706) and covers all the shared packet evidence in one comprehensive pass. Refine the objective heap if the gap needs smaller child goals.
+
+## HAO-734 Close objective gap: Interoperate swissknife with Mcp-Plus-Plus
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: interoperability
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, tests/integration/test_swissknife_mcp_plus_plus_interop.py, docs/integration/swissknife-mcp_plus_plus.md, swissknife, Mcp-Plus-Plus, Mcp-Plus-Plus/tests-py/fixtures/valid/mcp_idl_descriptor.json, swissknife/contracts/control_surface_contract.schema.json, swissknife/contracts/interaction_envelope.schema.json, swissknife/contracts/mcp_plus_plus_compatibility_receipt.schema.json
+- Validation: python -m pytest tests/integration -q
+- Bundle: objective/interoperability/swissknife-mcp_plus_plus
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-interoperability-swissknife-mcp_plus_plus.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G000
+- Graph depth: 1
+- Parallel lane: objective/interoperability/swissknife-mcp_plus_plus
+- Conflict policy: keep pair-specific integration edits isolated; use the LLM merge resolver for conflicts
+- Goal id: VAIOS-G704
+- Missing evidence: objective validation repair
+- Embedding query: swissknife Mcp-Plus-Plus interoperability integration test interface descriptor Bio PIL __future__ argparse asyncio base64 collections concurrent contextlib cross cross_browser_model_sharding dataclasses
+- AST query: swissknife, Mcp-Plus-Plus, interface contract, integration test, Bio, PIL, __future__, argparse, asyncio, base64, collections, concurrent, contextlib, cross, cross_browser_model_sharding, dataclasses
+- Surplus group: objective/VAIOS-G704
+- Merge key: 9221543d39ab1ebb
+- Merge family: goal_packet/interoperability/swissknife/06921590135c
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair; goal_subgoal_packet
+- Goal packet: goal_packet/interoperability/swissknife/06921590135c
+- Goal packet role: packet_member
+- Goal packet goals: VAIOS-G700, VAIOS-G701, VAIOS-G702, VAIOS-G703, VAIOS-G704, VAIOS-G705, VAIOS-G706
+- Goal packet task count: 7
+- Goal packet work item count: 7
+- Candidate kind: validation_gate
+- Todo vector key: d3588c0baeb3a11e
+- Acceptance: Objective scan filed this gap for VAIOS-G704. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-08-hao-734-objective-gap-57359897bf4f.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/interoperability/swissknife/06921590135c; implement a complete, cohesive change that fully advances the packet goals (VAIOS-G700, VAIOS-G701, VAIOS-G702, VAIOS-G703, VAIOS-G704, VAIOS-G705, VAIOS-G706) and covers all the shared packet evidence in one comprehensive pass. Refine the objective heap if the gap needs smaller child goals.
+
+## HAO-735 Close objective gap: Interoperate swissknife with external/meta-wearables-dat-android
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: interoperability
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, tests/integration/test_swissknife_external_meta_wearables_dat_android_interop.py, docs/integration/swissknife-external_meta_wearables_dat_android.md, swissknife, external/meta-wearables-dat-android, swissknife/contracts/control_surface_contract.schema.json, swissknife/contracts/interaction_envelope.schema.json, swissknife/contracts/mcp_plus_plus_compatibility_receipt.schema.json, swissknife/contracts/mediation_receipt.schema.json
+- Validation: python -m pytest tests/integration -q
+- Bundle: objective/interoperability/swissknife-external_meta_wearables_dat_android
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-interoperability-swissknife-external_meta_wearables_dat_android.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G000
+- Graph depth: 1
+- Parallel lane: objective/interoperability/swissknife-external_meta_wearables_dat_android
+- Conflict policy: keep pair-specific integration edits isolated; use the LLM merge resolver for conflicts
+- Goal id: VAIOS-G705
+- Missing evidence: objective validation repair
+- Embedding query: swissknife external/meta-wearables-dat-android interoperability integration test interface descriptor Bio PIL __future__ argparse asyncio base64 collections concurrent contextlib cross cross_browser_model_sharding dataclasses
+- AST query: swissknife, external/meta-wearables-dat-android, interface contract, integration test, Bio, PIL, __future__, argparse, asyncio, base64, collections, concurrent, contextlib, cross, cross_browser_model_sharding, dataclasses
+- Surplus group: objective/VAIOS-G705
+- Merge key: 326e147a49d08a18
+- Merge family: goal_packet/interoperability/swissknife/06921590135c
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair; goal_subgoal_packet
+- Goal packet: goal_packet/interoperability/swissknife/06921590135c
+- Goal packet role: packet_member
+- Goal packet goals: VAIOS-G700, VAIOS-G701, VAIOS-G702, VAIOS-G703, VAIOS-G704, VAIOS-G705, VAIOS-G706
+- Goal packet task count: 7
+- Goal packet work item count: 7
+- Candidate kind: validation_gate
+- Todo vector key: 1baf9e93bd03ee60
+- Acceptance: Objective scan filed this gap for VAIOS-G705. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-08-hao-735-objective-gap-73dd061c433c.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/interoperability/swissknife/06921590135c; implement a complete, cohesive change that fully advances the packet goals (VAIOS-G700, VAIOS-G701, VAIOS-G702, VAIOS-G703, VAIOS-G704, VAIOS-G705, VAIOS-G706) and covers all the shared packet evidence in one comprehensive pass. Refine the objective heap if the gap needs smaller child goals.
+
+## HAO-736 Close objective gap: Interoperate swissknife with external/meta-wearables-dat-ios
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: interoperability
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, tests/integration/test_swissknife_external_meta_wearables_dat_ios_interop.py, docs/integration/swissknife-external_meta_wearables_dat_ios.md, swissknife, external/meta-wearables-dat-ios, swissknife/contracts/control_surface_contract.schema.json, swissknife/contracts/interaction_envelope.schema.json, swissknife/contracts/mcp_plus_plus_compatibility_receipt.schema.json, swissknife/contracts/mediation_receipt.schema.json
+- Validation: python -m pytest tests/integration -q
+- Bundle: objective/interoperability/swissknife-external_meta_wearables_dat_ios
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-interoperability-swissknife-external_meta_wearables_dat_ios.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G000
+- Graph depth: 1
+- Parallel lane: objective/interoperability/swissknife-external_meta_wearables_dat_ios
+- Conflict policy: keep pair-specific integration edits isolated; use the LLM merge resolver for conflicts
+- Goal id: VAIOS-G706
+- Missing evidence: objective validation repair
+- Embedding query: swissknife external/meta-wearables-dat-ios interoperability integration test interface descriptor Bio PIL __future__ argparse asyncio base64 collections concurrent contextlib cross cross_browser_model_sharding dataclasses
+- AST query: swissknife, external/meta-wearables-dat-ios, interface contract, integration test, Bio, PIL, __future__, argparse, asyncio, base64, collections, concurrent, contextlib, cross, cross_browser_model_sharding, dataclasses
+- Surplus group: objective/VAIOS-G706
+- Merge key: 5e04b98b01c0fac7
+- Merge family: goal_packet/interoperability/swissknife/06921590135c
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair; goal_subgoal_packet
+- Goal packet: goal_packet/interoperability/swissknife/06921590135c
+- Goal packet role: packet_member
+- Goal packet goals: VAIOS-G700, VAIOS-G701, VAIOS-G702, VAIOS-G703, VAIOS-G704, VAIOS-G705, VAIOS-G706
+- Goal packet task count: 7
+- Goal packet work item count: 7
+- Candidate kind: validation_gate
+- Todo vector key: 7d62c199aa475d01
+- Acceptance: Objective scan filed this gap for VAIOS-G706. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-08-hao-736-objective-gap-d6bdae3a60cc.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/interoperability/swissknife/06921590135c; implement a complete, cohesive change that fully advances the packet goals (VAIOS-G700, VAIOS-G701, VAIOS-G702, VAIOS-G703, VAIOS-G704, VAIOS-G705, VAIOS-G706) and covers all the shared packet evidence in one comprehensive pass. Refine the objective heap if the gap needs smaller child goals.
+
+## HAO-737 Close objective gap: Interoperate external/meta-wearables-dat-android with external/ipfs_accelerate
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: interoperability
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, tests/integration/test_external_meta_wearables_dat_android_external_ipfs_accelerate_interop.py, docs/integration/external_meta_wearables_dat_android-external_ipfs_accelerate.md, external/meta-wearables-dat-android, external/ipfs_accelerate, external/ipfs_accelerate/data/duckdb/db_schema/time_series_schema.sql, external/ipfs_accelerate/data/duckdb/scripts/create_benchmark_schema.py, external/ipfs_accelerate/data/duckdb/utils/check_database_schema.py, external/ipfs_accelerate/data/duckdb/utils/check_db_schema.py
+- Validation: python -m pytest tests/integration -q
+- Bundle: objective/interoperability/external_meta_wearables_dat_android-external_ipfs_accelerate
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-interoperability-external_meta_wearables_dat_android-external_ipfs_accelerate.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G000
+- Graph depth: 1
+- Parallel lane: objective/interoperability/external_meta_wearables_dat_android-external_ipfs_accelerate
+- Conflict policy: keep pair-specific integration edits isolated; use the LLM merge resolver for conflicts
+- Goal id: VAIOS-G709
+- Missing evidence: objective validation repair
+- Embedding query: external/meta-wearables-dat-android external/ipfs_accelerate interoperability integration test interface descriptor __future__ _jsonnet abc anyio argparse ast asyncio atexit base64 boto3 bs4 cProfile
+- AST query: external/meta-wearables-dat-android, external/ipfs_accelerate, interface contract, integration test, __future__, _jsonnet, abc, anyio, argparse, ast, asyncio, atexit, base64, boto3, bs4, cProfile
+- Surplus group: objective/VAIOS-G709
+- Merge key: 84954eaa36d6bdab
+- Merge family: goal_packet/interoperability/external/6595cbbfadb9
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair; goal_subgoal_packet
+- Goal packet: goal_packet/interoperability/external/6595cbbfadb9
+- Goal packet role: packet_anchor
+- Goal packet goals: VAIOS-G709, VAIOS-G710, VAIOS-G711
+- Goal packet task count: 3
+- Goal packet work item count: 3
+- Candidate kind: validation_gate
+- Todo vector key: 7b1f274f3b485b7d
+- Acceptance: Objective scan filed this gap for VAIOS-G709. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-08-hao-737-objective-gap-56ff358535c4.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/interoperability/external/6595cbbfadb9; implement a complete, cohesive change that fully advances the packet goals (VAIOS-G709, VAIOS-G710, VAIOS-G711) and covers all the shared packet evidence in one comprehensive pass. Refine the objective heap if the gap needs smaller child goals.
+
+## HAO-738 Close objective gap: Interoperate external/meta-wearables-dat-android with external/ipfs_datasets
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: interoperability
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, tests/integration/test_external_meta_wearables_dat_android_external_ipfs_datasets_interop.py, docs/integration/external_meta_wearables_dat_android-external_ipfs_datasets.md, external/meta-wearables-dat-android, external/ipfs_datasets, external/ipfs_datasets/.tools/ipfs_kit_py/data/deprecations_report.schema.json, external/ipfs_datasets/.tools/ipfs_kit_py/docs/implementation/BUCKET_VFS_INTERFACES_COMPLETE.md, external/ipfs_datasets/.tools/ipfs_kit_py/examples/demo_bucket_vfs_interfaces.py, external/ipfs_datasets/.tools/ipfs_kit_py/examples/demo_unified_bucket_interface.py
+- Validation: python -m pytest tests/integration -q
+- Bundle: objective/interoperability/external_meta_wearables_dat_android-external_ipfs_datasets
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-interoperability-external_meta_wearables_dat_android-external_ipfs_datasets.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G000
+- Graph depth: 1
+- Parallel lane: objective/interoperability/external_meta_wearables_dat_android-external_ipfs_datasets
+- Conflict policy: keep pair-specific integration edits isolated; use the LLM merge resolver for conflicts
+- Goal id: VAIOS-G710
+- Missing evidence: objective validation repair
+- Embedding query: external/meta-wearables-dat-android external/ipfs_datasets interoperability integration test interface descriptor __future__ _jsonnet abc anyio argparse ast asyncio atexit base64 boto3 bs4 cProfile
+- AST query: external/meta-wearables-dat-android, external/ipfs_datasets, interface contract, integration test, __future__, _jsonnet, abc, anyio, argparse, ast, asyncio, atexit, base64, boto3, bs4, cProfile
+- Surplus group: objective/VAIOS-G710
+- Merge key: a21f55ab34a02e7c
+- Merge family: goal_packet/interoperability/external/6595cbbfadb9
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair; goal_subgoal_packet
+- Goal packet: goal_packet/interoperability/external/6595cbbfadb9
+- Goal packet role: packet_member
+- Goal packet goals: VAIOS-G709, VAIOS-G710, VAIOS-G711
+- Goal packet task count: 3
+- Goal packet work item count: 3
+- Candidate kind: validation_gate
+- Todo vector key: a08852876b7a22bb
+- Acceptance: Objective scan filed this gap for VAIOS-G710. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-08-hao-738-objective-gap-136ccea7b51c.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/interoperability/external/6595cbbfadb9; implement a complete, cohesive change that fully advances the packet goals (VAIOS-G709, VAIOS-G710, VAIOS-G711) and covers all the shared packet evidence in one comprehensive pass. Refine the objective heap if the gap needs smaller child goals.
+
+## HAO-739 Close objective gap: Interoperate external/meta-wearables-dat-android with external/ipfs_kit
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: interoperability
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, tests/integration/test_external_meta_wearables_dat_android_external_ipfs_kit_interop.py, docs/integration/external_meta_wearables_dat_android-external_ipfs_kit.md, external/meta-wearables-dat-android, external/ipfs_kit, external/ipfs_kit/archive/archive_clutter/fix_scripts/fix_mcp_schema.py, external/ipfs_kit/backup/archive_clutter/fix_scripts/fix_mcp_schema.py, external/ipfs_kit/backup/patches/fixes/fix_mcp_schema.py, external/ipfs_kit/data/deprecations_report.schema.json
+- Validation: python -m pytest tests/integration -q
+- Bundle: objective/interoperability/external_meta_wearables_dat_android-external_ipfs_kit
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-interoperability-external_meta_wearables_dat_android-external_ipfs_kit.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G000
+- Graph depth: 1
+- Parallel lane: objective/interoperability/external_meta_wearables_dat_android-external_ipfs_kit
+- Conflict policy: keep pair-specific integration edits isolated; use the LLM merge resolver for conflicts
+- Goal id: VAIOS-G711
+- Missing evidence: objective validation repair
+- Embedding query: external/meta-wearables-dat-android external/ipfs_kit interoperability integration test interface descriptor __future__ aiofiles aiohttp anyio argparse ast atexit binascii boto3 botocore check_high_level_api_syntax collections
+- AST query: external/meta-wearables-dat-android, external/ipfs_kit, interface contract, integration test, __future__, aiofiles, aiohttp, anyio, argparse, ast, atexit, binascii, boto3, botocore, check_high_level_api_syntax, collections
+- Surplus group: objective/VAIOS-G711
+- Merge key: a0a21995a64795d9
+- Merge family: goal_packet/interoperability/external/6595cbbfadb9
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair; goal_subgoal_packet
+- Goal packet: goal_packet/interoperability/external/6595cbbfadb9
+- Goal packet role: packet_member
+- Goal packet goals: VAIOS-G709, VAIOS-G710, VAIOS-G711
+- Goal packet task count: 3
+- Goal packet work item count: 3
+- Candidate kind: validation_gate
+- Todo vector key: 3ff7c962d8ab58b5
+- Acceptance: Objective scan filed this gap for VAIOS-G711. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-08-hao-739-objective-gap-853e023f8d1d.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/interoperability/external/6595cbbfadb9; implement a complete, cohesive change that fully advances the packet goals (VAIOS-G709, VAIOS-G710, VAIOS-G711) and covers all the shared packet evidence in one comprehensive pass. Refine the objective heap if the gap needs smaller child goals.
+
+## HAO-740 Close objective gap: Interoperate hallucinate_app with mobile
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: interoperability
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, tests/integration/test_hallucinate_app_mobile_interop.py, docs/integration/hallucinate_app-mobile.md, hallucinate_app, mobile, hallucinate_app/hallucinate_app/node/dashboard/content_browser/search_interface.js, hallucinate_app/hallucinate_app/node/views/test_interface.html, hallucinate_app/ipfs_accelerate_py/data/duckdb/db_schema/time_series_schema.sql, hallucinate_app/ipfs_accelerate_py/data/duckdb/scripts/create_benchmark_schema.py
+- Validation: python -m pytest tests/integration -q
+- Bundle: objective/interoperability/hallucinate_app-mobile
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-interoperability-hallucinate_app-mobile.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G000
+- Graph depth: 1
+- Parallel lane: objective/interoperability/hallucinate_app-mobile
+- Conflict policy: keep pair-specific integration edits isolated; use the LLM merge resolver for conflicts
+- Goal id: VAIOS-G707
+- Missing evidence: objective validation repair
+- Embedding query: hallucinate_app mobile interoperability integration test interface descriptor __future__ _jsonnet abc anyio argparse ast asyncio atexit base64 both boto3 bs4
+- AST query: hallucinate_app, mobile, interface contract, integration test, __future__, _jsonnet, abc, anyio, argparse, ast, asyncio, atexit, base64, both, boto3, bs4
+- Surplus group: objective/VAIOS-G707
+- Merge key: dce12a84320c8baf
+- Merge family: objective/VAIOS-G707
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair
+- Goal packet: 
+- Goal packet role: 
+- Goal packet goals: 
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Candidate kind: validation_gate
+- Todo vector key: c28bf5e5280df451
+- Acceptance: Objective scan filed this gap for VAIOS-G707. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-08-hao-740-objective-gap-7edb316279e5.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+## HAO-741 Close objective gap: Interoperate mobile with external/ipfs_accelerate
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: interoperability
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, tests/integration/test_mobile_external_ipfs_accelerate_interop.py, docs/integration/mobile-external_ipfs_accelerate.md, mobile, external/ipfs_accelerate, external/ipfs_accelerate/data/duckdb/db_schema/time_series_schema.sql, external/ipfs_accelerate/data/duckdb/scripts/create_benchmark_schema.py, external/ipfs_accelerate/data/duckdb/utils/check_database_schema.py, external/ipfs_accelerate/data/duckdb/utils/check_db_schema.py
+- Validation: python -m pytest tests/integration -q
+- Bundle: objective/interoperability/mobile-external_ipfs_accelerate
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-interoperability-mobile-external_ipfs_accelerate.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G000
+- Graph depth: 1
+- Parallel lane: objective/interoperability/mobile-external_ipfs_accelerate
+- Conflict policy: keep pair-specific integration edits isolated; use the LLM merge resolver for conflicts
+- Goal id: VAIOS-G719
+- Missing evidence: objective validation repair
+- Embedding query: mobile external/ipfs_accelerate interoperability integration test interface descriptor __future__ _jsonnet abc anyio argparse ast asyncio atexit base64 boto3 bs4 cProfile
+- AST query: mobile, external/ipfs_accelerate, interface contract, integration test, __future__, _jsonnet, abc, anyio, argparse, ast, asyncio, atexit, base64, boto3, bs4, cProfile
+- Surplus group: objective/VAIOS-G719
+- Merge key: 64e26db5b0fa2426
+- Merge family: objective/VAIOS-G719
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair
+- Goal packet: 
+- Goal packet role: 
+- Goal packet goals: 
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Candidate kind: validation_gate
+- Todo vector key: abd3dcae203fdb6b
+- Acceptance: Objective scan filed this gap for VAIOS-G719. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-08-hao-741-objective-gap-c1edafa875e6.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
