@@ -7,6 +7,62 @@
  * @module dashboard/content_browser/search_interface
  */
 
+export const HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT = {
+  contract_id: 'interface contract hallucinate_app mobile',
+  name: 'hallucinate_app_mobile_search_handoff',
+  namespace: 'handsfree.hallucinate_app.mobile',
+  version: '0.1.0',
+  source_surface: 'hallucinate_app',
+  target_surface: 'mobile',
+  control_surface_contract_ref: 'control_surface_contract:hallucinate-app:remote-client',
+  route: '/v1/mobile/orb/invoke_service',
+  operation: 'invoke_service',
+  descriptor_path:
+    'hallucinate_app/hallucinate_app/node/dashboard/content_browser/search_interface.js',
+  required_artifacts: ['interaction_envelope', 'policy_decision', 'mediation_receipt'],
+};
+
+export function buildHallucinateAppMobileSearchHandoff(query, options = {}) {
+  const text = typeof query === 'string' ? query : '';
+  const filter =
+    options.filter && typeof options.filter === 'object' && !Array.isArray(options.filter)
+      ? options.filter
+      : {};
+  const issuedAt = options.issued_at || new Date().toISOString();
+  const correlationId =
+    options.correlation_id || `hallucinate-app-mobile-search-${Date.now()}`;
+
+  return {
+    contract_id: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.contract_id,
+    source_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.source_surface,
+    target_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.target_surface,
+    route: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.route,
+    operation: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.operation,
+    control_surface_contract_ref:
+      HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.control_surface_contract_ref,
+    correlation_id: correlationId,
+    issued_at: issuedAt,
+    payload: {
+      intent: 'hallucinate_app.content_browser.search',
+      query: text,
+      filter,
+      result_target: options.result_target || 'mobile_card',
+    },
+    normalized_intent: {
+      intent: 'hallucinate_app.content_browser.search',
+      method: 'invoke_service',
+      target_ref:
+        'handsfree.meta_glasses.mobile.mobile_orb_bridge.invoke_service',
+      arguments: {
+        query: text,
+        filter,
+        result_target: options.result_target || 'mobile_card',
+      },
+      confidence: 1.0,
+    },
+  };
+}
+
 export class SearchInterface {
   /**
    * Create a new SearchInterface component
@@ -240,6 +296,9 @@ export class SearchInterface {
    */
   search(query) {
     this.currentQuery = query || '';
+    const mobileHandoff = buildHallucinateAppMobileSearchHandoff(this.currentQuery, {
+      filter: this.currentFilter,
+    });
     
     // Add to search history
     this._addToSearchHistory(this.currentQuery, this.currentFilter);
@@ -252,10 +311,12 @@ export class SearchInterface {
     // Emit event
     if (this.eventBus) {
       this.eventBus.emit('content-browser:search', this.currentQuery);
+      this.eventBus.emit('hallucinate_app-mobile:handoff', mobileHandoff);
     }
     
     // Emit event for direct listeners
     this.emit('search', this.currentQuery);
+    this.emit('mobile-handoff', mobileHandoff);
   }
   
   /**

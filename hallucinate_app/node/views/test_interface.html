@@ -81,6 +81,34 @@
             </button>
           </div>
         </div>
+
+        <div class="card" id="hallucinate-app-mobile-interop-contract" data-contract-id="interface contract hallucinate_app mobile">
+          <div class="card-header">
+            <h2>Hallucinate App Mobile Handoff</h2>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label for="mobileInteropContract">Interface descriptor:</label>
+              <textarea id="mobileInteropContract" rows="9" readonly>{
+  "contract_id": "interface contract hallucinate_app mobile",
+  "source_surface": "hallucinate_app",
+  "target_surface": "mobile",
+  "control_surface_contract_ref": "control_surface_contract:hallucinate-app:remote-client",
+  "routes": [
+    "/v1/mobile/orb/register_edge_capabilities",
+    "/v1/mobile/orb/invoke_service",
+    "/v1/mobile/orb/dispatch_glasses_response",
+    "/v1/mobile/orb/diagnostics"
+  ],
+  "artifacts": ["interaction_envelope", "policy_decision", "mediation_receipt"]
+}</textarea>
+            </div>
+            <div class="module-test-results">
+              <h3>Runtime handoff probe:</h3>
+              <div id="mobileInteropResults" class="result-area">Ready to validate Hallucinate App to mobile ORB handoff</div>
+            </div>
+          </div>
+        </div>
         
         <!-- Test modules sections -->
         <div id="ipfs-kit-section" class="module-section">
@@ -695,6 +723,7 @@
           { name: 'GET /v1/ipfs/list_datasets', fn: () => backend.datasets.listDatasets() },
           { name: 'GET /v1/ipfs/metrics', fn: () => backend.accelerate.metrics() },
           { name: 'GET /v1/ipfs/endpoints', fn: () => backend.accelerate.endpoints() },
+          { name: 'GET /v1/mobile/orb/diagnostics', fn: () => backend._fetch('/v1/mobile/orb/diagnostics') },
           { name: 'Health Check All', fn: () => backend.healthCheckAll() },
         ];
         
