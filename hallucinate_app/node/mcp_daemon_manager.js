@@ -1796,6 +1796,32 @@ const VAI_659_LAUNCH_VALIDATION_GATE = {
   ],
   failure_rule: 'Any missing VAI-659 launch Playwright validation gate, catalog, daemon health, tools/list, tools/call, Swissknife consumer, external backend handoff, or VAI-660 packet sibling evidence remains supervisor-fed launch work for VAIOS-G724 and VAIOS-G728.'
 };
+const VAI_680_LAUNCH_VALIDATION_GATE = {
+  ...VAI_548_LAUNCH_VALIDATION_GATE,
+  task_id: 'VAI-680',
+  source_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-08-vai-680-objective-gap-3e00ad2a0074.md',
+  supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-08-vai-680-objective-gap-3e00ad2a0074.md',
+  todo_source: {
+    file: 'implementation_plan/docs/19-virtual-ai-os-submodule-integration.todo.md',
+    source_line: 9360
+  },
+  launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-08-vai-680-mcp-dashboard-launch-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-680-mcp-dashboard-launch-gate.json',
+  gate_state: 'gate_closed_by_playwright_validation',
+  external_backend_surfaces: [
+    'external/ipfs_accelerate',
+    'external/ipfs_datasets',
+    'external/ipfs_kit'
+  ],
+  packet_sibling_goal_id: 'VAIOS-G728',
+  packet_sibling_task_id: 'VAI-681',
+  packet_sibling_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-08-vai-681-daemon-launch-health-gate.md',
+  attempt: 1,
+  attempt_receipts: [
+    'data/virtual_ai_os/discovery/2026-07-08-vai-680-attempt-1-launch-playwright-validation-gate.md'
+  ],
+  failure_rule: 'Any missing VAI-680 launch Playwright validation gate, catalog, daemon health, tools/list, tools/call, Swissknife consumer, external backend handoff, or VAI-681 packet sibling evidence remains supervisor-fed launch work for VAIOS-G724 and VAIOS-G728.'
+};
 const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   MGW_533_LAUNCH_VALIDATION_GATE,
   MGW_546_LAUNCH_VALIDATION_GATE,
@@ -1885,7 +1911,8 @@ const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   VAI_653_LAUNCH_VALIDATION_GATE,
   VAI_655_LAUNCH_VALIDATION_GATE,
   VAI_657_LAUNCH_VALIDATION_GATE,
-  VAI_659_LAUNCH_VALIDATION_GATE
+  VAI_659_LAUNCH_VALIDATION_GATE,
+  VAI_680_LAUNCH_VALIDATION_GATE
 ];
 const DAEMON_LAUNCH_GATE_TASK_ID = 'MGW-535';
 const DAEMON_LAUNCH_GATE_VAI_TASK_ID = 'VAI-519';
@@ -2543,6 +2570,23 @@ const VAI_660_DAEMON_LAUNCH_VALIDATION_GATE = {
   todo_source: {
     file: 'implementation_plan/docs/19-virtual-ai-os-submodule-integration.todo.md',
     source_line: 8801
+  },
+  gate_state: 'gate_closed_by_playwright_validation',
+  validation_commands: [
+    'PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q',
+    'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts',
+    'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
+    'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
+  ]
+};
+const VAI_681_DAEMON_LAUNCH_VALIDATION_GATE = {
+  task_id: 'VAI-681',
+  objective_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-08-vai-681-objective-gap-b023c8de5b69.md',
+  launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-08-vai-681-daemon-launch-health-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-681-daemon-launch-health-gate.json',
+  todo_source: {
+    file: 'implementation_plan/docs/19-virtual-ai-os-submodule-integration.todo.md',
+    source_line: 9395
   },
   gate_state: 'gate_closed_by_playwright_validation',
   validation_commands: [
@@ -3753,6 +3797,7 @@ class MCPDaemonManager extends EventEmitter {
       hallucinate_backlog_receipts: overrides.hallucinate_backlog_receipts || [...DAEMON_LAUNCH_GATE_HALLUCINATE_BACKLOG_RECEIPTS],
       ...(overrides.launch_gate_receipt ? { launch_gate_receipt: overrides.launch_gate_receipt } : {}),
       ...(overrides.receipt_fixture ? { receipt_fixture: overrides.receipt_fixture } : {}),
+      ...(overrides.todo_source ? { todo_source: overrides.todo_source } : {}),
       validation_commands: overrides.validation_commands || [
         'npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts',
         'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
@@ -4255,6 +4300,50 @@ class MCPDaemonManager extends EventEmitter {
           VAI_656_DAEMON_LAUNCH_VALIDATION_GATE.objective_gap_receipt,
           VAI_658_DAEMON_LAUNCH_VALIDATION_GATE.objective_gap_receipt,
           VAI_660_DAEMON_LAUNCH_VALIDATION_GATE.objective_gap_receipt
+        ]
+      }),
+      this.getDaemonLaunchValidationGate({
+        ...VAI_681_DAEMON_LAUNCH_VALIDATION_GATE,
+        shared_packet_task_id: DAEMON_LAUNCH_GATE_TASK_ID,
+        vai_task_ids: [
+          ...DAEMON_LAUNCH_GATE_VAI_TASK_IDS,
+          VAI_643_DAEMON_LAUNCH_VALIDATION_GATE.task_id,
+          VAI_645_DAEMON_LAUNCH_VALIDATION_GATE.task_id,
+          VAI_648_DAEMON_LAUNCH_VALIDATION_GATE.task_id,
+          VAI_650_DAEMON_LAUNCH_VALIDATION_GATE.task_id,
+          VAI_652_DAEMON_LAUNCH_VALIDATION_GATE.task_id,
+          VAI_654_DAEMON_LAUNCH_VALIDATION_GATE.task_id,
+          VAI_656_DAEMON_LAUNCH_VALIDATION_GATE.task_id,
+          VAI_658_DAEMON_LAUNCH_VALIDATION_GATE.task_id,
+          VAI_660_DAEMON_LAUNCH_VALIDATION_GATE.task_id,
+          VAI_681_DAEMON_LAUNCH_VALIDATION_GATE.task_id
+        ],
+        discovery_receipts: [
+          ...DAEMON_LAUNCH_GATE_DISCOVERY_RECEIPTS,
+          VAI_643_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt,
+          VAI_645_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt,
+          VAI_648_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt,
+          VAI_650_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt,
+          VAI_652_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt,
+          VAI_654_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt,
+          VAI_656_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt,
+          VAI_658_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt,
+          VAI_660_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt,
+          VAI_681_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt
+        ],
+        objective_gap_receipt: VAI_681_DAEMON_LAUNCH_VALIDATION_GATE.objective_gap_receipt,
+        objective_gap_receipts: [
+          ...DAEMON_LAUNCH_GATE_OBJECTIVE_GAP_RECEIPTS,
+          VAI_643_DAEMON_LAUNCH_VALIDATION_GATE.objective_gap_receipt,
+          VAI_645_DAEMON_LAUNCH_VALIDATION_GATE.objective_gap_receipt,
+          VAI_648_DAEMON_LAUNCH_VALIDATION_GATE.objective_gap_receipt,
+          VAI_650_DAEMON_LAUNCH_VALIDATION_GATE.objective_gap_receipt,
+          VAI_652_DAEMON_LAUNCH_VALIDATION_GATE.objective_gap_receipt,
+          VAI_654_DAEMON_LAUNCH_VALIDATION_GATE.objective_gap_receipt,
+          VAI_656_DAEMON_LAUNCH_VALIDATION_GATE.objective_gap_receipt,
+          VAI_658_DAEMON_LAUNCH_VALIDATION_GATE.objective_gap_receipt,
+          VAI_660_DAEMON_LAUNCH_VALIDATION_GATE.objective_gap_receipt,
+          VAI_681_DAEMON_LAUNCH_VALIDATION_GATE.objective_gap_receipt
         ]
       }),
       this.getDaemonLaunchValidationGate({

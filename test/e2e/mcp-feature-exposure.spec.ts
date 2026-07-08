@@ -519,6 +519,20 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
         ]
       }),
       expect.objectContaining({
+        task_id: 'VAI-680',
+        goal_id: 'VAIOS-G724',
+        goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
+        packet_goal_ids: ['VAIOS-G724', 'VAIOS-G728'],
+        evidence_term: 'launch Playwright validation gate',
+        gate_state: 'gate_closed_by_playwright_validation',
+        supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-08-vai-680-objective-gap-3e00ad2a0074.md',
+        launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-08-vai-680-mcp-dashboard-launch-gate.md',
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-680-mcp-dashboard-launch-gate.json',
+        packet_sibling_goal_id: 'VAIOS-G728',
+        packet_sibling_task_id: 'VAI-681',
+        packet_sibling_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-08-vai-681-daemon-launch-health-gate.md'
+      }),
+      expect.objectContaining({
         task_id: 'VAI-529',
         goal_id: 'VAIOS-G724',
         goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
@@ -1991,6 +2005,20 @@ test.describe('MCP Feature Exposure - headless backend gate', () => {
           'data/meta_glasses_display_widgets/discovery/2026-07-02-mgw-563-attempt-3-launch-playwright-validation-gate.md',
           'data/hallucinate_multimodal_control/discovery/2026-07-02-mgw-563-attempt-3-validation.md'
         ]
+      }),
+      expect.objectContaining({
+        task_id: 'VAI-680',
+        goal_id: 'VAIOS-G724',
+        goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
+        packet_goal_ids: ['VAIOS-G724', 'VAIOS-G728'],
+        evidence_term: 'launch Playwright validation gate',
+        gate_state: 'gate_closed_by_playwright_validation',
+        supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-08-vai-680-objective-gap-3e00ad2a0074.md',
+        launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-08-vai-680-mcp-dashboard-launch-gate.md',
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-680-mcp-dashboard-launch-gate.json',
+        packet_sibling_goal_id: 'VAIOS-G728',
+        packet_sibling_task_id: 'VAI-681',
+        packet_sibling_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-08-vai-681-daemon-launch-health-gate.md'
       }),
       expect.objectContaining({
         task_id: 'VAI-529',
