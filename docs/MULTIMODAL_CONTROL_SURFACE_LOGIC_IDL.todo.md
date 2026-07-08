@@ -9314,7 +9314,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-740 Close objective gap: Interoperate hallucinate_app with mobile
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P1
 - Track: interoperability
@@ -9346,6 +9346,8 @@ UI-plane participants and runtime-plane targets.
 - Candidate kind: validation_gate
 - Todo vector key: c28bf5e5280df451
 - Acceptance: Objective scan filed this gap for VAIOS-G707. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-08-hao-740-objective-gap-7edb316279e5.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
+
+- Blocked reason: Deferred by the HAO-751 validation retry-budget repair because HAO-740's `python -m pytest tests/integration -q` validation command fails with 96 failed and 49 errored pre-existing tests spanning MCP++ protocol coverage, Swissknife descriptor-module exports, and Meta Wearables DAT Android/iOS interop -- a systemic regression unrelated to the hallucinate_app-mobile interoperability scope and far larger than a single ops repair cycle. See /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-08-hao-751-hao-740-validation-retry-budget-repair.md for the full triage; this keeps lanes focused while a dedicated remediation task addresses the tests/integration regression.
 
 ## HAO-741 Close objective gap: Interoperate mobile with external/ipfs_accelerate
 
@@ -9603,7 +9605,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-751 Resolve validation retry-budget failure for HAO-740
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -9649,7 +9651,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-753 Resolve validation retry-budget failure for HAO-745
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
