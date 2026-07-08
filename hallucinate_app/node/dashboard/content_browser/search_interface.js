@@ -80,6 +80,76 @@ export function buildHallucinateAppMobileSearchHandoff(query, options = {}) {
   };
 }
 
+/**
+ * VAI-674 / VAIOS-G707: Objective validation repair descriptor.
+ *
+ * Mirrors `mobile/src/orb/metaGlassesOrbDescriptors.js`'s
+ * `HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR` so the Hallucinate App desktop
+ * search surface and the mobile ORB bridge advertise the same
+ * `interface contract hallucinate_app mobile` schema refs, the same
+ * `hallucinate-app:mobile-interop-handoff` event name, and the same
+ * `hallucinate_app_mobile_interop_receipts` DuckDB receipt table (see
+ * `hallucinate_app/ipfs_accelerate_py/data/duckdb/db_schema/time_series_schema.sql`
+ * and
+ * `hallucinate_app/ipfs_accelerate_py/data/duckdb/scripts/create_benchmark_schema.py`).
+ */
+export const HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR = {
+  descriptor_id: 'hallucinate-app-mobile-interop@0.1.0',
+  contract_id: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.contract_id,
+  source_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.source_surface,
+  target_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.target_surface,
+  event_name: 'hallucinate-app:mobile-interop-handoff',
+  receipt_table: 'hallucinate_app_mobile_interop_receipts',
+  descriptor_path: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.descriptor_path,
+  interop_descriptor_ref:
+    'mobile/src/orb/metaGlassesOrbDescriptors.js::HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR',
+  schema_refs: {
+    search_interface_descriptor:
+      'hallucinate_app/hallucinate_app/node/dashboard/content_browser/search_interface.js',
+    test_interface_fixture: 'hallucinate_app/hallucinate_app/node/views/test_interface.html',
+    time_series_schema:
+      'hallucinate_app/ipfs_accelerate_py/data/duckdb/db_schema/time_series_schema.sql',
+    benchmark_schema_script:
+      'hallucinate_app/ipfs_accelerate_py/data/duckdb/scripts/create_benchmark_schema.py',
+  },
+  validation: {
+    task_id: 'VAI-674',
+    goal_id: 'VAIOS-G707',
+    objective_gap_ref:
+      'data/virtual_ai_os/discovery/2026-07-08-vai-674-objective-gap-7edb316279e5.md',
+    validation_repair_ref:
+      'data/virtual_ai_os/discovery/2026-07-08-vai-674-objective-validation-repair.md',
+    evidence: 'objective validation repair',
+  },
+};
+
+/**
+ * Build and (optionally) emit the `hallucinate-app:mobile-interop-handoff`
+ * event payload for a desktop search handoff. The Electron main process or
+ * dashboard event bus subscribes to this event name to relay the handoff
+ * envelope toward the mobile ORB bridge's `invoke_service` route.
+ *
+ * @param {Object} eventBus - Optional event bus with an `emit(event, payload)` method.
+ * @param {string} query - The search query submitted on the desktop surface.
+ * @param {Object} [options] - Same options accepted by
+ *   `buildHallucinateAppMobileSearchHandoff`.
+ * @returns {Object} The emitted event payload (also returned when no event
+ *   bus is supplied, so callers/tests can inspect it deterministically).
+ */
+export function emitHallucinateAppMobileInteropHandoff(eventBus, query, options = {}) {
+  const handoff = buildHallucinateAppMobileSearchHandoff(query, options);
+  const eventPayload = {
+    event: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.event_name,
+    descriptor_id: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.descriptor_id,
+    receipt_table: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.receipt_table,
+    handoff,
+  };
+  if (eventBus && typeof eventBus.emit === 'function') {
+    eventBus.emit(HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.event_name, eventPayload);
+  }
+  return eventPayload;
+}
+
 export class SearchInterface {
   /**
    * Create a new SearchInterface component
