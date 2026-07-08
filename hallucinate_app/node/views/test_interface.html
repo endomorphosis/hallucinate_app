@@ -42,6 +42,7 @@
           <li><a href="#" data-module="agents"><i class="fas fa-robot"></i> Agents</a></li>
           <li><a href="#" data-module="libp2p"><i class="fas fa-plug"></i> libp2p</a></li>
           <li><a href="#" data-module="orbitdb"><i class="fas fa-database"></i> OrbitDB</a></li>
+          <li><a href="#" data-module="mobile-orb"><i class="fas fa-mobile-alt"></i> Mobile ORB</a></li>
         </ul>
       </div>
     </nav>
@@ -257,6 +258,42 @@
             </div>
           </div>
         </div>
+
+        <div id="mobile-orb-section" class="module-section" data-module="mobile-orb">
+          <div class="card hallucinate-app-mobile-interop-card">
+            <div class="card-header">
+              <h2><i class="fas fa-mobile-alt"></i> Hallucinate App Mobile ORB</h2>
+              <div>
+                <span id="mobile-orb-status" class="status offline">Not Tested</span>
+                <button id="btnTestMobileOrb" class="btn btn-outline">Run Test</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label for="mobileOrbConfig">Configuration:</label>
+                <textarea id="mobileOrbConfig" rows="12">{
+  "objective_id": "VAIOS-G707",
+  "interface_contract": "handsfree.hallucinate_app/mobile-search-handoff@0.1.0",
+  "runtime_handoff": "content-search-to-mobile-results",
+  "action_id": "mobile_hallucinate_app_search",
+  "operation": "dispatch_content_search",
+  "query": "cid:QmDemo hallucinate_app mobile",
+  "handoff": {
+    "schema": "hallucinate_app_mobile_content_search_handoff_v1",
+    "ipfs_cids": ["QmDemo"],
+    "edge_session_id": "edge-session-demo",
+    "libp2p_peer_id": "12D3KooWHallucinateMobile"
+  }
+}</textarea>
+              </div>
+              <pre id="hallucinateMobilePayload" class="result-area hallucinate-app-mobile-handoff" data-contract="handsfree.hallucinate_app/mobile-search-handoff@0.1.0">mobile_hallucinate_app_search handoff fixture ready</pre>
+              <div class="module-test-results">
+                <h3>Test Results:</h3>
+                <div id="mobileOrbResults" class="result-area hallucinate-app-mobile-handoff-result">No results yet</div>
+              </div>
+            </div>
+          </div>
+        </div>
         
         <!-- Test summary section -->
         <div class="card">
@@ -316,6 +353,7 @@
     const btnTestAccelerate = document.getElementById('btnTestAccelerate');
     const btnTestFaiss = document.getElementById('btnTestFaiss');
     const btnTestAgents = document.getElementById('btnTestAgents');
+    const btnTestMobileOrb = document.getElementById('btnTestMobileOrb');
     
     // Module Status Elements
     const ipfsKitStatus = document.getElementById('ipfs-kit-status');
@@ -325,6 +363,7 @@
     const accelerateStatus = document.getElementById('accelerate-status');
     const faissStatus = document.getElementById('faiss-status');
     const agentsStatus = document.getElementById('agents-status');
+    const mobileOrbStatus = document.getElementById('mobile-orb-status');
     
     // Module Results Elements
     const ipfsKitResults = document.getElementById('ipfsKitResults');
@@ -334,6 +373,7 @@
     const accelerateResults = document.getElementById('accelerateResults');
     const faissResults = document.getElementById('faissResults');
     const agentsResults = document.getElementById('agentsResults');
+    const mobileOrbResults = document.getElementById('mobileOrbResults');
     
     // Module Configurations
     const ipfsKitConfig = document.getElementById('ipfsKitConfig');
@@ -343,6 +383,7 @@
     const accelerateConfig = document.getElementById('accelerateConfig');
     const faissConfig = document.getElementById('faissConfig');
     const agentsConfig = document.getElementById('agentsConfig');
+    const mobileOrbConfig = document.getElementById('mobileOrbConfig');
     
     // Server status
     let isServerRunning = false;
@@ -460,6 +501,10 @@
     btnTestAgents.addEventListener('click', () => {
       runModuleTest('agents', agentsConfig.value);
     });
+
+    btnTestMobileOrb.addEventListener('click', () => {
+      runModuleTest('mobile-orb', mobileOrbConfig.value);
+    });
     
     btnExportResults.addEventListener('click', () => {
       ipcRenderer.send('export-test-results', testResults);
@@ -551,7 +596,9 @@
     
     function updateModuleTestResult(module, result) {
       const statusElement = document.getElementById(`${module}-status`);
-      const resultsElement = document.getElementById(`${module}Results`);
+      const resultsElement =
+        document.getElementById(`${module}Results`) ||
+        document.getElementById(`${toCamelCase(module)}Results`);
       
       if (result.success) {
         statusElement.textContent = 'Passed';
@@ -562,7 +609,9 @@
       }
       
       // Pretty-format the JSON with syntax highlighting
-      resultsElement.textContent = JSON.stringify(result.details, null, 2);
+      if (resultsElement) {
+        resultsElement.textContent = JSON.stringify(result.details, null, 2);
+      }
       
       // Re-enable the test button
       document.getElementById(`btnTest${toCamelCase(module)}`).disabled = false;

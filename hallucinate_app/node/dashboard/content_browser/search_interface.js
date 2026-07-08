@@ -7,6 +7,126 @@
  * @module dashboard/content_browser/search_interface
  */
 
+export const HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT =
+  'handsfree.hallucinate_app/mobile-search-handoff@0.1.0';
+
+export const HALLUCINATE_APP_MOBILE_SEARCH_DESCRIPTOR = {
+  name: 'hallucinate_app_mobile_content_search',
+  interface_contract: HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT,
+  objective_id: 'VAIOS-G707',
+  runtime_handoff: 'content-search-to-mobile-results',
+  action_id: 'mobile_hallucinate_app_search',
+  event_type: 'transport.handoff',
+  route: 'hallucinate_app.mobile.search_handoff',
+};
+
+function stableJson(value) {
+  if (Array.isArray(value)) {
+    return `[${value.map((item) => stableJson(item)).join(',')}]`;
+  }
+  if (value && typeof value === 'object') {
+    return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${stableJson(value[key])}`).join(',')}}`;
+  }
+  return JSON.stringify(value);
+}
+
+function digestHandoff(value) {
+  const material = stableJson(value);
+  let hash = 0;
+  for (let index = 0; index < material.length; index += 1) {
+    hash = (hash << 5) - hash + material.charCodeAt(index);
+    hash |= 0;
+  }
+  return Math.abs(hash).toString(16).padStart(8, '0');
+}
+
+function normalizeCidList({ cid, cids, ipfs_cids: ipfsCids }) {
+  const values = [];
+  [cid, ...(Array.isArray(cids) ? cids : []), ...(Array.isArray(ipfsCids) ? ipfsCids : [])].forEach((value) => {
+    if (value && !values.includes(String(value))) {
+      values.push(String(value));
+    }
+  });
+  return values;
+}
+
+export function buildMobileHandoffSearchRequest(options = {}) {
+  const query = String(options.query || '');
+  const filter = options.filter || options.filters || {};
+  const requestId =
+    options.request_id ||
+    options.requestId ||
+    `hallucinate-app-mobile-${digestHandoff({ query, filter })}`;
+  const handoff = {
+    schema: 'hallucinate_app_mobile_content_search_handoff_v1',
+    objective_id: 'VAIOS-G707',
+    interface_contract: HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT,
+    runtime_handoff: 'content-search-to-mobile-results',
+    query,
+    filter,
+    ipfs_cids: normalizeCidList(options),
+    edge_session_id: options.edge_session_id || options.edgeSessionId || null,
+    libp2p_peer_id: options.libp2p_peer_id || options.libp2pPeerId || null,
+  };
+  const mobilePayload = {
+    type: HALLUCINATE_APP_MOBILE_SEARCH_DESCRIPTOR.action_id,
+    source_surface: 'hallucinate_app.content_browser',
+    target_surface: 'mobile.results',
+    request_id: requestId,
+    query,
+    filter,
+    handoff,
+  };
+  const receiptDigest = digestHandoff({
+    requestId,
+    interface_contract: HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT,
+    handoff,
+  });
+
+  return {
+    profile: 'swissknife.mcp++/event-envelope@0.1.0',
+    mcp_plus_plus_profile: 'swissknife.mcp++/event-envelope@0.1.0',
+    action_id: HALLUCINATE_APP_MOBILE_SEARCH_DESCRIPTOR.action_id,
+    event_type: 'transport.handoff',
+    interface_contract: HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT,
+    objective_id: 'VAIOS-G707',
+    request_id: requestId,
+    timestamp: options.timestamp || new Date().toISOString(),
+    control_plane: {
+      route: HALLUCINATE_APP_MOBILE_SEARCH_DESCRIPTOR.route,
+      requires_ack: true,
+      mediation_receipt_required: true,
+    },
+    handoff,
+    mobile_payload: mobilePayload,
+    mediation_receipt: {
+      receipt_type: 'hallucinate_app_mobile_handoff',
+      receipt_cid: `sha256:hallucinate-app-mobile:${receiptDigest}`,
+      correlation_id: requestId,
+      accepted_interface_contract: HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT,
+    },
+    receipt_cid: `sha256:hallucinate-app-mobile:${receiptDigest}`,
+  };
+}
+
+export const buildHallucinateAppMobileSearchEnvelope = buildMobileHandoffSearchRequest;
+
+export function publishMobileHandoff(envelope, eventBus) {
+  if (eventBus && typeof eventBus.emit === 'function') {
+    eventBus.emit('hallucinate_app:mobile-handoff-search', envelope);
+    eventBus.emit('content-browser:mobile-search', envelope);
+  }
+  return envelope;
+}
+
+export function dispatchMobileAction(options = {}, eventBus = null) {
+  return publishMobileHandoff(buildMobileHandoffSearchRequest(options), eventBus);
+}
+
+export function launchMobileSearch(options = {}, eventBus = null) {
+  return dispatchMobileAction(options, eventBus);
+}
+
 export class SearchInterface {
   /**
    * Create a new SearchInterface component
