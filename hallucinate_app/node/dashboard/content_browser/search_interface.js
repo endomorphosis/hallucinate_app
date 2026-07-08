@@ -21,11 +21,27 @@ export const HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT = {
   source_surface: 'hallucinate_app',
   target_surface: 'mobile',
   control_surface_contract_ref: 'control_surface_contract:hallucinate-app:remote-client',
+  event_name: 'hallucinate-app:mobile-interop-handoff',
   route: '/v1/mobile/orb/invoke_service',
   operation: 'invoke_service',
   descriptor_path:
     'hallucinate_app/hallucinate_app/node/dashboard/content_browser/search_interface.js',
   required_artifacts: ['interaction_envelope', 'policy_decision', 'mediation_receipt'],
+};
+
+export const HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR = {
+  descriptor_id: 'hallucinate-app-mobile-search-handoff@0.1.0',
+  contract: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT,
+  interface_contract: 'interface contract hallucinate_app mobile',
+  goal_id: 'VAIOS-G707',
+  validation: {
+    task_id: 'MGW-579',
+    objective_gap_ref:
+      'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-579-objective-gap-7edb316279e5.md',
+    validation_repair_ref:
+      'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-579-objective-validation-repair.md',
+    evidence: 'objective validation repair',
+  },
 };
 
 /**
@@ -53,6 +69,7 @@ export function buildHallucinateAppMobileSearchHandoff(query, options = {}) {
     contract_id: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.contract_id,
     source_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.source_surface,
     target_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.target_surface,
+    event_name: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.event_name,
     route: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.route,
     operation: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.operation,
     control_surface_contract_ref:
@@ -328,6 +345,7 @@ export class SearchInterface {
     // Emit event
     if (this.eventBus) {
       this.eventBus.emit('content-browser:search', this.currentQuery);
+      this.eventBus.emit('hallucinate-app:mobile-interop-handoff', mobileHandoff);
       this.eventBus.emit('hallucinate_app-mobile:handoff', mobileHandoff);
     }
     
@@ -495,13 +513,15 @@ export class SearchInterface {
     this.currentFilter = searchItem.filter || {};
     
     // Update UI components
-    const searchInput = this.container.querySelector('.search-input');
-    if (searchInput) {
-      searchInput.value = this.currentQuery;
+    if (this.container) {
+      const searchInput = this.container.querySelector('.search-input');
+      if (searchInput) {
+        searchInput.value = this.currentQuery;
+      }
+
+      // Update advanced search form if available
+      this._updateAdvancedSearchForm(this.currentFilter);
     }
-    
-    // Update advanced search form if available
-    this._updateAdvancedSearchForm(this.currentFilter);
     
     // Call callbacks
     if (typeof this.onSearch === 'function') {
@@ -517,6 +537,32 @@ export class SearchInterface {
       this.eventBus.emit('content-browser:search', this.currentQuery);
       this.eventBus.emit('content-browser:filter', this.currentFilter);
     }
+  }
+
+  /**
+   * Handle saved-search selection from programmatic callers.
+   * @param {Object|string} searchItemOrId - Saved search record or saved search id.
+   * @private
+   */
+  _handleSavedSearchSelect(searchItemOrId) {
+    const searchItem =
+      typeof searchItemOrId === 'string'
+        ? this.savedSearches.find(item => item.id === searchItemOrId)
+        : searchItemOrId;
+    this.loadSearch(searchItem);
+  }
+
+  /**
+   * Handle search-history selection from programmatic callers.
+   * @param {Object|string} historyItemOrId - History record or history item id.
+   * @private
+   */
+  _handleSearchHistorySelect(historyItemOrId) {
+    const historyItem =
+      typeof historyItemOrId === 'string'
+        ? this.searchHistory.find(item => item.id === historyItemOrId)
+        : historyItemOrId;
+    this.loadSearch(historyItem);
   }
   
   /**

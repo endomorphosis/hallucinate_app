@@ -94,13 +94,15 @@
   "source_surface": "hallucinate_app",
   "target_surface": "mobile",
   "control_surface_contract_ref": "control_surface_contract:hallucinate-app:remote-client",
+  "event_name": "hallucinate-app:mobile-interop-handoff",
   "routes": [
     "/v1/mobile/orb/register_edge_capabilities",
     "/v1/mobile/orb/invoke_service",
     "/v1/mobile/orb/dispatch_glasses_response",
     "/v1/mobile/orb/diagnostics"
   ],
-  "artifacts": ["interaction_envelope", "policy_decision", "mediation_receipt"]
+  "artifacts": ["interaction_envelope", "policy_decision", "mediation_receipt"],
+  "receipt_table": "hallucinate_app_mobile_interop_receipts"
 }</textarea>
             </div>
             <div class="module-test-results">
