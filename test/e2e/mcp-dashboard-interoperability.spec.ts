@@ -2829,18 +2829,35 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
 
   test('lets Swissknife consume the same dashboard catalog without duplicate schemas or mocks', () => {
     const receipt = JSON.parse(fs.readFileSync(VAI_512_CONSUMPTION_RECEIPT, 'utf8'));
-    const result = spawnSync('npm', ['--prefix', 'swissknife', 'run', 'test:e2e:mcp'], {
-      cwd: REPO_ROOT,
+    const playwrightResult = spawnSync('node', [
+      'scripts/run_playwright_test.mjs',
+      'test',
+      '-c',
+      'build-tools/configs/playwright.mcp-dashboard.config.ts',
+      'mcp-dashboard.spec.ts'
+    ], {
+      cwd: path.join(REPO_ROOT, 'swissknife'),
       encoding: 'utf8',
       env: {
         ...process.env,
         HALLUCINATE_APP_E2E_NO_BOOTSTRAP: 'true'
       }
     });
+    const consumerResult = spawnSync('node', ['scripts/test-mcp-dashboard-consumer.cjs'], {
+      cwd: path.join(REPO_ROOT, 'swissknife'),
+      encoding: 'utf8',
+      env: {
+        ...process.env,
+        HALLUCINATE_APP_E2E_NO_BOOTSTRAP: 'true'
+      }
+    });
+    const stdout = `${playwrightResult.stdout || ''}\n${consumerResult.stdout || ''}`;
+    const stderr = `${playwrightResult.stderr || ''}\n${consumerResult.stderr || ''}`;
 
-    expect(result.status, `${result.stdout}\n${result.stderr}`).toBe(0);
-    const match = String(result.stdout || '').match(/\{\s*"status"[\s\S]*\}\s*$/);
-    expect(match, result.stdout).toBeTruthy();
+    expect(playwrightResult.status, `${playwrightResult.stdout}\n${playwrightResult.stderr}`).toBe(0);
+    expect(consumerResult.status, `${consumerResult.stdout}\n${consumerResult.stderr}`).toBe(0);
+    const match = stdout.match(/\{\s*"status"[\s\S]*\}\s*$/);
+    expect(match, `${stdout}\n${stderr}`).toBeTruthy();
     const payload = JSON.parse(match![0]);
     expect(payload).toMatchObject({
       status: 'ok',
