@@ -786,6 +786,31 @@ const MGW_566_LAUNCH_VALIDATION_GATE = {
   ],
   failure_rule: 'Any MGW-566 dashboard catalog, UI wiring, mediated tools/list, mediated tools/call, Swissknife consumer, backend validation, or Playwright failure remains supervisor-generated follow-up work for VAIOS-G723.'
 };
+const MGW_591_LAUNCH_VALIDATION_GATE = {
+  ...MGW_558_LAUNCH_VALIDATION_GATE,
+  task_id: 'MGW-591',
+  source_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-591-objective-gap-7ea369464239.md',
+  supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-591-objective-gap-7ea369464239.md',
+  launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-591-launch-playwright-validation-gate.md',
+  hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-mgw-591-mcp-dashboard-launch-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-591-mcp-dashboard-launch-gate.json',
+  attempt: 1,
+  required_evidence: [
+    'hallucinate_app menus',
+    'Hallucinate App MCP dashboard',
+    'dashboard capability catalog',
+    'daemon health',
+    'tools/list',
+    'tools/call',
+    'ipfs_accelerate_py MCP server',
+    'ipfs_datasets_py MCP server',
+    'ipfs_kit_py MCP server',
+    'Swissknife applications',
+    'Playwright MCP dashboard interoperability',
+    'launch Playwright validation gate'
+  ],
+  failure_rule: 'Any MGW-591 dashboard catalog, UI wiring, mediated tools/list, mediated tools/call, Swissknife consumer, backend validation, or Playwright failure remains supervisor-generated follow-up work for VAIOS-G723.'
+};
 const VAI_563_LAUNCH_VALIDATION_GATE = {
   ...MGW_566_LAUNCH_VALIDATION_GATE,
   task_id: 'VAI-563',
@@ -1885,7 +1910,8 @@ const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   VAI_653_LAUNCH_VALIDATION_GATE,
   VAI_655_LAUNCH_VALIDATION_GATE,
   VAI_657_LAUNCH_VALIDATION_GATE,
-  VAI_659_LAUNCH_VALIDATION_GATE
+  VAI_659_LAUNCH_VALIDATION_GATE,
+  MGW_591_LAUNCH_VALIDATION_GATE
 ];
 const DAEMON_LAUNCH_GATE_TASK_ID = 'MGW-535';
 const DAEMON_LAUNCH_GATE_VAI_TASK_ID = 'VAI-519';
