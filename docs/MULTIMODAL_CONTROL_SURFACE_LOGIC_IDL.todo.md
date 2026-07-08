@@ -9207,7 +9207,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-737 Close objective gap: Interoperate external/meta-wearables-dat-android with external/ipfs_accelerate
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P1
 - Track: interoperability
@@ -9240,9 +9240,10 @@ UI-plane participants and runtime-plane targets.
 - Todo vector key: 7b1f274f3b485b7d
 - Acceptance: Objective scan filed this gap for VAIOS-G709. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-08-hao-737-objective-gap-56ff358535c4.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/interoperability/external/6595cbbfadb9; implement a complete, cohesive change that fully advances the packet goals (VAIOS-G709, VAIOS-G710, VAIOS-G711) and covers all the shared packet evidence in one comprehensive pass. Refine the objective heap if the gap needs smaller child goals.
 
+- Blocked reason: Retired by objective-task janitor during launch steering because goal_completed.
 ## HAO-738 Close objective gap: Interoperate external/meta-wearables-dat-android with external/ipfs_datasets
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P1
 - Track: interoperability
@@ -9275,6 +9276,7 @@ UI-plane participants and runtime-plane targets.
 - Todo vector key: a08852876b7a22bb
 - Acceptance: Objective scan filed this gap for VAIOS-G710. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-08-hao-738-objective-gap-136ccea7b51c.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap. This task is part of goal_packet/interoperability/external/6595cbbfadb9; implement a complete, cohesive change that fully advances the packet goals (VAIOS-G709, VAIOS-G710, VAIOS-G711) and covers all the shared packet evidence in one comprehensive pass. Refine the objective heap if the gap needs smaller child goals.
 
+- Blocked reason: Retired by objective-task janitor during launch steering because goal_completed.
 ## HAO-739 Close objective gap: Interoperate external/meta-wearables-dat-android with external/ipfs_kit
 
 - Status: deferred
