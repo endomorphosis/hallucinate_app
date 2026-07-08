@@ -2043,6 +2043,33 @@ const MGW_556_DAEMON_LAUNCH_VALIDATION_GATE = {
     'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
   ]
 };
+const MGW_565_DAEMON_LAUNCH_VALIDATION_GATE = {
+  task_id: 'MGW-565',
+  supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-02-mgw-565-objective-gap-b023c8de5b69.md',
+  launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-02-mgw-565-daemon-launch-health-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-565-daemon-launch-health-gate.json',
+  validation_commands: [
+    'PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q',
+    'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts',
+    'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
+    'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
+  ]
+};
+const MGW_590_DAEMON_LAUNCH_VALIDATION_GATE = {
+  task_id: 'MGW-590',
+  supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-590-objective-gap-b023c8de5b69.md',
+  launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-590-daemon-launch-health-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-590-daemon-launch-health-gate.json',
+  packet_sibling_task_id: 'MGW-589',
+  packet_sibling_goal_id: 'VAIOS-G724',
+  packet_sibling_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-589-objective-gap-3e00ad2a0074.md',
+  validation_commands: [
+    'PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q',
+    'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts',
+    'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
+    'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
+  ]
+};
 const VAI_536_DAEMON_LAUNCH_VALIDATION_GATE = {
   task_id: 'VAI-536',
   objective_gap_receipt: 'data/virtual_ai_os/discovery/2026-06-28-vai-536-objective-gap-b023c8de5b69.md',
@@ -3358,6 +3385,22 @@ class MCPDaemonManager extends EventEmitter {
             launch_gate_receipt: MGW_556_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt
           },
           {
+            task_id: MGW_565_DAEMON_LAUNCH_VALIDATION_GATE.task_id,
+            goal_id: DAEMON_LAUNCH_GATE_GOAL_ID,
+            evidence_term: 'launch Playwright validation gate',
+            playwright_spec: 'hallucinate_app/test/e2e/daemon-launch-health.spec.ts',
+            supervisor_gap_receipt: MGW_565_DAEMON_LAUNCH_VALIDATION_GATE.supervisor_gap_receipt,
+            launch_gate_receipt: MGW_565_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt
+          },
+          {
+            task_id: MGW_590_DAEMON_LAUNCH_VALIDATION_GATE.task_id,
+            goal_id: DAEMON_LAUNCH_GATE_GOAL_ID,
+            evidence_term: 'launch Playwright validation gate',
+            playwright_spec: 'hallucinate_app/test/e2e/daemon-launch-health.spec.ts',
+            supervisor_gap_receipt: MGW_590_DAEMON_LAUNCH_VALIDATION_GATE.supervisor_gap_receipt,
+            launch_gate_receipt: MGW_590_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt
+          },
+          {
             task_id: VAI_536_DAEMON_LAUNCH_VALIDATION_GATE.task_id,
             goal_id: DAEMON_LAUNCH_GATE_GOAL_ID,
             evidence_term: 'launch Playwright validation gate',
@@ -3737,6 +3780,9 @@ class MCPDaemonManager extends EventEmitter {
       goal_id: DAEMON_LAUNCH_GATE_GOAL_ID,
       goal_packet: DAEMON_LAUNCH_GATE_PACKET_ID,
       packet_goals: [...DAEMON_LAUNCH_GATE_PACKET_GOALS],
+      ...(overrides.packet_sibling_task_id ? { packet_sibling_task_id: overrides.packet_sibling_task_id } : {}),
+      ...(overrides.packet_sibling_goal_id ? { packet_sibling_goal_id: overrides.packet_sibling_goal_id } : {}),
+      ...(overrides.packet_sibling_gap_receipt ? { packet_sibling_gap_receipt: overrides.packet_sibling_gap_receipt } : {}),
       evidence_term: 'launch Playwright validation gate',
       launch_key: 'hallucinate-daemon-launch-orchestration',
       gate_state: overrides.gate_state || 'gate_open_until_playwright_passes',
@@ -3811,6 +3857,34 @@ class MCPDaemonManager extends EventEmitter {
         objective_gap_receipts: [
           ...DAEMON_LAUNCH_GATE_OBJECTIVE_GAP_RECEIPTS,
           MGW_556_DAEMON_LAUNCH_VALIDATION_GATE.supervisor_gap_receipt
+        ]
+      }),
+      this.getDaemonLaunchValidationGate({
+        ...MGW_565_DAEMON_LAUNCH_VALIDATION_GATE,
+        shared_packet_task_id: DAEMON_LAUNCH_GATE_TASK_ID,
+        discovery_receipts: [
+          ...DAEMON_LAUNCH_GATE_DISCOVERY_RECEIPTS,
+          MGW_565_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt
+        ],
+        objective_gap_receipt: MGW_565_DAEMON_LAUNCH_VALIDATION_GATE.supervisor_gap_receipt,
+        objective_gap_receipts: [
+          ...DAEMON_LAUNCH_GATE_OBJECTIVE_GAP_RECEIPTS,
+          MGW_565_DAEMON_LAUNCH_VALIDATION_GATE.supervisor_gap_receipt
+        ]
+      }),
+      this.getDaemonLaunchValidationGate({
+        ...MGW_590_DAEMON_LAUNCH_VALIDATION_GATE,
+        shared_packet_task_id: DAEMON_LAUNCH_GATE_TASK_ID,
+        discovery_receipts: [
+          ...DAEMON_LAUNCH_GATE_DISCOVERY_RECEIPTS,
+          MGW_565_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt,
+          MGW_590_DAEMON_LAUNCH_VALIDATION_GATE.launch_gate_receipt
+        ],
+        objective_gap_receipt: MGW_590_DAEMON_LAUNCH_VALIDATION_GATE.supervisor_gap_receipt,
+        objective_gap_receipts: [
+          ...DAEMON_LAUNCH_GATE_OBJECTIVE_GAP_RECEIPTS,
+          MGW_565_DAEMON_LAUNCH_VALIDATION_GATE.supervisor_gap_receipt,
+          MGW_590_DAEMON_LAUNCH_VALIDATION_GATE.supervisor_gap_receipt
         ]
       }),
       this.getDaemonLaunchValidationGate({

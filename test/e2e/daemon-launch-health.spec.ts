@@ -12,6 +12,8 @@ const { test, expect } = playwrightTest as unknown as typeof import('@playwright
 const GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-535-daemon-launch-health-gate.json');
 const MGW_551_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-551-daemon-launch-health-gate.json');
 const MGW_556_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-556-daemon-launch-health-gate.json');
+const MGW_565_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-565-daemon-launch-health-gate.json');
+const MGW_590_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-590-daemon-launch-health-gate.json');
 const VAI_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-519-daemon-launch-health-gate.json');
 const HAO_713_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-713-daemon-launch-health-gate.json');
 const VAI_530_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-530-daemon-launch-health-gate.json');
@@ -287,6 +289,8 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
       'MGW-535',
       'MGW-551',
       'MGW-556',
+      'MGW-565',
+      'MGW-590',
       'VAI-536',
       'VAI-538',
       'VAI-540',
@@ -421,6 +425,86 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
     ))).toBe(true);
     expect(gate.daemon_health_paths.map((entry: any) => entry.daemon_id)).toEqual(DAEMON_IDS);
     expect(gate.swissknife_handoff.every((entry: any) => entry.swissknife_consumer.includes('Swissknife'))).toBe(true);
+  });
+
+  test('closes current MGW daemon launch objective gaps with Playwright validation gates', () => {
+    const manager = new MCPDaemonManager();
+    const gates = manager.getDaemonLaunchValidationGates();
+    const launchPlan = manager.getLaunchPlan();
+    const fixtures = [
+      {
+        taskId: 'MGW-565',
+        fixturePath: MGW_565_GATE_FIXTURE,
+        gapReceipt: 'data/meta_glasses_display_widgets/discovery/2026-07-02-mgw-565-objective-gap-b023c8de5b69.md',
+        launchReceipt: 'data/meta_glasses_display_widgets/discovery/2026-07-02-mgw-565-daemon-launch-health-gate.md'
+      },
+      {
+        taskId: 'MGW-590',
+        fixturePath: MGW_590_GATE_FIXTURE,
+        gapReceipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-590-objective-gap-b023c8de5b69.md',
+        launchReceipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-590-daemon-launch-health-gate.md',
+        packetSiblingTaskId: 'MGW-589',
+        packetSiblingGoalId: 'VAIOS-G724',
+        packetSiblingGapReceipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-589-objective-gap-3e00ad2a0074.md'
+      }
+    ];
+
+    for (const fixture of fixtures) {
+      const gate = gates.find((candidate: any) => candidate.task_id === fixture.taskId) as any;
+      const receipt = JSON.parse(fs.readFileSync(fixture.fixturePath, 'utf8'));
+
+      expect(gate).toBeTruthy();
+      expect(gate).toEqual(receipt);
+      expect(receipt.schema).toBe('hallucinate_app.daemon_launch_validation_gate.v1');
+      expect(receipt.receipt_schema).toBe('launch_readiness_receipt_v1');
+      expect(receipt.task_id).toBe(fixture.taskId);
+      expect(receipt.shared_packet_task_id).toBe('MGW-535');
+      expect(receipt.goal_id).toBe('VAIOS-G728');
+      expect(receipt.goal_packet).toBe('goal_packet/launch/hallucinate_app/44dceea6bc53');
+      expect(receipt.packet_goals).toEqual(['VAIOS-G724', 'VAIOS-G728']);
+      expect(receipt.evidence_term).toBe('launch Playwright validation gate');
+      expect(receipt.objective_gap_receipt).toBe(fixture.gapReceipt);
+      expect(receipt.objective_gap_receipts).toContain(fixture.gapReceipt);
+      expect(receipt.supervisor_gap_receipt).toBe(fixture.gapReceipt);
+      expect(receipt.launch_gate_receipt).toBe(fixture.launchReceipt);
+      expect(receipt.discovery_receipts).toContain(fixture.launchReceipt);
+      expect(receipt.receipt_fixture).toBe(`hallucinate_app/test/e2e/fixtures/${fixture.taskId.toLowerCase()}-daemon-launch-health-gate.json`);
+      expect(receipt.validation_commands).toEqual([
+        'PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q',
+        'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts',
+        'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
+        'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
+      ]);
+      expect(receipt.playwright_specs).toContain('hallucinate_app/test/e2e/daemon-launch-health.spec.ts');
+      expect(receipt.required_backends).toEqual(BACKEND_PACKAGES);
+      expect(receipt.required_evidence).toEqual(expect.arrayContaining([
+        'Hallucinate App daemon health',
+        'daemon launcher',
+        'MCP server',
+        'MCP dashboard',
+        'ipfs_accelerate_py',
+        'ipfs_datasets_py',
+        'ipfs_kit_py',
+        'dashboard capability catalog',
+        'Swissknife applications',
+        'launch Playwright validation gate'
+      ]));
+      expect(receipt.daemon_health_paths.map((entry: any) => entry.daemon_id)).toEqual(DAEMON_IDS);
+      expect(receipt.swissknife_handoff.every((entry: any) => entry.swissknife_consumer.includes('Swissknife'))).toBe(true);
+      expect(launchPlan.every((entry: any) => (
+        entry.launch_validation_gates.some((candidate: any) => (
+          candidate.task_id === fixture.taskId &&
+          candidate.supervisor_gap_receipt === fixture.gapReceipt &&
+          candidate.launch_gate_receipt === fixture.launchReceipt
+        ))
+      ))).toBe(true);
+
+      if (fixture.taskId === 'MGW-590') {
+        expect(receipt.packet_sibling_task_id).toBe(fixture.packetSiblingTaskId);
+        expect(receipt.packet_sibling_goal_id).toBe(fixture.packetSiblingGoalId);
+        expect(receipt.packet_sibling_gap_receipt).toBe(fixture.packetSiblingGapReceipt);
+      }
+    }
   });
 
   test('binds the VAI-519 objective gap receipt to the daemon launch health gate', () => {
