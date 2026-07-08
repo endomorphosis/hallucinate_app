@@ -12,6 +12,7 @@ const { test, expect } = playwrightTest as unknown as typeof import('@playwright
 const GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-535-daemon-launch-health-gate.json');
 const MGW_551_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-551-daemon-launch-health-gate.json');
 const MGW_556_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-556-daemon-launch-health-gate.json');
+const MGW_565_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-565-daemon-launch-health-gate.json');
 const VAI_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-519-daemon-launch-health-gate.json');
 const HAO_713_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-713-daemon-launch-health-gate.json');
 const VAI_530_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-530-daemon-launch-health-gate.json');
@@ -312,6 +313,7 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
       'MGW-535',
       'MGW-551',
       'MGW-556',
+      'MGW-565',
       'VAI-536',
       'VAI-538',
       'VAI-540',
@@ -442,6 +444,59 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
     expect(launchPlan.every((entry: any) => (
       entry.launch_validation_gates.some((candidate: any) => (
         candidate.task_id === 'MGW-556' &&
+        candidate.supervisor_gap_receipt === gate.supervisor_gap_receipt &&
+        candidate.launch_gate_receipt === gate.launch_gate_receipt
+      ))
+    ))).toBe(true);
+    expect(gate.daemon_health_paths.map((entry: any) => entry.daemon_id)).toEqual(DAEMON_IDS);
+    expect(gate.swissknife_handoff.every((entry: any) => entry.swissknife_consumer.includes('Swissknife'))).toBe(true);
+  });
+
+  test('closes the MGW-565 daemon launch objective gap with the current Playwright gate', () => {
+    const manager = new MCPDaemonManager();
+    const fixture = JSON.parse(fs.readFileSync(MGW_565_GATE_FIXTURE, 'utf8'));
+    const gates = manager.getDaemonLaunchValidationGates();
+    const gate = gates.find((candidate: any) => candidate.task_id === 'MGW-565') as any;
+    const launchPlan = manager.getLaunchPlan();
+
+    expect(gate).toBeTruthy();
+    expectDaemonGateToMatchReceipt(gate, fixture);
+    expect(gate.goal_id).toBe('VAIOS-G728');
+    expect(gate.goal_packet).toBe('goal_packet/launch/hallucinate_app/44dceea6bc53');
+    expect(gate.packet_goals).toEqual(['VAIOS-G724', 'VAIOS-G728']);
+    expect(gate.evidence_term).toBe('launch Playwright validation gate');
+    expect(gate.supervisor_gap_receipt).toBe(
+      'data/meta_glasses_display_widgets/discovery/2026-07-02-mgw-565-objective-gap-b023c8de5b69.md'
+    );
+    expect(gate.objective_gap_receipt).toBe(gate.supervisor_gap_receipt);
+    expect(gate.objective_gap_receipts).toContain(gate.supervisor_gap_receipt);
+    expect(gate.launch_gate_receipt).toBe(
+      'data/meta_glasses_display_widgets/discovery/2026-07-02-mgw-565-daemon-launch-health-gate.md'
+    );
+    expect(gate.discovery_receipts).toContain(gate.launch_gate_receipt);
+    expect(gate.validation_commands).toEqual([
+      'PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q',
+      'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts',
+      'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
+      'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
+    ]);
+    expect(gate.playwright_specs).toContain('hallucinate_app/test/e2e/daemon-launch-health.spec.ts');
+    expect(gate.required_backends).toEqual(BACKEND_PACKAGES);
+    expect(gate.required_evidence).toEqual(expect.arrayContaining([
+      'Hallucinate App daemon health',
+      'daemon launcher',
+      'MCP server',
+      'MCP dashboard',
+      'ipfs_accelerate_py',
+      'ipfs_datasets_py',
+      'ipfs_kit_py',
+      'dashboard capability catalog',
+      'Swissknife applications',
+      'launch Playwright validation gate'
+    ]));
+    expect(launchPlan.every((entry: any) => (
+      entry.launch_validation_gates.some((candidate: any) => (
+        candidate.task_id === 'MGW-565' &&
         candidate.supervisor_gap_receipt === gate.supervisor_gap_receipt &&
         candidate.launch_gate_receipt === gate.launch_gate_receipt
       ))
