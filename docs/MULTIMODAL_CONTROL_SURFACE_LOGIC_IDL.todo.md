@@ -9067,7 +9067,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-733 Close objective gap: Interoperate swissknife with external/ipfs_kit
 
-- Status: todo
+- Status: deferred
 - Completion: manual
 - Priority: P1
 - Track: interoperability
@@ -9277,7 +9277,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-739 Close objective gap: Interoperate external/meta-wearables-dat-android with external/ipfs_kit
 
-- Status: todo
+- Status: deferred
 - Completion: manual
 - Priority: P1
 - Track: interoperability
