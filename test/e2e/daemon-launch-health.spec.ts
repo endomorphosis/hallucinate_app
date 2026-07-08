@@ -78,6 +78,7 @@ const VAI_660_ATTEMPT_RECEIPT = path.join(
 );
 const HAO_719_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-719-daemon-launch-health-gate.json');
 const HAO_721_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-721-daemon-launch-health-gate.json');
+const HAO_743_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-743-daemon-launch-health-gate.json');
 const HAO_715_REPAIR_RECEIPT = path.join(
   repoRoot,
   'data',
@@ -327,7 +328,8 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
       'VAI-658',
       'VAI-660',
       'HAO-719',
-      'HAO-721'
+      'HAO-721',
+      'HAO-743'
     ]);
     expect(gate.goal_id).toBe('VAIOS-G728');
     expect(gate.goal_packet).toBe('goal_packet/launch/hallucinate_app/44dceea6bc53');
@@ -844,7 +846,7 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
     }
   });
 
-  test('binds the HAO-719 and HAO-721 objective gaps to the daemon launch Playwright gate', () => {
+  test('binds HAO objective gaps to the daemon launch Playwright gate', () => {
     const manager = new MCPDaemonManager();
     const gate = manager.getDaemonLaunchValidationGate();
     const gates = manager.getDaemonLaunchValidationGates();
@@ -853,13 +855,22 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
         taskId: 'HAO-719',
         fixturePath: HAO_719_GATE_FIXTURE,
         gapReceipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-719-objective-gap-b023c8de5b69.md',
-        launchReceipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-719-daemon-launch-health-gate.md'
+        launchReceipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-719-daemon-launch-health-gate.md',
+        daemonLaunchCommand: 'npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts'
       },
       {
         taskId: 'HAO-721',
         fixturePath: HAO_721_GATE_FIXTURE,
         gapReceipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-721-objective-gap-b023c8de5b69.md',
-        launchReceipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-721-daemon-launch-health-gate.md'
+        launchReceipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-721-daemon-launch-health-gate.md',
+        daemonLaunchCommand: 'npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts'
+      },
+      {
+        taskId: 'HAO-743',
+        fixturePath: HAO_743_GATE_FIXTURE,
+        gapReceipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-743-objective-gap-b023c8de5b69.md',
+        launchReceipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-743-daemon-launch-health-gate.md',
+        daemonLaunchCommand: 'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts'
       }
     ];
 
@@ -881,15 +892,15 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
       expect(receipt.launch_gate_receipt).toBe(fixture.launchReceipt);
       expect(receipt.hallucinate_backlog_receipt).toBe(fixture.launchReceipt);
       expect(receipt.shared_packet_task_id).toBe(gate.task_id);
-      expect(gate.backlog_task_ids).toContain(fixture.taskId);
-      expect(gate.supervisor_gap_receipts).toContain(fixture.gapReceipt);
-      expect(gate.hallucinate_backlog_receipts).toContain(fixture.launchReceipt);
+      expect(receipt.backlog_task_ids).toContain(fixture.taskId);
+      expect(receipt.supervisor_gap_receipts).toContain(fixture.gapReceipt);
+      expect(receipt.hallucinate_backlog_receipts).toContain(fixture.launchReceipt);
       expect(receipt.playwright_specs).toEqual(gate.playwright_specs);
       expect(receipt.validation_commands).toEqual(expect.arrayContaining([
         'PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q',
         'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
         'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts',
-        'npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts'
+        fixture.daemonLaunchCommand
       ]));
       expect(receipt.required_backends).toEqual(gate.required_backends);
       expect(receipt.required_evidence).toEqual(gate.required_evidence);
