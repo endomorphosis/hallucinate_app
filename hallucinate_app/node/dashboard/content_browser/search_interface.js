@@ -7,6 +7,83 @@
  * @module dashboard/content_browser/search_interface
  */
 
+export const HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT = {
+  contract: 'handsfree.hallucinate-app/mobile-search-handoff@0.1.0',
+  control_surface_contract_ref: 'control_surface_contract:hallucinate-app:remote-client',
+  mobile_orb_diagnostics_contract: 'handsfree.meta-glasses/mobile-orb-diagnostics@0.1.0',
+  display_widget_action_contract: 'handsfree.meta-glasses/display-widget-action@0.1.0',
+  source_surface: 'hallucinate_app.content_browser.search_interface',
+  target_surface: 'mobile.meta_glasses.mobile_orb_bridge',
+  descriptor_path: 'hallucinate_app/hallucinate_app/node/dashboard/content_browser/search_interface.js',
+  mobile_contract_path: 'mobile/src/orb/metaGlassesMobileOrbBridge.js',
+  handoff_event: 'hallucinate-app:mobile-search-handoff',
+  receipt_table: 'hallucinate_mobile_handoff_receipts',
+  required_receipt_fields: [
+    'contract',
+    'control_surface_contract_ref',
+    'correlation_id',
+    'query',
+    'filter',
+    'mobile_operation',
+    'orb_receipt_cid',
+    'mediation_receipt'
+  ],
+  mobile_operations: [
+    'render_widget',
+    'update_widget',
+    'clear_widget',
+    'focus_next',
+    'activate',
+    'reset_session',
+    'play_video',
+    'subscribe_updates'
+  ]
+};
+
+export function buildHallucinateAppMobileSearchHandoff(query = '', filter = {}, options = {}) {
+  const issuedAt = options.issued_at || options.issuedAt || new Date().toISOString();
+  const correlationId =
+    options.correlation_id ||
+    options.correlationId ||
+    `hallucinate-mobile-search-${issuedAt}`;
+  const normalizedFilter = filter && typeof filter === 'object' && !Array.isArray(filter)
+    ? filter
+    : {};
+  const mobileOperation = options.mobile_operation || options.mobileOperation || 'render_widget';
+
+  return {
+    contract: HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT.contract,
+    control_surface_contract_ref:
+      options.control_surface_contract_ref ||
+      HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT.control_surface_contract_ref,
+    source_surface: HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT.source_surface,
+    target_surface: HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT.target_surface,
+    handoff_event: HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT.handoff_event,
+    correlation_id: correlationId,
+    issued_at: issuedAt,
+    query: String(query || ''),
+    filter: normalizedFilter,
+    mobile_operation: mobileOperation,
+    mobile_payload: {
+      contract: HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT.display_widget_action_contract,
+      type: options.mobile_action_id || 'mobile_render_display_widget',
+      operation: mobileOperation,
+      widget_id: options.widget_id || 'hallucinate-content-browser-search',
+      state: {
+        query: String(query || ''),
+        filter: normalizedFilter
+      },
+      fallback: {
+        renderPath: 'mobile-card',
+        reason: 'hallucinate_app_mobile_search_handoff'
+      }
+    },
+    required_receipt_fields: [
+      ...HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT.required_receipt_fields
+    ]
+  };
+}
+
 export class SearchInterface {
   /**
    * Create a new SearchInterface component
@@ -34,6 +111,7 @@ export class SearchInterface {
       maxSavedSearches: 20,
       defaultExpandedState: false,
       localStoragePrefix: 'pyarrow_index_search_',
+      mobileInteropContract: HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT,
       availableFilters: [
         'mimetype', 'size', 'date', 'tags', 'location', 'metadata'
       ],
@@ -75,6 +153,8 @@ export class SearchInterface {
     this.emit = this.emit.bind(this);
     this.refreshSuggestions = this.refreshSuggestions.bind(this);
     this.dispose = this.dispose.bind(this);
+    this.getMobileInteropDescriptor = this.getMobileInteropDescriptor.bind(this);
+    this.buildMobileSearchHandoff = this.buildMobileSearchHandoff.bind(this);
     this._handleSearchSubmit = this._handleSearchSubmit.bind(this);
     this._handleAdvancedSearch = this._handleAdvancedSearch.bind(this);
     this._handleSavedSearchSelect = this._handleSavedSearchSelect.bind(this);
@@ -240,6 +320,7 @@ export class SearchInterface {
    */
   search(query) {
     this.currentQuery = query || '';
+    const mobileHandoff = this.buildMobileSearchHandoff(this.currentQuery, this.currentFilter);
     
     // Add to search history
     this._addToSearchHistory(this.currentQuery, this.currentFilter);
@@ -252,10 +333,37 @@ export class SearchInterface {
     // Emit event
     if (this.eventBus) {
       this.eventBus.emit('content-browser:search', this.currentQuery);
+      this.eventBus.emit(
+        HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT.handoff_event,
+        mobileHandoff
+      );
     }
     
     // Emit event for direct listeners
     this.emit('search', this.currentQuery);
+    this.emit('mobile-search-handoff', mobileHandoff);
+  }
+
+  /**
+   * Return the scanner-visible interface contract shared with mobile.
+   * @returns {Object} Hallucinate App mobile interoperability descriptor
+   */
+  getMobileInteropDescriptor() {
+    return {
+      ...this.config.mobileInteropContract,
+      emitted_by: 'SearchInterface.getMobileInteropDescriptor'
+    };
+  }
+
+  /**
+   * Build a mobile handoff receipt candidate for the current search state.
+   * @param {string} query - Search query
+   * @param {Object} filter - Filter criteria
+   * @param {Object} options - Optional receipt metadata
+   * @returns {Object} Handoff payload accepted by the mobile ORB bridge
+   */
+  buildMobileSearchHandoff(query = this.currentQuery, filter = this.currentFilter, options = {}) {
+    return buildHallucinateAppMobileSearchHandoff(query, filter, options);
   }
   
   /**

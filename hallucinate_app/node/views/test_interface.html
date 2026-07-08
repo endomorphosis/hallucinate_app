@@ -8,7 +8,11 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
+<body
+  data-hallucinate-mobile-interop-contract="handsfree.hallucinate-app/mobile-search-handoff@0.1.0"
+  data-control-surface-contract-ref="control_surface_contract:hallucinate-app:remote-client"
+  data-mobile-orb-diagnostics-contract="handsfree.meta-glasses/mobile-orb-diagnostics@0.1.0"
+>
   <div class="app-container">
     <!-- Header -->
     <header class="header">
@@ -57,6 +61,18 @@
             <h2>Test Configuration</h2>
           </div>
           <div class="card-body">
+            <div
+              id="hallucinateMobileInteropContract"
+              class="interop-contract"
+              data-contract="handsfree.hallucinate-app/mobile-search-handoff@0.1.0"
+              data-source-surface="hallucinate_app.node.views.test_interface"
+              data-target-surface="mobile.meta_glasses.mobile_orb_bridge"
+              data-handoff-event="hallucinate-app:mobile-search-handoff"
+              data-receipt-table="hallucinate_mobile_handoff_receipts"
+            >
+              <strong>Mobile interop:</strong>
+              <span>control_surface_contract:hallucinate-app:remote-client</span>
+            </div>
             <div class="form-group">
               <label for="testEnvironment">Test Environment:</label>
               <select id="testEnvironment">
@@ -295,6 +311,27 @@
 
   <script>
     const { ipcRenderer } = window.require('electron');
+    const HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT = {
+      contract: 'handsfree.hallucinate-app/mobile-search-handoff@0.1.0',
+      control_surface_contract_ref: 'control_surface_contract:hallucinate-app:remote-client',
+      mobile_orb_diagnostics_contract: 'handsfree.meta-glasses/mobile-orb-diagnostics@0.1.0',
+      display_widget_action_contract: 'handsfree.meta-glasses/display-widget-action@0.1.0',
+      source_surface: 'hallucinate_app.node.views.test_interface',
+      target_surface: 'mobile.meta_glasses.mobile_orb_bridge',
+      handoff_event: 'hallucinate-app:mobile-search-handoff',
+      receipt_table: 'hallucinate_mobile_handoff_receipts',
+      required_receipt_fields: [
+        'contract',
+        'control_surface_contract_ref',
+        'correlation_id',
+        'mobile_operation',
+        'orb_receipt_cid',
+        'mediation_receipt'
+      ]
+    };
+
+    window.HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT =
+      HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT;
     
     // DOM Elements
     const serverStatus = document.getElementById('serverStatus');
