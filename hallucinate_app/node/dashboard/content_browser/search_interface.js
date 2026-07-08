@@ -7,6 +7,28 @@
  * @module dashboard/content_browser/search_interface
  */
 
+export const HALLUCINATE_APP_MOBILE_SEARCH_DESCRIPTOR = {
+  schema: 'hallucinate_app_mobile_content_search_handoff_v1',
+  objective_id: 'VAIOS-G707',
+  interface_contract: 'handsfree.interop.hallucinate_app_mobile/handoff@0.1.0',
+  source: 'hallucinate_app',
+  target: 'mobile',
+  operation: 'dispatch_content_search',
+  required_fields: [
+    'query',
+    'filters',
+    'edge_session_id',
+    'correlation_id',
+    'handoff.ipfs_cids',
+    'handoff.libp2p_peer_id',
+    'mediation_receipt',
+  ],
+  descriptor_refs: [
+    'handsfree.meta_glasses.mobile.mobile_orb_bridge@0.1.0',
+    'handsfree.interop.hallucinate_app_mobile.hallucinate_app_mobile_interop@0.1.0',
+  ],
+};
+
 export class SearchInterface {
   /**
    * Create a new SearchInterface component
@@ -81,6 +103,7 @@ export class SearchInterface {
     this._handleSearchHistorySelect = this._handleSearchHistorySelect.bind(this);
     this._initSavedSearches = this._initSavedSearches.bind(this);
     this._initSearchHistory = this._initSearchHistory.bind(this);
+    this.buildMobileHandoffSearchRequest = this.buildMobileHandoffSearchRequest.bind(this);
   }
   
   /**
@@ -240,6 +263,10 @@ export class SearchInterface {
    */
   search(query) {
     this.currentQuery = query || '';
+    const mobileHandoff = this.buildMobileHandoffSearchRequest({
+      query: this.currentQuery,
+      filters: this.currentFilter,
+    });
     
     // Add to search history
     this._addToSearchHistory(this.currentQuery, this.currentFilter);
@@ -252,10 +279,41 @@ export class SearchInterface {
     // Emit event
     if (this.eventBus) {
       this.eventBus.emit('content-browser:search', this.currentQuery);
+      this.eventBus.emit('hallucinate_app:mobile-handoff-search', mobileHandoff);
     }
     
     // Emit event for direct listeners
     this.emit('search', this.currentQuery);
+    this.emit('mobile-handoff-search', mobileHandoff);
+  }
+
+  /**
+   * Build the content-search handoff envelope consumed by the mobile ORB bridge.
+   *
+   * @param {Object} options - Handoff options
+   * @param {string} options.query - Search query
+   * @param {Object} options.filters - Search filter object
+   * @param {string} options.edgeSessionId - Mobile edge session identifier
+   * @param {string} options.correlationId - Cross-surface correlation identifier
+   * @returns {Object} Mobile handoff request
+   */
+  buildMobileHandoffSearchRequest(options = {}) {
+    const query = options.query ?? this.currentQuery ?? '';
+    const filters = options.filters ?? this.currentFilter ?? {};
+    const correlationId = options.correlationId || `hallucinate-app-mobile-search:${Date.now()}`;
+    return {
+      ...HALLUCINATE_APP_MOBILE_SEARCH_DESCRIPTOR,
+      query,
+      filters,
+      edge_session_id: options.edgeSessionId || options.edge_session_id || null,
+      correlation_id: correlationId,
+      handoff: {
+        ipfs_cids: Array.isArray(options.ipfsCids) ? options.ipfsCids : [],
+        libp2p_peer_id: options.libp2pPeerId || null,
+        libp2p_session_id: options.libp2pSessionId || null,
+      },
+      mediation_receipt: options.mediationReceipt || null,
+    };
   }
   
   /**
