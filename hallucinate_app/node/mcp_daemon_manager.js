@@ -1219,6 +1219,24 @@ const MGW_564_LAUNCH_VALIDATION_GATE = {
     'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
   ]
 };
+const MGW_589_LAUNCH_VALIDATION_GATE = {
+  ...VAI_548_LAUNCH_VALIDATION_GATE,
+  task_id: 'MGW-589',
+  source_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-589-objective-gap-3e00ad2a0074.md',
+  supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-589-objective-gap-3e00ad2a0074.md',
+  launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-589-launch-playwright-validation-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-589-mcp-dashboard-launch-gate.json',
+  gate_state: 'gate_closed_by_playwright_validation',
+  packet_sibling_goal_id: 'VAIOS-G728',
+  packet_sibling_task_id: 'MGW-590',
+  packet_sibling_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-590-objective-gap-b023c8de5b69.md',
+  external_backend_surfaces: [
+    'external/ipfs_accelerate',
+    'external/ipfs_datasets',
+    'external/ipfs_kit'
+  ],
+  failure_rule: 'Any missing MGW-589 launch Playwright validation gate, catalog, daemon health, tools/list, tools/call, Swissknife consumer, external backend surface, or MGW-590 packet sibling evidence remains supervisor-fed launch work for VAIOS-G724 and VAIOS-G728.'
+};
 const VAI_556_LAUNCH_VALIDATION_GATE = {
   ...VAI_548_LAUNCH_VALIDATION_GATE,
   task_id: 'VAI-556',
@@ -1823,6 +1841,7 @@ const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   MGW_563_LAUNCH_VALIDATION_GATE,
   MGW_555_LAUNCH_VALIDATION_GATE,
   MGW_564_LAUNCH_VALIDATION_GATE,
+  MGW_589_LAUNCH_VALIDATION_GATE,
   VAI_556_LAUNCH_VALIDATION_GATE,
   VAI_564_LAUNCH_VALIDATION_GATE,
   VAI_567_LAUNCH_VALIDATION_GATE,

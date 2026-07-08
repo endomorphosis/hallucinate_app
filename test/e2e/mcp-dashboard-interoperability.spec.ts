@@ -78,6 +78,7 @@ const MGW_561_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-561-mc
 const MGW_562_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-562-mcp-dashboard-launch-gate.json');
 const MGW_563_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-563-mcp-dashboard-launch-gate.json');
 const MGW_564_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-564-mcp-dashboard-launch-gate.json');
+const MGW_589_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-589-mcp-dashboard-launch-gate.json');
 const MGW_566_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-566-mcp-dashboard-launch-gate.json');
 const HAO_681_SWISSKNIFE_CONSUMER_FIXTURE = path.join(
   REPO_ROOT,
@@ -387,6 +388,20 @@ const MGW_564_LAUNCH_GATE_RECEIPT = path.join(
   'meta_glasses_display_widgets',
   'discovery',
   '2026-07-02-mgw-564-launch-playwright-validation-gate.md'
+);
+const MGW_589_OBJECTIVE_GAP_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'meta_glasses_display_widgets',
+  'discovery',
+  '2026-07-08-mgw-589-objective-gap-3e00ad2a0074.md'
+);
+const MGW_589_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'meta_glasses_display_widgets',
+  'discovery',
+  '2026-07-08-mgw-589-launch-playwright-validation-gate.md'
 );
 const VAI_556_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-556-mcp-dashboard-launch-gate.json');
 const VAI_556_OBJECTIVE_GAP_RECEIPT = path.join(
@@ -4042,6 +4057,20 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       launchGateReceipt: 'data/meta_glasses_display_widgets/discovery/2026-07-02-mgw-564-launch-playwright-validation-gate.md',
       receiptFixture: 'hallucinate_app/test/e2e/fixtures/mgw-564-mcp-dashboard-launch-gate.json',
       heapProof: 'MGW-564 proof',
+      gateState: 'gate_closed_by_playwright_validation'
+    });
+  });
+
+  test('closes the MGW-589 objective gap with the current Hallucinate launch Playwright validation gate', () => {
+    validateDashboardLaunchGateReceipt({
+      fixturePath: MGW_589_LAUNCH_GATE_FIXTURE,
+      launchGateReceiptPath: MGW_589_LAUNCH_GATE_RECEIPT,
+      objectiveGapPath: MGW_589_OBJECTIVE_GAP_RECEIPT,
+      taskId: 'MGW-589',
+      sourceGapReceipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-589-objective-gap-3e00ad2a0074.md',
+      launchGateReceipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-589-launch-playwright-validation-gate.md',
+      receiptFixture: 'hallucinate_app/test/e2e/fixtures/mgw-589-mcp-dashboard-launch-gate.json',
+      heapProof: 'MGW-589 proof',
       gateState: 'gate_closed_by_playwright_validation'
     });
   });

@@ -588,6 +588,26 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
         packet_sibling_goal_id: 'VAIOS-G728'
       }),
       expect.objectContaining({
+        task_id: 'MGW-589',
+        goal_id: 'VAIOS-G724',
+        goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
+        packet_goal_ids: ['VAIOS-G724', 'VAIOS-G728'],
+        evidence_term: 'launch Playwright validation gate',
+        source_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-589-objective-gap-3e00ad2a0074.md',
+        supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-589-objective-gap-3e00ad2a0074.md',
+        launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-589-launch-playwright-validation-gate.md',
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-589-mcp-dashboard-launch-gate.json',
+        gate_state: 'gate_closed_by_playwright_validation',
+        packet_sibling_goal_id: 'VAIOS-G728',
+        packet_sibling_task_id: 'MGW-590',
+        packet_sibling_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-590-objective-gap-b023c8de5b69.md',
+        external_backend_surfaces: [
+          'external/ipfs_accelerate',
+          'external/ipfs_datasets',
+          'external/ipfs_kit'
+        ]
+      }),
+      expect.objectContaining({
         task_id: 'VAI-556',
         goal_id: 'VAIOS-G724',
         goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
@@ -2055,6 +2075,26 @@ test.describe('MCP Feature Exposure - headless backend gate', () => {
         receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-564-mcp-dashboard-launch-gate.json',
         gate_state: 'gate_closed_by_playwright_validation',
         packet_sibling_goal_id: 'VAIOS-G728'
+      }),
+      expect.objectContaining({
+        task_id: 'MGW-589',
+        goal_id: 'VAIOS-G724',
+        goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
+        packet_goal_ids: ['VAIOS-G724', 'VAIOS-G728'],
+        evidence_term: 'launch Playwright validation gate',
+        source_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-589-objective-gap-3e00ad2a0074.md',
+        supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-589-objective-gap-3e00ad2a0074.md',
+        launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-589-launch-playwright-validation-gate.md',
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-589-mcp-dashboard-launch-gate.json',
+        gate_state: 'gate_closed_by_playwright_validation',
+        packet_sibling_goal_id: 'VAIOS-G728',
+        packet_sibling_task_id: 'MGW-590',
+        packet_sibling_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-590-objective-gap-b023c8de5b69.md',
+        external_backend_surfaces: [
+          'external/ipfs_accelerate',
+          'external/ipfs_datasets',
+          'external/ipfs_kit'
+        ]
       }),
       expect.objectContaining({
         task_id: 'VAI-556',

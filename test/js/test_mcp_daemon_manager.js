@@ -179,6 +179,16 @@ async function runTests() {
       gate.attempt_receipts?.includes('data/hallucinate_multimodal_control/discovery/2026-07-04-vai-628-attempt-1-validation.md')
     ) &&
     catalog.launch_validation_gates?.some(gate =>
+      gate.task_id === 'MGW-589' &&
+      gate.goal_id === 'VAIOS-G724' &&
+      gate.receipt_fixture === 'hallucinate_app/test/e2e/fixtures/mgw-589-mcp-dashboard-launch-gate.json' &&
+      gate.gate_state === 'gate_closed_by_playwright_validation' &&
+      gate.packet_sibling_task_id === 'MGW-590' &&
+      gate.external_backend_surfaces?.includes('external/ipfs_accelerate') &&
+      gate.external_backend_surfaces?.includes('external/ipfs_datasets') &&
+      gate.external_backend_surfaces?.includes('external/ipfs_kit')
+    ) &&
+    catalog.launch_validation_gates?.some(gate =>
       gate.task_id === 'VAI-632' &&
       gate.goal_id === 'VAIOS-G724' &&
       gate.receipt_fixture === 'hallucinate_app/test/e2e/fixtures/vai-632-mcp-dashboard-launch-gate.json' &&
