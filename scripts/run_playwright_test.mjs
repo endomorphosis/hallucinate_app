@@ -13,6 +13,25 @@ const electronPackage = path.join(projectRoot, 'node_modules', 'electron', 'pack
 const commandArgs = process.argv.slice(2);
 const args = commandArgs.length > 0 ? commandArgs : ['test'];
 const missingDisplayDiagnostic = 'missing_xvfb_for_electron_playwright';
+const launchGateEvidenceTerms = [
+  'Hallucinate App menus',
+  'Hallucinate App MCP dashboard',
+  'dashboard capability catalog',
+  'backend service catalog',
+  'daemon health',
+  'MCP++ telemetry',
+  'tools/list',
+  'tools/call',
+  'control_surface receipts',
+  'Swissknife applications',
+  'catalog normalization',
+  'dashboard UI wiring',
+  'mediated tool-call receipts',
+  'Swissknife consumers',
+  'Playwright coverage',
+  'supervisor-generated follow-up subtasks',
+  'launch Playwright validation gate',
+];
 const noDisplayLaunchGateSpecs = new Set([
   'daemon-launch-health.spec.ts',
   'mcp-feature-exposure.spec.ts',
