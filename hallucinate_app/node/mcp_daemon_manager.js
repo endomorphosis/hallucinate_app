@@ -701,6 +701,51 @@ const HAO_727_LAUNCH_VALIDATION_GATE = {
   catalog_launch_objective_ids: DASHBOARD_LAUNCH_OBJECTIVE_IDS,
   supervisor_follow_up_subtasks: ['HAO-678', 'HAO-679', 'HAO-680', 'HAO-681', 'HAO-682', 'HAO-683']
 };
+const HAO_750_LAUNCH_VALIDATION_GATE = {
+  ...withoutFields(HAO_727_LAUNCH_VALIDATION_GATE, [
+    'attempt',
+    'attempt_receipts',
+    'goal_packet',
+    'packet_goal_ids'
+  ]),
+  task_id: 'HAO-750',
+  lineage_id: 'VAIOS-G723:hallucinate-mcp-dashboard-interoperability-console',
+  source_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-750-objective-gap-7ea369464239.md',
+  supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-750-objective-gap-7ea369464239.md',
+  launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-750-mcp-dashboard-launch-gate.md',
+  hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-750-mcp-dashboard-launch-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-750-mcp-dashboard-launch-gate.json',
+  goal_packet: 'objective/VAIOS-G723',
+  packet_goal_ids: ['VAIOS-G723'],
+  merge_key: '3997b2fdaa13d4a4',
+  merge_family: 'objective/VAIOS-G723',
+  merge_role: 'validation_gate',
+  todo_source: {
+    file: 'hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md',
+    source_line: 9569
+  },
+  child_goals: [
+    'VAIOS-G723-C1 Catalog normalization',
+    'VAIOS-G723-C2 Dashboard UI wiring',
+    'VAIOS-G723-C3 Mediated tool-call receipts',
+    'VAIOS-G723-C4 Swissknife consumers',
+    'VAIOS-G723-C5 Playwright coverage',
+    'VAIOS-G723-C6 Supervisor-generated follow-up subtasks'
+  ],
+  follow_up_subtasks: ['HAO-678', 'HAO-679', 'HAO-680', 'HAO-681', 'HAO-682', 'HAO-683'],
+  supervisor_follow_up_subtasks: ['HAO-678', 'HAO-679', 'HAO-680', 'HAO-681', 'HAO-682', 'HAO-683'],
+  validation_commands: [
+    'PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py tests/test_virtual_ai_os_todo_queue.py -q',
+    'npm --prefix hallucinate_app run test:daemon-manager',
+    'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
+    'cd hallucinate_app && (env -u DISPLAY -u WAYLAND_DISPLAY HALLUCINATE_APP_E2E_NO_BOOTSTRAP=true node scripts/run_playwright_test.mjs --help || test $? -eq 78)',
+    'npm --prefix swissknife run test:e2e:mcp',
+    'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
+    'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
+  ],
+  gate_state: 'gate_open_until_playwright_passes',
+  failure_rule: 'Any HAO-750 catalog normalization, dashboard UI wiring, mediated tools/list, mediated tools/call, Swissknife consumer, Playwright coverage, dashboard backend, or supervisor follow-up failure remains supervisor-generated follow-up work for VAIOS-G723.'
+};
 const MGW_558_LAUNCH_VALIDATION_GATE = {
   ...withoutFields(HAO_727_LAUNCH_VALIDATION_GATE, [
     'attempt',
@@ -1816,6 +1861,7 @@ const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   VAI_542_LAUNCH_VALIDATION_GATE,
   VAI_543_LAUNCH_VALIDATION_GATE,
   HAO_727_LAUNCH_VALIDATION_GATE,
+  HAO_750_LAUNCH_VALIDATION_GATE,
   MGW_558_LAUNCH_VALIDATION_GATE,
   MGW_559_LAUNCH_VALIDATION_GATE,
   MGW_561_LAUNCH_VALIDATION_GATE,

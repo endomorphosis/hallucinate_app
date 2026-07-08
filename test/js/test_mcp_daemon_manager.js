@@ -184,6 +184,13 @@ async function runTests() {
       gate.receipt_fixture === 'hallucinate_app/test/e2e/fixtures/vai-632-mcp-dashboard-launch-gate.json' &&
       gate.packet_sibling_task_id === 'VAI-633' &&
       gate.packet_sibling_gate_receipt === 'data/virtual_ai_os/discovery/2026-07-04-vai-633-daemon-launch-health-gate.md'
+    ) &&
+    catalog.launch_validation_gates?.some(gate =>
+      gate.task_id === 'HAO-750' &&
+      gate.goal_id === 'VAIOS-G723' &&
+      gate.receipt_fixture === 'hallucinate_app/test/e2e/fixtures/hao-750-mcp-dashboard-launch-gate.json' &&
+      gate.merge_family === 'objective/VAIOS-G723' &&
+      gate.merge_role === 'validation_gate'
     );
 
   if (catalogBaseOk && catalogEntriesOk && catalogSpecificsOk) {
