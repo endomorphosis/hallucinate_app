@@ -1796,6 +1796,29 @@ const VAI_659_LAUNCH_VALIDATION_GATE = {
   ],
   failure_rule: 'Any missing VAI-659 launch Playwright validation gate, catalog, daemon health, tools/list, tools/call, Swissknife consumer, external backend handoff, or VAI-660 packet sibling evidence remains supervisor-fed launch work for VAIOS-G724 and VAIOS-G728.'
 };
+const MGW_589_LAUNCH_VALIDATION_GATE = {
+  ...VAI_548_LAUNCH_VALIDATION_GATE,
+  task_id: 'MGW-589',
+  source_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-589-objective-gap-3e00ad2a0074.md',
+  supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-589-objective-gap-3e00ad2a0074.md',
+  todo_source: {
+    file: 'implementation_plan/docs/18-swissknife-meta-glasses-display-widgets.todo.md',
+    source_line: 3903
+  },
+  launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-589-launch-playwright-validation-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-589-mcp-dashboard-launch-gate.json',
+  gate_state: 'gate_closed_by_playwright_validation',
+  external_backend_surfaces: [
+    'external/ipfs_accelerate',
+    'external/ipfs_datasets',
+    'external/ipfs_kit'
+  ],
+  packet_sibling_goal_id: 'VAIOS-G728',
+  packet_sibling_task_id: 'MGW-590',
+  packet_sibling_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-590-objective-gap-b023c8de5b69.md',
+  packet_sibling_existing_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-07-02-mgw-565-daemon-launch-health-gate.md',
+  failure_rule: 'Any missing MGW-589 launch Playwright validation gate, catalog, daemon health, tools/list, tools/call, Swissknife consumer, external backend handoff, or MGW-590 packet sibling evidence remains supervisor-fed launch work for VAIOS-G724 and VAIOS-G728.'
+};
 const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   MGW_533_LAUNCH_VALIDATION_GATE,
   MGW_546_LAUNCH_VALIDATION_GATE,
@@ -1885,7 +1908,8 @@ const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   VAI_653_LAUNCH_VALIDATION_GATE,
   VAI_655_LAUNCH_VALIDATION_GATE,
   VAI_657_LAUNCH_VALIDATION_GATE,
-  VAI_659_LAUNCH_VALIDATION_GATE
+  VAI_659_LAUNCH_VALIDATION_GATE,
+  MGW_589_LAUNCH_VALIDATION_GATE
 ];
 const DAEMON_LAUNCH_GATE_TASK_ID = 'MGW-535';
 const DAEMON_LAUNCH_GATE_VAI_TASK_ID = 'VAI-519';

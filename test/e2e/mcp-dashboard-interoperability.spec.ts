@@ -79,6 +79,7 @@ const MGW_562_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-562-mc
 const MGW_563_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-563-mcp-dashboard-launch-gate.json');
 const MGW_564_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-564-mcp-dashboard-launch-gate.json');
 const MGW_566_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-566-mcp-dashboard-launch-gate.json');
+const MGW_589_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'mgw-589-mcp-dashboard-launch-gate.json');
 const HAO_681_SWISSKNIFE_CONSUMER_FIXTURE = path.join(
   REPO_ROOT,
   'swissknife',
@@ -601,6 +602,20 @@ const MGW_566_ATTEMPT_2_HALLUCINATE_VALIDATION_RECEIPT = path.join(
   'hallucinate_multimodal_control',
   'discovery',
   '2026-07-02-mgw-566-attempt-2-validation.md'
+);
+const MGW_589_OBJECTIVE_GAP_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'meta_glasses_display_widgets',
+  'discovery',
+  '2026-07-08-mgw-589-objective-gap-3e00ad2a0074.md'
+);
+const MGW_589_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'meta_glasses_display_widgets',
+  'discovery',
+  '2026-07-08-mgw-589-launch-playwright-validation-gate.md'
 );
 const VAI_563_OBJECTIVE_GAP_RECEIPT = path.join(
   REPO_ROOT,
@@ -6224,6 +6239,20 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
     expect(readinessDoc).toContain(receipt.receipt_fixture);
     expect(readinessDoc).toContain(receipt.launch_gate_receipt);
     expect(readinessDoc).toContain(receipt.hallucinate_backlog_receipt);
+  });
+
+  test('binds MGW-589 objective gap evidence to the VAIOS-G724 dashboard launch Playwright gate', () => {
+    validateDashboardLaunchGateReceipt({
+      fixturePath: MGW_589_LAUNCH_GATE_FIXTURE,
+      launchGateReceiptPath: MGW_589_LAUNCH_GATE_RECEIPT,
+      objectiveGapPath: MGW_589_OBJECTIVE_GAP_RECEIPT,
+      taskId: 'MGW-589',
+      sourceGapReceipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-589-objective-gap-3e00ad2a0074.md',
+      launchGateReceipt: 'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-589-launch-playwright-validation-gate.md',
+      receiptFixture: 'hallucinate_app/test/e2e/fixtures/mgw-589-mcp-dashboard-launch-gate.json',
+      heapProof: 'MGW-589 proof',
+      gateState: 'gate_closed_by_playwright_validation'
+    });
   });
 
   test('binds VAI-563 objective gap evidence to the VAIOS-G723 dashboard launch Playwright gate', () => {
