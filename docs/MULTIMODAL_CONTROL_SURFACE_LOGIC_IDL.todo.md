@@ -9535,8 +9535,9 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-747 Resolve merge retry-budget failure for HAO-731
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: stale non-launch retry-budget maintenance deferred during launch-readiness run
 - Priority: P1
 - Track: ops
 - Depends on: 
@@ -9546,8 +9547,9 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-748 Resolve merge retry-budget failure for HAO-741
 
-- Status: todo
+- Status: blocked
 - Completion: manual
+- Blocked reason: stale non-launch retry-budget maintenance deferred during launch-readiness run
 - Priority: P1
 - Track: ops
 - Depends on: 
