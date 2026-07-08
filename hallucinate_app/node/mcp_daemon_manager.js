@@ -453,6 +453,16 @@ const HAO_742_LAUNCH_VALIDATION_GATE = {
   ],
   failure_rule: 'Any missing HAO-742 launch Playwright validation gate, catalog, daemon health, tools/list, tools/call, Swissknife consumer, or HAO-743 packet sibling evidence remains supervisor-fed launch work for VAIOS-G724 and VAIOS-G728.'
 };
+const HAO_744_LAUNCH_VALIDATION_GATE = {
+  ...HAO_742_LAUNCH_VALIDATION_GATE,
+  task_id: 'HAO-744',
+  packet_sibling_task_id: 'HAO-745',
+  source_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-744-objective-gap-3e00ad2a0074.md',
+  supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-744-objective-gap-3e00ad2a0074.md',
+  launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-744-mcp-dashboard-launch-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-744-mcp-dashboard-launch-gate.json',
+  failure_rule: 'Any missing HAO-744 launch Playwright validation gate, catalog, daemon health, tools/list, tools/call, Swissknife consumer, or HAO-745 packet sibling evidence remains supervisor-fed launch work for VAIOS-G724 and VAIOS-G728.'
+};
 const VAI_529_LAUNCH_VALIDATION_GATE = {
   ...MGW_533_LAUNCH_VALIDATION_GATE,
   task_id: 'VAI-529',
@@ -1797,6 +1807,7 @@ const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   HAO_720_LAUNCH_VALIDATION_GATE,
   HAO_724_LAUNCH_VALIDATION_GATE,
   HAO_742_LAUNCH_VALIDATION_GATE,
+  HAO_744_LAUNCH_VALIDATION_GATE,
   VAI_529_LAUNCH_VALIDATION_GATE,
   VAI_535_LAUNCH_VALIDATION_GATE,
   VAI_537_LAUNCH_VALIDATION_GATE,
