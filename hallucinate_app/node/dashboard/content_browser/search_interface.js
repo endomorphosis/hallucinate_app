@@ -7,6 +7,116 @@
  * @module dashboard/content_browser/search_interface
  */
 
+export const HALLUCINATE_APP_CONTENT_BROWSER_OPERATIONS = [
+  'search_content_index',
+  'apply_content_filter',
+  'clear_content_search',
+  'save_content_search',
+  'select_saved_search',
+  'refresh_search_suggestions',
+];
+
+export const HALLUCINATE_APP_MOBILE_WIDGET_ACTIONS = [
+  'mobile_render_search_results_widget',
+  'mobile_update_search_filter_widget',
+  'mobile_clear_search_results_widget',
+  'mobile_open_content_item',
+];
+
+export const HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR = {
+  descriptor_id: 'hallucinate-app-mobile-interop@0.1.0',
+  interface: {
+    name: 'hallucinate_app_mobile_interop',
+    namespace: 'handsfree.interop.hallucinate_app_mobile',
+    version: '0.1.0',
+    metadata: {
+      interface_contract: 'interface contract hallucinate_app mobile',
+      goal_id: 'VAIOS-G707',
+      source_surface: 'hallucinate_app',
+      target_surface: 'mobile',
+    },
+    objective_goals: ['VAIOS-G707'],
+    methods: [
+      ...HALLUCINATE_APP_CONTENT_BROWSER_OPERATIONS.map((name) => ({
+        name,
+        surface: 'hallucinate_app.content_browser.search_interface',
+        contract_ref:
+          'hallucinate_app/hallucinate_app/node/dashboard/content_browser/search_interface.js',
+      })),
+      ...HALLUCINATE_APP_MOBILE_WIDGET_ACTIONS.map((name) => ({
+        name,
+        surface: 'mobile.display_widget_bridge',
+        contract_ref: 'mobile/src/orb/metaGlassesOrbDescriptors.js',
+      })),
+    ],
+    errors: [
+      { name: 'mobile_edge_session_unavailable', code: 409 },
+      { name: 'search_payload_not_serializable', code: 422 },
+    ],
+    requires: [
+      'mcp++/profile-a-idl',
+      'hallucinate_app/content-browser',
+      'mobile/meta-wearables-dat',
+    ],
+  },
+  schema_refs: {
+    search_interface:
+      'hallucinate_app/hallucinate_app/node/dashboard/content_browser/search_interface.js',
+    test_interface_fixture: 'hallucinate_app/hallucinate_app/node/views/test_interface.html',
+    time_series_schema:
+      'hallucinate_app/ipfs_accelerate_py/data/duckdb/db_schema/time_series_schema.sql',
+    benchmark_schema_script:
+      'hallucinate_app/ipfs_accelerate_py/data/duckdb/scripts/create_benchmark_schema.py',
+    mobile_orb_descriptors: 'mobile/src/orb/metaGlassesOrbDescriptors.js',
+  },
+  runtime_handoff: {
+    source_surface: 'hallucinate_app',
+    target_surface: 'mobile',
+    event_name: 'hallucinate-app:mobile-interop-handoff',
+    route: 'hallucinate-app-content-browser-to-mobile-widget',
+    endpoint_path: '/v1/hallucinate-app/content-browser/search',
+    method: 'POST',
+    content_browser_operations: HALLUCINATE_APP_CONTENT_BROWSER_OPERATIONS,
+    mobile_widget_actions: HALLUCINATE_APP_MOBILE_WIDGET_ACTIONS,
+    time_series_tables: ['hallucinate_app_mobile_interop_events'],
+  },
+  validation: {
+    task_id: 'MGW-579',
+    goal_id: 'VAIOS-G707',
+    objective_gap_ref:
+      'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-579-objective-gap-7edb316279e5.md',
+    validation_repair_ref:
+      'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-579-objective-validation-repair.md',
+    evidence: 'objective validation repair',
+  },
+};
+
+export function buildHallucinateAppMobileInteropHandoff({
+  query = '',
+  filter = {},
+  resultCount = 0,
+  correlationId = null,
+} = {}) {
+  return {
+    event_name: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.runtime_handoff.event_name,
+    route: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.runtime_handoff.route,
+    interface_contract:
+      HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.interface.metadata.interface_contract,
+    goal_id: 'VAIOS-G707',
+    source_surface: 'hallucinate_app',
+    target_surface: 'mobile',
+    action_id: 'mobile_render_search_results_widget',
+    content_browser_operation: 'search_content_index',
+    query,
+    filter,
+    result_count: Number.isFinite(resultCount) ? resultCount : 0,
+    correlation_id:
+      correlationId ||
+      `hallucinate-app-mobile-search:${String(query).length}:${Object.keys(filter || {}).length}`,
+    schema_refs: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.schema_refs,
+  };
+}
+
 export class SearchInterface {
   /**
    * Create a new SearchInterface component
@@ -252,10 +362,24 @@ export class SearchInterface {
     // Emit event
     if (this.eventBus) {
       this.eventBus.emit('content-browser:search', this.currentQuery);
+      this.eventBus.emit(
+        HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.runtime_handoff.event_name,
+        buildHallucinateAppMobileInteropHandoff({
+          query: this.currentQuery,
+          filter: this.currentFilter,
+        })
+      );
     }
     
     // Emit event for direct listeners
     this.emit('search', this.currentQuery);
+    this.emit(
+      'mobile-interop-handoff',
+      buildHallucinateAppMobileInteropHandoff({
+        query: this.currentQuery,
+        filter: this.currentFilter,
+      })
+    );
   }
   
   /**

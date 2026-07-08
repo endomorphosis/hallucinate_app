@@ -51,6 +51,39 @@
       <!-- Module Tests Page -->
       <div id="module-tests-page" class="page active">
         <h1>Comprehensive Module Testing</h1>
+        <script
+          id="hallucinate-app-mobile-interop-fixture"
+          type="application/json"
+        >{
+  "task_id": "MGW-579",
+  "goal_id": "VAIOS-G707",
+  "interface_contract": "interface contract hallucinate_app mobile",
+  "event_name": "hallucinate-app:mobile-interop-handoff",
+  "route": "hallucinate-app-content-browser-to-mobile-widget",
+  "source_surface": "hallucinate_app",
+  "target_surface": "mobile",
+  "content_browser_operations": [
+    "search_content_index",
+    "apply_content_filter",
+    "clear_content_search",
+    "save_content_search",
+    "select_saved_search",
+    "refresh_search_suggestions"
+  ],
+  "mobile_widget_actions": [
+    "mobile_render_search_results_widget",
+    "mobile_update_search_filter_widget",
+    "mobile_clear_search_results_widget",
+    "mobile_open_content_item"
+  ],
+  "schema_refs": {
+    "search_interface": "hallucinate_app/hallucinate_app/node/dashboard/content_browser/search_interface.js",
+    "time_series_schema": "hallucinate_app/ipfs_accelerate_py/data/duckdb/db_schema/time_series_schema.sql",
+    "benchmark_schema_script": "hallucinate_app/ipfs_accelerate_py/data/duckdb/scripts/create_benchmark_schema.py",
+    "mobile_orb_descriptors": "mobile/src/orb/metaGlassesOrbDescriptors.js"
+  },
+  "evidence": "objective validation repair"
+}</script>
         
         <div class="card">
           <div class="card-header">
