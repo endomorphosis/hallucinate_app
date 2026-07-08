@@ -9530,3 +9530,38 @@ UI-plane participants and runtime-plane targets.
 - Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, tests/integration/test_external_meta_wearables_dat_android_external_ipfs_kit_interop.py, docs/integration/external_meta_wearables_dat_android-external_ipfs_kit.md, external/meta-wearables-dat-android, external/ipfs_kit, external/ipfs_kit/archive/archive_clutter/fix_scripts/fix_mcp_schema.py, external/ipfs_kit/backup/archive_clutter/fix_scripts/fix_mcp_schema.py, external/ipfs_kit/backup/patches/fixes/fix_mcp_schema.py, external/ipfs_kit/data/deprecations_report.schema.json
 - Validation: python -m pytest tests/integration -q
 - Acceptance: Retry-budget guardrail filed this from repeated validation failures in HAO-739. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-08-hao-746-hao-739-retry-budget.md to fix the validation blocker, then mark this repair task completed so the supervisor can release HAO-739 from strategy blocked_tasks.
+
+## HAO-747 Close objective gap: Interoperate mobile with external/ipfs_accelerate
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: interoperability
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, tests/integration/test_mobile_external_ipfs_accelerate_interop.py, docs/integration/mobile-external_ipfs_accelerate.md, mobile, external/ipfs_accelerate, external/ipfs_accelerate/data/duckdb/db_schema/time_series_schema.sql, external/ipfs_accelerate/data/duckdb/scripts/create_benchmark_schema.py, external/ipfs_accelerate/data/duckdb/utils/check_database_schema.py, external/ipfs_accelerate/data/duckdb/utils/check_db_schema.py
+- Validation: python -m pytest tests/integration -q
+- Bundle: objective/interoperability/mobile-external_ipfs_accelerate
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-interoperability-mobile-external_ipfs_accelerate.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G000
+- Graph depth: 1
+- Parallel lane: objective/interoperability/mobile-external_ipfs_accelerate
+- Conflict policy: keep pair-specific integration edits isolated; use the LLM merge resolver for conflicts
+- Goal id: VAIOS-G719
+- Missing evidence: objective validation repair
+- Embedding query: mobile external/ipfs_accelerate interoperability integration test interface descriptor __future__ _jsonnet abc anyio argparse ast asyncio atexit base64 boto3 bs4 cProfile
+- AST query: mobile, external/ipfs_accelerate, interface contract, integration test, __future__, _jsonnet, abc, anyio, argparse, ast, asyncio, atexit, base64, boto3, bs4, cProfile
+- Surplus group: objective/VAIOS-G719
+- Merge key: 64e26db5b0fa2426
+- Merge family: objective/VAIOS-G719
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair
+- Goal packet: 
+- Goal packet role: 
+- Goal packet goals: 
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Candidate kind: validation_gate
+- Todo vector key: abd3dcae203fdb6b
+- Acceptance: Objective scan filed this gap for VAIOS-G719. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-08-hao-747-objective-gap-c1edafa875e6.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
