@@ -63,6 +63,7 @@ const HAO_700_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-700-mc
 const HAO_712_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-712-mcp-dashboard-launch-gate.json');
 const HAO_720_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-720-mcp-dashboard-launch-gate.json');
 const HAO_724_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-724-mcp-dashboard-launch-gate.json');
+const HAO_742_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-742-mcp-dashboard-launch-gate.json');
 const VAI_529_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-529-mcp-dashboard-launch-gate.json');
 const VAI_535_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-535-mcp-dashboard-launch-gate.json');
 const VAI_537_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-537-mcp-dashboard-launch-gate.json');
@@ -231,6 +232,20 @@ const HAO_724_LAUNCH_GATE_RECEIPT = path.join(
   'hallucinate_multimodal_control',
   'discovery',
   '2026-06-28-hao-724-mcp-dashboard-launch-gate.md'
+);
+const HAO_742_OBJECTIVE_GAP_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'hallucinate_multimodal_control',
+  'discovery',
+  '2026-07-08-hao-742-objective-gap-3e00ad2a0074.md'
+);
+const HAO_742_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'hallucinate_multimodal_control',
+  'discovery',
+  '2026-07-08-hao-742-mcp-dashboard-launch-gate.md'
 );
 const VAI_535_OBJECTIVE_GAP_RECEIPT = path.join(
   REPO_ROOT,
@@ -2432,6 +2447,19 @@ electronDescribe('MCP Dashboard Interoperability - VAIOS-G723 Electron UI wiring
         supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-objective-gap-3e00ad2a0074.md'
       }),
       expect.objectContaining({
+        task_id: 'HAO-742',
+        goal_id: 'VAIOS-G724',
+        goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
+        packet_goal_ids: ['VAIOS-G724', 'VAIOS-G728'],
+        packet_sibling_task_id: 'HAO-743',
+        packet_sibling_goal_id: 'VAIOS-G728',
+        evidence_term: 'launch Playwright validation gate',
+        supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-742-objective-gap-3e00ad2a0074.md',
+        launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-742-mcp-dashboard-launch-gate.md',
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-742-mcp-dashboard-launch-gate.json',
+        failure_rule: 'Any missing HAO-742 launch Playwright validation gate, catalog, daemon health, tools/list, tools/call, Swissknife consumer, or HAO-743 packet sibling evidence remains supervisor-fed launch work for VAIOS-G724 and VAIOS-G728.'
+      }),
+      expect.objectContaining({
         task_id: 'VAI-529',
         goal_id: 'VAIOS-G724',
         goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
@@ -3849,6 +3877,20 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       launchGateReceipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-mcp-dashboard-launch-gate.md',
       receiptFixture: 'hallucinate_app/test/e2e/fixtures/hao-724-mcp-dashboard-launch-gate.json',
       heapProof: 'HAO-724 proof'
+    });
+  });
+
+  test('closes the HAO-742 objective gap with the shared VAIOS-G724/VAIOS-G728 launch packet gate', () => {
+    validateDashboardLaunchGateReceipt({
+      fixturePath: HAO_742_LAUNCH_GATE_FIXTURE,
+      launchGateReceiptPath: HAO_742_LAUNCH_GATE_RECEIPT,
+      objectiveGapPath: HAO_742_OBJECTIVE_GAP_RECEIPT,
+      taskId: 'HAO-742',
+      sourceGapReceipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-742-objective-gap-3e00ad2a0074.md',
+      launchGateReceipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-742-mcp-dashboard-launch-gate.md',
+      receiptFixture: 'hallucinate_app/test/e2e/fixtures/hao-742-mcp-dashboard-launch-gate.json',
+      heapProof: 'HAO-742 proof',
+      gateState: 'gate_open_until_playwright_passes'
     });
   });
 

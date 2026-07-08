@@ -442,6 +442,18 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
         supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-objective-gap-3e00ad2a0074.md'
       }),
       expect.objectContaining({
+        task_id: 'HAO-742',
+        goal_id: 'VAIOS-G724',
+        goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
+        packet_goal_ids: ['VAIOS-G724', 'VAIOS-G728'],
+        packet_sibling_task_id: 'HAO-743',
+        packet_sibling_goal_id: 'VAIOS-G728',
+        evidence_term: 'launch Playwright validation gate',
+        supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-742-objective-gap-3e00ad2a0074.md',
+        launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-742-mcp-dashboard-launch-gate.md',
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-742-mcp-dashboard-launch-gate.json'
+      }),
+      expect.objectContaining({
         task_id: 'HAO-727',
         goal_id: 'VAIOS-G723',
         evidence_term: 'launch Playwright validation gate',
@@ -1920,6 +1932,18 @@ test.describe('MCP Feature Exposure - headless backend gate', () => {
         supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-objective-gap-3e00ad2a0074.md',
         launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-724-mcp-dashboard-launch-gate.md',
         receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-724-mcp-dashboard-launch-gate.json'
+      }),
+      expect.objectContaining({
+        task_id: 'HAO-742',
+        goal_id: 'VAIOS-G724',
+        goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
+        packet_goal_ids: ['VAIOS-G724', 'VAIOS-G728'],
+        packet_sibling_task_id: 'HAO-743',
+        packet_sibling_goal_id: 'VAIOS-G728',
+        evidence_term: 'launch Playwright validation gate',
+        supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-742-objective-gap-3e00ad2a0074.md',
+        launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-742-mcp-dashboard-launch-gate.md',
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-742-mcp-dashboard-launch-gate.json'
       }),
       expect.objectContaining({
         task_id: 'HAO-727',
