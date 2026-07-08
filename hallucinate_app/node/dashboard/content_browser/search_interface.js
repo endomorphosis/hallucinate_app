@@ -26,6 +26,15 @@ export const HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT = {
   descriptor_path:
     'hallucinate_app/hallucinate_app/node/dashboard/content_browser/search_interface.js',
   required_artifacts: ['interaction_envelope', 'policy_decision', 'mediation_receipt'],
+  validation: {
+    task_id: 'VAI-685',
+    goal_id: 'VAIOS-G707',
+    objective_gap_ref:
+      'data/virtual_ai_os/discovery/2026-07-08-vai-685-objective-gap-7edb316279e5.md',
+    validation_repair_ref:
+      'data/virtual_ai_os/discovery/2026-07-08-vai-685-objective-validation-repair.md',
+    evidence: 'objective validation repair',
+  },
 };
 
 /**
@@ -517,6 +526,42 @@ export class SearchInterface {
       this.eventBus.emit('content-browser:search', this.currentQuery);
       this.eventBus.emit('content-browser:filter', this.currentFilter);
     }
+  }
+
+  /**
+   * Handle selecting a saved search by id or item payload.
+   * @param {string|Object} search - Saved search id or saved search object.
+   * @returns {boolean} Whether a saved search was loaded.
+   * @private
+   */
+  _handleSavedSearchSelect(search) {
+    const savedSearch =
+      typeof search === 'string'
+        ? this.savedSearches.find((item) => item.id === search)
+        : search;
+    if (!savedSearch) {
+      return false;
+    }
+    this.loadSearch(savedSearch);
+    return true;
+  }
+
+  /**
+   * Handle selecting a search-history entry by id or item payload.
+   * @param {string|Object} historyItem - Search-history id or history item.
+   * @returns {boolean} Whether a history item was loaded.
+   * @private
+   */
+  _handleSearchHistorySelect(historyItem) {
+    const selectedHistoryItem =
+      typeof historyItem === 'string'
+        ? this.searchHistory.find((item) => item.id === historyItem)
+        : historyItem;
+    if (!selectedHistoryItem) {
+      return false;
+    }
+    this.loadSearch(selectedHistoryItem);
+    return true;
   }
   
   /**
