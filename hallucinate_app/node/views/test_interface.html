@@ -657,6 +657,66 @@
       ipcRenderer.send('check-services-status');
     });
   </script>
+  <script
+    type="application/json"
+    id="hallucinate-app-mobile-interop-fixture"
+    data-hallucinate-mobile-interop-contract="interface contract hallucinate_app mobile"
+    data-control-surface-contract-ref="control_surface_contract:hallucinate-app:remote-client"
+  >
+{
+  "contract": "interface contract hallucinate_app mobile",
+  "objective_id": "VAIOS-G707",
+  "task_id": "MGW-579",
+  "event": "hallucinate-app:mobile-interop-handoff",
+  "descriptor": "HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR",
+  "descriptorPayload": {
+    "name": "hallucinate_app_mobile_content_browser",
+    "namespace": "handsfree.hallucinate_app.mobile",
+    "version": "0.1.0"
+  },
+  "mobileInterface": "handsfree.meta_glasses.mobile.hallucinate_app_mobile_interop@0.1.0",
+  "source": "hallucinate_app.content_browser.search_interface",
+  "target": "mobile.meta_glasses.mobile_orb_bridge",
+  "route": {
+    "from": "hallucinate_app",
+    "to": "mobile",
+    "transport": "mobile_orb_bridge",
+    "target_surface": "meta_glasses_display"
+  },
+  "persistence": {
+    "duckdbTable": "hallucinate_app_mobile_interop_events",
+    "receiptTable": "hallucinate_mobile_handoff_receipts",
+    "schemaPath": "hallucinate_app/ipfs_accelerate_py/data/duckdb/db_schema/time_series_schema.sql"
+  },
+  "samplePayload": {
+    "action": "search",
+    "query": "cid:demo",
+    "filter": { "mimetype": "application/json" },
+    "mobile_operation": "accept_handoff"
+  }
+}
+  </script>
+  <script>
+    window.HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT = {
+      contract: 'interface contract hallucinate_app mobile',
+      event: 'hallucinate-app:mobile-interop-handoff',
+      mobileInterface: 'handsfree.meta_glasses.mobile.hallucinate_app_mobile_interop@0.1.0',
+      duckdbTable: 'hallucinate_app_mobile_interop_events',
+    };
+
+    function buildModuleTestHandoff(query = 'cid:demo', filter = {}) {
+      return {
+        ...window.HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT,
+        objective_id: 'VAIOS-G707',
+        source: 'hallucinate_app.content_browser.search_interface',
+        target: 'mobile.meta_glasses.mobile_orb_bridge',
+        action: 'search',
+        query,
+        filter,
+        timestamp: new Date().toISOString(),
+      };
+    }
+  </script>
   <!-- Backend integration for real endpoint testing -->
   <script src="components/backend-connector.js"></script>
   <script>

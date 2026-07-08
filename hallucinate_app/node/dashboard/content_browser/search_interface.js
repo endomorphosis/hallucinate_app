@@ -7,6 +7,83 @@
  * @module dashboard/content_browser/search_interface
  */
 
+export const HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT =
+  'interface contract hallucinate_app mobile';
+export const HALLUCINATE_APP_MOBILE_INTEROP_EVENT =
+  'hallucinate-app:mobile-interop-handoff';
+export const HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR = {
+  name: 'hallucinate_app_mobile_content_browser',
+  namespace: 'handsfree.hallucinate_app.mobile',
+  version: '0.1.0',
+  contract: HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT,
+  objective_id: 'VAIOS-G707',
+  task_id: 'MGW-579',
+  source: 'hallucinate_app.content_browser.search_interface',
+  target: 'mobile.meta_glasses.mobile_orb_bridge',
+  mobileInterface: 'handsfree.meta_glasses.mobile.hallucinate_app_mobile_interop@0.1.0',
+  event: HALLUCINATE_APP_MOBILE_INTEROP_EVENT,
+  route: {
+    from: 'hallucinate_app',
+    to: 'mobile',
+    transport: 'mobile_orb_bridge',
+    target_surface: 'meta_glasses_display',
+  },
+  persistence: {
+    duckdbTable: 'hallucinate_app_mobile_interop_events',
+    schemaPath: 'hallucinate_app/ipfs_accelerate_py/data/duckdb/db_schema/time_series_schema.sql',
+  },
+  actions: ['search', 'filter', 'clear'],
+};
+
+function safeObject(value) {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+}
+
+export function buildHallucinateAppMobileSearchHandoff({
+  action = 'search',
+  query = '',
+  filter = {},
+  correlationId = null,
+  timestamp = new Date().toISOString(),
+} = {}) {
+  const normalizedAction = HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.actions.includes(action)
+    ? action
+    : 'search';
+  const normalizedQuery = typeof query === 'string' ? query : '';
+  const normalizedFilter = safeObject(filter);
+  const correlation_id =
+    correlationId ||
+    `hallucinate-mobile-${normalizedAction}-${Math.abs(
+      JSON.stringify([normalizedQuery, normalizedFilter, timestamp]).length
+    )}`;
+
+  return {
+    contract: HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT,
+    descriptor: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR,
+    event: HALLUCINATE_APP_MOBILE_INTEROP_EVENT,
+    objective_id: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.objective_id,
+    source: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.source,
+    target: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.target,
+    action: normalizedAction,
+    query: normalizedQuery,
+    filter: normalizedFilter,
+    route: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.route,
+    correlation_id,
+    timestamp,
+    mobile_operation: 'accept_handoff',
+    mobile_payload: {
+      route: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.route,
+      interface_cid: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.mobileInterface,
+      action: normalizedAction,
+      query: normalizedQuery,
+      filter: normalizedFilter,
+    },
+    persistence: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.persistence,
+  };
+}
+
+export const buildMobileSearchHandoff = buildHallucinateAppMobileSearchHandoff;
+
 export class SearchInterface {
   /**
    * Create a new SearchInterface component
@@ -253,6 +330,8 @@ export class SearchInterface {
     if (this.eventBus) {
       this.eventBus.emit('content-browser:search', this.currentQuery);
     }
+
+    this._emitMobileInteropHandoff('search');
     
     // Emit event for direct listeners
     this.emit('search', this.currentQuery);
@@ -274,6 +353,8 @@ export class SearchInterface {
     if (this.eventBus) {
       this.eventBus.emit('content-browser:filter', this.currentFilter);
     }
+
+    this._emitMobileInteropHandoff('filter');
     
     // Emit event for direct listeners
     this.emit('filter-change', this.currentFilter);
@@ -303,6 +384,57 @@ export class SearchInterface {
       this.eventBus.emit('content-browser:search', '');
       this.eventBus.emit('content-browser:filter', {});
     }
+
+    this._emitMobileInteropHandoff('clear');
+  }
+
+  /**
+   * Build and emit the Hallucinate App -> mobile interop payload.
+   * @param {string} action - Handoff action name
+   * @returns {Object} Handoff payload
+   * @private
+   */
+  _emitMobileInteropHandoff(action) {
+    const payload = buildHallucinateAppMobileSearchHandoff({
+      action,
+      query: this.currentQuery,
+      filter: this.currentFilter,
+    });
+    this.lastMobileInteropHandoff = payload;
+    if (this.eventBus) {
+      this.eventBus.emit(HALLUCINATE_APP_MOBILE_INTEROP_EVENT, payload);
+      this.eventBus.emit('mobile-interop-handoff', payload);
+    }
+    this.emit('mobile-interop-handoff', payload);
+    this.recordMobileInteropHandoff(payload);
+    return payload;
+  }
+
+  /**
+   * Store the latest handoff locally for dashboard tests and offline diagnostics.
+   * @param {Object} handoff - Handoff payload
+   * @returns {Object|null} Stored receipt
+   */
+  recordMobileInteropHandoff(handoff) {
+    if (!handoff || typeof handoff !== 'object') {
+      return null;
+    }
+    const receipt = {
+      receipt_id: `local:hallucinate-app-mobile:${handoff.correlation_id}`,
+      contract: HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT,
+      event: HALLUCINATE_APP_MOBILE_INTEROP_EVENT,
+      correlation_id: handoff.correlation_id,
+      action: handoff.action,
+      query: handoff.query,
+      filter: handoff.filter,
+      duckdb_table: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.persistence.duckdbTable,
+      recorded_at: new Date().toISOString(),
+    };
+    this.mobileInteropReceipts = [
+      ...(Array.isArray(this.mobileInteropReceipts) ? this.mobileInteropReceipts : []),
+      receipt,
+    ].slice(-20);
+    return receipt;
   }
   
   /**
