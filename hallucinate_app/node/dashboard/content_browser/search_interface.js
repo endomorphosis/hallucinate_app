@@ -28,6 +28,43 @@ export const HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT = {
   required_artifacts: ['interaction_envelope', 'policy_decision', 'mediation_receipt'],
 };
 
+export const HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR = {
+  descriptor_id: 'hallucinate-app-mobile-interop@0.1.0',
+  interface_contract: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.contract_id,
+  goal_id: 'VAIOS-G707',
+  task_id: 'HAO-740',
+  repair_task_id: 'HAO-751',
+  source_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.source_surface,
+  target_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.target_surface,
+  control_surface_contract_ref:
+    HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.control_surface_contract_ref,
+  schema_refs: {
+    search_interface:
+      'hallucinate_app/hallucinate_app/node/dashboard/content_browser/search_interface.js',
+    test_interface: 'hallucinate_app/hallucinate_app/node/views/test_interface.html',
+    time_series_schema:
+      'hallucinate_app/ipfs_accelerate_py/data/duckdb/db_schema/time_series_schema.sql',
+    benchmark_schema_script:
+      'hallucinate_app/ipfs_accelerate_py/data/duckdb/scripts/create_benchmark_schema.py',
+  },
+  runtime_handoff: {
+    route: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.route,
+    operation: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.operation,
+    required_artifacts:
+      HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.required_artifacts,
+    allowed_surfaces: ['agent', 'desktop', 'remote_client', 'mobile', 'meta_glasses'],
+  },
+  validation: {
+    objective_gap_ref:
+      'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-740-objective-gap-7edb316279e5.md',
+    validation_repair_ref:
+      'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-751-hao-740-validation-repair.md',
+    retry_budget_ref:
+      'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-751-hao-740-retry-budget.md',
+    evidence: 'objective validation repair',
+  },
+};
+
 /**
  * Build the normalized mobile ORB handoff payload for a desktop search.
  *
@@ -55,6 +92,8 @@ export function buildHallucinateAppMobileSearchHandoff(query, options = {}) {
     target_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.target_surface,
     route: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.route,
     operation: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.operation,
+    interop_descriptor: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR,
+    required_artifacts: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.runtime_handoff.required_artifacts,
     control_surface_contract_ref:
       HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.control_surface_contract_ref,
     correlation_id: correlationId,

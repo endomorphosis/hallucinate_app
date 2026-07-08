@@ -9603,12 +9603,11 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-751 Resolve validation retry-budget failure for HAO-740
 
-- Status: blocked
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
 - Depends on: HAO-013
-- Blocked reason: deferred stale retry-budget repair because HAO-740 validation ownership is outside the active VAIOS-G724/VAIOS-G728 launch packet.
 - Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, tests/integration/test_hallucinate_app_mobile_interop.py, docs/integration/hallucinate_app-mobile.md, hallucinate_app, mobile, hallucinate_app/hallucinate_app/node/dashboard/content_browser/search_interface.js, hallucinate_app/hallucinate_app/node/views/test_interface.html, hallucinate_app/ipfs_accelerate_py/data/duckdb/db_schema/time_series_schema.sql, hallucinate_app/ipfs_accelerate_py/data/duckdb/scripts/create_benchmark_schema.py
 - Validation: python -m pytest tests/integration -q
 - Acceptance: Retry-budget guardrail filed this from repeated validation failures in HAO-740. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-08-hao-751-hao-740-retry-budget.md to fix the validation blocker, then mark this repair task completed so the supervisor can release HAO-740 from strategy blocked_tasks.
