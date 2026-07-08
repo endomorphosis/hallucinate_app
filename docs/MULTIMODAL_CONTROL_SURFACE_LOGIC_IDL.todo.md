@@ -9535,7 +9535,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-747 Resolve merge retry-budget failure for HAO-731
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because the merge retry-budget repair is already recorded in data/hallucinate_multimodal_control/discovery/2026-07-08-hao-747-hao-731-merge-retry-budget.md and is not part of the VAIOS-G724/VAIOS-G728 Hallucinate App launch gate.
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -9546,7 +9547,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-748 Resolve merge retry-budget failure for HAO-741
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred during the launch-focused supervisor run because the merge retry-budget repair is already recorded in data/hallucinate_multimodal_control/discovery/2026-07-08-hao-748-hao-741-merge-retry-budget.md and is not part of the VAIOS-G724/VAIOS-G728 Hallucinate App launch gate.
 - Completion: manual
 - Priority: P1
 - Track: ops
