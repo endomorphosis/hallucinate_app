@@ -9535,7 +9535,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-747 Resolve merge retry-budget failure for HAO-731
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred by objective-task janitor during launch steering because off_mission_retry_budget_task; keep the current run focused on VAIOS-G723 Hallucinate MCP dashboard interoperability, Swissknife consumers, and Playwright launch readiness.
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -9546,7 +9547,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-748 Resolve merge retry-budget failure for HAO-741
 
-- Status: todo
+- Status: blocked
+- Blocked reason: Deferred by objective-task janitor during launch steering because off_mission_retry_budget_task; keep the current run focused on VAIOS-G723 Hallucinate MCP dashboard interoperability, Swissknife consumers, and Playwright launch readiness.
 - Completion: manual
 - Priority: P1
 - Track: ops

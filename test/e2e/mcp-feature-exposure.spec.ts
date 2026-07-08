@@ -474,6 +474,18 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
         receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-727-mcp-dashboard-launch-gate.json'
       }),
       expect.objectContaining({
+        task_id: 'HAO-729',
+        goal_id: 'VAIOS-G723',
+        evidence_term: 'launch Playwright validation gate',
+        supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-30-hao-729-objective-gap-7ea369464239.md',
+        launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-729-mcp-dashboard-launch-gate.md',
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-729-mcp-dashboard-launch-gate.json',
+        attempt: 1,
+        attempt_receipts: [
+          'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-729-attempt-1-validation.md'
+        ]
+      }),
+      expect.objectContaining({
         task_id: 'MGW-558',
         goal_id: 'VAIOS-G723',
         evidence_term: 'launch Playwright validation gate',
@@ -1977,6 +1989,19 @@ test.describe('MCP Feature Exposure - headless backend gate', () => {
         launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-727-mcp-dashboard-launch-gate.md',
         hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-28-hao-727-mcp-dashboard-launch-gate.md',
         receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-727-mcp-dashboard-launch-gate.json'
+      }),
+      expect.objectContaining({
+        task_id: 'HAO-729',
+        goal_id: 'VAIOS-G723',
+        evidence_term: 'launch Playwright validation gate',
+        supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-06-30-hao-729-objective-gap-7ea369464239.md',
+        launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-729-mcp-dashboard-launch-gate.md',
+        hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-729-mcp-dashboard-launch-gate.md',
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-729-mcp-dashboard-launch-gate.json',
+        attempt: 1,
+        attempt_receipts: [
+          'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-729-attempt-1-validation.md'
+        ]
       }),
       expect.objectContaining({
         task_id: 'MGW-563',
