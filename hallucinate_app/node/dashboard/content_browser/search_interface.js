@@ -7,6 +7,66 @@
  * @module dashboard/content_browser/search_interface
  */
 
+/**
+ * MGW-579 / VAIOS-G707: interoperability contract for handing off Hallucinate
+ * App content-browser search actions to the mobile ORB bridge / Meta glasses
+ * display widget so the mobile app can render matching search results.
+ *
+ * `mobile/src/orb/metaGlassesOrbDescriptors.js` exports the matching
+ * `HALLUCINATE_APP_MOBILE_INTEROP_INTERFACE` / `HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR`
+ * so both surfaces agree on the runtime handoff shape without either module
+ * importing the other's runtime code (interface contract hallucinate_app mobile).
+ */
+export const HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT = 'interface contract hallucinate_app mobile';
+export const HALLUCINATE_APP_MOBILE_INTEROP_EVENT = 'hallucinate-app:mobile-interop-handoff';
+export const HALLUCINATE_APP_MOBILE_INTEROP_TABLE = 'hallucinate_app_mobile_interop_events';
+export const MOBILE_INTERFACE_KEY = 'HALLUCINATE_APP_MOBILE_INTEROP_INTERFACE';
+
+export const HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR = {
+  descriptor: 'HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR',
+  contract: HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT,
+  event: HALLUCINATE_APP_MOBILE_INTEROP_EVENT,
+  mobileInterface: MOBILE_INTERFACE_KEY,
+  route: {
+    from: 'hallucinate_app',
+    to: 'mobile',
+    transport: 'mobile_orb_bridge',
+    target_surface: 'meta_glasses_display',
+  },
+  persistence: {
+    duckdbTable: HALLUCINATE_APP_MOBILE_INTEROP_TABLE,
+    schemaRef: 'hallucinate_app/ipfs_accelerate_py/data/duckdb/db_schema/time_series_schema.sql',
+    schemaScriptRef:
+      'hallucinate_app/ipfs_accelerate_py/data/duckdb/scripts/create_benchmark_schema.py',
+  },
+  validation: {
+    task_id: 'MGW-579',
+    goal_id: 'VAIOS-G707',
+    evidence: 'objective validation repair',
+  },
+};
+
+/**
+ * Build the normalized mobile interop handoff payload for a search-interface
+ * action. Exposed as a standalone function so both the class instance and
+ * tests can construct the same shape without needing a live DOM/eventBus.
+ *
+ * @param {string} action - The search-interface action being handed off (e.g. 'search', 'filter').
+ * @param {Object} [details] - Additional action-specific details (query, filter, etc.)
+ * @returns {Object} Normalized mobile interop handoff payload
+ */
+export function buildMobileInteropHandoffPayload(action, details = {}) {
+  return {
+    contract: HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT,
+    event: HALLUCINATE_APP_MOBILE_INTEROP_EVENT,
+    descriptor: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.descriptor,
+    mobileInterface: MOBILE_INTERFACE_KEY,
+    route: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.route,
+    action,
+    ...details,
+  };
+}
+
 export class SearchInterface {
   /**
    * Create a new SearchInterface component
@@ -256,6 +316,33 @@ export class SearchInterface {
     
     // Emit event for direct listeners
     this.emit('search', this.currentQuery);
+
+    // Hand the search off to mobile via the mobile ORB bridge (MGW-579 /
+    // VAIOS-G707: interface contract hallucinate_app mobile).
+    this.emitMobileInteropHandoff('search', {
+      query: this.currentQuery,
+      filter: this.currentFilter,
+    });
+  }
+
+  /**
+   * Emit a `HALLUCINATE_APP_MOBILE_INTEROP_EVENT` handoff so the mobile ORB
+   * bridge / Meta glasses display widget can mirror this search-interface
+   * action. Returns the payload for callers that want to persist it
+   * (for example into the DuckDB `hallucinate_app_mobile_interop_events`
+   * table) without needing an eventBus.
+   *
+   * @param {string} action - The search-interface action being handed off.
+   * @param {Object} [details] - Additional action-specific details.
+   * @returns {Object} The emitted mobile interop handoff payload.
+   */
+  emitMobileInteropHandoff(action, details = {}) {
+    const payload = buildMobileInteropHandoffPayload(action, details);
+    if (this.eventBus) {
+      this.eventBus.emit(HALLUCINATE_APP_MOBILE_INTEROP_EVENT, payload);
+    }
+    this.emit(HALLUCINATE_APP_MOBILE_INTEROP_EVENT, payload);
+    return payload;
   }
   
   /**

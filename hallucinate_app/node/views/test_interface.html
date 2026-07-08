@@ -715,5 +715,42 @@
       };
     });
   </script>
+
+  <!-- MGW-579 / VAIOS-G707: interface contract hallucinate_app mobile -->
+  <!-- Machine-readable fixture proving the Hallucinate App content-browser
+       search interface hands off to the mobile ORB bridge / Meta glasses
+       display widget. Mirrors HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR from
+       hallucinate_app/hallucinate_app/node/dashboard/content_browser/search_interface.js
+       and HALLUCINATE_APP_MOBILE_INTEROP_INTERFACE from
+       mobile/src/orb/metaGlassesOrbDescriptors.js. -->
+  <script type="application/json" id="hallucinate-app-mobile-interop-fixture">
+  {
+    "contract": "interface contract hallucinate_app mobile",
+    "event": "hallucinate-app:mobile-interop-handoff",
+    "descriptor": "HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR",
+    "mobileInterface": "HALLUCINATE_APP_MOBILE_INTEROP_INTERFACE",
+    "route": {
+      "from": "hallucinate_app",
+      "to": "mobile",
+      "transport": "mobile_orb_bridge",
+      "target_surface": "meta_glasses_display"
+    },
+    "persistence": {
+      "duckdbTable": "hallucinate_app_mobile_interop_events",
+      "schemaRef": "hallucinate_app/ipfs_accelerate_py/data/duckdb/db_schema/time_series_schema.sql",
+      "schemaScriptRef": "hallucinate_app/ipfs_accelerate_py/data/duckdb/scripts/create_benchmark_schema.py"
+    },
+    "samplePayload": {
+      "action": "search",
+      "query": "meta glasses widget",
+      "widget_id": "task-progress-active"
+    },
+    "validation": {
+      "task_id": "MGW-579",
+      "goal_id": "VAIOS-G707",
+      "evidence": "objective validation repair"
+    }
+  }
+  </script>
 </body>
 </html>
