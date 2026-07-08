@@ -28,6 +28,34 @@ export const HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT = {
   required_artifacts: ['interaction_envelope', 'policy_decision', 'mediation_receipt'],
 };
 
+export const HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR = {
+  descriptor_id: 'hallucinate-app-mobile-interop@0.1.0',
+  interface_contract: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.contract_id,
+  goal_id: 'VAIOS-G707',
+  task_id: 'MGW-579',
+  source_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.source_surface,
+  target_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.target_surface,
+  route: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.route,
+  operation: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.operation,
+  schema_refs: {
+    search_interface:
+      'hallucinate_app/hallucinate_app/node/dashboard/content_browser/search_interface.js',
+    test_interface: 'hallucinate_app/hallucinate_app/node/views/test_interface.html',
+    time_series_schema:
+      'hallucinate_app/ipfs_accelerate_py/data/duckdb/db_schema/time_series_schema.sql',
+    benchmark_schema_script:
+      'hallucinate_app/ipfs_accelerate_py/data/duckdb/scripts/create_benchmark_schema.py',
+    mobile_descriptor: 'mobile/src/orb/metaGlassesOrbDescriptors.js',
+  },
+  validation: {
+    objective_gap_ref:
+      'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-579-objective-gap-7edb316279e5.md',
+    validation_repair_ref:
+      'data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-579-objective-validation-repair.md',
+    evidence: 'objective validation repair',
+  },
+};
+
 /**
  * Build the normalized mobile ORB handoff payload for a desktop search.
  *
@@ -55,8 +83,10 @@ export function buildHallucinateAppMobileSearchHandoff(query, options = {}) {
     target_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.target_surface,
     route: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.route,
     operation: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.operation,
+    descriptor_id: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.descriptor_id,
     control_surface_contract_ref:
       HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.control_surface_contract_ref,
+    artifact_refs: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.required_artifacts,
     correlation_id: correlationId,
     issued_at: issuedAt,
     payload: {
