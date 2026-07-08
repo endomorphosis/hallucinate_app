@@ -9,6 +9,29 @@
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+  <script type="application/json" id="hallucinate-app-mobile-interop-fixture">
+{
+  "descriptor_id": "hallucinate-app-mobile-interop@0.1.0",
+  "interface_contract": "interface contract hallucinate_app mobile",
+  "objective_goal": "VAIOS-G707",
+  "event_name": "hallucinate-app:mobile-interop-handoff",
+  "source_surface": "hallucinate_app",
+  "target_surface": "mobile",
+  "mobile_interface": "handsfree.interop.hallucinate_app_mobile.hallucinate_app_mobile_interop@0.1.0",
+  "operations": [
+    "search_handoff",
+    "register_edge_capabilities",
+    "dispatch_glasses_response",
+    "record_interop_event"
+  ],
+  "persistence_table": "hallucinate_app_mobile_interop_events",
+  "validation": {
+    "task_id": "VAI-674",
+    "objective_goal": "VAIOS-G707",
+    "evidence": "objective validation repair"
+  }
+}
+  </script>
   <div class="app-container">
     <!-- Header -->
     <header class="header">

@@ -7,6 +7,52 @@
  * @module dashboard/content_browser/search_interface
  */
 
+export const HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR = {
+  descriptor_id: 'hallucinate-app-mobile-interop@0.1.0',
+  interface_contract: 'interface contract hallucinate_app mobile',
+  objective_goal: 'VAIOS-G707',
+  source_surface: 'hallucinate_app',
+  target_surface: 'mobile',
+  event_name: 'hallucinate-app:mobile-interop-handoff',
+  mobile_interface: 'handsfree.interop.hallucinate_app_mobile.hallucinate_app_mobile_interop@0.1.0',
+  operations: [
+    'search_handoff',
+    'register_edge_capabilities',
+    'dispatch_glasses_response',
+    'record_interop_event',
+  ],
+  persistence_table: 'hallucinate_app_mobile_interop_events',
+  validation: {
+    task_id: 'VAI-674',
+    objective_goal: 'VAIOS-G707',
+    evidence: 'objective validation repair',
+  },
+};
+
+export function buildHallucinateAppMobileInteropHandoff({
+  query = '',
+  filter = {},
+  edgeSessionId = null,
+  timestamp = new Date().toISOString(),
+} = {}) {
+  return {
+    descriptor_id: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.descriptor_id,
+    interface_contract: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.interface_contract,
+    objective_goal: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.objective_goal,
+    event_name: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.event_name,
+    source_surface: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.source_surface,
+    target_surface: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.target_surface,
+    operation: 'search_handoff',
+    query,
+    filter,
+    edge_session_id: edgeSessionId,
+    render_targets: ['mobile_card', 'meta_glasses_display', 'audio_summary'],
+    dispatch_operation: 'dispatch_glasses_response',
+    persistence_table: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.persistence_table,
+    emitted_at: timestamp,
+  };
+}
+
 export class SearchInterface {
   /**
    * Create a new SearchInterface component
@@ -25,6 +71,7 @@ export class SearchInterface {
     this.eventBus = options.eventBus;
     this.onSearch = options.onSearch;
     this.onFilterChange = options.onFilterChange;
+    this.mobileInteropEdgeSessionId = options.mobileInteropEdgeSessionId || null;
     
     // Default configuration with overrides from options
     this.config = {
@@ -73,6 +120,7 @@ export class SearchInterface {
     this.toggleExpanded = this.toggleExpanded.bind(this);
     this.on = this.on.bind(this);
     this.emit = this.emit.bind(this);
+    this.emitMobileInteropHandoff = this.emitMobileInteropHandoff.bind(this);
     this.refreshSuggestions = this.refreshSuggestions.bind(this);
     this.dispose = this.dispose.bind(this);
     this._handleSearchSubmit = this._handleSearchSubmit.bind(this);
@@ -256,6 +304,36 @@ export class SearchInterface {
     
     // Emit event for direct listeners
     this.emit('search', this.currentQuery);
+
+    this.emitMobileInteropHandoff();
+  }
+
+  /**
+   * Emit the Hallucinate App to mobile interoperability handoff.
+   * @returns {Object} Machine-readable mobile interop payload
+   */
+  emitMobileInteropHandoff() {
+    const payload = buildHallucinateAppMobileInteropHandoff({
+      query: this.currentQuery,
+      filter: this.currentFilter,
+      edgeSessionId: this.mobileInteropEdgeSessionId,
+    });
+
+    if (this.eventBus) {
+      this.eventBus.emit(HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.event_name, payload);
+    }
+
+    this.emit(HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.event_name, payload);
+
+    if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+      window.dispatchEvent(
+        new CustomEvent(HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.event_name, {
+          detail: payload,
+        })
+      );
+    }
+
+    return payload;
   }
   
   /**
@@ -1076,6 +1154,30 @@ export class SearchInterface {
     if (!this.config.keepAdvancedSearchOpen) {
       this.expanded = false;
       this.render();
+    }
+  }
+
+  /**
+   * Handle a saved search selection by id
+   * @param {string} id - Saved search id
+   * @private
+   */
+  _handleSavedSearchSelect(id) {
+    const search = this.savedSearches.find(item => item.id === id);
+    if (search) {
+      this.loadSearch(search);
+    }
+  }
+
+  /**
+   * Handle a search history selection by id
+   * @param {string} id - Search history id
+   * @private
+   */
+  _handleSearchHistorySelect(id) {
+    const historyItem = this.searchHistory.find(item => item.id === id);
+    if (historyItem) {
+      this.loadSearch(historyItem);
     }
   }
   
