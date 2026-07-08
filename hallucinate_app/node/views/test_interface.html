@@ -82,6 +82,7 @@
           </div>
         </div>
 
+        <!-- VAI-674 / VAIOS-G707 objective/interoperability/hallucinate_app-mobile objective validation repair -->
         <div class="card" id="hallucinate-app-mobile-interop-contract" data-contract-id="interface contract hallucinate_app mobile">
           <div class="card-header">
             <h2>Hallucinate App Mobile Handoff</h2>
@@ -91,8 +92,18 @@
               <label for="mobileInteropContract">Interface descriptor:</label>
               <textarea id="mobileInteropContract" rows="9" readonly>{
   "contract_id": "interface contract hallucinate_app mobile",
+  "goal_id": "VAIOS-G707",
+  "task_id": "VAI-674",
+  "bundle": "objective/interoperability/hallucinate_app-mobile",
+  "evidence": "objective validation repair",
+  "event_name": "hallucinate-app:mobile-interop-handoff",
   "source_surface": "hallucinate_app",
   "target_surface": "mobile",
+  "descriptor_id": "hallucinate-app-mobile-interop@0.1.0",
+  "descriptor_symbols": [
+    "HALLUCINATE_APP_MOBILE_INTEROP_INTERFACE",
+    "HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR"
+  ],
   "control_surface_contract_ref": "control_surface_contract:hallucinate-app:remote-client",
   "routes": [
     "/v1/mobile/orb/register_edge_capabilities",

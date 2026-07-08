@@ -15,6 +15,7 @@
  */
 export const HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT = {
   contract_id: 'interface contract hallucinate_app mobile',
+  goal_id: 'VAIOS-G707',
   name: 'hallucinate_app_mobile_search_handoff',
   namespace: 'handsfree.hallucinate_app.mobile',
   version: '0.1.0',
@@ -26,6 +27,96 @@ export const HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT = {
   descriptor_path:
     'hallucinate_app/hallucinate_app/node/dashboard/content_browser/search_interface.js',
   required_artifacts: ['interaction_envelope', 'policy_decision', 'mediation_receipt'],
+};
+
+export const HALLUCINATE_APP_MOBILE_INTEROP_EVENT =
+  'hallucinate-app:mobile-interop-handoff';
+
+export const HALLUCINATE_APP_MOBILE_INTEROP_INTERFACE = {
+  name: 'hallucinate_app_mobile_interop',
+  namespace: 'handsfree.interop.hallucinate_app_mobile',
+  version: '0.1.0',
+  metadata: {
+    interface_contract: 'interface contract hallucinate_app mobile',
+    goal_id: 'VAIOS-G707',
+    source_surface: 'hallucinate_app',
+    target_surface: 'mobile',
+  },
+  methods: [
+    {
+      name: 'register_edge_capabilities',
+      surface: 'mobile_orb_bridge',
+      contract_ref: 'control_surface_contract:hallucinate-app:remote-client',
+    },
+    {
+      name: 'invoke_service',
+      surface: 'mobile_orb_bridge',
+      contract_ref: 'control_surface_contract:hallucinate-app:remote-client',
+    },
+    {
+      name: 'dispatch_glasses_response',
+      surface: 'mobile_orb_bridge',
+      contract_ref: 'control_surface_contract:hallucinate-app:remote-client',
+    },
+    {
+      name: 'diagnostics',
+      surface: 'mobile_orb_bridge',
+      contract_ref: 'control_surface_contract:hallucinate-app:remote-client',
+    },
+  ],
+  errors: [
+    {
+      name: 'mobile_orb_unavailable',
+      code: 409,
+    },
+    {
+      name: 'unsupported_mobile_surface',
+      code: 422,
+    },
+  ],
+  requires: [
+    'mcp++/profile-a-idl',
+    'mcp++/profile-b-cid-artifacts',
+    'mcp++/profile-d-policy',
+    'mobile/meta-glasses-orb',
+  ],
+};
+
+export const HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR = {
+  descriptor_id: 'hallucinate-app-mobile-interop@0.1.0',
+  interface: HALLUCINATE_APP_MOBILE_INTEROP_INTERFACE,
+  schema_refs: {
+    control_surface_contract: 'control_surface_contract:hallucinate-app:remote-client',
+    time_series_schema:
+      'hallucinate_app/ipfs_accelerate_py/data/duckdb/db_schema/time_series_schema.sql',
+    benchmark_schema_script:
+      'hallucinate_app/ipfs_accelerate_py/data/duckdb/scripts/create_benchmark_schema.py',
+  },
+  runtime_handoff: {
+    event_name: HALLUCINATE_APP_MOBILE_INTEROP_EVENT,
+    source_surface: 'hallucinate_app',
+    target_surface: 'mobile',
+    allowed_surfaces: ['desktop', 'remote_client', 'mobile', 'meta_glasses'],
+    mobile_orb_routes: [
+      '/v1/mobile/orb/register_edge_capabilities',
+      '/v1/mobile/orb/invoke_service',
+      '/v1/mobile/orb/dispatch_glasses_response',
+      '/v1/mobile/orb/diagnostics',
+    ],
+    persistence_tables: [
+      'hallucinate_app_mobile_interop_receipts',
+      'hallucinate_app_mobile_interop_events',
+    ],
+  },
+  validation: {
+    task_id: 'VAI-674',
+    goal_id: 'VAIOS-G707',
+    objective_gap_ref:
+      'data/virtual_ai_os/discovery/2026-07-08-vai-674-objective-gap-7edb316279e5.md',
+    validation_repair_ref:
+      'data/virtual_ai_os/discovery/2026-07-08-vai-674-objective-validation-repair.md',
+    evidence: 'objective validation repair',
+  },
 };
 
 /**
@@ -51,6 +142,9 @@ export function buildHallucinateAppMobileSearchHandoff(query, options = {}) {
 
   return {
     contract_id: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.contract_id,
+    goal_id: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.goal_id,
+    event_name: HALLUCINATE_APP_MOBILE_INTEROP_EVENT,
+    descriptor: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR,
     source_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.source_surface,
     target_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.target_surface,
     route: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.route,
@@ -328,6 +422,7 @@ export class SearchInterface {
     // Emit event
     if (this.eventBus) {
       this.eventBus.emit('content-browser:search', this.currentQuery);
+      this.eventBus.emit(HALLUCINATE_APP_MOBILE_INTEROP_EVENT, mobileHandoff);
       this.eventBus.emit('hallucinate_app-mobile:handoff', mobileHandoff);
     }
     
