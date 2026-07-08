@@ -42,6 +42,7 @@
           <li><a href="#" data-module="agents"><i class="fas fa-robot"></i> Agents</a></li>
           <li><a href="#" data-module="libp2p"><i class="fas fa-plug"></i> libp2p</a></li>
           <li><a href="#" data-module="orbitdb"><i class="fas fa-database"></i> OrbitDB</a></li>
+          <li><a href="#" data-module="mobile-handoff"><i class="fas fa-mobile-alt"></i> Mobile Handoff</a></li>
         </ul>
       </div>
     </nav>
@@ -257,6 +258,40 @@
             </div>
           </div>
         </div>
+
+        <div id="mobile-handoff-section" class="module-section">
+          <div class="card">
+            <div class="card-header">
+              <h2><i class="fas fa-mobile-alt"></i> Mobile Handoff</h2>
+              <div>
+                <span id="mobile-handoff-status" class="status offline">Not Tested</span>
+                <button id="btnTestMobileHandoff" class="btn btn-outline">Run Test</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label for="mobileHandoffConfig">Interface descriptor:</label>
+                <textarea id="mobileHandoffConfig" rows="12">{
+  "contract": "handsfree.hallucinate_app/mobile-handoff@0.1.0",
+  "descriptor": "hallucinate_app.mobile.interface_descriptor.v1",
+  "source": "hallucinate_app",
+  "target": "mobile",
+  "operations": ["search", "filter", "clear", "module_test", "benchmark_telemetry"],
+  "requiredFields": ["contract", "descriptor", "operation", "request_id", "source", "target", "payload", "handoff", "policy", "created_at"],
+  "handoff": {
+    "transport": "electron-ipc-or-local-http",
+    "route": "hallucinate_app.dashboard.mobile_handoff",
+    "receipt_required": true
+  }
+}</textarea>
+              </div>
+              <div class="module-test-results">
+                <h3>Test Results:</h3>
+                <div id="mobileHandoffResults" class="result-area">No results yet</div>
+              </div>
+            </div>
+          </div>
+        </div>
         
         <!-- Test summary section -->
         <div class="card">
@@ -316,6 +351,7 @@
     const btnTestAccelerate = document.getElementById('btnTestAccelerate');
     const btnTestFaiss = document.getElementById('btnTestFaiss');
     const btnTestAgents = document.getElementById('btnTestAgents');
+    const btnTestMobileHandoff = document.getElementById('btnTestMobileHandoff');
     
     // Module Status Elements
     const ipfsKitStatus = document.getElementById('ipfs-kit-status');
@@ -325,6 +361,7 @@
     const accelerateStatus = document.getElementById('accelerate-status');
     const faissStatus = document.getElementById('faiss-status');
     const agentsStatus = document.getElementById('agents-status');
+    const mobileHandoffStatus = document.getElementById('mobile-handoff-status');
     
     // Module Results Elements
     const ipfsKitResults = document.getElementById('ipfsKitResults');
@@ -334,6 +371,7 @@
     const accelerateResults = document.getElementById('accelerateResults');
     const faissResults = document.getElementById('faissResults');
     const agentsResults = document.getElementById('agentsResults');
+    const mobileHandoffResults = document.getElementById('mobileHandoffResults');
     
     // Module Configurations
     const ipfsKitConfig = document.getElementById('ipfsKitConfig');
@@ -343,6 +381,7 @@
     const accelerateConfig = document.getElementById('accelerateConfig');
     const faissConfig = document.getElementById('faissConfig');
     const agentsConfig = document.getElementById('agentsConfig');
+    const mobileHandoffConfig = document.getElementById('mobileHandoffConfig');
     
     // Server status
     let isServerRunning = false;
@@ -460,6 +499,10 @@
     btnTestAgents.addEventListener('click', () => {
       runModuleTest('agents', agentsConfig.value);
     });
+
+    btnTestMobileHandoff.addEventListener('click', () => {
+      runMobileHandoffContractTest();
+    });
     
     btnExportResults.addEventListener('click', () => {
       ipcRenderer.send('export-test-results', testResults);
@@ -540,7 +583,8 @@
         statusElement.className = 'status';
         
         // Disable the test button
-        document.getElementById(`btnTest${toCamelCase(module)}`).disabled = true;
+        const testButton = document.getElementById(`btnTest${toPascalCase(module)}`);
+        if (testButton) testButton.disabled = true;
         
         // Send test request
         ipcRenderer.send('test-module', { module, config });
@@ -548,10 +592,59 @@
         alert(`Invalid configuration JSON: ${e.message}`);
       }
     }
+
+    function runMobileHandoffContractTest() {
+      const start = performance.now();
+      try {
+        const descriptor = JSON.parse(mobileHandoffConfig.value);
+        const required = [
+          'contract',
+          'descriptor',
+          'operation',
+          'request_id',
+          'source',
+          'target',
+          'payload',
+          'handoff',
+          'policy',
+          'created_at'
+        ];
+        const hasRequired = required.every(field => descriptor.requiredFields.includes(field));
+        const supportsSearch = descriptor.operations.includes('search');
+        const supportsTelemetry = descriptor.operations.includes('benchmark_telemetry');
+        const result = {
+          module: 'mobile-handoff',
+          success: descriptor.contract === 'handsfree.hallucinate_app/mobile-handoff@0.1.0' &&
+            descriptor.descriptor === 'hallucinate_app.mobile.interface_descriptor.v1' &&
+            descriptor.target === 'mobile' &&
+            hasRequired &&
+            supportsSearch &&
+            supportsTelemetry,
+          duration: Math.round(performance.now() - start),
+          details: descriptor,
+        };
+        testResults[result.module] = result;
+        updateModuleTestResult(result.module, result);
+        updateTestSummary(result);
+        btnExportResults.disabled = false;
+        btnClearResults.disabled = false;
+      } catch (e) {
+        const result = {
+          module: 'mobile-handoff',
+          success: false,
+          duration: Math.round(performance.now() - start),
+          error: e.message,
+          details: { error: e.message },
+        };
+        testResults[result.module] = result;
+        updateModuleTestResult(result.module, result);
+        updateTestSummary(result);
+      }
+    }
     
     function updateModuleTestResult(module, result) {
       const statusElement = document.getElementById(`${module}-status`);
-      const resultsElement = document.getElementById(`${module}Results`);
+      const resultsElement = document.getElementById(`${toCamelCase(module)}Results`);
       
       if (result.success) {
         statusElement.textContent = 'Passed';
@@ -565,7 +658,8 @@
       resultsElement.textContent = JSON.stringify(result.details, null, 2);
       
       // Re-enable the test button
-      document.getElementById(`btnTest${toCamelCase(module)}`).disabled = false;
+      const testButton = document.getElementById(`btnTest${toPascalCase(module)}`);
+      if (testButton) testButton.disabled = false;
     }
     
     function updateTestSummary(result) {
@@ -643,6 +737,11 @@
       return str.split('-').map((word, index) => {
         return index === 0 ? word : word[0].toUpperCase() + word.slice(1);
       }).join('');
+    }
+
+    function toPascalCase(str) {
+      const camel = toCamelCase(str);
+      return camel.charAt(0).toUpperCase() + camel.slice(1);
     }
     
     function prettyModuleName(moduleId) {

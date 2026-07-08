@@ -7,6 +7,74 @@
  * @module dashboard/content_browser/search_interface
  */
 
+export const HALLUCINATE_APP_MOBILE_HANDOFF_CONTRACT =
+  'handsfree.hallucinate_app/mobile-handoff@0.1.0';
+
+export const HALLUCINATE_APP_MOBILE_INTERFACE_DESCRIPTOR =
+  'hallucinate_app.mobile.interface_descriptor.v1';
+
+export const HALLUCINATE_APP_MOBILE_SEARCH_DESCRIPTOR = {
+  contract: HALLUCINATE_APP_MOBILE_HANDOFF_CONTRACT,
+  descriptor: HALLUCINATE_APP_MOBILE_INTERFACE_DESCRIPTOR,
+  source: 'hallucinate_app',
+  target: 'mobile',
+  operations: ['search', 'filter', 'clear'],
+  event: 'hallucinate-app:mobile-handoff',
+  requiredFields: [
+    'contract',
+    'descriptor',
+    'operation',
+    'request_id',
+    'source',
+    'target',
+    'payload',
+    'handoff',
+    'policy',
+    'created_at',
+  ],
+};
+
+function buildMobileRequestId(operation) {
+  return `hao-mobile-${operation}-${Date.now()}-${Math.random().toString(16).slice(2, 10)}`;
+}
+
+export function buildHallucinateAppMobileSearchHandoff({
+  operation = 'search',
+  query = '',
+  filter = {},
+  requestId,
+  createdAt,
+  source = 'hallucinate_app.node.dashboard.content_browser.search_interface',
+} = {}) {
+  if (!HALLUCINATE_APP_MOBILE_SEARCH_DESCRIPTOR.operations.includes(operation)) {
+    throw new Error(`Unsupported hallucinate_app mobile search operation: ${operation}`);
+  }
+
+  return {
+    contract: HALLUCINATE_APP_MOBILE_HANDOFF_CONTRACT,
+    descriptor: HALLUCINATE_APP_MOBILE_INTERFACE_DESCRIPTOR,
+    operation,
+    request_id: requestId || buildMobileRequestId(operation),
+    source,
+    target: 'mobile',
+    payload: {
+      query: query || '',
+      filter: filter || {},
+    },
+    handoff: {
+      transport: 'electron-ipc-or-local-http',
+      route: 'hallucinate_app.dashboard.content_browser.search',
+      mobile_surface: 'handsfree-mobile',
+      receipt_required: true,
+    },
+    policy: {
+      user_visible: true,
+      requires_mobile_ack: true,
+    },
+    created_at: createdAt || new Date().toISOString(),
+  };
+}
+
 export class SearchInterface {
   /**
    * Create a new SearchInterface component
@@ -34,6 +102,10 @@ export class SearchInterface {
       maxSavedSearches: 20,
       defaultExpandedState: false,
       localStoragePrefix: 'pyarrow_index_search_',
+      mobileInterop: {
+        enabled: false,
+        eventName: HALLUCINATE_APP_MOBILE_SEARCH_DESCRIPTOR.event,
+      },
       availableFilters: [
         'mimetype', 'size', 'date', 'tags', 'location', 'metadata'
       ],
@@ -69,6 +141,7 @@ export class SearchInterface {
     this.search = this.search.bind(this);
     this.applyFilter = this.applyFilter.bind(this);
     this.clearSearch = this.clearSearch.bind(this);
+    this.createMobileHandoff = this.createMobileHandoff.bind(this);
     this.saveSearch = this.saveSearch.bind(this);
     this.toggleExpanded = this.toggleExpanded.bind(this);
     this.on = this.on.bind(this);
@@ -256,6 +329,8 @@ export class SearchInterface {
     
     // Emit event for direct listeners
     this.emit('search', this.currentQuery);
+
+    this._emitMobileHandoff('search');
   }
   
   /**
@@ -277,6 +352,8 @@ export class SearchInterface {
     
     // Emit event for direct listeners
     this.emit('filter-change', this.currentFilter);
+
+    this._emitMobileHandoff('filter');
   }
   
   /**
@@ -303,6 +380,42 @@ export class SearchInterface {
       this.eventBus.emit('content-browser:search', '');
       this.eventBus.emit('content-browser:filter', {});
     }
+
+    this._emitMobileHandoff('clear');
+  }
+
+  /**
+   * Create a mobile handoff envelope for the current search state.
+   * @param {Object} options - Handoff overrides
+   * @returns {Object} Mobile handoff contract
+   */
+  createMobileHandoff(options = {}) {
+    return buildHallucinateAppMobileSearchHandoff({
+      operation: options.operation || 'search',
+      query: options.query !== undefined ? options.query : this.currentQuery,
+      filter: options.filter !== undefined ? options.filter : this.currentFilter,
+      requestId: options.requestId,
+      createdAt: options.createdAt,
+    });
+  }
+
+  /**
+   * Emit the mobile interop handoff without requiring a native mobile bridge.
+   * @param {string} operation - Operation that produced the handoff
+   * @private
+   */
+  _emitMobileHandoff(operation) {
+    const handoff = this.createMobileHandoff({ operation });
+    this.emit('mobile-handoff', handoff);
+
+    if (this.eventBus && this.config.mobileInterop?.enabled) {
+      this.eventBus.emit(
+        this.config.mobileInterop.eventName || HALLUCINATE_APP_MOBILE_SEARCH_DESCRIPTOR.event,
+        handoff
+      );
+    }
+
+    return handoff;
   }
   
   /**
