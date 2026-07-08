@@ -1777,7 +1777,7 @@ const VAI_659_LAUNCH_VALIDATION_GATE = {
   supervisor_gap_receipt: 'data/virtual_ai_os/discovery/2026-07-05-vai-659-objective-gap-3e00ad2a0074.md',
   todo_source: {
     file: 'implementation_plan/docs/19-virtual-ai-os-submodule-integration.todo.md',
-    source_line: 8768
+    source_line: 8766
   },
   launch_gate_receipt: 'data/virtual_ai_os/discovery/2026-07-05-vai-659-mcp-dashboard-launch-gate.md',
   receipt_fixture: 'hallucinate_app/test/e2e/fixtures/vai-659-mcp-dashboard-launch-gate.json',
