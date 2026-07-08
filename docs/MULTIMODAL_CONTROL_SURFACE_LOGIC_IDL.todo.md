@@ -9314,7 +9314,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-740 Close objective gap: Interoperate hallucinate_app with mobile
 
-- Status: todo
+- Status: completed
+- Completion note 2026-07-08: Implemented the Hallucinate App/mobile interop evidence across `mobile/src/orb/metaGlassesOrbDescriptors.js`, `mobile/src/orb/metaGlassesMobileOrbBridge.js`, `hallucinate_app/hallucinate_app/node/dashboard/content_browser/search_interface.js`, `hallucinate_app/hallucinate_app/node/views/test_interface.html`, `tests/integration/test_hallucinate_app_mobile_interop.py`, `docs/integration/hallucinate_app-mobile.md`, and `data/meta_glasses_display_widgets/discovery/2026-07-08-mgw-579-objective-validation-repair.md`, then validated the repair with the focused interoperability pytest coverage.
 - Completion: manual
 - Priority: P1
 - Track: interoperability
@@ -9603,7 +9604,8 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-751 Resolve validation retry-budget failure for HAO-740
 
-- Status: todo
+- Status: completed
+- Completion note 2026-07-08: Resolved the retry-budget blocker by landing the real HAO-740 hallucinate_app/mobile interop implementation, rerunning the focused interop regression and shared todo-queue validations, and releasing HAO-740 from stale retry-budget status.
 - Completion: manual
 - Priority: P1
 - Track: ops

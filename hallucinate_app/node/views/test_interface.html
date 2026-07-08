@@ -89,24 +89,99 @@
           <div class="card-body">
             <div class="form-group">
               <label for="mobileInteropContract">Interface descriptor:</label>
-              <textarea id="mobileInteropContract" rows="9" readonly>{
+              <textarea id="mobileInteropContract" rows="15" readonly>{
+  "descriptor_id": "hallucinate-app-mobile-interop@0.1.0",
   "contract_id": "interface contract hallucinate_app mobile",
+  "goal_id": "VAIOS-G707",
+  "hao_task_id": "HAO-740",
   "source_surface": "hallucinate_app",
   "target_surface": "mobile",
   "control_surface_contract_ref": "control_surface_contract:hallucinate-app:remote-client",
   "routes": [
     "/v1/mobile/orb/register_edge_capabilities",
+    "/v1/mobile/orb/publish_glasses_event",
+    "/v1/mobile/orb/bind_service",
     "/v1/mobile/orb/invoke_service",
     "/v1/mobile/orb/dispatch_glasses_response",
     "/v1/mobile/orb/diagnostics"
   ],
-  "artifacts": ["interaction_envelope", "policy_decision", "mediation_receipt"]
+  "artifacts": ["interaction_envelope", "policy_decision", "mediation_receipt"],
+  "fixture_id": "hallucinate-app-mobile-interop-fixture"
 }</textarea>
             </div>
             <div class="module-test-results">
               <h3>Runtime handoff probe:</h3>
               <div id="mobileInteropResults" class="result-area">Ready to validate Hallucinate App to mobile ORB handoff</div>
             </div>
+            <script type="application/json" id="hallucinate-app-mobile-interop-fixture">
+{
+  "contract_id": "interface contract hallucinate_app mobile",
+  "source_surface": "hallucinate_app",
+  "target_surface": "mobile",
+  "route": "/v1/mobile/orb/invoke_service",
+  "operation": "invoke_service",
+  "edge_session_id": "local:edge-session:hallucinate-app-mobile-search",
+  "binding_handle": "binding:hallucinate-app-mobile-search",
+  "correlation_id": "hallucinate-app-mobile-search-001",
+  "interaction_envelope": {
+    "interaction_id": "hallucinate-app-mobile-search-001",
+    "surface": "remote_client",
+    "surface_event": "content-browser:search",
+    "raw_payload": {
+      "query": "meta glasses diagnostics",
+      "filter": {
+        "mimetype": "application/json"
+      },
+      "result_target": "mobile_card"
+    },
+    "normalized_intent": {
+      "intent": "hallucinate_app.content_browser.search",
+      "method": "invoke_service",
+      "target_ref": "handsfree.meta_glasses.mobile.mobile_orb_bridge.invoke_service",
+      "arguments": {
+        "query": "meta glasses diagnostics",
+        "filter": {
+          "mimetype": "application/json"
+        },
+        "result_target": "mobile_card"
+      },
+      "confidence": 1.0
+    },
+    "control_surface_contract_ref": "control_surface_contract:hallucinate-app:remote-client",
+    "policy_bundle_ref": {
+      "policy_id": "policy:hallucinate_app:mobile-interop",
+      "policy_cid": "local:hallucinate-app:mobile-interop",
+      "version": "0.1.0",
+      "scope": "hallucinate-app-mobile-interop",
+      "source": "system_default"
+    },
+    "compiled_policy_cid": "local:hallucinate-app:mobile-interop"
+  },
+  "policy_decision": {
+    "decision_id": "policy-decision:hallucinate-app-mobile-search-001",
+    "outcome": "allow",
+    "rationale": "Desktop content-browser search is allowed to hand off to the registered mobile ORB.",
+    "compiled_policy_cid": "local:hallucinate-app:mobile-interop",
+    "policy_bundle_ref": {
+      "policy_id": "policy:hallucinate_app:mobile-interop",
+      "policy_cid": "local:hallucinate-app:mobile-interop",
+      "version": "0.1.0",
+      "scope": "hallucinate-app-mobile-interop",
+      "source": "system_default"
+    }
+  },
+  "mediation_receipt": {
+    "receipt_id": "receipt:hallucinate-app-mobile-search-001",
+    "control_surface_contract_ref": "control_surface_contract:hallucinate-app:remote-client",
+    "policy_decision": {
+      "decision_id": "policy-decision:hallucinate-app-mobile-search-001",
+      "outcome": "allow"
+    },
+    "outcome": "allow"
+  },
+  "receipt_cid": "local:receipt:hallucinate-app-mobile-search:001"
+}
+            </script>
           </div>
         </div>
         

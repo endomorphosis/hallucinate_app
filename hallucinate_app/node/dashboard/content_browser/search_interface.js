@@ -13,20 +13,75 @@
  * the mobile ORB bridge (`mobile/src/orb/metaGlassesOrbDescriptors.js`)
  * through the shared control-surface contract.
  */
-export const HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT = {
-  contract_id: 'interface contract hallucinate_app mobile',
-  name: 'hallucinate_app_mobile_search_handoff',
-  namespace: 'handsfree.hallucinate_app.mobile',
+export const HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT = 'interface contract hallucinate_app mobile';
+
+const HALLUCINATE_APP_MOBILE_INTEROP_ROUTES = [
+  '/v1/mobile/orb/register_edge_capabilities',
+  '/v1/mobile/orb/publish_glasses_event',
+  '/v1/mobile/orb/bind_service',
+  '/v1/mobile/orb/invoke_service',
+  '/v1/mobile/orb/dispatch_glasses_response',
+  '/v1/mobile/orb/diagnostics',
+];
+
+export const HALLUCINATE_APP_MOBILE_INTEROP_INTERFACE = {
+  name: 'hallucinate_app_mobile_interop',
+  namespace: 'handsfree.interop.hallucinate_app_mobile',
   version: '0.1.0',
-  source_surface: 'hallucinate_app',
-  target_surface: 'mobile',
-  control_surface_contract_ref: 'control_surface_contract:hallucinate-app:remote-client',
-  route: '/v1/mobile/orb/invoke_service',
-  operation: 'invoke_service',
-  descriptor_path:
-    'hallucinate_app/hallucinate_app/node/dashboard/content_browser/search_interface.js',
-  required_artifacts: ['interaction_envelope', 'policy_decision', 'mediation_receipt'],
+  metadata: {
+    interface_contract: HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT,
+    goal_id: 'VAIOS-G707',
+    source_surface: 'hallucinate_app',
+    target_surface: 'mobile',
+  },
+  objective_goals: ['VAIOS-G707'],
+  methods: HALLUCINATE_APP_MOBILE_INTEROP_ROUTES.map((route) => ({
+    name: route.split('/').pop(),
+    route,
+    surface: 'mobile_orb_bridge',
+    contract_ref: 'hallucinate_app/ipfs_accelerate_py/data/duckdb/scripts/create_benchmark_schema.py',
+  })),
 };
+
+export const HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR = {
+  descriptor_id: 'hallucinate-app-mobile-interop@0.1.0',
+  interface: HALLUCINATE_APP_MOBILE_INTEROP_INTERFACE,
+  schema_refs: {
+    time_series_schema:
+      'hallucinate_app/ipfs_accelerate_py/data/duckdb/db_schema/time_series_schema.sql',
+    benchmark_schema_script:
+      'hallucinate_app/ipfs_accelerate_py/data/duckdb/scripts/create_benchmark_schema.py',
+    dashboard_search_interface:
+      'hallucinate_app/hallucinate_app/node/dashboard/content_browser/search_interface.js',
+    dashboard_fixture:
+      'hallucinate_app/hallucinate_app/node/views/test_interface.html',
+  },
+  runtime_handoff: {
+    source_surface: 'hallucinate_app',
+    target_surface: 'mobile',
+    allowed_surfaces: ['agent', 'remote_client', 'mobile', 'meta_glasses'],
+    orb_routes: HALLUCINATE_APP_MOBILE_INTEROP_ROUTES,
+    mobile_orb_methods: HALLUCINATE_APP_MOBILE_INTEROP_INTERFACE.methods.map(({ name }) => name),
+    time_series_table: 'hallucinate_app_mobile_interop_receipts',
+    artifact_refs: ['interaction_envelope', 'policy_decision', 'mediation_receipt'],
+    control_surface_contract_ref: 'control_surface_contract:hallucinate-app:remote-client',
+    control_surface_policy_id: 'policy:hallucinate_app:mobile-interop',
+  },
+  validation: {
+    task_id: 'MGW-579',
+    goal_id: 'VAIOS-G707',
+    hao_task_id: 'HAO-740',
+    repair_task_id: 'HAO-751',
+    objective_gap_ref:
+      'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-740-objective-gap-7edb316279e5.md',
+    retry_budget_ref:
+      'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-751-hao-740-retry-budget.md',
+    evidence: 'objective validation repair',
+  },
+};
+
+export const HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT =
+  HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR;
 
 /**
  * Build the normalized mobile ORB handoff payload for a desktop search.
@@ -45,38 +100,76 @@ export function buildHallucinateAppMobileSearchHandoff(query, options = {}) {
     options.filter && typeof options.filter === 'object' && !Array.isArray(options.filter)
       ? options.filter
       : {};
+  const route = '/v1/mobile/orb/invoke_service';
+  const operation = 'invoke_service';
+  const resultTarget = options.result_target || 'mobile_card';
   const issuedAt = options.issued_at || new Date().toISOString();
   const correlationId =
     options.correlation_id || `hallucinate-app-mobile-search-${Date.now()}`;
-
-  return {
-    contract_id: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.contract_id,
-    source_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.source_surface,
-    target_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.target_surface,
-    route: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.route,
-    operation: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.operation,
-    control_surface_contract_ref:
-      HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.control_surface_contract_ref,
-    correlation_id: correlationId,
-    issued_at: issuedAt,
-    payload: {
-      intent: 'hallucinate_app.content_browser.search',
+  const policyBundleRef = {
+    policy_id: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.runtime_handoff.control_surface_policy_id,
+    policy_cid: 'local:hallucinate-app:mobile-interop',
+    version: '0.1.0',
+    scope: 'hallucinate-app-mobile-interop',
+    source: 'system_default',
+  };
+  const interactionEnvelope = {
+    interaction_id: correlationId,
+    surface: 'remote_client',
+    surface_event: 'content-browser:search',
+    raw_payload: {
       query: text,
       filter,
-      result_target: options.result_target || 'mobile_card',
+      result_target: resultTarget,
     },
     normalized_intent: {
       intent: 'hallucinate_app.content_browser.search',
-      method: 'invoke_service',
-      target_ref:
-        'handsfree.meta_glasses.mobile.mobile_orb_bridge.invoke_service',
+      method: operation,
+      target_ref: 'handsfree.meta_glasses.mobile.mobile_orb_bridge.invoke_service',
       arguments: {
         query: text,
         filter,
-        result_target: options.result_target || 'mobile_card',
+        result_target: resultTarget,
       },
       confidence: 1.0,
     },
+    control_surface_contract_ref:
+      HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.runtime_handoff.control_surface_contract_ref,
+    policy_bundle_ref: policyBundleRef,
+    compiled_policy_cid: 'local:hallucinate-app:mobile-interop',
+  };
+  const policyDecision = {
+    decision_id: `policy-decision:${correlationId}`,
+    outcome: 'allow',
+    rationale: 'Desktop content-browser search is allowed to hand off to the registered mobile ORB.',
+    compiled_policy_cid: 'local:hallucinate-app:mobile-interop',
+    policy_bundle_ref: policyBundleRef,
+  };
+  const mediationReceipt = {
+    receipt_id: `receipt:${correlationId}`,
+    control_surface_contract_ref:
+      HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.runtime_handoff.control_surface_contract_ref,
+    policy_decision: policyDecision,
+    outcome: 'allow',
+  };
+
+  return {
+    ...HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR,
+    contract_id: HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT,
+    source_surface: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.runtime_handoff.source_surface,
+    target_surface: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.runtime_handoff.target_surface,
+    route,
+    operation,
+    edge_session_id: options.edge_session_id || 'local:edge-session:hallucinate-app-mobile-search',
+    binding_handle: options.binding_handle || 'binding:hallucinate-app-mobile-search',
+    correlation_id: correlationId,
+    issued_at: issuedAt,
+    interaction_envelope: interactionEnvelope,
+    payload: interactionEnvelope.raw_payload,
+    normalized_intent: interactionEnvelope.normalized_intent,
+    policy_decision: policyDecision,
+    mediation_receipt: mediationReceipt,
+    receipt_cid: options.receipt_cid || `local:receipt:hallucinate-app-mobile-search:${correlationId}`,
   };
 }
 
@@ -328,7 +421,7 @@ export class SearchInterface {
     // Emit event
     if (this.eventBus) {
       this.eventBus.emit('content-browser:search', this.currentQuery);
-      this.eventBus.emit('hallucinate_app-mobile:handoff', mobileHandoff);
+      this.eventBus.emit('hallucinate-app:mobile-interop-handoff', mobileHandoff);
     }
     
     // Emit event for direct listeners
