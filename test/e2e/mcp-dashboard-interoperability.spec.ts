@@ -65,6 +65,7 @@ const HAO_720_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-720-mc
 const HAO_724_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-724-mcp-dashboard-launch-gate.json');
 const HAO_742_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-742-mcp-dashboard-launch-gate.json');
 const HAO_744_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-744-mcp-dashboard-launch-gate.json');
+const HAO_754_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'hao-754-mcp-dashboard-launch-gate.json');
 const VAI_529_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-529-mcp-dashboard-launch-gate.json');
 const VAI_535_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-535-mcp-dashboard-launch-gate.json');
 const VAI_537_LAUNCH_GATE_FIXTURE = path.join(__dirname, 'fixtures', 'vai-537-mcp-dashboard-launch-gate.json');
@@ -261,6 +262,20 @@ const HAO_744_LAUNCH_GATE_RECEIPT = path.join(
   'hallucinate_multimodal_control',
   'discovery',
   '2026-07-08-hao-744-mcp-dashboard-launch-gate.md'
+);
+const HAO_754_OBJECTIVE_GAP_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'hallucinate_multimodal_control',
+  'discovery',
+  '2026-07-08-hao-754-objective-gap-3e00ad2a0074.md'
+);
+const HAO_754_LAUNCH_GATE_RECEIPT = path.join(
+  REPO_ROOT,
+  'data',
+  'hallucinate_multimodal_control',
+  'discovery',
+  '2026-07-08-hao-754-mcp-dashboard-launch-gate.md'
 );
 const VAI_535_OBJECTIVE_GAP_RECEIPT = path.join(
   REPO_ROOT,
@@ -3919,6 +3934,20 @@ test.describe('MCP Dashboard Interoperability - VAIOS-G723 headless backend gate
       launchGateReceipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-744-mcp-dashboard-launch-gate.md',
       receiptFixture: 'hallucinate_app/test/e2e/fixtures/hao-744-mcp-dashboard-launch-gate.json',
       heapProof: 'HAO-744 proof',
+      gateState: 'gate_open_until_playwright_passes'
+    });
+  });
+
+  test('closes the HAO-754 objective gap with the shared VAIOS-G724/VAIOS-G728 launch packet gate', () => {
+    validateDashboardLaunchGateReceipt({
+      fixturePath: HAO_754_LAUNCH_GATE_FIXTURE,
+      launchGateReceiptPath: HAO_754_LAUNCH_GATE_RECEIPT,
+      objectiveGapPath: HAO_754_OBJECTIVE_GAP_RECEIPT,
+      taskId: 'HAO-754',
+      sourceGapReceipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-754-objective-gap-3e00ad2a0074.md',
+      launchGateReceipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-754-mcp-dashboard-launch-gate.md',
+      receiptFixture: 'hallucinate_app/test/e2e/fixtures/hao-754-mcp-dashboard-launch-gate.json',
+      heapProof: 'HAO-754 proof',
       gateState: 'gate_open_until_playwright_passes'
     });
   });
