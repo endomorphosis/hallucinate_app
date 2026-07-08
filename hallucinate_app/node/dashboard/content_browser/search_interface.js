@@ -61,6 +61,8 @@ export const HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR = {
       'data/virtual_ai_os/discovery/2026-07-08-vai-674-objective-validation-repair.md',
     validation_repair_ref:
       'data/virtual_ai_os/discovery/2026-07-08-vai-674-objective-validation-repair.md',
+    attempt_2_validation_confirmation_ref:
+      'data/virtual_ai_os/discovery/2026-07-08-vai-674-attempt-2-validation-confirmation.md',
     retry_budget_ref:
       'data/virtual_ai_os/state/discovery/2026-07-08-vai-684-vai-674-retry-budget.md',
     evidence: 'objective validation repair',
