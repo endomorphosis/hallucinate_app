@@ -26,6 +26,48 @@ export const HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT = {
   descriptor_path:
     'hallucinate_app/hallucinate_app/node/dashboard/content_browser/search_interface.js',
   required_artifacts: ['interaction_envelope', 'policy_decision', 'mediation_receipt'],
+  objective_goal: 'VAIOS-G707',
+  objective_validation_repair: 'VAI-674 repairs the VAIOS-G707 objective validation repair',
+};
+
+export const HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR = {
+  descriptor_id: 'hallucinate-app-mobile-interop@0.1.0',
+  interface_contract: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.contract_id,
+  source_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.source_surface,
+  target_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.target_surface,
+  namespace: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.namespace,
+  routes: [
+    '/v1/mobile/orb/register_edge_capabilities',
+    '/v1/mobile/orb/invoke_service',
+    '/v1/mobile/orb/dispatch_glasses_response',
+    '/v1/mobile/orb/diagnostics',
+  ],
+  schema_refs: {
+    search_interface:
+      'hallucinate_app/hallucinate_app/node/dashboard/content_browser/search_interface.js',
+    test_interface: 'hallucinate_app/hallucinate_app/node/views/test_interface.html',
+    time_series_schema:
+      'hallucinate_app/ipfs_accelerate_py/data/duckdb/db_schema/time_series_schema.sql',
+    benchmark_schema_script:
+      'hallucinate_app/ipfs_accelerate_py/data/duckdb/scripts/create_benchmark_schema.py',
+  },
+  runtime_handoff: {
+    event_type: 'hallucinate-app:mobile-interop-handoff',
+    source_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.source_surface,
+    target_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.target_surface,
+    operation: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.operation,
+    allowed_surfaces: ['hallucinate_app', 'remote_client', 'mobile', 'meta_glasses'],
+    required_artifacts: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.required_artifacts,
+  },
+  validation: {
+    task_id: 'VAI-674',
+    goal_id: 'VAIOS-G707',
+    objective_gap_ref:
+      'data/virtual_ai_os/discovery/2026-07-08-vai-674-objective-gap-7edb316279e5.md',
+    validation_repair_ref:
+      'data/virtual_ai_os/discovery/2026-07-08-vai-674-objective-validation-repair.md',
+    evidence: 'objective validation repair',
+  },
 };
 
 /**
@@ -55,6 +97,8 @@ export function buildHallucinateAppMobileSearchHandoff(query, options = {}) {
     target_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.target_surface,
     route: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.route,
     operation: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.operation,
+    event_type: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.runtime_handoff.event_type,
+    descriptor_id: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.descriptor_id,
     control_surface_contract_ref:
       HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.control_surface_contract_ref,
     correlation_id: correlationId,
