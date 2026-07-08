@@ -1156,6 +1156,32 @@ export class SearchInterface {
       this.render();
     }
   }
+
+  /**
+   * Load a saved search by id.
+   *
+   * @param {string} id - Saved search id.
+   * @private
+   */
+  _handleSavedSearchSelect(id) {
+    const search = this.savedSearches.find((item) => item.id === id);
+    if (search) {
+      this.loadSearch(search);
+    }
+  }
+
+  /**
+   * Load a search history entry by id.
+   *
+   * @param {string} id - Search history id.
+   * @private
+   */
+  _handleSearchHistorySelect(id) {
+    const search = this.searchHistory.find((item) => item.id === id);
+    if (search) {
+      this.loadSearch(search);
+    }
+  }
   
   /**
    * Reset the advanced search form to default values
