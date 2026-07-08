@@ -13,7 +13,11 @@
  * the mobile ORB bridge (`mobile/src/orb/metaGlassesOrbDescriptors.js`)
  * through the shared control-surface contract.
  */
-export const HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT = {
+export const HALLUCINATE_APP_MOBILE_INTEROP_EVENT =
+  'hallucinate-app:mobile-interop-handoff';
+
+export const HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR = {
+  descriptor_id: 'hallucinate-app-mobile-interop@0.1.0',
   contract_id: 'interface contract hallucinate_app mobile',
   name: 'hallucinate_app_mobile_search_handoff',
   namespace: 'handsfree.hallucinate_app.mobile',
@@ -26,7 +30,12 @@ export const HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT = {
   descriptor_path:
     'hallucinate_app/hallucinate_app/node/dashboard/content_browser/search_interface.js',
   required_artifacts: ['interaction_envelope', 'policy_decision', 'mediation_receipt'],
+  mobile_descriptor_ref: 'mobile/src/orb/metaGlassesOrbDescriptors.js',
+  event_type: HALLUCINATE_APP_MOBILE_INTEROP_EVENT,
 };
+
+export const HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT =
+  HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR;
 
 /**
  * Build the normalized mobile ORB handoff payload for a desktop search.
@@ -50,13 +59,15 @@ export function buildHallucinateAppMobileSearchHandoff(query, options = {}) {
     options.correlation_id || `hallucinate-app-mobile-search-${Date.now()}`;
 
   return {
-    contract_id: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.contract_id,
-    source_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.source_surface,
-    target_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.target_surface,
-    route: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.route,
-    operation: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.operation,
+    event_type: HALLUCINATE_APP_MOBILE_INTEROP_EVENT,
+    descriptor_id: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.descriptor_id,
+    contract_id: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.contract_id,
+    source_surface: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.source_surface,
+    target_surface: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.target_surface,
+    route: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.route,
+    operation: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.operation,
     control_surface_contract_ref:
-      HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.control_surface_contract_ref,
+      HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.control_surface_contract_ref,
     correlation_id: correlationId,
     issued_at: issuedAt,
     payload: {
