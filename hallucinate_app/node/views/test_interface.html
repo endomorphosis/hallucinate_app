@@ -81,6 +81,43 @@
             </button>
           </div>
         </div>
+
+        <div class="card" id="hallucinate-app-mobile-interop-card">
+          <div class="card-header">
+            <h2><i class="fas fa-mobile-alt"></i> Mobile Interoperability Handoff</h2>
+            <span id="hallucinateMobileStatus" class="status offline">Not Sent</span>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label for="hallucinateMobileSearchQuery">Search Query:</label>
+              <input
+                id="hallucinateMobileSearchQuery"
+                type="text"
+                value="cid:QmDemo hallucinate_app mobile interoperability"
+              >
+            </div>
+            <div class="form-group">
+              <label for="hallucinateMobilePayload">Mobile Payload:</label>
+              <textarea id="hallucinateMobilePayload" rows="8">{
+  "contract": "handsfree.hallucinate_app/mobile-search-handoff@0.1.0",
+  "type": "mobile_hallucinate_app_search",
+  "request_id": "hallucinate-app-mobile-test-interface",
+  "query": "cid:QmDemo hallucinate_app mobile interoperability",
+  "filters": { "source": "test_interface", "surface": "hallucinate_app" },
+  "result_limit": 20,
+  "source_surface": "hallucinate_app.test_interface",
+  "target_surface": "mobile.results"
+}</textarea>
+            </div>
+            <button id="btnSendHallucinateMobileHandoff" class="btn btn-primary">
+              <i class="fas fa-paper-plane"></i> Send Mobile Handoff
+            </button>
+            <div class="module-test-results">
+              <h3>Handoff Result:</h3>
+              <div id="hallucinateMobileResults" class="result-area">No handoff sent yet</div>
+            </div>
+          </div>
+        </div>
         
         <!-- Test modules sections -->
         <div id="ipfs-kit-section" class="module-section">
@@ -307,6 +344,16 @@
     const testSummaryTable = document.getElementById('testSummaryTable');
     const btnExportResults = document.getElementById('btnExportResults');
     const btnClearResults = document.getElementById('btnClearResults');
+    const hallucinateMobileStatus = document.getElementById('hallucinateMobileStatus');
+    const hallucinateMobileSearchQuery = document.getElementById('hallucinateMobileSearchQuery');
+    const hallucinateMobilePayload = document.getElementById('hallucinateMobilePayload');
+    const btnSendHallucinateMobileHandoff = document.getElementById('btnSendHallucinateMobileHandoff');
+    const hallucinateMobileResults = document.getElementById('hallucinateMobileResults');
+
+    const HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT =
+      'handsfree.hallucinate_app/mobile-search-handoff@0.1.0';
+    const HALLUCINATE_APP_MOBILE_ACTION_ID = 'mobile_hallucinate_app_search';
+    const HALLUCINATE_APP_MOBILE_EVENT = 'hallucinate_app:mobile-search-handoff';
     
     // Module Test Buttons
     const btnTestIpfsKit = document.getElementById('btnTestIpfsKit');
@@ -471,6 +518,58 @@
       btnExportResults.disabled = true;
       btnClearResults.disabled = true;
     });
+
+    btnSendHallucinateMobileHandoff.addEventListener('click', () => {
+      try {
+        const mobilePayload = JSON.parse(hallucinateMobilePayload.value);
+        mobilePayload.contract = HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT;
+        mobilePayload.type = HALLUCINATE_APP_MOBILE_ACTION_ID;
+        mobilePayload.query = hallucinateMobileSearchQuery.value.trim() || mobilePayload.query;
+
+        const envelope = {
+          contract: HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT,
+          profile: 'swissknife.mcp++/event-envelope@0.1.0',
+          event_type: 'transport.handoff',
+          event: HALLUCINATE_APP_MOBILE_EVENT,
+          action_id: HALLUCINATE_APP_MOBILE_ACTION_ID,
+          request_id: mobilePayload.request_id,
+          correlation_id: mobilePayload.request_id,
+          source_surface: 'hallucinate_app.test_interface',
+          target_surface: 'mobile.results',
+          payload: {
+            query: mobilePayload.query,
+            filters: mobilePayload.filters || {},
+            cid: mobilePayload.cid || null,
+            path: mobilePayload.path || null
+          },
+          handoff: {
+            ipfs_cids: mobilePayload.cid ? [mobilePayload.cid] : [],
+            libp2p_peer_id: null,
+            libp2p_session_id: null,
+            mcp_plus_plus_profile: 'swissknife.mcp++/event-envelope@0.1.0'
+          },
+          control_plane: {
+            route: 'hallucinate_app.mobile.search_handoff',
+            operation: HALLUCINATE_APP_MOBILE_ACTION_ID
+          },
+          policy: {
+            outcome: 'allow',
+            source: 'hallucinate_app.test_interface'
+          },
+          receipts: [],
+          mobile_payload: mobilePayload
+        };
+
+        hallucinateMobileStatus.textContent = 'Sent';
+        hallucinateMobileStatus.className = 'status online';
+        hallucinateMobileResults.textContent = JSON.stringify(envelope, null, 2);
+        ipcRenderer.send('hallucinate-app-mobile-handoff', envelope);
+      } catch (e) {
+        hallucinateMobileStatus.textContent = 'Invalid';
+        hallucinateMobileStatus.className = 'status offline';
+        hallucinateMobileResults.textContent = `Invalid mobile handoff payload: ${e.message}`;
+      }
+    });
     
     // IPC Response Handlers
     ipcRenderer.on('services-status', (event, data) => {
@@ -525,6 +624,10 @@
     
     ipcRenderer.on('export-complete', (event, data) => {
       alert(`Test results exported to ${data.path}`);
+    });
+
+    ipcRenderer.on('hallucinate-app-mobile-handoff-result', (event, data) => {
+      hallucinateMobileResults.textContent = JSON.stringify(data, null, 2);
     });
     
     // Helper Functions

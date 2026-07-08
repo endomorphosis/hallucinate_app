@@ -7,6 +7,117 @@
  * @module dashboard/content_browser/search_interface
  */
 
+export const HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT =
+  'handsfree.hallucinate_app/mobile-search-handoff@0.1.0';
+export const HALLUCINATE_APP_MOBILE_ACTION_ID = 'mobile_hallucinate_app_search';
+export const HALLUCINATE_APP_MOBILE_EVENT = 'hallucinate_app:mobile-search-handoff';
+export const HALLUCINATE_APP_MOBILE_SOURCE_SURFACE = 'hallucinate_app.content_browser';
+export const HALLUCINATE_APP_MOBILE_TARGET_SURFACE = 'mobile.results';
+export const MCP_PLUS_PLUS_ENVELOPE_PROFILE = 'swissknife.mcp++/event-envelope@0.1.0';
+
+function objectOrEmpty(value) {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+}
+
+function stableStringify(value) {
+  if (value === null || typeof value !== 'object') {
+    return JSON.stringify(value);
+  }
+  if (Array.isArray(value)) {
+    return `[${value.map((item) => stableStringify(item)).join(',')}]`;
+  }
+  return `{${Object.keys(value)
+    .sort()
+    .map((key) => `${JSON.stringify(key)}:${stableStringify(value[key])}`)
+    .join(',')}}`;
+}
+
+function stableHash(input) {
+  let hash = 0;
+  for (let index = 0; index < input.length; index += 1) {
+    hash = (hash * 31 + input.charCodeAt(index)) >>> 0;
+  }
+  return hash.toString(16).padStart(8, '0');
+}
+
+export function buildHallucinateAppMobileSearchEnvelope({
+  query = '',
+  filter = {},
+  filters = null,
+  cid = null,
+  path = null,
+  resultLimit = 20,
+  requestId = null,
+  metadata = {},
+  issuedAt = null,
+} = {}) {
+  const normalizedFilters = objectOrEmpty(filters || filter);
+  const normalizedQuery = typeof query === 'string' ? query.trim() : '';
+  const normalizedCid = typeof cid === 'string' && cid.trim() ? cid.trim() : null;
+  const normalizedPath = typeof path === 'string' && path.trim() ? path.trim() : null;
+
+  if (!normalizedQuery && Object.keys(normalizedFilters).length === 0 && !normalizedCid && !normalizedPath) {
+    throw new Error('Hallucinate App mobile handoff requires query, filters, cid, or path.');
+  }
+
+  const seed = stableStringify({
+    query: normalizedQuery,
+    filters: normalizedFilters,
+    cid: normalizedCid,
+    path: normalizedPath,
+    metadata: objectOrEmpty(metadata),
+  });
+  const resolvedRequestId = requestId || `hallucinate-app-mobile-${stableHash(seed)}`;
+  const mobilePayload = {
+    type: HALLUCINATE_APP_MOBILE_ACTION_ID,
+    contract: HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT,
+    request_id: resolvedRequestId,
+    query: normalizedQuery,
+    filters: normalizedFilters,
+    result_limit: Number.isFinite(Number(resultLimit)) && Number(resultLimit) > 0 ? Number(resultLimit) : 20,
+    cid: normalizedCid,
+    path: normalizedPath,
+    source_surface: HALLUCINATE_APP_MOBILE_SOURCE_SURFACE,
+    target_surface: HALLUCINATE_APP_MOBILE_TARGET_SURFACE,
+    issued_at: issuedAt || new Date().toISOString(),
+    metadata: objectOrEmpty(metadata),
+  };
+
+  return {
+    contract: HALLUCINATE_APP_MOBILE_INTEROP_CONTRACT,
+    profile: MCP_PLUS_PLUS_ENVELOPE_PROFILE,
+    event_type: 'transport.handoff',
+    action_id: HALLUCINATE_APP_MOBILE_ACTION_ID,
+    event: HALLUCINATE_APP_MOBILE_EVENT,
+    request_id: resolvedRequestId,
+    correlation_id: resolvedRequestId,
+    source_surface: HALLUCINATE_APP_MOBILE_SOURCE_SURFACE,
+    target_surface: HALLUCINATE_APP_MOBILE_TARGET_SURFACE,
+    payload: {
+      query: normalizedQuery,
+      filters: normalizedFilters,
+      cid: normalizedCid,
+      path: normalizedPath,
+    },
+    handoff: {
+      ipfs_cids: normalizedCid ? [normalizedCid] : [],
+      libp2p_peer_id: null,
+      libp2p_session_id: null,
+      mcp_plus_plus_profile: MCP_PLUS_PLUS_ENVELOPE_PROFILE,
+    },
+    control_plane: {
+      route: 'hallucinate_app.mobile.search_handoff',
+      operation: 'mobile_hallucinate_app_search',
+    },
+    policy: {
+      outcome: 'allow',
+      source: 'hallucinate_app.content_browser',
+    },
+    receipts: [],
+    mobile_payload: mobilePayload,
+  };
+}
+
 export class SearchInterface {
   /**
    * Create a new SearchInterface component
@@ -17,6 +128,7 @@ export class SearchInterface {
    * @param {Object} options.eventBus - Event bus for component communication
    * @param {Function} options.onSearch - Callback when search is performed
    * @param {Function} options.onFilterChange - Callback when filters change
+   * @param {Function} options.onMobileHandoff - Callback when a mobile handoff is published
    * @param {Object} options.config - Component configuration
    */
   constructor(options = {}) {
@@ -25,11 +137,13 @@ export class SearchInterface {
     this.eventBus = options.eventBus;
     this.onSearch = options.onSearch;
     this.onFilterChange = options.onFilterChange;
+    this.onMobileHandoff = options.onMobileHandoff;
     
     // Default configuration with overrides from options
     this.config = {
       enableSavedSearches: true,
       enableSearchHistory: true,
+      enableMobileHandoff: true,
       maxHistoryItems: 10,
       maxSavedSearches: 20,
       defaultExpandedState: false,
@@ -70,6 +184,7 @@ export class SearchInterface {
     this.applyFilter = this.applyFilter.bind(this);
     this.clearSearch = this.clearSearch.bind(this);
     this.saveSearch = this.saveSearch.bind(this);
+    this.launchMobileSearch = this.launchMobileSearch.bind(this);
     this.toggleExpanded = this.toggleExpanded.bind(this);
     this.on = this.on.bind(this);
     this.emit = this.emit.bind(this);
@@ -114,6 +229,7 @@ export class SearchInterface {
         this.eventBus.on('search-interface:perform-search', (query) => this.search(query));
         this.eventBus.on('search-interface:apply-filter', (filter) => this.applyFilter(filter));
         this.eventBus.on('search-interface:clear-search', () => this.clearSearch());
+        this.eventBus.on('search-interface:launch-mobile-search', (options) => this.launchMobileSearch(options));
       }
       
       this.initialized = true;
@@ -256,6 +372,46 @@ export class SearchInterface {
     
     // Emit event for direct listeners
     this.emit('search', this.currentQuery);
+  }
+
+  /**
+   * Build and publish a mobile search handoff envelope.
+   *
+   * @param {Object} options - Optional handoff overrides
+   * @returns {Promise<Object>} Published handoff envelope
+   */
+  async launchMobileSearch(options = {}) {
+    const envelope = buildHallucinateAppMobileSearchEnvelope({
+      query: options.query !== undefined ? options.query : this.currentQuery,
+      filter: options.filter || this.currentFilter,
+      cid: options.cid || null,
+      path: options.path || null,
+      resultLimit: options.resultLimit || this.config.mobileResultLimit || 20,
+      requestId: options.requestId || null,
+      metadata: {
+        component: 'SearchInterface',
+        dashboard: 'pyarrow_content_index',
+        ...objectOrEmpty(options.metadata),
+      },
+    });
+
+    if (typeof this.onMobileHandoff === 'function') {
+      await this.onMobileHandoff(envelope);
+    }
+
+    if (this.bridge && typeof this.bridge.publishMobileHandoff === 'function') {
+      await this.bridge.publishMobileHandoff(envelope);
+    } else if (this.bridge && typeof this.bridge.dispatchMobileAction === 'function') {
+      await this.bridge.dispatchMobileAction(envelope.mobile_payload);
+    }
+
+    if (this.eventBus) {
+      this.eventBus.emit(HALLUCINATE_APP_MOBILE_EVENT, envelope);
+      this.eventBus.emit('content-browser:mobile-search', envelope);
+    }
+
+    this.emit('mobile-search-handoff', envelope);
+    return envelope;
   }
   
   /**
@@ -519,6 +675,11 @@ export class SearchInterface {
           ${this.config.enableSearchHistory ? 
             `<button type="button" class="search-history-button" title="Search history">
               <i class="fas fa-history"></i>
+            </button>` : ''}
+
+          ${this.config.enableMobileHandoff ?
+            `<button type="button" class="mobile-search-button" title="Open search on mobile">
+              <i class="fas fa-mobile-alt"></i>
             </button>` : ''}
         </div>
       </form>
@@ -853,6 +1014,23 @@ export class SearchInterface {
     const searchHistoryButton = this.container.querySelector('.search-history-button');
     if (searchHistoryButton) {
       searchHistoryButton.addEventListener('click', () => this._showSearchHistory());
+    }
+
+    const mobileSearchButton = this.container.querySelector('.mobile-search-button');
+    if (mobileSearchButton) {
+      mobileSearchButton.addEventListener('click', async () => {
+        const searchInput = this.container.querySelector('.search-input');
+        if (searchInput) {
+          this.currentQuery = searchInput.value.trim();
+        }
+        try {
+          await this.launchMobileSearch();
+        } catch (error) {
+          console.error('Failed to launch mobile search handoff:', error);
+          this.error = error;
+          this.render();
+        }
+      });
     }
     
     // Advanced search form submit
@@ -2660,6 +2838,7 @@ export class SearchInterface {
         this.eventBus.off('search-interface:perform-search');
         this.eventBus.off('search-interface:apply-filter');
         this.eventBus.off('search-interface:clear-search');
+        this.eventBus.off('search-interface:launch-mobile-search');
       }
     }
   }
