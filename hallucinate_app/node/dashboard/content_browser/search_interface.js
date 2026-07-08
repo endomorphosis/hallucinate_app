@@ -8,7 +8,7 @@
  */
 
 /**
- * Interop contract advertised for HAO-740 / VAIOS-G707: proves that the
+ * Interop contract advertised for HAO-740 and HAO-752 / VAIOS-G707: proves that the
  * Hallucinate App desktop search surface can hand off a search request to
  * the mobile ORB bridge (`mobile/src/orb/metaGlassesOrbDescriptors.js`)
  * through the shared control-surface contract.
@@ -34,6 +34,7 @@ export const HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR = {
   goal_id: 'VAIOS-G707',
   task_id: 'HAO-740',
   repair_task_id: 'HAO-751',
+  current_task_id: 'HAO-752',
   source_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.source_surface,
   target_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.target_surface,
   control_surface_contract_ref:
@@ -57,12 +58,17 @@ export const HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR = {
   validation: {
     objective_gap_ref:
       'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-740-objective-gap-7edb316279e5.md',
+    current_objective_gap_ref:
+      'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-752-objective-gap-7edb316279e5.md',
     validation_confirmation_ref:
       'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-740-attempt-4-validation-confirmation.md',
     validation_repair_ref:
       'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-751-hao-740-validation-repair.md',
+    current_validation_repair_ref:
+      'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-752-objective-validation-repair.md',
     retry_budget_ref:
       'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-751-hao-740-retry-budget.md',
+    validation_task_ids: ['HAO-740', 'HAO-751', 'HAO-752'],
     evidence: 'objective validation repair',
   },
 };
