@@ -28,6 +28,36 @@ export const HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT = {
   required_artifacts: ['interaction_envelope', 'policy_decision', 'mediation_receipt'],
 };
 
+export const HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR = {
+  descriptor_id: 'hallucinate-app-mobile-interop@0.1.0',
+  interface_contract: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.contract_id,
+  goal_id: 'VAIOS-G707',
+  task_id: 'VAI-674',
+  bundle: 'objective/interoperability/hallucinate_app-mobile',
+  source_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.source_surface,
+  target_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.target_surface,
+  route: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.route,
+  operation: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.operation,
+  event_name: 'hallucinate-app:mobile-interop-handoff',
+  receipt_table: 'hallucinate_app_mobile_interop_receipts',
+  schema_refs: {
+    mobile_descriptor: 'mobile/src/orb/metaGlassesOrbDescriptors.js',
+    mobile_bridge: 'mobile/src/orb/metaGlassesMobileOrbBridge.js',
+    test_interface: 'hallucinate_app/hallucinate_app/node/views/test_interface.html',
+    time_series_schema:
+      'hallucinate_app/ipfs_accelerate_py/data/duckdb/db_schema/time_series_schema.sql',
+    benchmark_schema_script:
+      'hallucinate_app/ipfs_accelerate_py/data/duckdb/scripts/create_benchmark_schema.py',
+  },
+  validation: {
+    objective_gap_ref:
+      'data/virtual_ai_os/discovery/2026-07-08-vai-674-objective-gap-7edb316279e5.md',
+    validation_repair_ref:
+      'data/virtual_ai_os/discovery/2026-07-08-vai-674-objective-validation-repair.md',
+    evidence: 'objective validation repair',
+  },
+};
+
 /**
  * Build the normalized mobile ORB handoff payload for a desktop search.
  *
@@ -55,6 +85,10 @@ export function buildHallucinateAppMobileSearchHandoff(query, options = {}) {
     target_surface: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.target_surface,
     route: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.route,
     operation: HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.operation,
+    descriptor_id: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.descriptor_id,
+    goal_id: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.goal_id,
+    task_id: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.task_id,
+    validation: HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR.validation,
     control_surface_contract_ref:
       HALLUCINATE_APP_MOBILE_SEARCH_INTEROP_CONTRACT.control_surface_contract_ref,
     correlation_id: correlationId,
@@ -329,6 +363,7 @@ export class SearchInterface {
     if (this.eventBus) {
       this.eventBus.emit('content-browser:search', this.currentQuery);
       this.eventBus.emit('hallucinate_app-mobile:handoff', mobileHandoff);
+      this.eventBus.emit('hallucinate-app:mobile-interop-handoff', mobileHandoff);
     }
     
     // Emit event for direct listeners

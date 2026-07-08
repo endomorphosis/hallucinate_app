@@ -91,8 +91,14 @@
               <label for="mobileInteropContract">Interface descriptor:</label>
               <textarea id="mobileInteropContract" rows="9" readonly>{
   "contract_id": "interface contract hallucinate_app mobile",
+  "descriptor_id": "hallucinate-app-mobile-interop@0.1.0",
+  "task_id": "VAI-674",
+  "goal_id": "VAIOS-G707",
+  "evidence": "objective validation repair",
   "source_surface": "hallucinate_app",
   "target_surface": "mobile",
+  "event_name": "hallucinate-app:mobile-interop-handoff",
+  "receipt_table": "hallucinate_app_mobile_interop_receipts",
   "control_surface_contract_ref": "control_surface_contract:hallucinate-app:remote-client",
   "routes": [
     "/v1/mobile/orb/register_edge_capabilities",
