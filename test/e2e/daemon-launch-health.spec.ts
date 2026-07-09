@@ -243,11 +243,13 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
     expect(gate.supervisor_gap_receipts).toContain('data/hallucinate_multimodal_control/discovery/2026-06-28-hao-719-objective-gap-b023c8de5b69.md');
     expect(gate.supervisor_gap_receipts).toContain('data/hallucinate_multimodal_control/discovery/2026-06-28-hao-721-objective-gap-b023c8de5b69.md');
     expect(gate.supervisor_gap_receipts).toContain('data/hallucinate_multimodal_control/discovery/2026-07-08-hao-743-objective-gap-b023c8de5b69.md');
+    expect(gate.supervisor_gap_receipts).toContain('data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-objective-gap-b023c8de5b69.md');
     expect(gate.supervisor_gap_receipts).toContain('data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-objective-gap-b023c8de5b69.md');
     expect(gate.hallucinate_backlog_receipts).toContain('data/hallucinate_multimodal_control/discovery/2026-06-27-hao-713-daemon-launch-health-gate.md');
     expect(gate.hallucinate_backlog_receipts).toContain('data/hallucinate_multimodal_control/discovery/2026-06-28-hao-719-daemon-launch-health-gate.md');
     expect(gate.hallucinate_backlog_receipts).toContain('data/hallucinate_multimodal_control/discovery/2026-06-28-hao-721-daemon-launch-health-gate.md');
     expect(gate.hallucinate_backlog_receipts).toContain('data/hallucinate_multimodal_control/discovery/2026-07-08-hao-743-daemon-launch-health-gate.md');
+    expect(gate.hallucinate_backlog_receipts).toContain('data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-daemon-launch-health-gate.md');
     expect(gate.hallucinate_backlog_receipts).toContain('data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-daemon-launch-health-gate.md');
     expect(gate.playwright_specs).toContain('hallucinate_app/test/e2e/daemon-launch-health.spec.ts');
     expect(gate.validation_commands).toContain('npm --prefix swissknife run test:e2e:meta-glasses');
