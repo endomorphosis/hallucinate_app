@@ -96,6 +96,13 @@ const HAO_757_REPAIR_RECEIPT = path.join(
   'discovery',
   '2026-07-09-hao-757-hao-755-implementation-retry-budget-repair.md'
 );
+const HAO_756_REPAIR_RECEIPT = path.join(
+  repoRoot,
+  'data',
+  'hallucinate_multimodal_control',
+  'discovery',
+  '2026-07-09-hao-756-hao-755-implementation-retry-budget-repair.md'
+);
 const OBJECTIVE_HEAP = path.join(
   repoRoot,
   'implementation_plan',
@@ -1208,5 +1215,29 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
     expect(repairFixture.validation_receipt).toBe(hao755Gate.validation_receipt);
     expect(hao755Gate.validation_receipts).toContain(repairFixture.validation_receipt);
     expect(repair).toContain('HAO-755 is removed from lane 0 `blocked_tasks`');
+  });
+
+  test('keeps HAO-756 retry-budget repair aligned with the closed HAO-755 launch gate', () => {
+    const manager = new MCPDaemonManager();
+    const gates = manager.getDaemonLaunchValidationGates();
+    const hao755Gate = gates.find((candidate: any) => candidate.task_id === 'HAO-755') as any;
+    const repair = fs.readFileSync(HAO_756_REPAIR_RECEIPT, 'utf8');
+    const repairFixture = jsonBlockAfter(repair, '## Repair Fixture');
+
+    expect(hao755Gate).toBeTruthy();
+    expect(repairFixture).toMatchObject({
+      schema: 'hao_implementation_retry_budget_repair_v1',
+      task_id: 'HAO-756',
+      source_task_id: 'HAO-755',
+      retry_budget_finding: 'data/hallucinate_multimodal_control/discovery/2026-07-09-hao-756-hao-755-implementation-retry-budget.md',
+      prior_repair_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-09-hao-757-hao-755-implementation-retry-budget-repair.md',
+      repaired_gate_state: 'gate_closed_by_playwright_validation',
+      source_task_released_from_blocked_tasks: true
+    });
+    expect(repairFixture.validation_commands).toEqual(hao755Gate.validation_commands);
+    expect(hao755Gate.validation_receipts).toContain(repairFixture.validation_receipt);
+    expect(hao755Gate.validation_receipts).toContain(repairFixture.prior_repair_receipt);
+    expect(repair).toContain('HAO-755');
+    expect(repair).toContain('blocked_tasks');
   });
 });

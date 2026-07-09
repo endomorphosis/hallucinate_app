@@ -2651,7 +2651,8 @@ const HAO_755_DAEMON_LAUNCH_VALIDATION_GATE = {
     'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-attempt-4-validation.md',
     'data/hallucinate_multimodal_control/discovery/2026-07-09-hao-755-attempt-1-validation.md',
     'data/hallucinate_multimodal_control/discovery/2026-07-09-hao-755-attempt-2-validation.md',
-    'data/hallucinate_multimodal_control/discovery/2026-07-09-hao-757-hao-755-implementation-retry-budget-repair.md'
+    'data/hallucinate_multimodal_control/discovery/2026-07-09-hao-757-hao-755-implementation-retry-budget-repair.md',
+    'data/hallucinate_multimodal_control/discovery/2026-07-09-hao-756-hao-755-implementation-retry-budget-repair.md'
   ],
   gate_state: 'gate_closed_by_playwright_validation',
   receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-755-daemon-launch-health-gate.json',
