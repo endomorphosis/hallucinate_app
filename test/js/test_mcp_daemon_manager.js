@@ -161,6 +161,16 @@ async function runTests() {
     catalogById.get('ipfs-datasets')?.mcpplusplus?.mode === 'optional_bridge' &&
     catalogById.get('ipfs-accelerate')?.mcpplusplus?.profiles?.includes('mcp++/profile-e-mcp-p2p') &&
     catalog.launch_validation_gates?.some(gate =>
+      gate.task_id === 'HAO-750' &&
+      gate.goal_id === 'VAIOS-G723' &&
+      gate.gate_state === 'gate_open_until_playwright_passes' &&
+      gate.receipt_fixture === 'hallucinate_app/test/e2e/fixtures/hao-750-mcp-dashboard-launch-gate.json' &&
+      gate.source_gap_receipt === 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-750-objective-gap-7ea369464239.md' &&
+      gate.validation_commands?.includes('cd hallucinate_app && (env -u DISPLAY -u WAYLAND_DISPLAY HALLUCINATE_APP_E2E_NO_BOOTSTRAP=true node scripts/run_playwright_test.mjs --help || test $? -eq 78)') &&
+      gate.child_goals?.includes('VAIOS-G723-C1 Catalog normalization') &&
+      gate.child_goals?.includes('VAIOS-G723-C6 Supervisor-generated follow-up subtasks')
+    ) &&
+    catalog.launch_validation_gates?.some(gate =>
       gate.task_id === 'VAI-622' &&
       gate.goal_id === 'VAIOS-G723' &&
       gate.receipt_fixture === 'hallucinate_app/test/e2e/fixtures/vai-622-mcp-dashboard-launch-gate.json' &&

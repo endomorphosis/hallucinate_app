@@ -410,6 +410,15 @@ electronDescribe('MCP Feature Exposure - Hallucinate Dashboard', () => {
         receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-547-mcp-dashboard-launch-gate.json'
       }),
       expect.objectContaining({
+        task_id: 'HAO-750',
+        goal_id: 'VAIOS-G723',
+        evidence_term: 'launch Playwright validation gate',
+        gate_state: 'gate_open_until_playwright_passes',
+        supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-750-objective-gap-7ea369464239.md',
+        launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-750-mcp-dashboard-launch-gate.md',
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-750-mcp-dashboard-launch-gate.json'
+      }),
+      expect.objectContaining({
         task_id: 'MGW-550',
         goal_id: 'VAIOS-G724',
         goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
@@ -1908,6 +1917,15 @@ test.describe('MCP Feature Exposure - headless backend gate', () => {
         supervisor_gap_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-27-mgw-547-objective-gap-7ea369464239.md',
         launch_gate_receipt: 'data/meta_glasses_display_widgets/discovery/2026-06-27-mgw-547-launch-playwright-validation-gate.md',
         receipt_fixture: 'hallucinate_app/test/e2e/fixtures/mgw-547-mcp-dashboard-launch-gate.json'
+      }),
+      expect.objectContaining({
+        task_id: 'HAO-750',
+        goal_id: 'VAIOS-G723',
+        evidence_term: 'launch Playwright validation gate',
+        gate_state: 'gate_open_until_playwright_passes',
+        supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-750-objective-gap-7ea369464239.md',
+        launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-750-mcp-dashboard-launch-gate.md',
+        receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-750-mcp-dashboard-launch-gate.json'
       }),
       expect.objectContaining({
         task_id: 'MGW-550',
