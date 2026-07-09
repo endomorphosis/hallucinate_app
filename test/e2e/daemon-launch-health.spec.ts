@@ -102,6 +102,13 @@ const OBJECTIVE_HEAP = path.join(
   'docs',
   '23-virtual-ai-os-objective-goal-heap.md'
 );
+const MGW_590_ATTEMPT_2_RECEIPT = path.join(
+  repoRoot,
+  'data',
+  'meta_glasses_display_widgets',
+  'discovery',
+  '2026-07-09-mgw-590-attempt-2-validation-confirmation.md'
+);
 const DAEMON_IDS = ['ipfs-kit', 'ipfs-datasets', 'ipfs-accelerate'];
 const BACKEND_PACKAGES = ['ipfs_kit_py', 'ipfs_datasets_py', 'ipfs_accelerate_py'];
 const ROLLING_DAEMON_GATE_FIELDS = new Set([
@@ -523,6 +530,43 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
     ))).toBe(true);
     expect(gate.daemon_health_paths.map((entry: any) => entry.daemon_id)).toEqual(DAEMON_IDS);
     expect(gate.swissknife_handoff.every((entry: any) => entry.swissknife_consumer.includes('Swissknife'))).toBe(true);
+  });
+
+  test('keeps the MGW-590 attempt 2 discovery receipt and objective heap aligned with the Playwright gate', () => {
+    const manager = new MCPDaemonManager();
+    const gates = manager.getDaemonLaunchValidationGates();
+    const gate = gates.find((candidate: any) => candidate.task_id === 'MGW-590') as any;
+    const receipt = fs.readFileSync(MGW_590_ATTEMPT_2_RECEIPT, 'utf8');
+    const objectiveHeap = fs.readFileSync(OBJECTIVE_HEAP, 'utf8');
+
+    expect(gate).toBeTruthy();
+    expect(receipt).toContain('MGW-590 Attempt 2 Validation Confirmation');
+    expect(receipt).toContain(gate.objective_gap_receipt);
+    expect(receipt).toContain(gate.launch_gate_receipt);
+    expect(receipt).toContain(gate.receipt_fixture);
+    expect(receipt).toContain('hallucinate_app/test/e2e/daemon-launch-health.spec.ts');
+    expect(receipt).toContain('swissknife/test/e2e/meta-glasses-virtual-os.spec.ts');
+    expect(receipt).toContain('hallucinate_app/test/e2e/multimodal-control-surface.spec.ts');
+    expect(receipt).toContain('tests/test_hallucinate_multimodal_control_todo_queue.py');
+
+    for (const term of [
+      'launch Playwright validation gate',
+      'gate_closed_by_playwright_validation',
+      'external/ipfs_accelerate',
+      'external/ipfs_datasets',
+      'external/ipfs_kit',
+      'dashboard capability catalog',
+      'Swissknife applications',
+      'VAIOS-G724',
+      'VAIOS-G728'
+    ]) {
+      expect(receipt).toContain(term);
+    }
+
+    expect(objectiveHeap).toContain('MGW-590 attempt 2 validation');
+    expect(objectiveHeap).toContain(gate.receipt_fixture);
+    expect(objectiveHeap).toContain(gate.launch_gate_receipt);
+    expect(objectiveHeap).toContain('No additional child goals are needed because MGW-590 attempt 2 reuses the existing daemon launch');
   });
 
   test('binds the VAI-519 objective gap receipt to the daemon launch health gate', () => {
