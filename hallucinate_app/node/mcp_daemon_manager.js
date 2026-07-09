@@ -2646,6 +2646,14 @@ const HAO_755_DAEMON_LAUNCH_VALIDATION_GATE = {
   supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-objective-gap-b023c8de5b69.md',
   launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-daemon-launch-health-gate.md',
   hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-daemon-launch-health-gate.md',
+  validation_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-09-hao-757-hao-755-implementation-retry-budget-repair.md',
+  validation_receipts: [
+    'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-attempt-4-validation.md',
+    'data/hallucinate_multimodal_control/discovery/2026-07-09-hao-755-attempt-1-validation.md',
+    'data/hallucinate_multimodal_control/discovery/2026-07-09-hao-755-attempt-2-validation.md',
+    'data/hallucinate_multimodal_control/discovery/2026-07-09-hao-757-hao-755-implementation-retry-budget-repair.md'
+  ],
+  gate_state: 'gate_closed_by_playwright_validation',
   receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-755-daemon-launch-health-gate.json',
   validation_commands: [
     'PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q',
@@ -3836,6 +3844,8 @@ class MCPDaemonManager extends EventEmitter {
       supervisor_gap_receipts: overrides.supervisor_gap_receipts || [...DAEMON_LAUNCH_GATE_SUPERVISOR_GAP_RECEIPTS],
       hallucinate_backlog_receipt: overrides.hallucinate_backlog_receipt || 'data/hallucinate_multimodal_control/discovery/2026-06-26-hao-702-daemon-launch-health-gate.md',
       hallucinate_backlog_receipts: overrides.hallucinate_backlog_receipts || [...DAEMON_LAUNCH_GATE_HALLUCINATE_BACKLOG_RECEIPTS],
+      ...(overrides.validation_receipt ? { validation_receipt: overrides.validation_receipt } : {}),
+      ...(overrides.validation_receipts ? { validation_receipts: [...overrides.validation_receipts] } : {}),
       ...(overrides.launch_gate_receipt ? { launch_gate_receipt: overrides.launch_gate_receipt } : {}),
       ...(overrides.receipt_fixture ? { receipt_fixture: overrides.receipt_fixture } : {}),
       ...(overrides.todo_source ? { todo_source: overrides.todo_source } : {}),

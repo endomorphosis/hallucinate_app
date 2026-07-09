@@ -89,6 +89,13 @@ const HAO_715_REPAIR_RECEIPT = path.join(
   'discovery',
   '2026-06-27-hao-715-hao-713-retry-budget-repair.md'
 );
+const HAO_757_REPAIR_RECEIPT = path.join(
+  repoRoot,
+  'data',
+  'hallucinate_multimodal_control',
+  'discovery',
+  '2026-07-09-hao-757-hao-755-implementation-retry-budget-repair.md'
+);
 const OBJECTIVE_HEAP = path.join(
   repoRoot,
   'implementation_plan',
@@ -979,6 +986,7 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
         fixturePath: HAO_755_GATE_FIXTURE,
         gapReceipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-objective-gap-b023c8de5b69.md',
         launchReceipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-daemon-launch-health-gate.md',
+        validationReceipt: 'data/hallucinate_multimodal_control/discovery/2026-07-09-hao-757-hao-755-implementation-retry-budget-repair.md',
         daemonLaunchCommand: 'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts'
       }
     ];
@@ -1000,6 +1008,11 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
       expect(receipt.supervisor_gap_receipt).toBe(fixture.gapReceipt);
       expect(receipt.launch_gate_receipt).toBe(fixture.launchReceipt);
       expect(receipt.hallucinate_backlog_receipt).toBe(fixture.launchReceipt);
+      if ('validationReceipt' in fixture) {
+        expect(receipt.gate_state).toBe('gate_closed_by_playwright_validation');
+        expect(receipt.validation_receipt).toBe(fixture.validationReceipt);
+        expect(receipt.validation_receipts).toContain(fixture.validationReceipt);
+      }
       expect(receipt.shared_packet_task_id).toBe(gate.task_id);
       expect(receipt.backlog_task_ids).toContain(fixture.taskId);
       expect(receipt.supervisor_gap_receipts).toContain(fixture.gapReceipt);
@@ -1173,5 +1186,27 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
       shared_packet_task: 'MGW-535',
       keeps_supervisor_fed_backlog_aligned: true
     });
+  });
+
+  test('keeps HAO-757 retry-budget repair aligned with the closed HAO-755 launch gate', () => {
+    const manager = new MCPDaemonManager();
+    const gates = manager.getDaemonLaunchValidationGates();
+    const hao755Gate = gates.find((candidate: any) => candidate.task_id === 'HAO-755') as any;
+    const repair = fs.readFileSync(HAO_757_REPAIR_RECEIPT, 'utf8');
+    const repairFixture = jsonBlockAfter(repair, '## Repair Fixture');
+
+    expect(hao755Gate).toBeTruthy();
+    expect(repairFixture).toMatchObject({
+      schema: 'hao_implementation_retry_budget_repair_v1',
+      task_id: 'HAO-757',
+      source_task_id: 'HAO-755',
+      retry_budget_finding: 'data/hallucinate_multimodal_control/state/discovery/2026-07-09-hao-757-hao-755-implementation-retry-budget.md',
+      repaired_gate_state: 'gate_closed_by_playwright_validation',
+      source_task_released_from_blocked_tasks: true
+    });
+    expect(repairFixture.validation_commands).toEqual(hao755Gate.validation_commands);
+    expect(repairFixture.validation_receipt).toBe(hao755Gate.validation_receipt);
+    expect(hao755Gate.validation_receipts).toContain(repairFixture.validation_receipt);
+    expect(repair).toContain('HAO-755 is removed from lane 0 `blocked_tasks`');
   });
 });
