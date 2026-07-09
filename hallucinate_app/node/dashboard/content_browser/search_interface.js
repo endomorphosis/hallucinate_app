@@ -64,6 +64,13 @@ export const HALLUCINATE_APP_MOBILE_INTEROP_DESCRIPTOR = {
     retry_budget_ref:
       'data/virtual_ai_os/state/discovery/2026-07-08-vai-684-vai-674-retry-budget.md',
     evidence: 'objective validation repair',
+    // VAI-685 re-observed the same VAIOS-G707 objective gap while VAI-674 was still in
+    // flight; record it as a related task instead of duplicating the descriptor.
+    related_task_ids: ['VAI-685'],
+    vai_685_objective_gap_ref:
+      'data/virtual_ai_os/discovery/2026-07-08-vai-685-objective-gap-7edb316279e5.md',
+    vai_685_validation_ref:
+      'data/virtual_ai_os/discovery/2026-07-08-vai-685-objective-validation-repair.md',
   },
 };
 
