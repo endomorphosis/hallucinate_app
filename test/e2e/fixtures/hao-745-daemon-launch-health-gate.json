@@ -57,7 +57,7 @@
   ],
   "evidence_term": "launch Playwright validation gate",
   "launch_key": "hallucinate-daemon-launch-orchestration",
-  "gate_state": "gate_open_until_playwright_passes",
+  "gate_state": "gate_closed_by_playwright_validation",
   "discovery_receipts": [
     "data/virtual_ai_os/discovery/2026-06-26-vai-519-daemon-launch-health-gate.md",
     "data/virtual_ai_os/discovery/2026-06-27-vai-530-daemon-launch-health-gate.md",
@@ -160,6 +160,19 @@
   ],
   "launch_gate_receipt": "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-745-daemon-launch-health-gate.md",
   "receipt_fixture": "hallucinate_app/test/e2e/fixtures/hao-745-daemon-launch-health-gate.json",
+  "attempt": 5,
+  "attempt_receipt": "data/hallucinate_multimodal_control/discovery/2026-07-09-hao-745-attempt-5-validation.md",
+  "attempt_receipts": [
+    "data/hallucinate_multimodal_control/discovery/2026-07-09-hao-745-attempt-5-validation.md"
+  ],
+  "todo_source": {
+    "file": "hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md",
+    "source_line": 9490
+  },
+  "packet_sibling_task_id": "HAO-744",
+  "packet_sibling_goal_id": "VAIOS-G724",
+  "packet_sibling_gap_receipt": "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-744-objective-gap-3e00ad2a0074.md",
+  "packet_sibling_gate_receipt": "data/hallucinate_multimodal_control/discovery/2026-07-08-hao-744-mcp-dashboard-launch-gate.md",
   "validation_commands": [
     "PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q",
     "test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts",
@@ -234,5 +247,84 @@
       "mediation_contract_ref": "control_surface_contract:mcp-daemon:ipfs-accelerate"
     }
   ],
+  "launch_playwright_validation_gate_coverage": {
+    "schema": "hallucinate_app.daemon_launch_playwright_validation_coverage.v1",
+    "status": "closed",
+    "gate_state": "gate_closed_by_playwright_validation",
+    "objective_ids": [
+      "VAIOS-G724",
+      "VAIOS-G728"
+    ],
+    "goal_packet": "goal_packet/launch/hallucinate_app/44dceea6bc53",
+    "required_daemon_ids": [
+      "ipfs-kit",
+      "ipfs-datasets",
+      "ipfs-accelerate"
+    ],
+    "covered_daemon_ids": [
+      "ipfs-kit",
+      "ipfs-datasets",
+      "ipfs-accelerate"
+    ],
+    "required_backends": [
+      "ipfs_kit_py",
+      "ipfs_datasets_py",
+      "ipfs_accelerate_py"
+    ],
+    "covered_backends": [
+      "ipfs_kit_py",
+      "ipfs_datasets_py",
+      "ipfs_accelerate_py"
+    ],
+    "required_playwright_specs": [
+      "hallucinate_app/test/e2e/daemon-launch-health.spec.ts",
+      "hallucinate_app/test/e2e/mcp-feature-exposure.spec.ts",
+      "hallucinate_app/test/e2e/mcp-dashboard-interoperability.spec.ts"
+    ],
+    "validated_commands": [
+      "PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py -q",
+      "test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts",
+      "test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses",
+      "test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts"
+    ],
+    "dashboard_packet_sibling_task_id": "HAO-744",
+    "dashboard_packet_sibling_goal_id": "VAIOS-G724",
+    "tool_protocols": [
+      {
+        "daemon_id": "ipfs-kit",
+        "tools_list": "tools/list",
+        "tools_call": "tools/call"
+      },
+      {
+        "daemon_id": "ipfs-datasets",
+        "tools_list": "tools/list",
+        "tools_call": "tools/call"
+      },
+      {
+        "daemon_id": "ipfs-accelerate",
+        "tools_list": "tools/list",
+        "tools_call": "tools/call"
+      }
+    ],
+    "health_paths": [
+      {
+        "daemon_id": "ipfs-kit",
+        "health_path": "/api/mcp/status",
+        "rpc_path": "/mcp/tools/call"
+      },
+      {
+        "daemon_id": "ipfs-datasets",
+        "health_path": "/health/ready",
+        "rpc_path": "/datasets/load"
+      },
+      {
+        "daemon_id": "ipfs-accelerate",
+        "health_path": "/api/mcp/status",
+        "rpc_path": "/mcp"
+      }
+    ],
+    "swissknife_handoff_verified": true,
+    "missing": []
+  },
   "failure_rule": "Any daemon launch, health, dashboard catalog, Swissknife handoff, or Playwright validation failure remains supervisor-generated follow-up work for VAIOS-G728."
 }

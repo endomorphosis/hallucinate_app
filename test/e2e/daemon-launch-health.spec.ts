@@ -1016,6 +1016,64 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
       expect(receipt.daemon_health_paths).toEqual(gate.daemon_health_paths);
       expect(receipt.swissknife_handoff).toEqual(gate.swissknife_handoff);
       expect(receipt.failure_rule).toBe(gate.failure_rule);
+
+      if (fixture.taskId === 'HAO-745') {
+        const launchPlan = manager.getLaunchPlan();
+        const hao745LaunchPlanGates = launchPlan.map((entry: any) => (
+          entry.launch_validation_gates.find((candidate: any) => candidate.task_id === 'HAO-745')
+        ));
+
+        expect(receipt.gate_state).toBe('gate_closed_by_playwright_validation');
+        expect(receipt.attempt).toBe(5);
+        expect(receipt.attempt_receipt).toBe(
+          'data/hallucinate_multimodal_control/discovery/2026-07-09-hao-745-attempt-5-validation.md',
+        );
+        expect(receipt.attempt_receipts).toEqual([receipt.attempt_receipt]);
+        expect(receipt.todo_source).toEqual({
+          file: 'hallucinate_app/docs/MULTIMODAL_CONTROL_SURFACE_LOGIC_IDL.todo.md',
+          source_line: 9490,
+        });
+        expect(receipt.packet_sibling_task_id).toBe('HAO-744');
+        expect(receipt.packet_sibling_goal_id).toBe('VAIOS-G724');
+        expect(receipt.packet_sibling_gate_receipt).toBe(
+          'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-744-mcp-dashboard-launch-gate.md',
+        );
+        expect(receipt.launch_playwright_validation_gate_coverage).toMatchObject({
+          schema: 'hallucinate_app.daemon_launch_playwright_validation_coverage.v1',
+          status: 'closed',
+          gate_state: 'gate_closed_by_playwright_validation',
+          goal_packet: 'goal_packet/launch/hallucinate_app/44dceea6bc53',
+          dashboard_packet_sibling_task_id: 'HAO-744',
+          dashboard_packet_sibling_goal_id: 'VAIOS-G724',
+          swissknife_handoff_verified: true,
+          missing: [],
+        });
+        expect(receipt.launch_playwright_validation_gate_coverage.required_daemon_ids).toEqual([
+          'ipfs-kit',
+          'ipfs-datasets',
+          'ipfs-accelerate',
+        ]);
+        expect(receipt.launch_playwright_validation_gate_coverage.covered_backends).toEqual([
+          'ipfs_kit_py',
+          'ipfs_datasets_py',
+          'ipfs_accelerate_py',
+        ]);
+        expect(receipt.launch_playwright_validation_gate_coverage.tool_protocols).toEqual(
+          launchPlan.map((entry: any) => ({
+            daemon_id: entry.daemon_id,
+            tools_list: 'tools/list',
+            tools_call: 'tools/call',
+          })),
+        );
+        for (const launchPlanGate of hao745LaunchPlanGates) {
+          expect(launchPlanGate).toMatchObject({
+            task_id: 'HAO-745',
+            gate_state: 'gate_closed_by_playwright_validation',
+            attempt: 5,
+            attempt_receipt: receipt.attempt_receipt,
+          });
+        }
+      }
     }
   });
 
