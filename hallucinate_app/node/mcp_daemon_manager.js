@@ -1796,6 +1796,44 @@ const VAI_659_LAUNCH_VALIDATION_GATE = {
   ],
   failure_rule: 'Any missing VAI-659 launch Playwright validation gate, catalog, daemon health, tools/list, tools/call, Swissknife consumer, external backend handoff, or VAI-660 packet sibling evidence remains supervisor-fed launch work for VAIOS-G724 and VAIOS-G728.'
 };
+const HAO_750_LAUNCH_VALIDATION_GATE = {
+  ...HAO_727_LAUNCH_VALIDATION_GATE,
+  task_id: 'HAO-750',
+  source_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-750-objective-gap-7ea369464239.md',
+  supervisor_gap_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-750-objective-gap-7ea369464239.md',
+  launch_gate_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-750-mcp-dashboard-launch-gate.md',
+  hallucinate_backlog_receipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-750-mcp-dashboard-launch-gate.md',
+  receipt_fixture: 'hallucinate_app/test/e2e/fixtures/hao-750-mcp-dashboard-launch-gate.json',
+  gate_state: 'gate_closed_by_playwright_validation',
+  attempt: 1,
+  attempt_receipts: [
+    'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-750-mcp-dashboard-launch-gate.md'
+  ],
+  required_evidence: [
+    'hallucinate_app menus',
+    'Hallucinate App MCP dashboard',
+    'dashboard capability catalog',
+    'daemon health',
+    'tools/list',
+    'tools/call',
+    'ipfs_accelerate_py MCP server',
+    'ipfs_datasets_py MCP server',
+    'ipfs_kit_py MCP server',
+    'Swissknife applications',
+    'Playwright MCP dashboard interoperability',
+    'launch Playwright validation gate'
+  ],
+  validation_commands: [
+    'PYTHONPATH=external/ipfs_accelerate:external/ipfs_datasets pytest tests/test_hallucinate_multimodal_control_todo_queue.py tests/test_virtual_ai_os_todo_queue.py -q',
+    'npm --prefix hallucinate_app run test:daemon-manager',
+    'npm --prefix hallucinate_app run test:e2e -- mcp-feature-exposure.spec.ts mcp-dashboard-interoperability.spec.ts',
+    'cd hallucinate_app && (env -u DISPLAY -u WAYLAND_DISPLAY HALLUCINATE_APP_E2E_NO_BOOTSTRAP=true node scripts/run_playwright_test.mjs --help || test $? -eq 78)',
+    'npm --prefix swissknife run test:e2e:mcp',
+    'test ! -f swissknife/package.json || npm --prefix swissknife run test:e2e:meta-glasses',
+    'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- multimodal-control-surface.spec.ts'
+  ],
+  failure_rule: 'Any HAO-750 dashboard catalog, UI wiring, mediated tools/list, mediated tools/call, Swissknife consumer, backend validation, or Playwright failure remains supervisor-generated follow-up work for VAIOS-G723.'
+};
 const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   MGW_533_LAUNCH_VALIDATION_GATE,
   MGW_546_LAUNCH_VALIDATION_GATE,
@@ -1885,7 +1923,8 @@ const DASHBOARD_LAUNCH_VALIDATION_GATES = [
   VAI_653_LAUNCH_VALIDATION_GATE,
   VAI_655_LAUNCH_VALIDATION_GATE,
   VAI_657_LAUNCH_VALIDATION_GATE,
-  VAI_659_LAUNCH_VALIDATION_GATE
+  VAI_659_LAUNCH_VALIDATION_GATE,
+  HAO_750_LAUNCH_VALIDATION_GATE
 ];
 const DAEMON_LAUNCH_GATE_TASK_ID = 'MGW-535';
 const DAEMON_LAUNCH_GATE_VAI_TASK_ID = 'VAI-519';
