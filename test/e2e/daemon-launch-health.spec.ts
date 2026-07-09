@@ -979,6 +979,7 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
         fixturePath: HAO_755_GATE_FIXTURE,
         gapReceipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-objective-gap-b023c8de5b69.md',
         launchReceipt: 'data/hallucinate_multimodal_control/discovery/2026-07-08-hao-755-daemon-launch-health-gate.md',
+        validationReceipt: 'data/hallucinate_multimodal_control/discovery/2026-07-09-hao-755-attempt-3-launch-playwright-validation-gate.md',
         daemonLaunchCommand: 'test ! -f hallucinate_app/package.json || npm --prefix hallucinate_app run test:e2e -- daemon-launch-health.spec.ts'
       }
     ];
@@ -1000,6 +1001,11 @@ test.describe('MGW-535 daemon launch health Playwright gate', () => {
       expect(receipt.supervisor_gap_receipt).toBe(fixture.gapReceipt);
       expect(receipt.launch_gate_receipt).toBe(fixture.launchReceipt);
       expect(receipt.hallucinate_backlog_receipt).toBe(fixture.launchReceipt);
+      if ('validationReceipt' in fixture) {
+        expect(receipt.gate_state).toBe('gate_closed_by_playwright_validation');
+        expect(receipt.validation_receipt).toBe(fixture.validationReceipt);
+        expect(receipt.validation_receipts).toContain(fixture.validationReceipt);
+      }
       expect(receipt.shared_packet_task_id).toBe(gate.task_id);
       expect(receipt.backlog_task_ids).toContain(fixture.taskId);
       expect(receipt.supervisor_gap_receipts).toContain(fixture.gapReceipt);
