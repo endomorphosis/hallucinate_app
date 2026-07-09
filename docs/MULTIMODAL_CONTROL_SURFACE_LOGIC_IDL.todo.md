@@ -9279,7 +9279,7 @@ UI-plane participants and runtime-plane targets.
 - Blocked reason: Retired by objective-task janitor during launch steering because goal_completed.
 ## HAO-739 Close objective gap: Interoperate external/meta-wearables-dat-android with external/ipfs_kit
 
-- Status: deferred
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: interoperability
