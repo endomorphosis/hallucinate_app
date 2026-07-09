@@ -9741,7 +9741,7 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-757 Resolve merge retry-budget failure for HAO-736
 
-- Status: todo
+- Status: completed
 - Completion: manual
 - Priority: P1
 - Track: ops
@@ -9749,3 +9749,38 @@ UI-plane participants and runtime-plane targets.
 - Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, tests/integration/test_swissknife_external_meta_wearables_dat_ios_interop.py, docs/integration/swissknife-external_meta_wearables_dat_ios.md, swissknife, external/meta-wearables-dat-ios, swissknife/contracts/control_surface_contract.schema.json, swissknife/contracts/interaction_envelope.schema.json, swissknife/contracts/mcp_plus_plus_compatibility_receipt.schema.json, swissknife/contracts/mediation_receipt.schema.json
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-09-hao-757-hao-736-merge-retry-budget.md
 - Acceptance: Merge retry-budget guardrail filed this from repeated merge failures in HAO-736. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-09-hao-757-hao-736-merge-retry-budget.md to fix the merge blocker, verify the intended implementation changes are committed in their owning repository or submodule, run `ipfs-accelerate-agent-merge-resolver --events-path ... --apply` when the conflict is semantic, then mark this repair task completed so the supervisor can release HAO-736 from strategy blocked_tasks.
+
+## HAO-758 Close objective gap: Interoperate mobile with external/ipfs_accelerate
+
+- Status: todo
+- Completion: manual
+- Priority: P1
+- Track: interoperability
+- Depends on: 
+- Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, tests/integration/test_mobile_external_ipfs_accelerate_interop.py, docs/integration/mobile-external_ipfs_accelerate.md, mobile, external/ipfs_accelerate, external/ipfs_accelerate/data/duckdb/db_schema/time_series_schema.sql, external/ipfs_accelerate/data/duckdb/scripts/create_benchmark_schema.py, external/ipfs_accelerate/data/duckdb/utils/check_database_schema.py, external/ipfs_accelerate/data/duckdb/utils/check_db_schema.py
+- Validation: python -m pytest tests/integration -q
+- Bundle: objective/interoperability/mobile-external_ipfs_accelerate
+- Bundle shard: data/hallucinate_multimodal_control/objective_bundles/objective-interoperability-mobile-external_ipfs_accelerate.todo.md
+- Bundle strategy: explicit
+- Graph parents: VAIOS-G000
+- Graph depth: 1
+- Parallel lane: objective/interoperability/mobile-external_ipfs_accelerate
+- Conflict policy: keep pair-specific integration edits isolated; use the LLM merge resolver for conflicts
+- Goal id: VAIOS-G719
+- Missing evidence: objective validation repair
+- Embedding query: mobile external/ipfs_accelerate interoperability integration test interface descriptor __future__ _jsonnet abc anyio argparse ast asyncio atexit base64 boto3 bs4 cProfile
+- AST query: mobile, external/ipfs_accelerate, interface contract, integration test, __future__, _jsonnet, abc, anyio, argparse, ast, asyncio, atexit, base64, boto3, bs4, cProfile
+- Surplus group: objective/VAIOS-G719
+- Merge key: 64e26db5b0fa2426
+- Merge family: objective/VAIOS-G719
+- Merge role: validation_gate
+- Work item count: 1
+- Work scope: objective_validation_repair
+- Goal packet: 
+- Goal packet role: 
+- Goal packet goals: 
+- Goal packet task count: 0
+- Goal packet work item count: 0
+- Candidate kind: validation_gate
+- Todo vector key: abd3dcae203fdb6b
+- Acceptance: Objective scan filed this gap for VAIOS-G719. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-09-hao-758-objective-gap-c1edafa875e6.md, add code/tests/docs or child goals that prove the missing evidence terms are covered (objective validation repair), and keep the supervisor-fed backlog aligned with the objective heap.  Refine the objective heap if the gap needs smaller child goals.
