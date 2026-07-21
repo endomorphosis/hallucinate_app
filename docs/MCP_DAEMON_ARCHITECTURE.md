@@ -125,7 +125,7 @@ HAO-443 Swissknife capability registry, HAO-444 app invocation route, and
 HAO-445 MCP++ compatibility contract into one launch path.
 
 The Swissknife-facing registry in
-`swissknife/src/services/swissknife-mcp-capability-registry.ts` now advertises
+`swissknife/src/services/apps/swissknife-mcp-capability-registry.ts` now advertises
 three launch contracts:
 
 | Server package | Supervised daemon | Startup order | Swissknife app/control surface | MCP++ capability advertisement |

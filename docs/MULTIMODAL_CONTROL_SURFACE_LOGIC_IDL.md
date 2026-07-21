@@ -314,7 +314,7 @@ The supervised contract covers all launch-critical server families:
 | `ipfs_accelerate_py` | `ipfs-accelerate` | `python -m ipfs_accelerate_py.cli mcp start --port 3003` | hardware profile, inference jobs, job status, telemetry | `tools_dispatch`, `tools_runtime_metrics`, and Profile A/C/E metadata |
 
 Swissknife publishes the launch-facing capability contracts in
-`swissknife/src/services/swissknife-mcp-capability-registry.ts`. Each entry now
+`swissknife/src/services/apps/swissknife-mcp-capability-registry.ts`. Each entry now
 contains:
 
 - `launch_contract.source == "HAO-674"` so tests and launch receipts can bind

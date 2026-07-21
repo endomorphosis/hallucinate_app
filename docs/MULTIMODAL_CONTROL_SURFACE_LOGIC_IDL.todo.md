@@ -9730,11 +9730,12 @@ UI-plane participants and runtime-plane targets.
 
 ## HAO-756 Resolve implementation retry-budget failure for HAO-755
 
-- Status: todo
+- Status: blocked
 - Completion: manual
 - Priority: P1
 - Track: ops
-- Depends on: 
+- Depends on: HAO-755
+- Blocked reason: The referenced retry-budget receipt was generated in a different checkout and is absent here; HAO-755 remains the active launch task. Recreate a current receipt only if HAO-755 actually exhausts its implementation retry budget.
 - Outputs: data/hallucinate_multimodal_control/discovery, implementation_plan/docs/23-virtual-ai-os-objective-goal-heap.md, hallucinate_app, swissknife, external/ipfs_accelerate, external/ipfs_datasets, external/ipfs_kit, hallucinate_app/test/e2e/daemon-launch-health.spec.ts
 - Validation: test -f /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-09-hao-756-hao-755-implementation-retry-budget.md
 - Acceptance: Implementation retry-budget guardrail filed this from repeated implementation failures in HAO-755. Use evidence in /home/barberb/lift_coding/data/hallucinate_multimodal_control/discovery/2026-07-09-hao-756-hao-755-implementation-retry-budget.md to fix the setup, runtime, or timeout blocker, then mark this repair task completed so the supervisor can release HAO-755 from strategy blocked_tasks.
