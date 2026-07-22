@@ -129,10 +129,20 @@ jobs:
           cache: 'npm'
       
       - name: Setup Python
+        if: matrix.os != 'rhel'
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
           cache: 'pip'
+
+      # setup-python's pip cache uses lsb_release, which is intentionally not
+      # shipped by the minimal Rocky 9 image. The RHEL build does not need the
+      # cache to package the app.
+      - name: Setup Python for RHEL
+        if: matrix.os == 'rhel'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       
       # Platform-specific system dependencies
       - name: Install RHEL system dependencies
