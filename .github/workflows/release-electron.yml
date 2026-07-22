@@ -88,6 +88,12 @@ jobs:
           submodules: false
           fetch-depth: 0
 
+      # The Rocky Linux container starts without Git. Install it before the
+      # common submodule initialization step below.
+      - name: Install Git for RHEL submodules
+        if: matrix.os == 'rhel'
+        run: dnf install -y git
+
       # Initialize only the top-level backend submodules. Recursive init is
       # avoided because the upstream repos contain broken/circular nested
       # vendored submodules (e.g. ipfs_accelerate_py/ipfs_datasets_py/.tools/...)
