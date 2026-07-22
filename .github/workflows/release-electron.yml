@@ -104,6 +104,10 @@ jobs:
           submodules: false
           fetch-depth: 0
 
+      - name: Trust RHEL checkout for submodules
+        if: matrix.os == 'rhel'
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
       # Initialize only the top-level backend submodules. Recursive init is
       # avoided because the upstream repos contain broken/circular nested
       # vendored submodules (e.g. ipfs_accelerate_py/ipfs_datasets_py/.tools/...)
