@@ -150,14 +150,12 @@ jobs:
         run: |
           dnf install -y \
             git \
-            curl \
             wget \
             ca-certificates \
             gcc \
             gcc-c++ \
             make \
             libX11-devel \
-            libxkbfile-devel \
             libsecret-devel \
             gtk3 \
             libnotify \
