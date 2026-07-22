@@ -268,9 +268,7 @@ jobs:
       
       # Make distributables
       - name: Make distributables
-        run: |
-          npm run make -- --platform=${{ matrix.platform }} --arch=${{ matrix.arch }} \
-            --targets=${{ matrix.targets }}
+        run: npm run make -- --platform=${{ matrix.platform }} --arch=${{ matrix.arch }} --targets=${{ matrix.targets }}
         env:
           NODE_ENV: production
       
