@@ -245,12 +245,19 @@ jobs:
           pip install -r python/hallucinate_app/python/requirements.txt || true
         continue-on-error: true
       
-      # Install submodule dependencies
-      - name: Install submodule dependencies
+      # Electron packages the checked-out backend sources; installing every optional
+      # backend and test dependency here can download platform-specific ML stacks
+      # without affecting the distributable. Full dependency installation belongs in
+      # the integration workflow, while releases verify the embedded sources instead.
+      - name: Verify embedded backend sources
         shell: bash
         run: |
-          bash scripts/install_submodule_deps.sh || true
-        continue-on-error: true
+          required_dirs=(ipfs_kit_py ipfs_datasets_py ipfs_accelerate_py swissknife)
+          for dir in "${required_dirs[@]}"; do
+            test -d "$dir"
+            test -e "$dir/pyproject.toml" -o -e "$dir/setup.py" -o -d "$dir/src"
+          done
+          git submodule status --recursive
       
       # Build the application for specific architecture
       - name: Package application
