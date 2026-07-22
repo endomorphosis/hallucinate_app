@@ -94,6 +94,16 @@ jobs:
         if: matrix.os == 'rhel'
         run: dnf install -y git
 
+      # The initial checkout falls back to a source archive when Git is absent
+      # from the base Rocky image. Re-run checkout after installing Git so the
+      # worktree has the .git metadata required by submodule commands.
+      - name: Recheckout RHEL source with Git
+        if: matrix.os == 'rhel'
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+          fetch-depth: 0
+
       # Initialize only the top-level backend submodules. Recursive init is
       # avoided because the upstream repos contain broken/circular nested
       # vendored submodules (e.g. ipfs_accelerate_py/ipfs_datasets_py/.tools/...)
