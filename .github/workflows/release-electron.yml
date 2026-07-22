@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version tag (e.g., v1.0.3)'
+        description: 'Version tag (e.g., v1.0.4)'
         required: true
         type: string
 
@@ -31,40 +31,55 @@ jobs:
             arch: x64
             runner: windows-latest
             platform: win32
-            makers: squirrel
+            targets: '@electron-forge/maker-squirrel'
           - os: windows
             arch: arm64
             runner: windows-latest
             platform: win32
-            makers: squirrel
+            targets: '@electron-forge/maker-squirrel'
           
           # macOS builds (Intel)
           - os: macos
             arch: x64
             runner: macos-13
             platform: darwin
-            makers: dmg,zip
+            targets: '@electron-forge/maker-dmg,@electron-forge/maker-zip'
           
           # macOS builds (Apple Silicon)
           - os: macos
             arch: arm64
             runner: macos-14
             platform: darwin
-            makers: dmg,zip
+            targets: '@electron-forge/maker-dmg,@electron-forge/maker-zip'
           
           # Linux x64 builds
           - os: linux
             arch: x64
             runner: ubuntu-latest
             platform: linux
-            makers: deb,rpm,zip
+            targets: '@electron-forge/maker-deb,@electron-forge/maker-rpm,@electron-forge/maker-zip'
           
           # Linux ARM64 builds
           - os: linux
             arch: arm64
             runner: ubuntu-latest
             platform: linux
-            makers: deb,rpm,zip
+            targets: '@electron-forge/maker-deb,@electron-forge/maker-rpm,@electron-forge/maker-zip'
+
+          # RHEL-compatible RPM builds. GitHub does not provide hosted RHEL
+          # runners, so use Rocky Linux in an Ubuntu-hosted job.
+          - os: rhel
+            arch: x64
+            runner: ubuntu-latest
+            container: rockylinux:9
+            platform: linux
+            targets: '@electron-forge/maker-rpm'
+          - os: rhel
+            arch: arm64
+            runner: ubuntu-latest
+            container: rockylinux:9
+            platform: linux
+            targets: '@electron-forge/maker-rpm'
     
     steps:
       - name: Checkout code
@@ -219,7 +234,8 @@ jobs:
       # Make distributables
       - name: Make distributables
         run: |
-          npm run make -- --platform=${{ matrix.platform }} --arch=${{ matrix.arch }}
+          npm run make -- --platform=${{ matrix.platform }} --arch=${{ matrix.arch }} \
+            --targets=${{ matrix.targets }}
         env:
           NODE_ENV: production
       
@@ -406,20 +422,22 @@ jobs:
           - **Windows ARM64**: `hallucinate_app-${VERSION}-win32-arm64-setup.exe`
           
           #### macOS
+          - **macOS Intel (x64) DMG**: the `.dmg` installer in the `macos-x64` artifact
           - **macOS Intel (x64)**: `hallucinate_app-${VERSION}-darwin-x64.zip`
+          - **macOS Apple Silicon (ARM64) DMG**: the `.dmg` installer in the `macos-arm64` artifact
           - **macOS Apple Silicon (ARM64)**: `hallucinate_app-${VERSION}-darwin-arm64.zip`
           
           #### Linux
-          - **Linux x64 DEB**: `hallucinate_app_${VERSION}_amd64.deb`
-          - **Linux x64 RPM**: `hallucinate_app-${VERSION}.x86_64.rpm`
+          - **Linux x64 DEB**: `hallucinate-app_${VERSION}_amd64.deb`
+          - **Linux x64 RPM**: `hallucinate_app-${VERSION}-1.x86_64.rpm`
           - **Linux x64 ZIP**: `hallucinate_app-${VERSION}-linux-x64.zip`
-          - **Linux ARM64 DEB**: `hallucinate_app_${VERSION}_arm64.deb`
-          - **Linux ARM64 RPM**: `hallucinate_app-${VERSION}.aarch64.rpm`
+          - **Linux ARM64 DEB**: `hallucinate-app_${VERSION}_arm64.deb`
+          - **Linux ARM64 RPM**: `hallucinate_app-${VERSION}-1.aarch64.rpm`
           - **Linux ARM64 ZIP**: `hallucinate_app-${VERSION}-linux-arm64.zip`
           
           #### RedHat Enterprise Linux (RHEL)
-          - **RHEL x64 RPM**: `hallucinate_app-${VERSION}-rhel.x86_64.rpm`
-          - **RHEL ARM64 RPM**: `hallucinate_app-${VERSION}-rhel.aarch64.rpm`
+          - **RHEL x64 RPM**: `hallucinate_app-${VERSION}-1.x86_64.rpm`
+          - **RHEL ARM64 RPM**: `hallucinate_app-${VERSION}-1.aarch64.rpm`
           
           > Note: RHEL RPMs are also compatible with CentOS, Rocky Linux, AlmaLinux, and Fedora
           
