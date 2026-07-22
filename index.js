@@ -140,8 +140,9 @@ function startSwissKnifeServer() {
     logInfo('SWISSKNIFE_SERVER', 'Starting server...', { port: SWISSKNIFE_PORT, webDir: swissKnifeWebDir });
     
     swissKnifeServer = createServer(async (req, res) => {
+      let filePath;
       try {
-        let filePath = req.url === '/' ? '/index.html' : req.url;
+        filePath = req.url === '/' ? '/index.html' : req.url;
         filePath = path.join(swissKnifeWebDir, filePath);
         
         // Security: prevent directory traversal
