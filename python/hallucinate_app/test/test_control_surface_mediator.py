@@ -126,10 +126,15 @@ class TestControlSurfaceMediator(unittest.TestCase):
             decided_at="2026-05-24T12:15:01Z",
         )
 
-        self.assertEqual(decision.outcome, "allow")
-        self.assertTrue(decision.can_execute)
+        # UIR-034: no matching norm fails closed (never default-allows).
+        self.assertEqual(decision.outcome, "require_confirmation")
+        self.assertFalse(decision.can_execute)
         self.assertEqual(decision.matched_norms, [])
-        self.assertEqual(decision.effects[0].outcome, DeonticOutcome.ALLOW)
+        self.assertTrue(decision.metadata.get("fail_closed"))
+        self.assertEqual(
+            decision.effects[0].outcome,
+            DeonticOutcome.REQUIRE_CONFIRMATION.value,
+        )
 
     def test_confirmation_policy_blocks_execution_until_confirmed(self) -> None:
         policy = compile_strict_template_rule("require confirmation before sending messages")
