@@ -56,10 +56,12 @@ class TestControlSurfacePointer(unittest.TestCase):
         self.assertEqual(envelope["normalized_intent"]["method"], "activate")
         self.assertEqual(envelope["normalized_intent"]["target_ref"], "widget:primary-action")
         self.assertEqual(envelope["normalized_intent"]["arguments"]["button"], 0)
-        self.assertEqual(decision["outcome"], "allow")
-        self.assertTrue(resolution.can_execute)
+        # UIR-034: no active policy fails closed (never default-allows).
+        self.assertEqual(decision["outcome"], "require_confirmation")
+        self.assertFalse(resolution.can_execute)
         self.assertEqual(decision["effects"][0]["target_ref"], "widget:primary-action")
-        self.assertEqual(decision["metadata"]["mediator_version"], "0.1.0")
+        self.assertEqual(decision["metadata"]["mediator_version"], "0.1.1")
+        self.assertTrue(decision["metadata"]["fail_closed"])
 
     def test_touch_event_alias_resolves_to_click_with_touch_pointer_metadata(self) -> None:
         envelope = normalize_pointer_interaction(

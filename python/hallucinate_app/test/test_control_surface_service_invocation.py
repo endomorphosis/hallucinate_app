@@ -9,6 +9,12 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
+from hallucinate_app.control_surface_logic_ir import (  # noqa: E402
+    ControlSurfaceNorm,
+    ControlSurfacePolicy,
+    DeonticOutcome,
+    InvocationEffect,
+)
 from hallucinate_app.control_surface_policy import compile_strict_template_rule  # noqa: E402
 from hallucinate_app.control_surface_service_invocation import (  # noqa: E402
     ServiceInvocationMediationError,
@@ -68,6 +74,30 @@ class TestControlSurfaceServiceInvocation(unittest.TestCase):
 
     def test_allowed_invocation_calls_transport_after_mediation(self) -> None:
         observed: dict[str, object] = {}
+        # UIR-034: explicit allow norm required; empty policy no longer default-allows.
+        allow_policy = ControlSurfacePolicy(
+            policy_id="policy:allow-list-datasets",
+            compiled_policy_cid="compiled:allow-list-datasets",
+            norms=(
+                ControlSurfaceNorm(
+                    norm_id="allow-list-datasets",
+                    outcome=DeonticOutcome.ALLOW,
+                    priority=100,
+                    actor="user:*",
+                    surface="*",
+                    surface_event="*",
+                    method="list_datasets",
+                    target_ref="target:*",
+                    effect=InvocationEffect(
+                        outcome=DeonticOutcome.ALLOW,
+                        method="list_datasets",
+                        target_ref="target:*",
+                        reason="explicit allow for list_datasets",
+                    ),
+                    explanation="explicit allow for list_datasets",
+                ),
+            ),
+        )
 
         def invoke(payload, mediation):
             observed["payload"] = payload
@@ -83,6 +113,7 @@ class TestControlSurfaceServiceInvocation(unittest.TestCase):
                 "actor": {"type": "user", "id": "operator-7"},
             },
             invoke,
+            active_policy_bundles=[allow_policy],
             decided_at="2026-05-24T10:00:01Z",
             emitted_at="2026-05-24T10:00:02Z",
         )

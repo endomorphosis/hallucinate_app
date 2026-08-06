@@ -276,7 +276,7 @@
     },
     {
       "id": "equivalent-display-focus-next",
-      "description": "Voice, gesture, mouse, and agent inputs normalize to display.focus_next and receive the same default allow explanation.",
+      "description": "Voice, gesture, mouse, and agent inputs normalize to display.focus_next and receive the same fail-closed explanation.",
       "policy_ids": [],
       "decided_at": "2026-05-24T17:00:01Z",
       "expected_intent": {
@@ -285,10 +285,10 @@
         "target_ref": "widget:list"
       },
       "expected_decision": {
-        "outcome": "allow",
+        "outcome": "require_confirmation",
         "effect_method": "focus_next",
         "effect_target_ref": "widget:list",
-        "explanation": "No active policy bundles were supplied; default allow permits the invocation."
+        "explanation": "No active policy bundles were supplied; fail-closed mediation returns require_confirmation and does not permit the invocation."
       },
       "cases": [
         {

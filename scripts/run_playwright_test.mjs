@@ -13,7 +13,9 @@ const electronPackage = path.join(projectRoot, 'node_modules', 'electron', 'pack
 const commandArgs = process.argv.slice(2);
 const args = commandArgs.length > 0 ? commandArgs : ['test'];
 const missingDisplayDiagnostic = 'missing_xvfb_for_electron_playwright';
-const noDisplayLaunchGateSpecs = new Set([
+// Spec basenames that may execute without a graphical display (VAI-533).
+// Electron UI coverage is not claimed for these no-display runnable gates.
+const NO_DISPLAY_RUNNABLE_SPEC_FILES = new Set([
   'daemon-launch-health.spec.ts',
   'mcp-feature-exposure.spec.ts',
   'mcp-dashboard-interoperability.spec.ts',
@@ -24,12 +26,6 @@ const specSourceDisplayPatterns = [
   'electron.launch(',
   'ElectronApplication',
 ];
-const headlessStaticCoverageSpecs = new Set([
-  'daemon-launch-health.spec.ts',
-  'mcp-feature-exposure.spec.ts',
-  'mcp-dashboard-interoperability.spec.ts',
-  'multimodal-control-surface.spec.ts',
-]);
 
 runPlaywright(args);
 
@@ -83,8 +79,8 @@ function runPlaywright(playwrightArgs) {
   if (command.usesXvfb) {
     console.warn('No graphical display detected; running Hallucinate Electron Playwright tests under xvfb-run.');
   }
-  if (command.headlessGate) {
-    console.warn('No graphical display detected; running headless-compatible launch gate specs without Electron UI coverage.');
+  if (command.noDisplayRunnableGate) {
+    console.warn('No graphical display detected; running no-display runnable launch gate specs without Electron UI coverage.');
   }
 
   const status = run(command.binary, command.args, command.env || {});
@@ -97,14 +93,14 @@ function playwrightCommand(playwrightArgs) {
     return { binary: process.execPath, args: baseArgs };
   }
 
-  if (canRunWithoutVirtualDisplay(playwrightArgs)) {
+  if (isNoDisplayRunnableRequest(playwrightArgs)) {
     return {
       binary: process.execPath,
       args: baseArgs,
       env: {
         HALLUCINATE_APP_E2E_HEADLESS_GATE: 'true',
       },
-      headlessGate: true,
+      noDisplayRunnableGate: true,
     };
   }
 
@@ -129,7 +125,7 @@ function playwrightCommand(playwrightArgs) {
   };
 }
 
-function canRunWithoutVirtualDisplay(playwrightArgs) {
+function isNoDisplayRunnableRequest(playwrightArgs) {
   return !selectedTestsNeedDisplay(playwrightArgs);
 }
 
@@ -155,7 +151,7 @@ function selectedTestsNeedDisplay(playwrightArgs) {
     return true;
   }
 
-  if (specPaths.every((specPath) => headlessStaticCoverageSpecs.has(path.basename(specPath)))) {
+  if (specPaths.every((specPath) => NO_DISPLAY_RUNNABLE_SPEC_FILES.has(path.basename(specPath)))) {
     return false;
   }
 

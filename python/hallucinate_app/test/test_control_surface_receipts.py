@@ -121,7 +121,7 @@ class TestControlSurfaceReceipts(unittest.TestCase):
             loaded = MediationReceiptStore(receipt_dir).load_receipt(record.receipt_cid)
             self.assertEqual(loaded["mediation_receipt"], receipt)
 
-    def test_default_allow_receipt_has_policy_ref_outcome_and_explanation(self) -> None:
+    def test_fail_closed_receipt_has_policy_ref_outcome_and_explanation(self) -> None:
         decision = evaluate_control_surface_interaction(
             _message_envelope(),
             active_policy_bundles=[],
@@ -140,10 +140,13 @@ class TestControlSurfaceReceipts(unittest.TestCase):
 
         self.receipt_validator.validate(receipt)
         self.assertEqual(first.receipt_id, second.receipt_id)
-        self.assertEqual(receipt["policy_refs"][0]["policy_bundle_ref"]["source"], "system_default")
-        self.assertEqual(receipt["mediation_result"]["outcome"], "allow")
-        self.assertTrue(receipt["mediation_result"]["invoked"])
-        self.assertIn("default allow", receipt["explanation"])
+        self.assertEqual(
+            receipt["policy_refs"][0]["policy_bundle_ref"]["source"],
+            "system_fail_closed",
+        )
+        self.assertEqual(receipt["mediation_result"]["outcome"], "require_confirmation")
+        self.assertFalse(receipt["mediation_result"]["invoked"])
+        self.assertIn("fail-closed", receipt["explanation"])
         self.assertEqual(receipt["metadata"]["surface"], "voice")
         self.assertEqual(receipt["metadata"]["normalized_intent"]["method"], "send_message")
 
