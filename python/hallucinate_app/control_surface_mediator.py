@@ -30,16 +30,18 @@ from hallucinate_app.control_surface_logic_ir import (
 from hallucinate_app.control_surface_store import PolicyBundleStore, stable_cid
 
 
-MEDIATOR_VERSION = "0.1.0"
+MEDIATOR_VERSION = "0.1.1"
 DEFAULT_CONFLICT_RESOLUTION = "deny_over_permit"
+# Align with SwissKnife mcp-control-surface-mediator DEFAULT_FAIL_CLOSED_OUTCOME.
+DEFAULT_MISSING_POLICY_OUTCOME = DeonticOutcome.REQUIRE_CONFIRMATION.value
 DEFAULT_POLICY_BUNDLE_REF = {
-    "policy_id": "policy:default-runtime-allow",
-    "policy_cid": "local:default-runtime-allow",
+    "policy_id": "policy:default-runtime-fail-closed",
+    "policy_cid": "local:default-runtime-fail-closed",
     "version": MEDIATOR_VERSION,
     "scope": "runtime",
-    "source": "system_default",
+    "source": "system_fail_closed",
 }
-DEFAULT_COMPILED_POLICY_CID = "local:default-runtime-allow"
+DEFAULT_COMPILED_POLICY_CID = "local:default-runtime-fail-closed"
 
 SUPPORTED_OUTCOMES = (
     "allow",
@@ -208,6 +210,7 @@ class ControlSurfaceMediator:
         active_policy_bundles: list[Any] | tuple[Any, ...] | None = None,
         conflict_resolution: str | None = None,
         decided_at: str | None = None,
+        missing_policy_outcome: str | None = None,
     ) -> PolicyDecision:
         """Return a rich policy decision for a normalized interaction envelope."""
 
@@ -222,6 +225,7 @@ class ControlSurfaceMediator:
             active_policy_bundles=bundles,
             conflict_resolution=conflict_resolution or self.conflict_resolution,
             decided_at=decided_at,
+            missing_policy_outcome=missing_policy_outcome,
         )
 
 
@@ -231,8 +235,14 @@ def evaluate_control_surface_interaction(
     active_policy_bundles: list[Any] | tuple[Any, ...] | None = None,
     conflict_resolution: str = DEFAULT_CONFLICT_RESOLUTION,
     decided_at: str | None = None,
+    missing_policy_outcome: str | None = None,
 ) -> PolicyDecision:
-    """Evaluate one normalized interaction before the target method executes."""
+    """Evaluate one normalized interaction before the target method executes.
+
+    UIR-034: no-match / missing policy fails closed (default
+    ``require_confirmation``), matching SwissKnife TypeScript mediation.
+    Missing or empty policy bundles never allow execution.
+    """
 
     resolved_envelope = _coerce_envelope(envelope)
     envelope_payload = _decision_envelope_payload(envelope, resolved_envelope)
@@ -242,16 +252,20 @@ def evaluate_control_surface_interaction(
     matched = _matched_norms(resolved_envelope, bundles, frame_facts)
     selected = _select_match(matched, conflict_resolution)
     event_atoms = [fact.atom() for fact in event_facts]
+    fail_closed_outcome = _coerce_missing_policy_outcome(missing_policy_outcome)
 
     if selected is None:
-        effect = _default_allow_effect(resolved_envelope)
-        reasons = [_default_allow_reason(bundles)]
+        effect = _fail_closed_effect(resolved_envelope, outcome=fail_closed_outcome)
+        reasons = [_fail_closed_reason(bundles, fail_closed_outcome)]
         explanation = reasons[0]
         policy_bundle_ref = dict(DEFAULT_POLICY_BUNDLE_REF)
         compiled_policy_cid = DEFAULT_COMPILED_POLICY_CID
-        outcome = DeonticOutcome.ALLOW.value
+        outcome = fail_closed_outcome
         confidence = 1.0
-        selected_norm_id = "default_allow"
+        selected_norm_id = "fail_closed_no_match"
+        fail_closed_reason = (
+            "missing_policy_bundle" if not bundles else "no_matching_policy_norm"
+        )
     else:
         outcome = selected.outcome
         effect = _effect_for_decision(selected.norm, resolved_envelope)
@@ -261,6 +275,7 @@ def evaluate_control_surface_interaction(
         explanation = _explanation(reasons)
         confidence = _policy_confidence(selected, bundles)
         selected_norm_id = selected.norm.norm_id
+        fail_closed_reason = ""
 
     decided = decided_at or _utc_now()
     decision_id = stable_control_surface_id(
@@ -287,6 +302,9 @@ def evaluate_control_surface_interaction(
             }
             for bundle in bundles
         ],
+        "fail_closed": selected is None,
+        "fail_closed_reason": fail_closed_reason,
+        "missing_policy_outcome": fail_closed_outcome if selected is None else "",
     }
 
     return PolicyDecision(
@@ -609,14 +627,41 @@ def _logic_clause_refs(norm: ControlSurfaceNorm, bundle: ActivePolicyBundle) -> 
     return sorted(dict.fromkeys(ref for ref in refs if ref))
 
 
-def _default_allow_effect(envelope: InteractionEnvelope) -> InvocationEffect:
+def _coerce_missing_policy_outcome(value: str | None) -> str:
+    """Only deny or require_confirmation are valid fail-closed defaults."""
+
+    if value is None or value == "":
+        return DEFAULT_MISSING_POLICY_OUTCOME
+    normalized = str(value).strip()
+    allowed = {
+        DeonticOutcome.DENY.value,
+        DeonticOutcome.REQUIRE_CONFIRMATION.value,
+    }
+    if normalized not in allowed:
+        # Invalid configuration itself fails closed to confirmation.
+        return DeonticOutcome.REQUIRE_CONFIRMATION.value
+    return normalized
+
+
+def _fail_closed_effect(
+    envelope: InteractionEnvelope,
+    *,
+    outcome: str,
+) -> InvocationEffect:
     intent = envelope.normalized_intent
     return InvocationEffect.from_intent(
-        outcome=DeonticOutcome.ALLOW,
+        outcome=outcome,
         method=intent.method,
         target_ref=intent.target_ref,
         arguments=intent.arguments,
-        reason="No matching active policy blocked the invocation.",
+        reason="No matching active policy; fail-closed mediation blocks invocation.",
+    )
+
+
+# Back-compat alias (deprecated): previously default-allowed on no match.
+def _default_allow_effect(envelope: InteractionEnvelope) -> InvocationEffect:
+    return _fail_closed_effect(
+        envelope, outcome=DEFAULT_MISSING_POLICY_OUTCOME
     )
 
 
@@ -678,10 +723,21 @@ def _decision_reasons(
     return _dedupe_strings(reasons)
 
 
-def _default_allow_reason(bundles: list[ActivePolicyBundle]) -> str:
+def _fail_closed_reason(bundles: list[ActivePolicyBundle], outcome: str) -> str:
     if bundles:
-        return "No active policy norm matched; default allow permits the invocation."
-    return "No active policy bundles were supplied; default allow permits the invocation."
+        return (
+            "No active policy norm matched; fail-closed mediation returns "
+            f"{outcome} and does not permit the invocation."
+        )
+    return (
+        "No active policy bundles were supplied; fail-closed mediation returns "
+        f"{outcome} and does not permit the invocation."
+    )
+
+
+# Back-compat alias (deprecated).
+def _default_allow_reason(bundles: list[ActivePolicyBundle]) -> str:
+    return _fail_closed_reason(bundles, DEFAULT_MISSING_POLICY_OUTCOME)
 
 
 def _explanation(reasons: list[str]) -> str:

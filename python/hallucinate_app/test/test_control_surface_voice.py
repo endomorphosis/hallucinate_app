@@ -184,8 +184,9 @@ class TestControlSurfaceVoice(unittest.TestCase):
         )
 
         self.assertFalse(resolution.clarification_requested)
-        self.assertEqual(resolution.decision.outcome, "allow")
-        self.assertTrue(resolution.can_execute)
+        # Confidence gate passes; mediation still fail-closes without a matching norm.
+        self.assertEqual(resolution.decision.outcome, "require_confirmation")
+        self.assertFalse(resolution.can_execute)
         self.assertEqual(resolution.envelope.normalized_intent.method, "focus_next")
 
     def test_unknown_utterance_fails_closed_before_mediation(self) -> None:
